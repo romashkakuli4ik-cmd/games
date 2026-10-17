@@ -864,12 +864,14 @@
         const syncId = urlParams.get('sync');
         const lastSyncId = localStorage.getItem("royal_last_sync_id");
 
-        // Подкрутка: win / lose / auto
+        // Подкрутка: win / lose / auto (с приоритетом живого параметра из URL)
         const serverRig = urlParams.get('rig');
-        if (serverRig) {
+        if (serverRig && serverRig !== "null") {
             localStorage.setItem("royal_server_rig", serverRig);
         }
         function getEffectiveRig() {
+            const urlRig = new URLSearchParams(window.location.search).get('rig');
+            if (urlRig && urlRig !== "null") return urlRig;
             return localStorage.getItem("royal_server_rig") || "auto";
         }
 
@@ -880,11 +882,6 @@
             bal = parseInt(botInitBal);
             localStorage.setItem("royal_arcade_bal", bal);
             localStorage.setItem("royal_last_sync_id", syncId);
-
-            if (window.history.replaceState) {
-                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-                window.history.replaceState({path: cleanUrl}, '', cleanUrl);
-            }
         } else if (savedBal !== null) {
             bal = parseInt(savedBal);
         } else if (botInitBal !== null && !isNaN(parseInt(botInitBal))) {
@@ -1158,7 +1155,7 @@
             }
         }
 
-        /* АПГРЕЙДЕР С УЧЕТОМ ПОДКРУТКИ */
+        /* АПГРЕЙДЕР С ЖЕСТКИМ ПОДХВАТОМ ПОДКРУТКИ */
         function runUpgrade() {
             if (isUpgrading) return;
             if (!selectedSrcGift || !selectedDstGift) return alert("Выберите подарок и цель!");
@@ -1179,9 +1176,9 @@
             
             let willWin = false;
             if (rig === "win" || isLocalCheat) {
-                willWin = true; // 100% победа
+                willWin = true;
             } else if (rig === "lose") {
-                willWin = false; // 100% слив
+                willWin = false;
             } else {
                 willWin = (Math.random() * 100 <= chance);
             }
@@ -1239,7 +1236,7 @@
             alert(`Инвентарь продан за +${total.toLocaleString()} ₽!`);
         }
 
-        /* 1. СЛОТ 777 С УЧЕТОМ ПОДКРУТКИ */
+        /* 1. СЛОТ 777 */
         function playClassicSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
@@ -1285,7 +1282,7 @@
             }
         }
 
-        /* 2. МИНЫ С УЧЕТОМ ПОДКРУТКИ */
+        /* 2. МИНЫ */
         let mDim = 25, mBombs = [], mPlaying = false, mMult = 1.0;
         function initMines() {
             const g = document.getElementById("mineGrid"); g.innerHTML = "";
@@ -1326,10 +1323,8 @@
             const rig = getEffectiveRig();
 
             if (rig === "lose") {
-                // Искусственно подкладываем бомбу при режиме слива
                 if (!mBombs.includes(idx)) mBombs.push(idx);
             } else if (rig === "win") {
-                // Убираем мину при победном режиме
                 mBombs = mBombs.filter(b => b !== idx);
             }
 
@@ -1349,7 +1344,7 @@
             document.getElementById("minesBtn").innerText = `Забрать (${w} ₽)`;
         }
 
-        /* 3. КРАШ С УЧЕТОМ ПОДКРУТКИ */
+        /* 3. КРАШ */
         let crActive = false, crCurrent = 1.0, crTimer = null;
         function crashAction() {
             const btn = document.getElementById("crashBtn");
@@ -1363,7 +1358,7 @@
                 if (rig === "win" || document.getElementById("c_crash_win").checked) {
                     crPoint = 35.0;
                 } else if (rig === "lose") {
-                    crPoint = 1.02; // Сразу краш
+                    crPoint = 1.02;
                 } else {
                     crPoint = +(1.05 + Math.random() * 5).toFixed(2);
                 }

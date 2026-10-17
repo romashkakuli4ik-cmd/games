@@ -121,6 +121,7 @@
             border-color: transparent;
         }
 
+        /* 16 ИГР */
         #gamesView { width: 100%; max-width: 390px; display: flex; flex-direction: column; align-items: center; }
 
         .bet-card {
@@ -200,6 +201,21 @@
         }
         .game-panel { display: none; width: 100%; flex-direction: column; align-items: center; }
         .game-panel.active { display: flex; }
+
+        .diff-row { display: flex; gap: 5px; width: 100%; margin-bottom: 8px; }
+        .diff-btn {
+            flex: 1;
+            padding: 5px;
+            background: #1b1542;
+            border: 1px solid #3f2f87;
+            color: #bbb;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+        .diff-btn.active { background: #00cec9; color: #080614; border-color: #00cec9; }
 
         .btn-action {
             width: 100%;
@@ -490,6 +506,7 @@
             font-size: 10px;
         }
 
+        /* ЧИТ-МОДАЛКА СО ВСЕМИ 16 ИГРАМИ */
         .cheat-modal {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -540,7 +557,7 @@
     <div id="accessDeniedScreen">
         <div class="denied-icon">🛡️⛔</div>
         <div class="denied-title">ДОСТУП ЗАПРЕЩЁН</div>
-        <div class="denied-desc">Вход разрешён исключительно через официального Telegram-бота. Запуск из внешнего браузера заблокирован.</div>
+        <div class="denied-desc">Вход разрешён исключительно через официального Telegram-бота.</div>
         <a href="https://t.me/Kuli4ik_bot" class="denied-btn">Перейти в Telegram-бота</a>
     </div>
 
@@ -557,7 +574,7 @@
             <button class="nav-switch-btn" id="btnTabAI" onclick="showMainSection('ai')">🧠 GEMINI AI</button>
         </div>
 
-        <!-- КАЗИНО -->
+        <!-- КАЗИНО: ВСЕ 16 ИГР -->
         <div id="gamesView">
             <div class="bet-card">
                 <div class="bet-label">
@@ -594,6 +611,7 @@
             </div>
 
             <div class="game-card">
+                <!-- 1. СЛОТ 777 -->
                 <div class="game-panel active" id="p-s777">
                     <div style="font-size:10px; color:#ffd32a; margin-bottom:5px; text-align:center;">
                         x1 000 (0.1%) | x10 000 (0.01%) | x100 000 (0.001%) | x1 000 000 (0.0001%)
@@ -605,12 +623,14 @@
                     <button class="btn-action" onclick="playClassicSlot()">Крутить 777</button>
                 </div>
 
+                <!-- 2. МИНЫ -->
                 <div class="game-panel" id="p-mines">
                     <div class="mine-grid" id="mineGrid"></div>
                     <div class="status-box" id="minesStatus">Множитель: x1.00</div>
                     <button class="btn-action" id="minesBtn" onclick="minesAction()">Старт (50 ₽)</button>
                 </div>
 
+                <!-- 3. КРАШ -->
                 <div class="game-panel" id="p-crash">
                     <div style="height: 80px; width:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#070517; border-radius:10px;">
                         <div style="font-size:24px;">🚀</div>
@@ -620,6 +640,7 @@
                     <button class="btn-action" id="crashBtn" onclick="crashAction()">Взлететь</button>
                 </div>
 
+                <!-- 4. FLIP -->
                 <div class="game-panel" id="p-flip">
                     <div style="font-size:42px; margin:4px 0;" id="flipIcon">🪙</div>
                     <div style="display:flex; gap:6px; width:100%;">
@@ -629,36 +650,42 @@
                     <div class="status-box" id="flipStatus">Сделайте выбор</div>
                 </div>
 
+                <!-- 5. ZEUS -->
                 <div class="game-panel" id="p-szeus">
                     <div class="slot-box" style="border-color:#ffd32a;"><span id="z1">⚡</span><span id="z2">🏛️</span><span id="z3">👑</span></div>
                     <div class="status-box" id="zeusStatus">Удар Зевса!</div>
                     <button class="btn-action" style="background:linear-gradient(90deg, #f39c12, #e74c3c);" onclick="playZeusSlot()">Удар Зевса</button>
                 </div>
 
+                <!-- 6. BONANZA -->
                 <div class="game-panel" id="p-ssweet">
                     <div class="slot-box" style="border-color:#ff3399;"><span id="sb1">🍬</span><span id="sb2">🍭</span><span id="sb3">💣</span></div>
                     <div class="status-box" id="sweetStatus">Бомбы сладостей!</div>
                     <button class="btn-action" style="background:linear-gradient(90deg, #ff3399, #9b59b6);" onclick="playSweetSlot()">Вращать Bonanza</button>
                 </div>
 
+                <!-- 7. WILD WEST -->
                 <div class="game-panel" id="p-swild">
                     <div class="slot-box" style="border-color:#e67e22;"><span id="ww1">🤠</span><span id="ww2">🔫</span><span id="ww3">⭐</span></div>
                     <div class="status-box" id="wildStatus">Выстрел Шерифа!</div>
                     <button class="btn-action" style="background:linear-gradient(90deg, #d35400, #c0392b);" onclick="playWildSlot()">Выстрел Шерифа</button>
                 </div>
 
+                <!-- 8. CROWN -->
                 <div class="game-panel" id="p-scrown">
                     <div class="slot-box" style="border-color:#f1c40f;"><span id="rc1">👑</span><span id="rc2">💎</span><span id="rc3">💰</span></div>
                     <div class="status-box" id="crownStatus">Королевский Джекпот!</div>
                     <button class="btn-action" style="background:linear-gradient(90deg, #f1c40f, #9b59b6);" onclick="playCrownSlot()">Королевский Спин</button>
                 </div>
 
+                <!-- 9. PINCO -->
                 <div class="game-panel" id="p-pinco">
                     <div style="font-size:32px; margin:4px 0;">⚪</div>
                     <div class="status-box" id="pincoStatus">Готов к сбросу</div>
                     <button class="btn-action" onclick="playPinco()">Бросить шарик</button>
                 </div>
 
+                <!-- 10. CHICKEN -->
                 <div class="game-panel" id="p-chicken">
                     <div style="font-size:26px;">🐔 🛣 🚗</div>
                     <div style="display:flex; gap:6px; width:100%; margin-top:6px;">
@@ -666,9 +693,11 @@
                         <button class="btn-action" style="margin:0; flex:1;" onclick="stepChicken(2)">Полоса 2</button>
                     </div>
                     <div class="status-box" id="chkStatus">Безопасная полоса</div>
+                    <button class="btn-action" id="chkCashBtn" style="display:none;" onclick="cashChicken()">Забрать</button>
                     <button class="btn-action" id="chkStartBtn" onclick="startChicken()">Начать путь</button>
                 </div>
 
+                <!-- 11. HI-LO -->
                 <div class="game-panel" id="p-hilo">
                     <div style="font-size:34px; background:#fff; color:#111; padding:4px 18px; border-radius:10px; font-weight:900; margin:4px;" id="hlCard">7</div>
                     <div style="display:flex; gap:6px; width:100%;">
@@ -676,9 +705,11 @@
                         <button class="btn-action" style="margin:0; flex:1;" onclick="playHiLo('lo')">⬇️ Меньше</button>
                     </div>
                     <div class="status-box" id="hlStatus">Угадайте карту</div>
+                    <button class="btn-action" id="hlCashBtn" style="display:none;" onclick="cashHiLo()">Забрать</button>
                     <button class="btn-action" id="hlStartBtn" onclick="startHiLo()">Старт</button>
                 </div>
 
+                <!-- 12. DICE -->
                 <div class="game-panel" id="p-dice">
                     <div style="font-size:38px; margin:4px 0;" id="diceDisplay">🎲 🎲</div>
                     <div style="display:flex; gap:6px; width:100%;">
@@ -689,18 +720,22 @@
                     <div class="status-box" id="diceStatus">Ставка на кости</div>
                 </div>
 
+                <!-- 13. КОЛЕСО -->
                 <div class="game-panel" id="p-wheel">
                     <div style="font-size:46px; margin:4px 0;" id="wheelIcon">🎡</div>
                     <div class="status-box" id="wheelStatus">Крутите Колесо!</div>
                     <button class="btn-action" onclick="playWheel()">Крутить Колесо</button>
                 </div>
 
+                <!-- 14. БАШНЯ 100 -->
                 <div class="game-panel" id="p-tower">
                     <div class="tower-view" id="towerView"></div>
                     <div class="status-box" id="towerStatus">Этаж: 1/100</div>
+                    <button class="btn-action" id="towerCashBtn" style="display:none;" onclick="cashTower()">Забрать</button>
                     <button class="btn-action" id="towerStartBtn" onclick="startTower()">Штурмовать Башню</button>
                 </div>
 
+                <!-- 15. РУЛЕТКА -->
                 <div class="game-panel" id="p-roulette">
                     <div style="font-size:34px; margin:4px 0;" id="roulDisplay">⚫ 🔴 🟢</div>
                     <div style="display:flex; gap:6px; width:100%;">
@@ -711,6 +746,7 @@
                     <div class="status-box" id="roulStatus">Сделайте ставку</div>
                 </div>
 
+                <!-- 16. КНБ -->
                 <div class="game-panel" id="p-rps">
                     <div style="font-size:38px; margin:4px 0;" id="rpsIcon">✂️ 🪨 📄</div>
                     <div style="display:flex; gap:6px; width:100%;">
@@ -772,7 +808,7 @@
             </div>
         </div>
 
-        <!-- ЧАТ С ИИ -->
+        <!-- ИИ ЧАТ -->
         <div id="aiView">
             <div class="ai-card">
                 <div class="chat-messages" id="chatMsgs">
@@ -786,19 +822,35 @@
         </div>
     </div>
 
-    <!-- ЧИТ-МОДАЛКА -->
+    <!-- ЧИТ МОДАЛКА СО ВСЕМИ 16 ИГРАМИ -->
     <div class="cheat-modal" id="cheatModal">
         <div class="cheat-box">
-            <h3 style="color:#00ff88; margin:0 0 10px 0; text-align:center;">⚡ DEV ЧИТЫ ⚡</h3>
+            <h3 style="color:#00ff88; margin:0 0 10px 0; text-align:center;">⚡ СИСТЕМА ЧИТОВ (16 ИГР) ⚡</h3>
             <div class="cheat-item"><span>🎁 Апгрейд: 100% Успех</span><input type="checkbox" id="c_upg_win"></div>
-            <div class="cheat-item"><span>🎰 777: Джекпот x1 000 000</span><input type="checkbox" id="c_777_win"></div>
-            <div class="cheat-item"><span>💣 Мины: Рентген</span><input type="checkbox" id="c_mines_xray" onchange="toggleXray()"></div>
+            <div class="cheat-item"><span>🎰 777: x1 000 000 Джекпот</span><input type="checkbox" id="c_777_win"></div>
+            <div class="cheat-item"><span>💣 Мины: Рентген X-Ray</span><input type="checkbox" id="c_mines_xray" onchange="toggleXray()"></div>
+            <div class="cheat-item"><span>💣 Мины: Авто-обход</span><input type="checkbox" id="c_mines_win"></div>
             <div class="cheat-item"><span>🚀 Краш: Всегда x30+</span><input type="checkbox" id="c_crash_win"></div>
+            <div class="cheat-item"><span>🪙 Flipcoin: Всегда победа</span><input type="checkbox" id="c_flip_win"></div>
+            <div class="cheat-item"><span>⚡ Zeus: Молния Зевса</span><input type="checkbox" id="c_zeus_win"></div>
+            <div class="cheat-item"><span>🍬 Bonanza: Бомбы x100</span><input type="checkbox" id="c_bonanza_win"></div>
+            <div class="cheat-item"><span>🤠 Wild West: Шериф x80</span><input type="checkbox" id="c_wild_win"></div>
+            <div class="cheat-item"><span>👑 Crown: Корона x200</span><input type="checkbox" id="c_crown_win"></div>
+            <div class="cheat-item"><span>⚪ Pinco: Макс. Лунка</span><input type="checkbox" id="c_pinco_win"></div>
+            <div class="cheat-item"><span>🐔 Chicken: Бессмертие</span><input type="checkbox" id="c_chk_win"></div>
+            <div class="cheat-item"><span>🃏 Hi-Lo: Идеальная карта</span><input type="checkbox" id="c_hilo_win"></div>
+            <div class="cheat-item"><span>🎲 Dice: Попадание</span><input type="checkbox" id="c_dice_win"></div>
+            <div class="cheat-item"><span>🎡 Колесо: Джекпот</span><input type="checkbox" id="c_wheel_win"></div>
+            <div class="cheat-item"><span>🗼 Башня: Чистый проход (100 эт.)</span><input type="checkbox" id="c_tower_win"></div>
+            <div class="cheat-item"><span>🔴 Рулетка: Точный цвет/Зеро</span><input type="checkbox" id="c_roul_win"></div>
+            <div class="cheat-item"><span>✂️ КНБ: Победа</span><input type="checkbox" id="c_rps_win"></div>
+
             <div class="cheat-btns">
                 <button class="btn-c-act" onclick="addMoney(10000)">+10k ₽</button>
                 <button class="btn-c-act" onclick="addMoney(100000)">+100k ₽</button>
                 <button class="btn-c-act" onclick="addMoney(1000000)">+1M ₽</button>
-                <button class="btn-c-act" style="background:#ff3399; color:#fff;" onclick="closeCheat()">Закрыть</button>
+                <button class="btn-c-act" onclick="addMoney(10000000)">+10M ₽</button>
+                <button class="btn-c-act" style="background:#ff3399; color:#fff; grid-column: span 2;" onclick="closeCheat()">Закрыть</button>
             </div>
         </div>
     </div>
@@ -825,7 +877,7 @@
             document.getElementById("admBtn").style.display = "block";
         }
 
-        // ================== ПОСТОЯННОЕ СОХРАНЕНИЕ В ПАМЯТИ (LOCALSTORAGE) ==================
+        // Автозагрузка баланса
         const urlParams = new URLSearchParams(window.location.search);
         const botInitBal = urlParams.get('bal');
 
@@ -874,7 +926,7 @@
             document.getElementById("p-" + name).classList.add("active");
         }
 
-        /* ================== 24 ПОДАРКА TELEGRAM ================== */
+        /* 24 ПОДАРКА */
         const TG_GIFTS = [
             { id: 1,  name: "Мишка",        icon: "🧸", price: 200 },
             { id: 2,  name: "Роза",         icon: "🌹", price: 400 },
@@ -971,10 +1023,7 @@
                     renderRightTargets();
                     updateUpgradePreview();
                 };
-                row.innerHTML = `
-                    <div>${item.icon} <b>${item.name}</b></div>
-                    <div style="color:#00cec9;">${item.price.toLocaleString()} ₽</div>
-                `;
+                row.innerHTML = `<div>${item.icon} <b>${item.name}</b></div><div style="color:#00cec9;">${item.price.toLocaleString()} ₽</div>`;
                 box.appendChild(row);
             });
         }
@@ -982,7 +1031,6 @@
         function renderRightTargets() {
             const box = document.getElementById("colTargetList");
             box.innerHTML = "";
-
             const minPrice = selectedSrcGift ? selectedSrcGift.price : 0;
             const available = TG_GIFTS.filter(g => g.price > minPrice);
 
@@ -1001,10 +1049,7 @@
                     renderRightTargets();
                     updateUpgradePreview();
                 };
-                row.innerHTML = `
-                    <div>${item.icon} <b>${item.name}</b></div>
-                    <div style="color:#ff3399;">${item.price.toLocaleString()} ₽</div>
-                `;
+                row.innerHTML = `<div>${item.icon} <b>${item.name}</b></div><div style="color:#ff3399;">${item.price.toLocaleString()} ₽</div>`;
                 box.appendChild(row);
             });
         }
@@ -1110,9 +1155,7 @@
 
         function runUpgrade() {
             if (isUpgrading) return;
-            if (!selectedSrcGift || !selectedDstGift) {
-                return alert("Выберите исходный подарок и цель!");
-            }
+            if (!selectedSrcGift || !selectedDstGift) return alert("Выберите подарок и цель!");
 
             isUpgrading = true;
             document.getElementById("btnRunUpgrade").disabled = true;
@@ -1153,7 +1196,7 @@
 
                 if (isActuallyInYellow) {
                     userInventory.push({ ...selectedDstGift, uid: Date.now() + Math.random() });
-                    document.getElementById("upgStatus").innerText = `🎉 ПОБЕДА! Стрелка в жёлтой зоне! Получен: ${selectedDstGift.icon} ${selectedDstGift.name}!`;
+                    document.getElementById("upgStatus").innerText = `🎉 ПОБЕДА! Стрелка в жёлтой зоне: ${selectedDstGift.icon} ${selectedDstGift.name}!`;
                 } else {
                     document.getElementById("upgStatus").innerText = `💥 НЕУДАЧА! Стрелка в серой зоне. Предмет сгорел.`;
                 }
@@ -1180,7 +1223,7 @@
             alert(`Инвентарь продан за +${total.toLocaleString()} ₽!`);
         }
 
-        /* ================== СЛОТ 777 ================== */
+        /* 1. СЛОТ 777 С УЛЬТРА-МНОЖИТЕЛЯМИ */
         function playClassicSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
@@ -1221,37 +1264,8 @@
             }
         }
 
-        /* ================== GEMINI AI ================== */
-        const _kParts = ["QVEuQWI4Uk42", "TFZBUGdudDZI", "clR4V0JkSWFa", "cjJzS0dBUVI4", "OVNuZTVWUVFM", "d0tWN3lxb1E="];
-        const GEMINI_KEY = atob(_kParts.join(""));
-        function handleChatKey(e) { if (e.key === "Enter") sendAiMessage(); }
-        async function sendAiMessage() {
-            const inp = document.getElementById("chatInput");
-            const text = inp.value.trim();
-            if (!text) return;
-            const box = document.getElementById("chatMsgs");
-            box.innerHTML += `<div class="msg user">${text}</div>`;
-            inp.value = "";
-            box.innerHTML += `<div class="msg ai">Думаю...</div>`;
-            box.scrollTop = box.scrollHeight;
-
-            try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${encodeURIComponent(GEMINI_KEY)}`;
-                const res = await fetch(url, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: text }] }] })
-                });
-                const data = await res.json();
-                const ans = data.candidates?.[0]?.content?.parts?.[0]?.text || "ИИ не ответил.";
-                box.lastElementChild.innerText = ans;
-            } catch (e) {
-                box.lastElementChild.innerText = "ИИ временно недоступен.";
-            }
-        }
-
-        /* ================== МИНЫ, КРАШ, FLIP ================== */
-        let mBombs = [], mPlaying = false, mMult = 1.0;
+        /* 2. МИНЫ */
+        let mDim = 25, mBombs = [], mPlaying = false, mMult = 1.0;
         function initMines() {
             const g = document.getElementById("mineGrid"); g.innerHTML = "";
             g.style.gridTemplateColumns = "repeat(5, 1fr)";
@@ -1288,10 +1302,14 @@
         function clickMine(cell, idx) {
             if (!mPlaying || cell.classList.contains("gem") || cell.classList.contains("bomb")) return;
             if (mBombs.includes(idx)) {
-                cell.classList.add("bomb"); cell.innerText = "💣"; mPlaying = false;
-                document.getElementById("minesBtn").innerText = `Старт (${currentBet} ₽)`;
-                document.getElementById("minesBtn").style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
-                return;
+                if (document.getElementById("c_mines_win").checked) {
+                    mBombs = mBombs.filter(b => b !== idx); cell.classList.add("gem"); cell.innerText = "💎";
+                } else {
+                    cell.classList.add("bomb"); cell.innerText = "💣"; mPlaying = false;
+                    document.getElementById("minesBtn").innerText = `Старт (${currentBet} ₽)`;
+                    document.getElementById("minesBtn").style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
+                    return;
+                }
             } else { cell.classList.add("gem"); cell.innerText = "💎"; }
             mMult = +(mMult * 1.15).toFixed(2);
             let w = Math.floor(currentBet * mMult);
@@ -1299,6 +1317,7 @@
             document.getElementById("minesBtn").innerText = `Забрать (${w} ₽)`;
         }
 
+        /* 3. КРАШ */
         let crActive = false, crCurrent = 1.0, crTimer = null;
         function crashAction() {
             const btn = document.getElementById("crashBtn");
@@ -1325,10 +1344,11 @@
             }
         }
 
+        /* 4. FLIPCOIN */
         function playFlip(choice) {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
-            let res = Math.random() > 0.5 ? 1 : 2;
+            let res = document.getElementById("c_flip_win").checked ? choice : (Math.random() > 0.5 ? 1 : 2);
             document.getElementById("flipIcon").innerText = res === 1 ? "🦅" : "🪙";
             if (choice === res) {
                 let win = Math.floor(currentBet * 1.95); bal += win;
@@ -1337,49 +1357,240 @@
             updateBal();
         }
 
-        function playZeusSlot() { playSimpleSlot("⚡", 30, "zeusStatus", "⚡ ЗЕВС: +"); }
-        function playSweetSlot() { playSimpleSlot("💣", 40, "sweetStatus", "💣 БОМБЫ: +"); }
-        function playWildSlot() { playSimpleSlot("⭐", 30, "wildStatus", "🤠 ШЕРИФ: +"); }
-        function playCrownSlot() { playSimpleSlot("👑", 50, "crownStatus", "👑 КОРОНА: +"); }
-
-        function playSimpleSlot(sym, mult, statId, msg) {
+        /* 5-8. СЛОТЫ */
+        function playZeusSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet;
-            let win = Math.random() < 0.2 ? currentBet * mult : 0;
+            let isCheat = document.getElementById("c_zeus_win").checked;
+            let win = isCheat || Math.random() < 0.2 ? currentBet * 30 : 0;
+            if (isCheat) { document.getElementById("z1").innerText = "⚡"; document.getElementById("z2").innerText = "⚡"; document.getElementById("z3").innerText = "⚡"; }
             bal += win; updateBal();
-            document.getElementById(statId).innerText = win > 0 ? `${msg}${win} ₽!` : "❌ Мимо!";
+            document.getElementById("zeusStatus").innerText = win > 0 ? `⚡ ЗЕВС: +${win} ₽!` : "❌ Мимо!";
+        }
+        function playSweetSlot() {
+            if (bal < currentBet) return alert("Недостаточно средств!");
+            bal -= currentBet;
+            let isCheat = document.getElementById("c_bonanza_win").checked;
+            let win = isCheat || Math.random() < 0.2 ? currentBet * 40 : 0;
+            if (isCheat) { document.getElementById("sb1").innerText = "💣"; document.getElementById("sb2").innerText = "💣"; document.getElementById("sb3").innerText = "💣"; }
+            bal += win; updateBal();
+            document.getElementById("sweetStatus").innerText = win > 0 ? `💣 БОМБЫ: +${win} ₽!` : "❌ Мимо!";
+        }
+        function playWildSlot() {
+            if (bal < currentBet) return alert("Недостаточно средств!");
+            bal -= currentBet;
+            let isCheat = document.getElementById("c_wild_win").checked;
+            let win = isCheat || Math.random() < 0.2 ? currentBet * 30 : 0;
+            if (isCheat) { document.getElementById("ww1").innerText = "⭐"; document.getElementById("ww2").innerText = "⭐"; document.getElementById("ww3").innerText = "⭐"; }
+            bal += win; updateBal();
+            document.getElementById("wildStatus").innerText = win > 0 ? `🤠 ВЫИГРЫШ: +${win} ₽!` : "❌ Мимо!";
+        }
+        function playCrownSlot() {
+            if (bal < currentBet) return alert("Недостаточно средств!");
+            bal -= currentBet;
+            let isCheat = document.getElementById("c_crown_win").checked;
+            let win = isCheat || Math.random() < 0.2 ? currentBet * 50 : 0;
+            if (isCheat) { document.getElementById("rc1").innerText = "👑"; document.getElementById("rc2").innerText = "👑"; document.getElementById("rc3").innerText = "👑"; }
+            bal += win; updateBal();
+            document.getElementById("crownStatus").innerText = win > 0 ? `👑 ДЖЕКПОТ: +${win} ₽!` : "❌ Мимо!";
         }
 
+        /* 9. PINCO */
         function playPinco() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet;
-            let win = Math.floor(currentBet * 2); bal += win; updateBal();
-            document.getElementById("pincoStatus").innerText = `🎯 Выплата: +${win} ₽`;
+            let mult = document.getElementById("c_pinco_win").checked ? 10.0 : (Math.random() < 0.4 ? 2.0 : 0.0);
+            let win = Math.floor(currentBet * mult); bal += win; updateBal();
+            document.getElementById("pincoStatus").innerText = win > 0 ? `🎯 Лунка x${mult}: +${win} ₽` : "❌ Мимо!";
         }
-        function startChicken() { document.getElementById("chkStatus").innerText = "Идём..."; }
-        function stepChicken(l) { document.getElementById("chkStatus").innerText = "Шаг сделан!"; }
-        function startHiLo() { document.getElementById("hlStatus").innerText = "Карта: 7"; }
-        function playHiLo(d) { document.getElementById("hlStatus").innerText = "Победа!"; }
-        function playDice(c) {
+
+        /* 10. CHICKEN */
+        let chkActive = false, chkMult = 1.0;
+        function startChicken() {
             if (bal < currentBet) return alert("Недостаточно средств!");
-            bal -= currentBet; bal += currentBet * 2; updateBal();
-            document.getElementById("diceStatus").innerText = "🎉 Победа!";
+            bal -= currentBet; updateBal(); chkActive = true; chkMult = 1.0;
+            document.getElementById("chkStartBtn").style.display = "none";
+            document.getElementById("chkCashBtn").style.display = "block";
+            document.getElementById("chkCashBtn").innerText = `Забрать (${currentBet} ₽)`;
+            document.getElementById("chkStatus").innerText = "Шаг 1 | Безопасно";
         }
+        function stepChicken(l) {
+            if (!chkActive) return;
+            if (document.getElementById("c_chk_win").checked || Math.random() > 0.3) {
+                chkMult = +(chkMult * 1.35).toFixed(2);
+                let w = Math.floor(currentBet * chkMult);
+                document.getElementById("chkStatus").innerText = `x${chkMult} (${w} ₽)`;
+                document.getElementById("chkCashBtn").innerText = `Забрать (${w} ₽)`;
+            } else {
+                chkActive = false; document.getElementById("chkStatus").innerText = "💥 Сбила машина!";
+                document.getElementById("chkStartBtn").style.display = "block"; document.getElementById("chkCashBtn").style.display = "none";
+            }
+        }
+        function cashChicken() {
+            if (!chkActive) return;
+            chkActive = false; let win = Math.floor(currentBet * chkMult);
+            bal += win; updateBal(); document.getElementById("chkStatus").innerText = `🏆 Забрано: +${win} ₽!`;
+            document.getElementById("chkStartBtn").style.display = "block"; document.getElementById("chkCashBtn").style.display = "none";
+        }
+
+        /* 11. HI-LO */
+        let hlActive = false, hlCard = 7, hlMult = 1.0;
+        function startHiLo() {
+            if (bal < currentBet) return alert("Недостаточно средств!");
+            bal -= currentBet; updateBal(); hlActive = true; hlCard = 7; hlMult = 1.0;
+            document.getElementById("hlCard").innerText = hlCard;
+            document.getElementById("hlStartBtn").style.display = "none"; document.getElementById("hlCashBtn").style.display = "block";
+            document.getElementById("hlCashBtn").innerText = `Забрать (${currentBet} ₽)`;
+            document.getElementById("hlStatus").innerText = "Угадайте карту";
+        }
+        function playHiLo(d) {
+            if (!hlActive) return;
+            let next = document.getElementById("c_hilo_win").checked ? (d === 'hi' ? 14 : 2) : Math.floor(Math.random() * 13) + 2;
+            document.getElementById("hlCard").innerText = next;
+            let win = (d === 'hi' && next >= hlCard) || (d === 'lo' && next <= hlCard);
+            if (win) {
+                hlMult = +(hlMult * 1.3).toFixed(2); hlCard = next;
+                let w = Math.floor(currentBet * hlMult);
+                document.getElementById("hlStatus").innerText = `Верно! x${hlMult}`;
+                document.getElementById("hlCashBtn").innerText = `Забрать (${w} ₽)`;
+            } else {
+                hlActive = false; document.getElementById("hlStatus").innerText = "❌ Проигрыш!";
+                document.getElementById("hlStartBtn").style.display = "block"; document.getElementById("hlCashBtn").style.display = "none";
+            }
+        }
+        function cashHiLo() {
+            if (!hlActive) return;
+            hlActive = false; let win = Math.floor(currentBet * hlMult);
+            bal += win; updateBal(); document.getElementById("hlStatus").innerText = `🏆 Забрано: +${win} ₽!`;
+            document.getElementById("hlStartBtn").style.display = "block"; document.getElementById("hlCashBtn").style.display = "none";
+        }
+
+        /* 12. DICE */
+        function playDice(choice) {
+            if (bal < currentBet) return alert("Недостаточно средств!");
+            bal -= currentBet; updateBal();
+            let sum = document.getElementById("c_dice_win").checked ? (choice === 'under' ? 4 : (choice === 'exact' ? 7 : 10)) : Math.floor(Math.random() * 11) + 2;
+            document.getElementById("diceDisplay").innerText = `🎲 Сумма: ${sum}`;
+            let win = (choice === 'under' && sum < 7) || (choice === 'exact' && sum === 7) || (choice === 'over' && sum > 7);
+            if (win) {
+                let m = choice === 'exact' ? 5.8 : 2.0; let w = Math.floor(currentBet * m);
+                bal += w; document.getElementById("diceStatus").innerText = `🎉 Победа: +${w} ₽!`;
+            } else { document.getElementById("diceStatus").innerText = "❌ Мимо!"; }
+            updateBal();
+        }
+
+        /* 13. КОЛЕСО */
         function playWheel() {
             if (bal < currentBet) return alert("Недостаточно средств!");
-            bal -= currentBet; bal += currentBet * 2; updateBal();
-            document.getElementById("wheelStatus").innerText = "🎯 x2!";
+            bal -= currentBet;
+            let mult = document.getElementById("c_wheel_win").checked ? 20.0 : (Math.random() < 0.4 ? 2.0 : 0.0);
+            let win = Math.floor(currentBet * mult); bal += win; updateBal();
+            document.getElementById("wheelStatus").innerText = win > 0 ? `🎯 x${mult}: +${win} ₽!` : "❌ Сектор x0";
         }
-        function startTower() { document.getElementById("towerStatus").innerText = "Этаж 1"; }
-        function playRoulette(c) {
-            if (bal < currentBet) return alert("Недостаточно средств!");
-            bal -= currentBet; bal += currentBet * 2; updateBal();
-            document.getElementById("roulStatus").innerText = "🎉 Выигрыш!";
+
+        /* 14. БАШНЯ 100 */
+        let tFloor = 1, tActive = false, tMult = 1.0;
+        function renderTower() {
+            const v = document.getElementById("towerView"); v.innerHTML = "";
+            for (let f = tFloor; f <= Math.min(100, tFloor + 4); f++) {
+                let r = document.createElement("div"); r.className = "tower-row";
+                for (let c = 1; c <= 3; c++) {
+                    let s = document.createElement("div"); s.className = `tower-step ${f === tFloor ? 'current' : ''}`;
+                    s.innerText = f === tFloor ? `Эт. ${f}` : `${f}`;
+                    s.onclick = () => stepTower(f, c); r.appendChild(s);
+                }
+                v.appendChild(r);
+            }
         }
-        function playRPS(m) {
+        function startTower() {
             if (bal < currentBet) return alert("Недостаточно средств!");
-            bal -= currentBet; bal += currentBet * 2; updateBal();
-            document.getElementById("rpsStatus").innerText = "🎉 Победа!";
+            bal -= currentBet; updateBal(); tFloor = 1; tMult = 1.0; tActive = true;
+            renderTower();
+            document.getElementById("towerStartBtn").style.display = "none"; document.getElementById("towerCashBtn").style.display = "block";
+            document.getElementById("towerCashBtn").innerText = `Забрать (${currentBet} ₽)`;
+            document.getElementById("towerStatus").innerText = "Этаж: 1/100";
+        }
+        function stepTower(f, c) {
+            if (!tActive || f !== tFloor) return;
+            if (document.getElementById("c_tower_win").checked || c !== 1) {
+                tFloor++; tMult = +(tMult * 1.45).toFixed(2);
+                let w = Math.floor(currentBet * tMult);
+                renderTower();
+                document.getElementById("towerStatus").innerText = `Этаж: ${tFloor}/100 | x${tMult} (${w} ₽)`;
+                document.getElementById("towerCashBtn").innerText = `Забрать (${w} ₽)`;
+            } else {
+                tActive = false; document.getElementById("towerStatus").innerText = "💥 Ловушка! Башня рухнула.";
+                document.getElementById("towerStartBtn").style.display = "block"; document.getElementById("towerCashBtn").style.display = "none";
+            }
+        }
+        function cashTower() {
+            if (!tActive) return;
+            tActive = false; let win = Math.floor(currentBet * tMult);
+            bal += win; updateBal(); document.getElementById("towerStatus").innerText = `🏆 Забрано: +${win} ₽!`;
+            document.getElementById("towerStartBtn").style.display = "block"; document.getElementById("towerCashBtn").style.display = "none";
+        }
+
+        /* 15. РУЛЕТКА */
+        function playRoulette(choice) {
+            if (bal < currentBet) return alert("Недостаточно средств!");
+            bal -= currentBet; updateBal();
+            let res = document.getElementById("c_roul_win").checked ? choice : (Math.random() < 0.08 ? 'zero' : (Math.random() > 0.5 ? 'red' : 'black'));
+            let icon = res === 'red' ? "🔴 Красное" : (res === 'black' ? "⚫ Черное" : "🟢 Зеро 0");
+            document.getElementById("roulDisplay").innerText = icon;
+            if (choice === res) {
+                let m = choice === 'zero' ? 14.0 : 2.0; let win = Math.floor(currentBet * m);
+                bal += win; document.getElementById("roulStatus").innerText = `🎉 Победа: +${win} ₽!`;
+            } else { document.getElementById("roulStatus").innerText = `❌ Мимо! Выпало ${icon}.`; }
+            updateBal();
+        }
+
+        /* 16. КНБ */
+        function playRPS(userMove) {
+            if (bal < currentBet) return alert("Недостаточно средств!");
+            bal -= currentBet; updateBal();
+            let botMove = document.getElementById("c_rps_win").checked ?
+                (userMove === 'rock' ? 'scissors' : (userMove === 'scissors' ? 'paper' : 'rock')) :
+                ['rock', 'scissors', 'paper'][Math.floor(Math.random() * 3)];
+            const icons = {'rock':'🪨', 'scissors':'✂️', 'paper':'📄'};
+            document.getElementById("rpsIcon").innerText = `${icons[userMove]} vs ${icons[botMove]}`;
+            if (userMove === botMove) {
+                bal += currentBet; document.getElementById("rpsStatus").innerText = "🤝 Ничья! Возврат.";
+            } else if (
+                (userMove === 'rock' && botMove === 'scissors') ||
+                (userMove === 'scissors' && botMove === 'paper') ||
+                (userMove === 'paper' && botMove === 'rock')
+            ) {
+                let win = Math.floor(currentBet * 2.0); bal += win; document.getElementById("rpsStatus").innerText = `🎉 Победа: +${win} ₽!`;
+            } else { document.getElementById("rpsStatus").innerText = "😢 Бот победил!"; }
+            updateBal();
+        }
+
+        /* GEMINI AI */
+        const _kParts = ["QVEuQWI4Uk42", "TFZBUGdudDZI", "clR4V0JkSWFa", "cjJzS0dBUVI4", "OVNuZTVWUVFM", "d0tWN3lxb1E="];
+        const GEMINI_KEY = atob(_kParts.join(""));
+        function handleChatKey(e) { if (e.key === "Enter") sendAiMessage(); }
+        async function sendAiMessage() {
+            const inp = document.getElementById("chatInput");
+            const text = inp.value.trim();
+            if (!text) return;
+            const box = document.getElementById("chatMsgs");
+            box.innerHTML += `<div class="msg user">${text}</div>`;
+            inp.value = "";
+            box.innerHTML += `<div class="msg ai">Думаю...</div>`;
+            box.scrollTop = box.scrollHeight;
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${encodeURIComponent(GEMINI_KEY)}`;
+                const res = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: text }] }] })
+                });
+                const data = await res.json();
+                const ans = data.candidates?.[0]?.content?.parts?.[0]?.text || "ИИ не ответил.";
+                box.lastElementChild.innerText = ans;
+            } catch (e) {
+                box.lastElementChild.innerText = "ИИ временно недоступен.";
+            }
         }
 
         initMines();

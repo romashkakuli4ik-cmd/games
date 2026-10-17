@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kuli4ik Mega Arcade 16 Games</title>
+    <title>Kuli4ik Mega Arcade 100 Floors</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
-            background: radial-gradient(circle at top, #181145 0%, #060412 100%);
+            background: radial-gradient(circle at top, #191244 0%, #060412 100%);
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
@@ -60,7 +60,6 @@
             font-weight: bold;
         }
 
-        /* ПАНЕЛЬ СТАВОК */
         .bet-card {
             width: 100%;
             max-width: 390px;
@@ -100,7 +99,6 @@
             box-shadow: 0 0 10px rgba(255, 51, 153, 0.6);
         }
 
-        /* 16 ТАБОВ ИГР */
         .tabs {
             display: flex;
             gap: 5px;
@@ -128,7 +126,6 @@
             border-color: transparent;
         }
 
-        /* ИГРОВОЙ БОКС */
         .game-card {
             background: #110d29;
             border: 1px solid #2e236b;
@@ -157,7 +154,7 @@
             border: 1px solid #3f2f87;
             color: #bbb;
             border-radius: 8px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
             cursor: pointer;
             text-align: center;
@@ -193,7 +190,6 @@
             margin-top: 10px;
         }
 
-        /* ЭЛЕМЕНТЫ ИГР */
         .mine-grid { display: grid; gap: 5px; width: 100%; }
         .mine-cell {
             aspect-ratio: 1;
@@ -223,32 +219,41 @@
             font-size: 38px;
         }
 
-        /* ТАВЕР / БАШНЯ */
-        .tower-grid {
+        /* 100 ЭТАЖЕЙ БАШНИ */
+        .tower-view {
             display: flex;
             flex-direction: column-reverse;
-            gap: 5px;
+            gap: 6px;
             width: 100%;
+            max-height: 220px;
+            overflow-y: auto;
+            padding: 4px;
+            background: #0a071d;
+            border-radius: 10px;
+            border: 1px solid #2e236b;
         }
-        .tower-floor {
+        .tower-row {
             display: flex;
-            gap: 5px;
+            gap: 6px;
             width: 100%;
         }
-        .tower-cell {
+        .tower-step {
             flex: 1;
             padding: 10px 0;
-            background: #20174e;
-            border-radius: 8px;
+            background: #1d1645;
+            border: 1px solid #392b77;
+            border-radius: 6px;
             text-align: center;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 12px;
             cursor: pointer;
-            border: 1px solid #362970;
         }
-        .tower-cell.active-row { border-color: #00cec9; background: #281e61; }
+        .tower-step.current {
+            border-color: #00cec9;
+            background: #291e63;
+            box-shadow: 0 0 8px rgba(0, 206, 201, 0.4);
+        }
 
-        /* ЧИТ МОДАЛКА */
         .cheat-modal {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -298,14 +303,14 @@
 
     <div class="header">
         <button class="admin-secret-btn" id="admBtn" onclick="openCheat()">👑 DEV ЧИТЫ</button>
-        <div class="title">👑 ROYAL MEGA CASINO (16 IN 1)</div>
+        <div class="title">👑 ROYAL MEGA CASINO (100 FLOORS)</div>
         <div class="balance-badge">Баланс: <span id="balance">1000</span> ₽</div>
     </div>
 
-    <!-- ВЫБОР СТАВКИ -->
+    <!-- ПАНЕЛЬ СТАВОК -->
     <div class="bet-card">
         <div class="bet-label">
-            <span>РАЗМЕР СТАВКИ:</span>
+            <span>СТАВКА:</span>
             <span id="curBetLabel" style="color: #ff3399;">50 ₽</span>
         </div>
         <div class="bet-grid">
@@ -318,7 +323,7 @@
         </div>
     </div>
 
-    <!-- 16 ВЫБОРОВ ИГР В ГОРИЗОНТАЛЬНОМ СКРОЛЛЕ -->
+    <!-- 16 ВКЛАДОК -->
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('mines')">💣 Мины</button>
         <button class="tab-btn" onclick="switchTab('crash')">🚀 Краш</button>
@@ -327,13 +332,13 @@
         <button class="tab-btn" onclick="switchTab('szeus')">⚡ Zeus</button>
         <button class="tab-btn" onclick="switchTab('ssweet')">🍬 Bonanza</button>
         <button class="tab-btn" onclick="switchTab('swild')">🤠 Wild West</button>
-        <button class="tab-btn" onclick="switchTab('scrown')">👑 Crown Slot</button>
+        <button class="tab-btn" onclick="switchTab('scrown')">👑 Crown</button>
         <button class="tab-btn" onclick="switchTab('pinco')">⚪ Pinco</button>
         <button class="tab-btn" onclick="switchTab('chicken')">🐔 Chicken</button>
         <button class="tab-btn" onclick="switchTab('hilo')">🃏 Hi-Lo</button>
         <button class="tab-btn" onclick="switchTab('dice')">🎲 Dice</button>
         <button class="tab-btn" onclick="switchTab('wheel')">🎡 Колесо</button>
-        <button class="tab-btn" onclick="switchTab('tower')">🗼 Башня</button>
+        <button class="tab-btn" onclick="switchTab('tower')">🗼 Башня 100</button>
         <button class="tab-btn" onclick="switchTab('roulette')">🔴 Рулетка</button>
         <button class="tab-btn" onclick="switchTab('rps')">✂️ КНБ</button>
     </div>
@@ -343,9 +348,9 @@
         <!-- 1. МИНЫ -->
         <div class="game-panel active" id="p-mines">
             <div class="diff-row">
-                <button class="diff-btn" onclick="setMinesDim(9, this)">3x3 (2 мины)</button>
-                <button class="diff-btn active" onclick="setMinesDim(25, this)">5x5 (3 мины)</button>
-                <button class="diff-btn" onclick="setMinesDim(36, this)">6x6 (5 мин)</button>
+                <button class="diff-btn" onclick="setMinesDim(9, this)">Лёгкий (3x3)</button>
+                <button class="diff-btn active" onclick="setMinesDim(25, this)">Средний (5x5)</button>
+                <button class="diff-btn" onclick="setMinesDim(36, this)">Хардкор (6x6)</button>
             </div>
             <div class="mine-grid" id="mineGrid"></div>
             <div class="status-box" id="minesStatus">Множитель: x1.00</div>
@@ -359,9 +364,9 @@
                 <button class="diff-btn" onclick="setCrashRisk('med', this)">Средний (x10)</button>
                 <button class="diff-btn" onclick="setCrashRisk('high', this)">Экстрим (x100)</button>
             </div>
-            <div style="height: 110px; width:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#070517; border-radius:10px;">
-                <div style="font-size:26px;">🚀</div>
-                <div style="font-size:36px; font-weight:900; color:#00cec9;" id="crashText">x1.00</div>
+            <div style="height: 100px; width:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#070517; border-radius:10px;">
+                <div style="font-size:24px;">🚀</div>
+                <div style="font-size:34px; font-weight:900; color:#00cec9;" id="crashText">x1.00</div>
             </div>
             <div class="status-box" id="crashStatus">Ожидание старта</div>
             <button class="btn-action" id="crashBtn" onclick="crashAction()">Взлететь</button>
@@ -370,11 +375,11 @@
         <!-- 3. FLIPCOIN -->
         <div class="game-panel" id="p-flip">
             <div class="diff-row">
-                <button class="diff-btn active" onclick="setFlipSides(2, this)">2 грани (x1.95)</button>
-                <button class="diff-btn" onclick="setFlipSides(3, this)">3 грани (x2.90)</button>
-                <button class="diff-btn" onclick="setFlipSides(4, this)">4 грани (x3.85)</button>
+                <button class="diff-btn active" onclick="setFlipSides(2, this)">Классика (x1.95)</button>
+                <button class="diff-btn" onclick="setFlipSides(3, this)">Трио (x2.90)</button>
+                <button class="diff-btn" onclick="setFlipSides(4, this)">Квадро (x3.85)</button>
             </div>
-            <div style="font-size:50px; margin:4px 0;" id="flipIcon">🪙</div>
+            <div style="font-size:46px; margin:4px 0;" id="flipIcon">🪙</div>
             <div style="display:flex; gap:6px; width:100%;" id="flipChoices">
                 <button class="btn-action" style="margin:0; flex:1;" onclick="playFlip(1)">Орёл</button>
                 <button class="btn-action" style="margin:0; flex:1;" onclick="playFlip(2)">Решка</button>
@@ -384,46 +389,71 @@
 
         <!-- 4. СЛОТ 777 -->
         <div class="game-panel" id="p-s777">
+            <div class="diff-row">
+                <button class="diff-btn active" onclick="setSlotDiff('norm', this)">1 Линия (x25)</button>
+                <button class="diff-btn" onclick="setSlotDiff('hard', this)">3 Линии (x75)</button>
+                <button class="diff-btn" onclick="setSlotDiff('vip', this)">VIP (x200)</button>
+            </div>
             <div class="slot-box">
                 <span id="cl1">💎</span><span id="cl2">🍒</span><span id="cl3">7️⃣</span>
             </div>
-            <div class="status-box" id="s777Status">Джекпот x25 за три семерки!</div>
+            <div class="status-box" id="s777Status">Джекпот за 3 Семёрки!</div>
             <button class="btn-action" onclick="playClassicSlot()">Крутить 777</button>
         </div>
 
-        <!-- 5. ZEUS OLYMPUS -->
+        <!-- 5. ZEUS -->
         <div class="game-panel" id="p-szeus">
+            <div class="diff-row">
+                <button class="diff-btn active" onclick="setZeusDiff('norm', this)">Олимп (x30)</button>
+                <button class="diff-btn" onclick="setZeusDiff('hard', this)">Шторм (x50)</button>
+                <button class="diff-btn" onclick="setZeusDiff('god', this)">Бог Грома (x150)</button>
+            </div>
             <div class="slot-box" style="border-color:#ffd32a;">
                 <span id="z1">⚡</span><span id="z2">🏛️</span><span id="z3">👑</span>
             </div>
-            <div class="status-box" id="zeusStatus">Удар Зевса даёт до x50!</div>
+            <div class="status-box" id="zeusStatus">Удар Зевса!</div>
             <button class="btn-action" style="background:linear-gradient(90deg, #f39c12, #e74c3c);" onclick="playZeusSlot()">Удар Зевса</button>
         </div>
 
-        <!-- 6. SWEET BONANZA -->
+        <!-- 6. BONANZA -->
         <div class="game-panel" id="p-ssweet">
+            <div class="diff-row">
+                <button class="diff-btn active" onclick="setSweetDiff('norm', this)">Леденцы (x40)</button>
+                <button class="diff-btn" onclick="setSweetDiff('hard', this)">Бомбы (x100)</button>
+                <button class="diff-btn" onclick="setSweetDiff('mega', this)">Мега Дроп (x250)</button>
+            </div>
             <div class="slot-box" style="border-color:#ff3399;">
                 <span id="sb1">🍬</span><span id="sb2">🍭</span><span id="sb3">💣</span>
             </div>
-            <div class="status-box" id="sweetStatus">Бомбы сладостей дают до x100!</div>
+            <div class="status-box" id="sweetStatus">Бомбы сладостей!</div>
             <button class="btn-action" style="background:linear-gradient(90deg, #ff3399, #9b59b6);" onclick="playSweetSlot()">Вращать Bonanza</button>
         </div>
 
-        <!-- 7. WILD WEST SLOT -->
+        <!-- 7. WILD WEST -->
         <div class="game-panel" id="p-swild">
+            <div class="diff-row">
+                <button class="diff-btn active" onclick="setWildDiff('norm', this)">Ковбой (x30)</button>
+                <button class="diff-btn" onclick="setWildDiff('hard', this)">Шериф (x80)</button>
+                <button class="diff-btn" onclick="setWildDiff('outlaw', this)">Бандит (x200)</button>
+            </div>
             <div class="slot-box" style="border-color:#e67e22;">
                 <span id="ww1">🤠</span><span id="ww2">🔫</span><span id="ww3">⭐</span>
             </div>
-            <div class="status-box" id="wildStatus">Дикий Запад: Шериф дает x80!</div>
+            <div class="status-box" id="wildStatus">Выстрел Шерифа!</div>
             <button class="btn-action" style="background:linear-gradient(90deg, #d35400, #c0392b);" onclick="playWildSlot()">Выстрел Шерифа</button>
         </div>
 
-        <!-- 8. ROYAL CROWN SLOT -->
+        <!-- 8. CROWN -->
         <div class="game-panel" id="p-scrown">
+            <div class="diff-row">
+                <button class="diff-btn active" onclick="setCrownDiff('norm', this)">Принц (x50)</button>
+                <button class="diff-btn" onclick="setCrownDiff('hard', this)">Король (x150)</button>
+                <button class="diff-btn" onclick="setCrownDiff('imp', this)">Император (x300)</button>
+            </div>
             <div class="slot-box" style="border-color:#f1c40f;">
                 <span id="rc1">👑</span><span id="rc2">💎</span><span id="rc3">💰</span>
             </div>
-            <div class="status-box" id="crownStatus">Королевский Джекпот x200!</div>
+            <div class="status-box" id="crownStatus">Королевский Джекпот!</div>
             <button class="btn-action" style="background:linear-gradient(90deg, #f1c40f, #9b59b6);" onclick="playCrownSlot()">Королевский Спин</button>
         </div>
 
@@ -439,19 +469,19 @@
             <button class="btn-action" onclick="playPinco()">Бросить шарик</button>
         </div>
 
-        <!-- 10. CHICKEN ROAD -->
+        <!-- 10. CHICKEN -->
         <div class="game-panel" id="p-chicken">
             <div class="diff-row">
                 <button class="diff-btn active" onclick="setChkLanes(2, this)">2 полосы (x1.35)</button>
                 <button class="diff-btn" onclick="setChkLanes(3, this)">3 полосы (x1.95)</button>
                 <button class="diff-btn" onclick="setChkLanes(4, this)">4 полосы (x3.50)</button>
             </div>
-            <div style="font-size:30px;">🐔 🛣 🚗</div>
+            <div style="font-size:28px;">🐔 🛣 🚗</div>
             <div style="display:flex; gap:6px; width:100%; margin-top:6px;" id="chkLanesRow">
                 <button class="btn-action" style="margin:0; flex:1;" onclick="stepChicken(1)">Полоса 1</button>
                 <button class="btn-action" style="margin:0; flex:1;" onclick="stepChicken(2)">Полоса 2</button>
             </div>
-            <div class="status-box" id="chkStatus">Выберите безопасную полосу</div>
+            <div class="status-box" id="chkStatus">Безопасная полоса</div>
             <button class="btn-action" id="chkCashBtn" style="display:none;" onclick="cashChicken()">Забрать</button>
             <button class="btn-action" id="chkStartBtn" onclick="startChicken()">Начать путь</button>
         </div>
@@ -460,7 +490,8 @@
         <div class="game-panel" id="p-hilo">
             <div class="diff-row">
                 <button class="diff-btn active" onclick="setHiLoDiff('std', this)">Стандарт (2-14)</button>
-                <button class="diff-btn" onclick="setHiLoDiff('narrow', this)">Экстрим (6-9)</button>
+                <button class="diff-btn" onclick="setHiLoDiff('narrow', this)">Узкий (6-9)</button>
+                <button class="diff-btn" onclick="setHiLoDiff('hard', this)">Экстрим (13-14)</button>
             </div>
             <div style="font-size:36px; background:#fff; color:#111; padding:6px 20px; border-radius:10px; font-weight:900; margin:6px;" id="hlCard">7</div>
             <div style="display:flex; gap:6px; width:100%;">
@@ -472,77 +503,102 @@
             <button class="btn-action" id="hlStartBtn" onclick="startHiLo()">Старт</button>
         </div>
 
-        <!-- 12. DICE DUEL -->
+        <!-- 12. DICE -->
         <div class="game-panel" id="p-dice">
-            <div style="font-size:46px; margin:6px 0;" id="diceDisplay">🎲 🎲</div>
-            <div style="display:flex; gap:6px; width:100%;">
-                <button class="btn-action" style="margin:0; flex:1;" onclick="playDice('under')">&lt; 7 (x2.0)</button>
-                <button class="btn-action" style="margin:0; flex:1; background:#00cec9; color:#080614;" onclick="playDice('exact')">= 7 (x5.8)</button>
-                <button class="btn-action" style="margin:0; flex:1;" onclick="playDice('over')">&gt; 7 (x2.0)</button>
+            <div class="diff-row">
+                <button class="diff-btn active" onclick="setDiceDiff('std', this)">Обычный</button>
+                <button class="diff-btn" onclick="setDiceDiff('pro', this)">Профи (x3.0)</button>
+                <button class="diff-btn" onclick="setDiceDiff('hard', this)">Хард (x8.0)</button>
             </div>
-            <div class="status-box" id="diceStatus">Сделайте ставку на сумму костей</div>
+            <div style="font-size:42px; margin:4px 0;" id="diceDisplay">🎲 🎲</div>
+            <div style="display:flex; gap:6px; width:100%;">
+                <button class="btn-action" style="margin:0; flex:1;" onclick="playDice('under')">&lt; 7</button>
+                <button class="btn-action" style="margin:0; flex:1; background:#00cec9; color:#080614;" onclick="playDice('exact')">= 7 (x5.8)</button>
+                <button class="btn-action" style="margin:0; flex:1;" onclick="playDice('over')">&gt; 7</button>
+            </div>
+            <div class="status-box" id="diceStatus">Ставка на кости</div>
         </div>
 
         <!-- 13. КОЛЕСО ФОРТУНЫ -->
         <div class="game-panel" id="p-wheel">
-            <div style="font-size:54px; margin:6px 0;" id="wheelIcon">🎡</div>
+            <div class="diff-row">
+                <button class="diff-btn active" onclick="setWheelDiff('safe', this)">Безопасное (до x5)</button>
+                <button class="diff-btn" onclick="setWheelDiff('norm', this)">Обычное (до x20)</button>
+                <button class="diff-btn" onclick="setWheelDiff('high', this)">Джекпот (до x100)</button>
+            </div>
+            <div style="font-size:50px; margin:6px 0;" id="wheelIcon">🎡</div>
             <div class="status-box" id="wheelStatus">Крутите Колесо Удачи!</div>
             <button class="btn-action" onclick="playWheel()">Крутить Колесо</button>
         </div>
 
-        <!-- 14. БАШНЯ (TOWER) -->
+        <!-- 14. БАШНЯ НА 100 ЭТАЖЕЙ -->
         <div class="game-panel" id="p-tower">
-            <div class="tower-grid" id="towerGrid"></div>
-            <div class="status-box" id="towerStatus">Этаж 1 | Множитель: x1.00</div>
-            <button class="btn-action" id="towerCashBtn" style="display:none;" onclick="cashTower()">Забрать</button>
-            <button class="btn-action" id="towerStartBtn" onclick="startTower()">Начать подъем</button>
+            <div class="diff-row">
+                <button class="diff-btn active" onclick="setTowerDiff('easy', this)">Лёгкая (1 ловушка / 4 плитки)</button>
+                <button class="diff-btn" onclick="setTowerDiff('med', this)">Средняя (1 ловушка / 3 плитки)</button>
+                <button class="diff-btn" onclick="setTowerDiff('hard', this)">Хард (2 ловушки / 3 плитки)</button>
+            </div>
+            <div class="tower-view" id="towerView"></div>
+            <div class="status-box" id="towerStatus">Этаж: 1/100 | Множитель: x1.00</div>
+            <button class="btn-action" id="towerCashBtn" style="display:none;" onclick="cashTower()">Забрать выигрыш</button>
+            <button class="btn-action" id="towerStartBtn" onclick="startTower()">Штурмовать Башню (100 этажей)</button>
         </div>
 
         <!-- 15. РУЛЕТКА -->
         <div class="game-panel" id="p-roulette">
-            <div style="font-size:44px; margin:6px 0;" id="roulDisplay">⚫ 🔴 🟢</div>
+            <div class="diff-row">
+                <button class="diff-btn active" onclick="setRoulDiff('euro', this)">Европа (1 Зеро)</button>
+                <button class="diff-btn" onclick="setRoulDiff('usa', this)">Америка (2 Зеро)</button>
+                <button class="diff-btn" onclick="setRoulDiff('vip', this)">VIP x3</button>
+            </div>
+            <div style="font-size:38px; margin:4px 0;" id="roulDisplay">⚫ 🔴 🟢</div>
             <div style="display:flex; gap:6px; width:100%;">
                 <button class="btn-action" style="margin:0; flex:1; background:#d63031;" onclick="playRoulette('red')">Красное (x2)</button>
                 <button class="btn-action" style="margin:0; flex:1; background:#00b894;" onclick="playRoulette('zero')">Зеро 0 (x14)</button>
                 <button class="btn-action" style="margin:0; flex:1; background:#2d3436;" onclick="playRoulette('black')">Черное (x2)</button>
             </div>
-            <div class="status-box" id="roulStatus">Сделайте ставку на рулетке</div>
+            <div class="status-box" id="roulStatus">Сделайте ставку</div>
         </div>
 
         <!-- 16. КАМЕНЬ НОЖНИЦЫ БУМАГА -->
         <div class="game-panel" id="p-rps">
-            <div style="font-size:48px; margin:6px 0;" id="rpsIcon">✂️ 🪨 📄</div>
+            <div class="diff-row">
+                <button class="diff-btn active" onclick="setRpsDiff('norm', this)">Обычный (x2.0)</button>
+                <button class="diff-btn" onclick="setRpsDiff('streak', this)">Серия 3 победы (x5.0)</button>
+                <button class="diff-btn" onclick="setRpsDiff('god', this)">Босс x10</button>
+            </div>
+            <div style="font-size:42px; margin:4px 0;" id="rpsIcon">✂️ 🪨 📄</div>
             <div style="display:flex; gap:6px; width:100%;">
                 <button class="btn-action" style="margin:0; flex:1;" onclick="playRPS('rock')">🪨 Камень</button>
                 <button class="btn-action" style="margin:0; flex:1;" onclick="playRPS('scissors')">✂️ Ножницы</button>
                 <button class="btn-action" style="margin:0; flex:1;" onclick="playRPS('paper')">📄 Бумага</button>
             </div>
-            <div class="status-box" id="rpsStatus">Сделайте свой ход против бота!</div>
+            <div class="status-box" id="rpsStatus">Сделайте ход!</div>
         </div>
 
     </div>
 
-    <!-- ЧИТ-ПАНЕЛЬ ПО ВСЕМ 16 ИГРАМ -->
+    <!-- ЧИТ-ПАНЕЛЬ ПО ВСЕМ ИГРАМ -->
     <div class="cheat-modal" id="cheatModal">
         <div class="cheat-box">
-            <h3 style="color:#00ff88; margin:0 0 10px 0; text-align:center;">⚡ ЧИТЫ ПО 16 ИГРАМ ⚡</h3>
+            <h3 style="color:#00ff88; margin:0 0 10px 0; text-align:center;">⚡ СИСТЕМА ЧИТОВ (16 ИГР) ⚡</h3>
             <div class="cheat-item"><span>💣 Мины: Рентген X-Ray</span><input type="checkbox" id="c_mines_xray" onchange="toggleXray()"></div>
-            <div class="cheat-item"><span>💣 Мины: Авто-обход мин</span><input type="checkbox" id="c_mines_win" checked></div>
-            <div class="cheat-item"><span>🚀 Краш: Всегда x20+</span><input type="checkbox" id="c_crash_win" checked></div>
+            <div class="cheat-item"><span>💣 Мины: Авто-обход</span><input type="checkbox" id="c_mines_win" checked></div>
+            <div class="cheat-item"><span>🚀 Краш: Всегда x30+</span><input type="checkbox" id="c_crash_win" checked></div>
             <div class="cheat-item"><span>🪙 Flipcoin: Всегда победа</span><input type="checkbox" id="c_flip_win" checked></div>
-            <div class="cheat-item"><span>🎰 777: Джекпот 777</span><input type="checkbox" id="c_777_win" checked></div>
-            <div class="cheat-item"><span>⚡ Zeus: Молния x50</span><input type="checkbox" id="c_zeus_win" checked></div>
+            <div class="cheat-item"><span>🎰 777: Джекпот</span><input type="checkbox" id="c_777_win" checked></div>
+            <div class="cheat-item"><span>⚡ Zeus: Молния Зевса</span><input type="checkbox" id="c_zeus_win" checked></div>
             <div class="cheat-item"><span>🍬 Bonanza: Бомбы x100</span><input type="checkbox" id="c_bonanza_win" checked></div>
             <div class="cheat-item"><span>🤠 Wild West: Шериф x80</span><input type="checkbox" id="c_wild_win" checked></div>
-            <div class="cheat-item"><span>👑 Crown: Джекпот x200</span><input type="checkbox" id="c_crown_win" checked></div>
+            <div class="cheat-item"><span>👑 Crown: Корона x200</span><input type="checkbox" id="c_crown_win" checked></div>
             <div class="cheat-item"><span>⚪ Pinco: Макс. Лунка</span><input type="checkbox" id="c_pinco_win" checked></div>
             <div class="cheat-item"><span>🐔 Chicken: Бессмертие</span><input type="checkbox" id="c_chk_win" checked></div>
             <div class="cheat-item"><span>🃏 Hi-Lo: Идеальная карта</span><input type="checkbox" id="c_hilo_win" checked></div>
-            <div class="cheat-item"><span>🎲 Dice: Всегда попадание</span><input type="checkbox" id="c_dice_win" checked></div>
-            <div class="cheat-item"><span>🎡 Колесо: Сектор x50</span><input type="checkbox" id="c_wheel_win" checked></div>
-            <div class="cheat-item"><span>🗼 Башня: Всегда чисто</span><input type="checkbox" id="c_tower_win" checked></div>
+            <div class="cheat-item"><span>🎲 Dice: Попадание</span><input type="checkbox" id="c_dice_win" checked></div>
+            <div class="cheat-item"><span>🎡 Колесо: Джекпот</span><input type="checkbox" id="c_wheel_win" checked></div>
+            <div class="cheat-item"><span>🗼 Башня: Чистый проход (100 эт.)</span><input type="checkbox" id="c_tower_win" checked></div>
             <div class="cheat-item"><span>🔴 Рулетка: Точный цвет/Зеро</span><input type="checkbox" id="c_roul_win" checked></div>
-            <div class="cheat-item"><span>✂️ КНБ: Победный ход</span><input type="checkbox" id="c_rps_win" checked></div>
+            <div class="cheat-item"><span>✂️ КНБ: Победа</span><input type="checkbox" id="c_rps_win" checked></div>
 
             <div class="cheat-btns">
                 <button class="btn-c-act" onclick="addMoney(10000)">+10k ₽</button>
@@ -684,7 +740,7 @@
                 bal -= currentBet; updateBal();
                 crActive = true; crCurrent = 1.0;
                 let maxR = crRisk === 'low' ? 3.0 : (crRisk === 'med' ? 12.0 : 120.0);
-                crPoint = document.getElementById("c_crash_win").checked ? 25.0 : +(1.1 + Math.random() * maxR).toFixed(2);
+                crPoint = document.getElementById("c_crash_win").checked ? 30.0 : +(1.1 + Math.random() * maxR).toFixed(2);
                 btn.innerText = `Забрать (${currentBet} ₽)`;
                 btn.style.background = "#00b894";
                 crTimer = setInterval(() => {
@@ -732,42 +788,38 @@
             if (choice === res) {
                 let win = Math.floor(currentBet * mult);
                 bal += win;
-                document.getElementById("flipStatus").innerText = `🎉 Победа: +${win} ₽!`;
+                document.getElementById("flipStatus").innerText = `🎉 Победа! Выпала грань ${res}: +${win} ₽!`;
             } else {
                 document.getElementById("flipStatus").innerText = `😢 Не угадали! Выпало ${res}`;
             }
             updateBal();
         }
 
-        /* 4. СЛОТ 777 */
+        /* 4-8. СЛОТЫ */
+        let slotM = 25, zeusM = 30, sweetM = 40, wildM = 30, crownM = 50;
+        function setSlotDiff(d, btn) {
+            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            slotM = d === 'norm' ? 25 : (d === 'hard' ? 75 : 200);
+        }
         function playClassicSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
             let syms = ["💎", "🍒", "7️⃣", "🔔", "⭐"];
-            let r1, r2, r3;
-            if (document.getElementById("c_777_win").checked) { r1 = r2 = r3 = "7️⃣"; }
-            else {
-                r1 = syms[Math.floor(Math.random() * syms.length)];
-                r2 = syms[Math.floor(Math.random() * syms.length)];
-                r3 = syms[Math.floor(Math.random() * syms.length)];
-            }
-            document.getElementById("cl1").innerText = r1;
-            document.getElementById("cl2").innerText = r2;
-            document.getElementById("cl3").innerText = r3;
-            let win = 0;
-            if (r1 === r2 && r2 === r3) {
-                win = r1 === "7️⃣" ? currentBet * 25 : currentBet * 10;
-                document.getElementById("s777Status").innerText = `🔥 777 ДЖЕКПОТ! +${win} ₽!`;
-            } else if (r1 === r2 || r2 === r3) {
-                win = Math.floor(currentBet * 1.5);
-                document.getElementById("s777Status").innerText = `✨ Пара: +${win} ₽`;
-            } else {
-                document.getElementById("s777Status").innerText = "❌ Попробуйте ещё!";
-            }
+            let r1 = document.getElementById("c_777_win").checked ? "7️⃣" : syms[Math.floor(Math.random() * syms.length)];
+            let r2 = document.getElementById("c_777_win").checked ? "7️⃣" : syms[Math.floor(Math.random() * syms.length)];
+            let r3 = document.getElementById("c_777_win").checked ? "7️⃣" : syms[Math.floor(Math.random() * syms.length)];
+            document.getElementById("cl1").innerText = r1; document.getElementById("cl2").innerText = r2; document.getElementById("cl3").innerText = r3;
+            let win = (r1 === r2 && r2 === r3) ? (r1 === "7️⃣" ? currentBet * slotM : currentBet * 10) : 0;
             bal += win; updateBal();
+            document.getElementById("s777Status").innerText = win > 0 ? `🔥 ДЖЕКПОТ! +${win} ₽!` : "❌ Мимо!";
         }
 
-        /* 5. ZEUS */
+        function setZeusDiff(d, btn) {
+            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            zeusM = d === 'norm' ? 30 : (d === 'hard' ? 50 : 150);
+        }
         function playZeusSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
@@ -776,12 +828,16 @@
             let r2 = document.getElementById("c_zeus_win").checked ? "⚡" : syms[Math.floor(Math.random() * syms.length)];
             let r3 = document.getElementById("c_zeus_win").checked ? "⚡" : syms[Math.floor(Math.random() * syms.length)];
             document.getElementById("z1").innerText = r1; document.getElementById("z2").innerText = r2; document.getElementById("z3").innerText = r3;
-            let win = (r1 === "⚡" && r2 === "⚡" && r3 === "⚡") ? currentBet * 50 : ((r1 === r2 && r2 === r3) ? currentBet * 15 : 0);
+            let win = (r1 === "⚡" && r2 === "⚡" && r3 === "⚡") ? currentBet * zeusM : 0;
             bal += win; updateBal();
-            document.getElementById("zeusStatus").innerText = win > 0 ? `⚡ ЗЕВС ВЫДАЛ: +${win} ₽!` : "❌ Зевс молчит.";
+            document.getElementById("zeusStatus").innerText = win > 0 ? `⚡ УДАР ЗЕВСА: +${win} ₽!` : "❌ Молнии нет.";
         }
 
-        /* 6. BONANZA */
+        function setSweetDiff(d, btn) {
+            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            sweetM = d === 'norm' ? 40 : (d === 'hard' ? 100 : 250);
+        }
         function playSweetSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
@@ -790,12 +846,16 @@
             let r2 = document.getElementById("c_bonanza_win").checked ? "💣" : syms[Math.floor(Math.random() * syms.length)];
             let r3 = document.getElementById("c_bonanza_win").checked ? "💣" : syms[Math.floor(Math.random() * syms.length)];
             document.getElementById("sb1").innerText = r1; document.getElementById("sb2").innerText = r2; document.getElementById("sb3").innerText = r3;
-            let win = (r1 === "💣" && r2 === "💣" && r3 === "💣") ? currentBet * 100 : ((r1 === r2 && r2 === r3) ? currentBet * 20 : 0);
+            let win = (r1 === "💣" && r2 === "💣" && r3 === "💣") ? currentBet * sweetM : 0;
             bal += win; updateBal();
-            document.getElementById("sweetStatus").innerText = win > 0 ? `💣 МЕГА ВЗРЫВ: +${win} ₽!` : "❌ Мимо!";
+            document.getElementById("sweetStatus").innerText = win > 0 ? `💣 БОМБЫ BONANZA: +${win} ₽!` : "❌ Мимо!";
         }
 
-        /* 7. WILD WEST */
+        function setWildDiff(d, btn) {
+            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            wildM = d === 'norm' ? 30 : (d === 'hard' ? 80 : 200);
+        }
         function playWildSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
@@ -804,12 +864,16 @@
             let r2 = document.getElementById("c_wild_win").checked ? "⭐" : syms[Math.floor(Math.random() * syms.length)];
             let r3 = document.getElementById("c_wild_win").checked ? "⭐" : syms[Math.floor(Math.random() * syms.length)];
             document.getElementById("ww1").innerText = r1; document.getElementById("ww2").innerText = r2; document.getElementById("ww3").innerText = r3;
-            let win = (r1 === "⭐" && r2 === "⭐" && r3 === "⭐") ? currentBet * 80 : ((r1 === r2 && r2 === r3) ? currentBet * 20 : 0);
+            let win = (r1 === "⭐" && r2 === "⭐" && r3 === "⭐") ? currentBet * wildM : 0;
             bal += win; updateBal();
-            document.getElementById("wildStatus").innerText = win > 0 ? `🤠 ШЕРИФ ПЛАТИТ: +${win} ₽!` : "❌ Пусто.";
+            document.getElementById("wildStatus").innerText = win > 0 ? `🤠 ШЕРИФ ВЫДАЛ: +${win} ₽!` : "❌ Пусто.";
         }
 
-        /* 8. CROWN SLOT */
+        function setCrownDiff(d, btn) {
+            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            crownM = d === 'norm' ? 50 : (d === 'hard' ? 150 : 300);
+        }
         function playCrownSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
@@ -818,9 +882,9 @@
             let r2 = document.getElementById("c_crown_win").checked ? "👑" : syms[Math.floor(Math.random() * syms.length)];
             let r3 = document.getElementById("c_crown_win").checked ? "👑" : syms[Math.floor(Math.random() * syms.length)];
             document.getElementById("rc1").innerText = r1; document.getElementById("rc2").innerText = r2; document.getElementById("rc3").innerText = r3;
-            let win = (r1 === "👑" && r2 === "👑" && r3 === "👑") ? currentBet * 200 : ((r1 === r2 && r2 === r3) ? currentBet * 30 : 0);
+            let win = (r1 === "👑" && r2 === "👑" && r3 === "👑") ? currentBet * crownM : 0;
             bal += win; updateBal();
-            document.getElementById("crownStatus").innerText = win > 0 ? `👑 КОРОЛЕВСКИЙ ДЖЕКПОТ x200: +${win} ₽!` : "❌ Мимо короны.";
+            document.getElementById("crownStatus").innerText = win > 0 ? `👑 КОРОЛЕВСКИЙ ДЖЕКПОТ: +${win} ₽!` : "❌ Мимо короны.";
         }
 
         /* 9. PINCO */
@@ -901,12 +965,12 @@
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
             hlActive = true; hlMult = 1.0; hlCard = 7;
-            hlNext = hlDiff === 'narrow' ? (Math.random() > 0.5 ? 9 : 6) : Math.floor(Math.random() * 13) + 2;
+            hlNext = hlDiff === 'narrow' ? (Math.random() > 0.5 ? 9 : 6) : (hlDiff === 'hard' ? 14 : Math.floor(Math.random() * 13) + 2);
             document.getElementById("hlCard").innerText = hlCard;
             document.getElementById("hlStartBtn").style.display = "none";
             document.getElementById("hlCashBtn").style.display = "block";
             document.getElementById("hlCashBtn").innerText = `Забрать (${currentBet} ₽)`;
-            document.getElementById("hlStatus").innerText = "Угадайте следующую карту";
+            document.getElementById("hlStatus").innerText = "Угадайте карту";
         }
         function playHiLo(dir) {
             if (!hlActive) return;
@@ -914,10 +978,10 @@
             let isWin = (dir === "hi" && hlNext >= hlCard) || (dir === "lo" && hlNext <= hlCard);
             document.getElementById("hlCard").innerText = hlNext;
             if (isWin) {
-                let g = hlDiff === 'narrow' ? 2.20 : 1.30;
+                let g = hlDiff === 'narrow' ? 2.20 : (hlDiff === 'hard' ? 3.50 : 1.30);
                 hlMult = +(hlMult * g).toFixed(2);
                 hlCard = hlNext;
-                hlNext = hlDiff === 'narrow' ? (Math.random() > 0.5 ? 9 : 6) : Math.floor(Math.random() * 13) + 2;
+                hlNext = Math.floor(Math.random() * 13) + 2;
                 let w = Math.floor(currentBet * hlMult);
                 document.getElementById("hlStatus").innerText = `Верно! Множитель: x${hlMult}`;
                 document.getElementById("hlCashBtn").innerText = `Забрать (${w} ₽)`;
@@ -938,7 +1002,13 @@
             document.getElementById("hlCashBtn").style.display = "none";
         }
 
-        /* 12. DICE DUEL */
+        /* 12. DICE */
+        let diceM = 2.0;
+        function setDiceDiff(d, btn) {
+            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            diceM = d === 'std' ? 2.0 : (d === 'pro' ? 3.0 : 8.0);
+        }
         function playDice(choice) {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
@@ -953,7 +1023,7 @@
             document.getElementById("diceDisplay").innerText = `${diceIcons[d1]} ${diceIcons[d2]} (${sum})`;
             let isWin = (choice === 'under' && sum < 7) || (choice === 'exact' && sum === 7) || (choice === 'over' && sum > 7);
             if (isWin) {
-                let m = choice === 'exact' ? 5.8 : 2.0;
+                let m = choice === 'exact' ? 5.8 : diceM;
                 let win = Math.floor(currentBet * m);
                 bal += win;
                 document.getElementById("diceStatus").innerText = `🎉 Выигрыш: +${win} ₽ (Сумма: ${sum})`;
@@ -963,92 +1033,114 @@
             updateBal();
         }
 
-        /* 13. КОЛЕСО ФОРТУНЫ */
+        /* 13. КОЛЕСО */
+        let wheelMax = 20.0;
+        function setWheelDiff(d, btn) {
+            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            wheelMax = d === 'safe' ? 5.0 : (d === 'norm' ? 20.0 : 100.0);
+        }
         function playWheel() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
-            const sectors = [0, 1.5, 2.0, 5.0, 10.0, 50.0];
-            let res = document.getElementById("c_wheel_win").checked ? 50.0 : sectors[Math.floor(Math.random() * sectors.length)];
+            const sectors = [0, 1.5, 2.0, 5.0, wheelMax];
+            let res = document.getElementById("c_wheel_win").checked ? wheelMax : sectors[Math.floor(Math.random() * sectors.length)];
             let win = Math.floor(currentBet * res);
             bal += win; updateBal();
             document.getElementById("wheelStatus").innerText = `🎯 Сектор x${res}! Выплата: +${win} ₽`;
         }
 
-        /* 14. БАШНЯ (TOWER) */
-        let towerFloor = 1, towerActive = false, towerMult = 1.0;
-        function initTower() {
-            const grid = document.getElementById("towerGrid");
-            grid.innerHTML = "";
-            for (let f = 1; f <= 5; f++) {
+        /* 14. БАШНЯ НА 100 ЭТАЖЕЙ */
+        let tDiff = 'med', tFloor = 1, tActive = false, tMult = 1.0;
+        function setTowerDiff(d, btn) {
+            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            tDiff = d;
+        }
+        function renderTowerFloors() {
+            const v = document.getElementById("towerView");
+            v.innerHTML = "";
+            let tilesCount = tDiff === 'easy' ? 4 : 3;
+            let startF = Math.max(1, tFloor - 2);
+            let endF = Math.min(100, tFloor + 3);
+            for (let f = startF; f <= endF; f++) {
                 let row = document.createElement("div");
-                row.className = "tower-floor";
-                for (let c = 1; c <= 3; c++) {
-                    let cell = document.createElement("div");
-                    cell.className = `tower-cell ${f === 1 ? 'active-row' : ''}`;
-                    cell.innerText = `Этаж ${f}`;
-                    cell.onclick = () => stepTower(f, c, cell);
-                    row.appendChild(cell);
+                row.className = "tower-row";
+                for (let c = 1; c <= tilesCount; c++) {
+                    let st = document.createElement("div");
+                    st.className = `tower-step ${f === tFloor ? 'current' : ''}`;
+                    st.innerText = f === tFloor ? `Эт. ${f}` : `${f}`;
+                    st.onclick = () => stepTower(f, c, st);
+                    row.appendChild(st);
                 }
-                grid.appendChild(row);
+                v.appendChild(row);
             }
         }
         function startTower() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
-            towerFloor = 1; towerActive = true; towerMult = 1.0;
-            initTower();
+            tFloor = 1; tActive = true; tMult = 1.0;
+            renderTowerFloors();
             document.getElementById("towerStartBtn").style.display = "none";
             document.getElementById("towerCashBtn").style.display = "block";
             document.getElementById("towerCashBtn").innerText = `Забрать (${currentBet} ₽)`;
-            document.getElementById("towerStatus").innerText = "Этаж 1 | Выберите плитку";
+            document.getElementById("towerStatus").innerText = `Этаж: 1/100 | Выберите плитку`;
         }
         function stepTower(f, c, cell) {
-            if (!towerActive || f !== towerFloor) return;
-            let trap = Math.floor(Math.random() * 3) + 1;
-            let isTrap = (c === trap) && !document.getElementById("c_tower_win").checked;
+            if (!tActive || f !== tFloor) return;
+            let tilesCount = tDiff === 'easy' ? 4 : 3;
+            let trapsCount = tDiff === 'hard' ? 2 : 1;
+            let isTrap = (c <= trapsCount) && !document.getElementById("c_tower_win").checked;
             if (isTrap) {
                 cell.innerText = "💥"; cell.style.background = "#d63031";
-                towerActive = false;
-                document.getElementById("towerStatus").innerText = "💥 Ловушка! Башня рухнула.";
+                tActive = false;
+                document.getElementById("towerStatus").innerText = `💥 Ловушка на этаже ${tFloor}! Башня рухнула.`;
                 document.getElementById("towerStartBtn").style.display = "block";
                 document.getElementById("towerCashBtn").style.display = "none";
             } else {
                 cell.innerText = "⭐"; cell.style.background = "#00b894";
-                towerFloor++;
-                towerMult = +(towerMult * 1.5).toFixed(2);
-                let w = Math.floor(currentBet * towerMult);
-                if (towerFloor > 5) {
-                    towerActive = false;
+                tFloor++;
+                let stepGrowth = tDiff === 'easy' ? 1.25 : (tDiff === 'med' ? 1.45 : 2.10);
+                tMult = +(tMult * stepGrowth).toFixed(2);
+                let w = Math.floor(currentBet * tMult);
+                if (tFloor > 100) {
+                    tActive = false;
                     bal += w; updateBal();
-                    document.getElementById("towerStatus").innerText = `🏆 ВЕРШИНА ДОСТИГНУТА! +${w} ₽!`;
+                    document.getElementById("towerStatus").innerText = `🏆 ПОКОРЕН 100-Й ЭТАЖ! Выигрыш: +${w} ₽!`;
                     document.getElementById("towerStartBtn").style.display = "block";
                     document.getElementById("towerCashBtn").style.display = "none";
                 } else {
-                    document.getElementById("towerStatus").innerText = `Этаж ${towerFloor} | x${towerMult} (Банк ${w} ₽)`;
+                    renderTowerFloors();
+                    document.getElementById("towerStatus").innerText = `Этаж: ${tFloor}/100 | x${tMult} (${w} ₽)`;
                     document.getElementById("towerCashBtn").innerText = `Забрать (${w} ₽)`;
-                    document.querySelectorAll(".tower-cell").forEach(cl => cl.classList.remove("active-row"));
                 }
             }
         }
         function cashTower() {
-            if (!towerActive) return;
-            towerActive = false;
-            let win = Math.floor(currentBet * towerMult);
+            if (!tActive) return;
+            tActive = false;
+            let win = Math.floor(currentBet * tMult);
             bal += win; updateBal();
-            document.getElementById("towerStatus").innerText = `🏆 Забрано: +${win} ₽!`;
+            document.getElementById("towerStatus").innerText = `🏆 Забрано на ${tFloor} этаже: +${win} ₽!`;
             document.getElementById("towerStartBtn").style.display = "block";
             document.getElementById("towerCashBtn").style.display = "none";
         }
 
         /* 15. РУЛЕТКА */
+        let zeroM = 14.0;
+        function setRoulDiff(d, btn) {
+            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            zeroM = d === 'euro' ? 14.0 : (d === 'usa' ? 18.0 : 36.0);
+        }
         function playRoulette(choice) {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
-            let res = document.getElementById("c_roul_win").checked ? choice : (Math.random() < 0.05 ? 'zero' : (Math.random() > 0.5 ? 'red' : 'black'));
+            let res = document.getElementById("c_roul_win").checked ? choice : (Math.random() < 0.08 ? 'zero' : (Math.random() > 0.5 ? 'red' : 'black'));
             let icon = res === 'red' ? "🔴 Красное" : (res === 'black' ? "⚫ Черное" : "🟢 Зеро 0");
             document.getElementById("roulDisplay").innerText = icon;
             if (choice === res) {
-                let m = choice === 'zero' ? 14.0 : 2.0;
+                let m = choice === 'zero' ? zeroM : 2.0;
                 let win = Math.floor(currentBet * m);
                 bal += win;
                 document.getElementById("roulStatus").innerText = `🎉 Победа! Выпало ${icon}: +${win} ₽!`;
@@ -1058,30 +1150,32 @@
             updateBal();
         }
 
-        /* 16. КАМЕНЬ НОЖНИЦЫ БУМАГА */
+        /* 16. КНБ */
+        let rpsM = 2.0;
+        function setRpsDiff(d, btn) {
+            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            rpsM = d === 'norm' ? 2.0 : (d === 'streak' ? 5.0 : 10.0);
+        }
         function playRPS(userMove) {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
-            let botMove;
-            if (document.getElementById("c_rps_win").checked) {
-                botMove = userMove === 'rock' ? 'scissors' : (userMove === 'scissors' ? 'paper' : 'rock');
-            } else {
-                const moves = ['rock', 'scissors', 'paper'];
-                botMove = moves[Math.floor(Math.random() * moves.length)];
-            }
+            let botMove = document.getElementById("c_rps_win").checked ?
+                (userMove === 'rock' ? 'scissors' : (userMove === 'scissors' ? 'paper' : 'rock')) :
+                ['rock', 'scissors', 'paper'][Math.floor(Math.random() * 3)];
             const icons = {'rock':'🪨', 'scissors':'✂️', 'paper':'📄'};
             document.getElementById("rpsIcon").innerText = `${icons[userMove]} vs ${icons[botMove]}`;
             if (userMove === botMove) {
                 bal += currentBet;
-                document.getElementById("rpsStatus").innerText = "🤝 Ничья! Ставка возвращена.";
+                document.getElementById("rpsStatus").innerText = "🤝 Ничья! Возврат ставки.";
             } else if (
                 (userMove === 'rock' && botMove === 'scissors') ||
                 (userMove === 'scissors' && botMove === 'paper') ||
                 (userMove === 'paper' && botMove === 'rock')
             ) {
-                let win = Math.floor(currentBet * 2.0);
+                let win = Math.floor(currentBet * rpsM);
                 bal += win;
-                document.getElementById("rpsStatus").innerText = `🎉 Вы победили! +${win} ₽!`;
+                document.getElementById("rpsStatus").innerText = `🎉 Победа над ботом: +${win} ₽!`;
             } else {
                 document.getElementById("rpsStatus").innerText = "😢 Бот победил! Ставка сгорела.";
             }
@@ -1089,7 +1183,6 @@
         }
 
         initMines();
-        initTower();
         setBet(50, document.querySelector(".b-btn.active"));
         updateBal();
     </script>

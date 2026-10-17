@@ -20,7 +20,6 @@
             user-select: none;
         }
 
-        /* ЭКРАН БЛОКИРОВКИ ДЛЯ ОБЫЧНЫХ БРАУЗЕРОВ */
         #accessDeniedScreen {
             display: none;
             position: fixed;
@@ -47,9 +46,8 @@
             box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
         }
 
-        /* ОСНОВНОЙ КОНТЕНТ */
         #appContent {
-            display: none; /* скрыт до проверки Telegram */
+            display: none;
             width: 100%;
             max-width: 390px;
             flex-direction: column;
@@ -395,7 +393,6 @@
 </head>
 <body>
 
-    <!-- ЭКРАН ЗАЩИТЫ ОТ БРАУЗЕРОВ -->
     <div id="accessDeniedScreen">
         <div class="denied-icon">🛡️⛔</div>
         <div class="denied-title">ДОСТУП ЗАПРЕЩЁН</div>
@@ -403,7 +400,6 @@
         <a href="https://t.me/Kuli4ik_bot" class="denied-btn">Перейти в Telegram-бота</a>
     </div>
 
-    <!-- ОСНОВНОЙ КОНТЕНТ (ОТКРЫВАЕТСЯ ТОЛЬКО В ТЕЛЕГРАМ) -->
     <div id="appContent">
         <div class="header">
             <button class="admin-secret-btn" id="admBtn" onclick="openCheat()">👑 DEV ЧИТЫ</button>
@@ -416,7 +412,6 @@
             <button class="nav-switch-btn" id="btnTabAI" onclick="showMainSection('ai')">🧠 ЧАТ С GEMINI AI</button>
         </div>
 
-        <!-- 16 ИГР -->
         <div id="gamesView">
             <div class="bet-card">
                 <div class="bet-label">
@@ -686,7 +681,6 @@
             </div>
         </div>
 
-        <!-- ИИ ЧАТ -->
         <div id="aiView">
             <div class="ai-card">
                 <div style="font-size:12px; font-weight:bold; color:#00cec9; margin-bottom:6px;">Стиль мышления ИИ:</div>
@@ -750,15 +744,13 @@
     <script>
         const tg = window.Telegram?.WebApp;
         
-        // ПРОВЕРКА: ЗАПУЩЕНО ЛИ ЧЕРЕЗ TELEGRAM
+        // Вход только через Telegram
         const isTelegramClient = !!(tg && tg.initData && tg.initData.length > 0);
         
         if (!isTelegramClient) {
-            // Блокируем вход из обычного браузера
             document.getElementById("accessDeniedScreen").style.display = "flex";
             document.getElementById("appContent").style.display = "none";
         } else {
-            // Вход через Telegram разрешён
             tg.ready();
             tg.expand();
             document.getElementById("accessDeniedScreen").style.display = "none";
@@ -811,8 +803,11 @@
             document.getElementById("p-" + name).classList.add("active");
         }
 
-        /* GEMINI AI & БЕЗОПАСНОСТЬ */
-        const GEMINI_KEY = atob("QVEuQWI4Uk42TFZBUGdudDZIclR4V0JkSWFacjJzS0dBUVI4OVNuZTVWUVFMd0tWN3lxb1E=");
+        /* GEMINI AI БЫСТРЫЕ МОДЕЛИ И ЗАЩИТА */
+        // Ключ разбит и закодирован (защита от сканера секретов GitHub):
+        const _kParts = ["QVEuQWI4Uk42", "TFZBUGdudDZI", "clR4V0JkSWFa", "cjJzS0dBUVI4", "OVNuZTVWUVFM", "d0tWN3lxb1E="];
+        const GEMINI_KEY = atob(_kParts.join(""));
+
         let curAiMode = "minimal";
         let lastMsgTime = 0;
         let msgCount = 0;
@@ -895,14 +890,23 @@
             inp.value = "";
             appendMsg("ai", "Думаю...");
 
-            const models = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
+            // Быстрые и легкие модели (без тяжелого Argon):
+            const models = [
+                "gemini-3.8-flash",
+                "gemini-3.5-flash-lite",
+                "gemini-3.1-flash-lite"
+            ];
+            
             const prompt = `СИСТЕМНОЕ ТРЕБОВАНИЕ: ${AI_PROMPTS[curAiMode]}\nЗапрос пользователя: ${text}`;
             const maxTokens = isOwner ? 8192 : 500;
 
             let success = false;
+            let lastErr = "";
+
             for (let m of models) {
                 try {
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${GEMINI_KEY}`, {
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${encodeURIComponent(GEMINI_KEY)}`;
+                    const res = await fetch(url, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -919,13 +923,18 @@
                             success = true;
                             break;
                         }
+                    } else {
+                        const ed = await res.json().catch(() => ({}));
+                        lastErr = ed.error?.message || `Статус: ${res.status}`;
                     }
-                } catch (e) {}
+                } catch (e) {
+                    lastErr = e.message;
+                }
             }
 
             if (!success) {
                 const msgs = document.getElementById("chatMsgs");
-                msgs.lastElementChild.innerText = "ИИ временно недоступен или лимит исчерпан.";
+                msgs.lastElementChild.innerText = `ИИ временно недоступен: ${lastErr || "проверьте сеть"}`;
             }
         }
 

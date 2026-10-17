@@ -472,7 +472,7 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 4px;
-            max-height: 140px;
+            max-height: 150px;
             overflow-y: auto;
             margin-top: 6px;
         }
@@ -782,7 +782,7 @@
 
             <div class="shop-box">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="font-size:11px; font-weight:bold; color:#00ff88;">🛍️ Каталог Подарков Telegram (24 шт.)</div>
+                    <div style="font-size:11px; font-weight:bold; color:#00ff88;">🛍️ Каталог Подарков Telegram (99 шт.)</div>
                     <button style="background:none; border:none; color:#ffd32a; font-size:10px; cursor:pointer;" onclick="sellAllInventory()">Продать инвентарь</button>
                 </div>
                 <div class="shop-grid" id="giftsShopList"></div>
@@ -981,32 +981,107 @@
             document.getElementById("p-" + name).classList.add("active");
         }
 
-        /* 24 ПОДАРКА TELEGRAM */
+        /* 99 ПОДАРКОВ TELEGRAM ПОЛНЫЙ КАТАЛОГ СО СКРИНШОТОВ */
         const TG_GIFTS = [
-            { id: 1,  name: "Мишка",        icon: "🧸", price: 200 },
-            { id: 2,  name: "Роза",         icon: "🌹", price: 400 },
-            { id: 3,  name: "Шоколад",     icon: "🍫", price: 600 },
-            { id: 4,  name: "Кофе",         icon: "☕", price: 1000 },
-            { id: 5,  name: "Шарик",        icon: "🎈", price: 1500 },
-            { id: 6,  name: "Ракета",       icon: "🚀", price: 2500 },
-            { id: 7,  name: "Торт",         icon: "🎂", price: 4000 },
-            { id: 8,  name: "Шампанское",   icon: "🍾", price: 7000 },
-            { id: 9,  name: "Бриллиант",    icon: "💎", price: 12000 },
-            { id: 10, name: "Подарок",      icon: "🎁", price: 20000 },
-            { id: 11, name: "Кольцо",       icon: "💍", price: 35000 },
-            { id: 12, name: "Кубок",        icon: "🏆", price: 60000 },
-            { id: 13, name: "Корона",       icon: "👑", price: 100000 },
-            { id: 14, name: "Пегас",        icon: "🦄", price: 200000 },
-            { id: 15, name: "Спорткар",     icon: "🏎️", price: 400000 },
-            { id: 16, name: "Яхта",         icon: "🛥️", price: 800000 },
-            { id: 17, name: "Замок",        icon: "🏰", price: 1500000 },
-            { id: 18, name: "Сатурн",       icon: "🪐", price: 3000000 },
-            { id: 19, name: "Галактика",    icon: "🌌", price: 6000000 },
-            { id: 20, name: "Сверхновая",   icon: "🎆", price: 12000000 },
-            { id: 21, name: "Молния",       icon: "⚡", price: 20000000 },
-            { id: 22, name: "Маг. Шар",     icon: "🔮", price: 35000000 },
-            { id: 23, name: "Монета Дурова",icon: "🪙", price: 60000000 },
-            { id: 24, name: "Золотой Дракон",icon: "🐲", price: 100000000 }
+            { id: 1,   name: "Кулич пасхальный", icon: "🧁", price: 75 },
+            { id: 2,   name: "Красная звезда", icon: "⭐", price: 100 },
+            { id: 3,   name: "1 Мая", icon: "🌺", price: 100 },
+            { id: 4,   name: "Марка с голубем", icon: "🕊️", price: 150 },
+            { id: 5,   name: "Мороженое", icon: "🍨", price: 150 },
+            { id: 6,   name: "Кокос с зонтиком", icon: "🥥", price: 150 },
+            { id: 7,   name: "8 Марта", icon: "💐", price: 200 },
+            { id: 8,   name: "Змея 2025", icon: "🐍", price: 440 },
+            { id: 9,   name: "Леденец трость", icon: "🦯", price: 450 },
+            { id: 10,  name: "Подарок со змейкой", icon: "🎁", price: 450 },
+            { id: 11,  name: "Цифры 2025", icon: "🎉", price: 490 },
+            { id: 12,  name: "Рождественский носок", icon: "🧦", price: 493 },
+            { id: 13,  name: "Песчаный замок", icon: "🏰", price: 500 },
+            { id: 14,  name: "Маска Джейсона", icon: "🎭", price: 500 },
+            { id: 15,  name: "Змейка Санта", icon: "🧣", price: 515 },
+            { id: 16,  name: "Рождественский венок", icon: "🎄", price: 520 },
+            { id: 17,  name: "Леденец спираль", icon: "🍭", price: 530 },
+            { id: 18,  name: "Клоун из коробки", icon: "🤡", price: 550 },
+            { id: 19,  name: "Теплые носки", icon: "🧦", price: 550 },
+            { id: 20,  name: "Блокнот с ручкой", icon: "📓", price: 555 },
+            { id: 21,  name: "Глинтвейн", icon: "🍷", price: 560 },
+            { id: 22,  name: "Шапка Санты", icon: "🎅", price: 570 },
+            { id: 23,  name: "Зелье в котле", icon: "🧪", price: 599 },
+            { id: 24,  name: "Горшочек с золотом", icon: "🏺", price: 608 },
+            { id: 25,  name: "Галстук-бабочка", icon: "👔", price: 620 },
+            { id: 26,  name: "Пряничное сердце", icon: "🍪", price: 625 },
+            { id: 27,  name: "Happy Birthday", icon: "🎂", price: 628 },
+            { id: 28,  name: "Клевер на ножке", icon: "🍀", price: 628 },
+            { id: 29,  name: "Шляпа ведьмы", icon: "🧙", price: 629 },
+            { id: 30,  name: "Мечеть на полумесяце", icon: "🕌", price: 629 },
+            { id: 31,  name: "Пасхальная корзинка", icon: "🧺", price: 629 },
+            { id: 32,  name: "Снежный шар", icon: "🔮", price: 629 },
+            { id: 33,  name: "Свеча винтажная", icon: "🕯️", price: 629 },
+            { id: 34,  name: "Теплые варежки", icon: "🧤", price: 629 },
+            { id: 35,  name: "Вишневый торт", icon: "🍰", price: 629 },
+            { id: 36,  name: "Колокольчик", icon: "🔔", price: 759 },
+            { id: 37,  name: "Кекс зайчик", icon: "🧁", price: 798 },
+            { id: 38,  name: "Клубника в шоколаде", icon: "🍓", price: 889 },
+            { id: 39,  name: "Звездочка брелок", icon: "⭐", price: 898 },
+            { id: 40,  name: "Цветок сакуры", icon: "🌸", price: 923 },
+            { id: 41,  name: "Цилиндр фокусника", icon: "🎩", price: 977 },
+            { id: 42,  name: "Праздничные бубенцы", icon: "🎀", price: 979 },
+            { id: 43,  name: "Коробка конфет", icon: "💝", price: 1051 },
+            { id: 44,  name: "Свеча сердце", icon: "🕯️", price: 1076 },
+            { id: 45,  name: "Шар с черепом", icon: "🔮", price: 1105 },
+            { id: 46,  name: "Череп в цветке", icon: "💀", price: 1201 },
+            { id: 47,  name: "Виниловый проигрыватель", icon: "📻", price: 1274 },
+            { id: 48,  name: "Ведьмина метла", icon: "🧹", price: 1279 },
+            { id: 49,  name: "Фен с лентой", icon: "💨", price: 1399 },
+            { id: 50,  name: "Тыква Хэллоуин", icon: "🎃", price: 1391 },
+            { id: 51,  name: "Любовное зелье", icon: "🧪", price: 1401 },
+            { id: 52,  name: "Сердце в паутине", icon: "🕸️", price: 1615 },
+            { id: 53,  name: "Хрустальные туфельки", icon: "👠", price: 1884 },
+            { id: 54,  name: "Медальон с ключом", icon: "🗝️", price: 2109 },
+            { id: 55,  name: "Шапка-ушанка", icon: "🧶", price: 2466 },
+            { id: 56,  name: "Роза под куполом", icon: "🌹", price: 2545 },
+            { id: 57,  name: "Золотая соска", icon: "👶", price: 2640 },
+            { id: 58,  name: "Хрустальный орел", icon: "🦅", price: 2683 },
+            { id: 59,  name: "Череп с сиреневыми глазами", icon: "💀", price: 2743 },
+            { id: 60,  name: "Шкатулка Tiffany", icon: "🧰", price: 3123 },
+            { id: 61,  name: "Розовый мишка", icon: "🧸", price: 3311 },
+            { id: 62,  name: "Золотая печатка TG", icon: "💍", price: 3321 },
+            { id: 63,  name: "Лампа Аладдина", icon: "🪔", price: 3475 },
+            { id: 64,  name: "Кукла Вуду", icon: "🪆", price: 3500 },
+            { id: 65,  name: "Шлем кошачьи ушки", icon: "🪖", price: 3587 },
+            { id: 66,  name: "Сигара с дымком", icon: "🚬", price: 3771 },
+            { id: 67,  name: "Двойное кольцо", icon: "💍", price: 4040 },
+            { id: 68,  name: "Жабка с поцелуем", icon: "🐸", price: 4395 },
+            { id: 69,  name: "Вампирские губы", icon: "👄", price: 4469 },
+            { id: 70,  name: "Гроб Дракулы", icon: "⚰️", price: 5000 },
+            { id: 71,  name: "Дипломат кейс", icon: "💼", price: 5000 },
+            { id: 72,  name: "Золотые часы Rolex", icon: "⌚", price: 5477 },
+            { id: 73,  name: "Лоурайдер Snoop Dogg", icon: "🚗", price: 5565 },
+            { id: 74,  name: "Яд во флаконе", icon: "☠️", price: 5927 },
+            { id: 75,  name: "Кольцо с сапфиром", icon: "💎", price: 6636 },
+            { id: 76,  name: "Золотой Оскар", icon: "🏆", price: 6995 },
+            { id: 77,  name: "Синие кристаллы", icon: "🔷", price: 7085 },
+            { id: 78,  name: "Красный кирпич 1 APR", icon: "🧱", price: 7633 },
+            { id: 79,  name: "Духи N°5", icon: "🧴", price: 7981 },
+            { id: 80,  name: "Черные кроссовки", icon: "👟", price: 10000 },
+            { id: 81,  name: "Рашгард черный", icon: "🥋", price: 10000 },
+            { id: 82,  name: "Браслет золотой гвоздь", icon: "⚜️", price: 11399 },
+            { id: 83,  name: "Жест вулканца салют", icon: "🖖", price: 11225 },
+            { id: 84,  name: "Хрустальный друза-кристалл", icon: "💎", price: 12113 },
+            { id: 85,  name: "Золотой бицепс", icon: "💪", price: 12481 },
+            { id: 86,  name: "Оранжевая сумка Birkin", icon: "👜", price: 13461 },
+            { id: 87,  name: "Надгробие RIP ворона", icon: "🪦", price: 15000 },
+            { id: 88,  name: "Шлем спартанца", icon: "🪖", price: 17779 },
+            { id: 89,  name: "Черные очки Wayfarer", icon: "🕶️", price: 18947 },
+            { id: 90,  name: "Черный кот с зелеными глазами", icon: "🐈‍⬛", price: 25143 },
+            { id: 91,  name: "Космическая слива", icon: "🍑", price: 26301 },
+            { id: 92,  name: "Фигурка Дуров", icon: "🦸", price: 41000 },
+            { id: 93,  name: "Кепка черная TG", icon: "🧢", price: 42895 },
+            { id: 94,  name: "Печальный мишка в худи", icon: "🧸", price: 85306 },
+            { id: 95,  name: "Сердце Sailor Moon", icon: "💖", price: 130114 },
+            { id: 96,  name: "Кубок ледяной кристалл", icon: "🏆", price: 161638 },
+            { id: 97,  name: "Кубок золотой пиксельный", icon: "🏆", price: 239395 },
+            { id: 98,  name: "Лягушонок Пепе с сердцем", icon: "🐸", price: 697623 },
+            { id: 99,  name: "Серебряный самолетик TG", icon: "✈️", price: 1000000 }
         ];
 
         let userInventory = [];
@@ -1778,4 +1853,4 @@
         updateBal();
     </script>
 </body>
-                                                                                     </html>
+</html>

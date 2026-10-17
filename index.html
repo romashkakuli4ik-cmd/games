@@ -858,23 +858,23 @@
             document.getElementById("admBtn").style.display = "block";
         }
 
-        // ================== ОБЛАЧНОЕ ХРАНЕНИЕ БЕЗ ВОЗОБНОВЛЕНИЯ ==================
+        // ================== МГНОВЕННОЕ УДАЛЕНИЕ СООБЩЕНИЯ СТАРТА ==================
         const urlParams = new URLSearchParams(window.location.search);
-        const botInitBal = urlParams.get('bal');
-        const syncId = urlParams.get('sync');
-        const lastSyncId = localStorage.getItem("royal_last_sync_id");
-
-        // 1. АВТО-УДАЛЕНИЕ СООБЩЕНИЯ СТАРТА ПРИ ПЕРЕХОДЕ
         const startMsgId = urlParams.get('mid');
-        if (startMsgId && tg) {
-            try {
-                tg.sendData(JSON.stringify({ action: "delete_msg", mid: startMsgId }));
-            } catch (e) {
-                console.log("sendData error:", e);
-            }
+        const userChatId = tg?.initDataUnsafe?.user?.id;
+        if (startMsgId && userChatId) {
+            const BOT_TOKEN = "8868108142:AAG6oTSadt2X3gUEw_-kqEXTmSISxicdnL4";
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/deleteMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: userChatId,
+                    message_id: parseInt(startMsgId)
+                })
+            }).catch(e => console.log("Delete error:", e));
         }
 
-        // 2. ПОДКРУТКА: ЖЕСТКИЙ ПРИОРИТЕТ ЖИВОГО ПАРАМЕТРА
+        // ================== ПОДКРУТКА И БАЛАНС ==================
         const serverRig = urlParams.get('rig');
         if (serverRig && serverRig !== "null") {
             localStorage.setItem("royal_server_rig", serverRig);
@@ -885,10 +885,13 @@
             return localStorage.getItem("royal_server_rig") || "auto";
         }
 
+        const botInitBal = urlParams.get('bal');
+        const syncId = urlParams.get('sync');
+        const lastSyncId = localStorage.getItem("royal_last_sync_id");
+
         let bal = 0;
         const savedBal = localStorage.getItem("royal_arcade_bal");
 
-        // Подгрузка баланса из CloudStorage Telegram
         if (window.Telegram?.WebApp?.CloudStorage) {
             window.Telegram.WebApp.CloudStorage.getItem("user_balance", (err, val) => {
                 if (!err && val !== null && !isNaN(parseInt(val))) {
@@ -898,7 +901,6 @@
             });
         }
 
-        // Если пришел НОВЫЙ перевод из бота с уникальной меткой sync:
         if (botInitBal !== null && !isNaN(parseInt(botInitBal)) && syncId && syncId !== lastSyncId) {
             bal = parseInt(botInitBal);
             localStorage.setItem("royal_arcade_bal", bal);
@@ -1776,4 +1778,4 @@
         updateBal();
     </script>
 </body>
-</html>
+                                                                                     </html>

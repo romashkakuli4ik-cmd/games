@@ -121,7 +121,6 @@
             border-color: transparent;
         }
 
-        /* КАЗИНО И СТАВКИ */
         #gamesView { width: 100%; max-width: 390px; display: flex; flex-direction: column; align-items: center; }
 
         .bet-card {
@@ -310,7 +309,6 @@
         .msg { padding: 8px 12px; border-radius: 12px; max-width: 85%; line-height: 1.4; word-wrap: break-word; }
         .msg.user { align-self: flex-end; background: #7046f4; color: #fff; }
         .msg.ai { align-self: flex-start; background: #1c1547; color: #ffd32a; border: 1px solid #382c7d; }
-        .msg.system { align-self: center; background: #3d0014; color: #ff5577; font-size: 11px; }
 
         .chat-input-row { display: flex; gap: 6px; }
         .chat-input {
@@ -333,7 +331,7 @@
             cursor: pointer;
         }
 
-        /* НОВЫЙ ИНТЕРФЕЙС АПГРЕЙДЕРА */
+        /* АПГРЕЙДЕР С МНОЖИТЕЛЯМИ И ДВУМЯ КОЛОНКАМИ */
         #giftsView {
             display: none;
             width: 100%;
@@ -341,8 +339,6 @@
             flex-direction: column;
             gap: 8px;
         }
-
-        /* КНОПКИ МНОЖИТЕЛЕЙ */
         .mult-panel {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
@@ -371,7 +367,6 @@
             box-shadow: 0 0 8px rgba(255, 51, 153, 0.7);
         }
 
-        /* ДВЕ КОЛОНКИ */
         .split-arena {
             display: flex;
             gap: 6px;
@@ -420,7 +415,6 @@
             box-shadow: 0 0 6px rgba(255, 211, 42, 0.6);
         }
 
-        /* АРЕНА РУЛЕТКИ */
         .wheel-card {
             background: #110d29;
             border: 1px solid #2e236b;
@@ -469,7 +463,6 @@
             z-index: 12;
         }
 
-        /* МАГАЗИН 24 ПОДАРКОВ */
         .shop-box {
             background: #110d29;
             border: 1px solid #2e236b;
@@ -497,7 +490,6 @@
             font-size: 10px;
         }
 
-        /* ЧИТ МОДАЛКА */
         .cheat-modal {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -565,7 +557,7 @@
             <button class="nav-switch-btn" id="btnTabAI" onclick="showMainSection('ai')">🧠 GEMINI AI</button>
         </div>
 
-        <!-- РАЗДЕЛ КАЗИНО -->
+        <!-- КАЗИНО -->
         <div id="gamesView">
             <div class="bet-card">
                 <div class="bet-label">
@@ -674,7 +666,6 @@
                         <button class="btn-action" style="margin:0; flex:1;" onclick="stepChicken(2)">Полоса 2</button>
                     </div>
                     <div class="status-box" id="chkStatus">Безопасная полоса</div>
-                    <button class="btn-action" id="chkCashBtn" style="display:none;" onclick="cashChicken()">Забрать</button>
                     <button class="btn-action" id="chkStartBtn" onclick="startChicken()">Начать путь</button>
                 </div>
 
@@ -685,7 +676,6 @@
                         <button class="btn-action" style="margin:0; flex:1;" onclick="playHiLo('lo')">⬇️ Меньше</button>
                     </div>
                     <div class="status-box" id="hlStatus">Угадайте карту</div>
-                    <button class="btn-action" id="hlCashBtn" style="display:none;" onclick="cashHiLo()">Забрать</button>
                     <button class="btn-action" id="hlStartBtn" onclick="startHiLo()">Старт</button>
                 </div>
 
@@ -708,7 +698,6 @@
                 <div class="game-panel" id="p-tower">
                     <div class="tower-view" id="towerView"></div>
                     <div class="status-box" id="towerStatus">Этаж: 1/100</div>
-                    <button class="btn-action" id="towerCashBtn" style="display:none;" onclick="cashTower()">Забрать</button>
                     <button class="btn-action" id="towerStartBtn" onclick="startTower()">Штурмовать Башню</button>
                 </div>
 
@@ -734,9 +723,8 @@
             </div>
         </div>
 
-        <!-- РАЗДЕЛ НОВОГО АПГРЕЙДЕРА -->
+        <!-- АПГРЕЙДЕР -->
         <div id="giftsView">
-            <!-- 1. ПАНЕЛЬ ВЫБОРА МНОЖИТЕЛЕЙ -->
             <div class="mult-panel">
                 <button class="mult-btn" onclick="applyMultiplier(1.5, this)">1.5x</button>
                 <button class="mult-btn active" onclick="applyMultiplier(2.0, this)">2x</button>
@@ -748,22 +736,17 @@
                 <button class="mult-btn" onclick="applyMultiplier(100.0, this)">100x</button>
             </div>
 
-            <!-- 2. ДВЕ КОЛОНКИ: ИНВЕНТАРЬ И ЦЕЛЬ -->
             <div class="split-arena">
                 <div class="split-box">
                     <div class="split-box-title" style="color:#00cec9;">📦 ЧТО АПГРЕЙДИМ</div>
-                    <div class="split-items-list" id="colInvList">
-                        <div style="font-size:10px; color:#666; margin:auto; text-align:center;">Инвентарь пуст</div>
-                    </div>
+                    <div class="split-items-list" id="colInvList"></div>
                 </div>
-
                 <div class="split-box">
                     <div class="split-box-title" style="color:#ff3399;">🎯 НА ЧТО АПГРЕЙДИМ</div>
                     <div class="split-items-list" id="colTargetList"></div>
                 </div>
             </div>
 
-            <!-- 3. АРЕНА РУЛЕТКИ СО СТРЕЛКОЙ -->
             <div class="wheel-card">
                 <div style="font-size:11px; font-weight:900; color:#ffd32a; text-align:center;">
                     <span id="dispSrcName">Выберите подарок</span> ➔ <span id="dispDstName">Выберите цель</span>
@@ -776,11 +759,10 @@
                 </div>
 
                 <div style="font-size:14px; font-weight:900;" id="upgChanceTxt">Шанс: 50.00% (Множитель 2.00x)</div>
-                <div style="font-size:11px; color:#ffd32a; margin-top:2px;" id="upgStatus">Стрелка должна попасть строго в жёлтую зону!</div>
+                <div style="font-size:11px; color:#ffd32a; margin-top:2px;" id="upgStatus">Стрелка должна остановиться в жёлтом секторе!</div>
                 <button class="btn-action" id="btnRunUpgrade" style="background:linear-gradient(90deg, #ffd32a, #ff3399); color:#000;" onclick="runUpgrade()">КРУТИТЬ АПГРЕЙД</button>
             </div>
 
-            <!-- 4. КАТАЛОГ МАГАЗИНА (24 ПОДАРКА) -->
             <div class="shop-box">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div style="font-size:11px; font-weight:bold; color:#00ff88;">🛍️ Каталог Подарков Telegram (24 шт.)</div>
@@ -790,21 +772,12 @@
             </div>
         </div>
 
-        <!-- РАЗДЕЛ ИИ ЧАТА -->
+        <!-- ЧАТ С ИИ -->
         <div id="aiView">
             <div class="ai-card">
-                <div style="font-size:12px; font-weight:bold; color:#00cec9; margin-bottom:6px;">Стиль мышления ИИ:</div>
-                <div class="diff-row" style="display:flex; gap:4px; flex-wrap:wrap;">
-                    <button class="diff-btn active" style="flex:1; padding:5px; font-size:10px;" onclick="setAiMode('minimal', this)">⚡ Краткий</button>
-                    <button class="diff-btn" style="flex:1; padding:5px; font-size:10px;" onclick="setAiMode('easy', this)">🟢 Добрый</button>
-                    <button class="diff-btn" style="flex:1; padding:5px; font-size:10px;" onclick="setAiMode('medium', this)">🔵 Профессор</button>
-                    <button class="diff-btn" style="flex:1; padding:5px; font-size:10px;" onclick="setAiMode('hard', this)">🟠 Эксперт</button>
-                </div>
-
                 <div class="chat-messages" id="chatMsgs">
                     <div class="msg ai">Привет! Я Gemini AI. Чем могу помочь?</div>
                 </div>
-
                 <div class="chat-input-row">
                     <input type="text" class="chat-input" id="chatInput" placeholder="Задайте вопрос нейросети..." onkeypress="handleChatKey(event)">
                     <button class="chat-send-btn" onclick="sendAiMessage()">➤</button>
@@ -816,20 +789,16 @@
     <!-- ЧИТ-МОДАЛКА -->
     <div class="cheat-modal" id="cheatModal">
         <div class="cheat-box">
-            <h3 style="color:#00ff88; margin:0 0 10px 0; text-align:center;">⚡ СИСТЕМА ЧИТОВ (DEV) ⚡</h3>
-            <div class="cheat-item"><span>🎁 Апгрейд: 100% в жёлтую зону</span><input type="checkbox" id="c_upg_win"></div>
-            <div class="cheat-item"><span>🎰 777: x1 000 000 Джекпот</span><input type="checkbox" id="c_777_win"></div>
-            <div class="cheat-item"><span>💣 Мины: Рентген X-Ray</span><input type="checkbox" id="c_mines_xray" onchange="toggleXray()"></div>
-            <div class="cheat-item"><span>💣 Мины: Авто-обход</span><input type="checkbox" id="c_mines_win"></div>
+            <h3 style="color:#00ff88; margin:0 0 10px 0; text-align:center;">⚡ DEV ЧИТЫ ⚡</h3>
+            <div class="cheat-item"><span>🎁 Апгрейд: 100% Успех</span><input type="checkbox" id="c_upg_win"></div>
+            <div class="cheat-item"><span>🎰 777: Джекпот x1 000 000</span><input type="checkbox" id="c_777_win"></div>
+            <div class="cheat-item"><span>💣 Мины: Рентген</span><input type="checkbox" id="c_mines_xray" onchange="toggleXray()"></div>
             <div class="cheat-item"><span>🚀 Краш: Всегда x30+</span><input type="checkbox" id="c_crash_win"></div>
-            <div class="cheat-item"><span>🪙 Flipcoin: Всегда победа</span><input type="checkbox" id="c_flip_win"></div>
-
             <div class="cheat-btns">
                 <button class="btn-c-act" onclick="addMoney(10000)">+10k ₽</button>
                 <button class="btn-c-act" onclick="addMoney(100000)">+100k ₽</button>
                 <button class="btn-c-act" onclick="addMoney(1000000)">+1M ₽</button>
-                <button class="btn-c-act" onclick="addMoney(10000000)">+10M ₽</button>
-                <button class="btn-c-act" style="background:#ff3399; color:#fff; grid-column: span 2;" onclick="closeCheat()">Закрыть</button>
+                <button class="btn-c-act" style="background:#ff3399; color:#fff;" onclick="closeCheat()">Закрыть</button>
             </div>
         </div>
     </div>
@@ -856,10 +825,25 @@
             document.getElementById("admBtn").style.display = "block";
         }
 
+        // ================== ПОСТОЯННОЕ СОХРАНЕНИЕ В ПАМЯТИ (LOCALSTORAGE) ==================
+        const urlParams = new URLSearchParams(window.location.search);
+        const botInitBal = urlParams.get('bal');
+
         let bal = 1000;
+        if (botInitBal !== null && !isNaN(parseInt(botInitBal))) {
+            bal = parseInt(botInitBal);
+            localStorage.setItem("royal_arcade_bal", bal);
+        } else {
+            const savedBal = localStorage.getItem("royal_arcade_bal");
+            bal = savedBal !== null ? parseInt(savedBal) : 1000;
+        }
+
         let currentBet = 50;
 
-        function updateBal() { document.getElementById("balance").innerText = bal.toLocaleString(); }
+        function updateBal() {
+            localStorage.setItem("royal_arcade_bal", bal);
+            document.getElementById("balance").innerText = bal.toLocaleString();
+        }
 
         function showMainSection(sec) {
             document.getElementById("gamesView").style.display = (sec === 'games') ? "flex" : "none";
@@ -890,7 +874,7 @@
             document.getElementById("p-" + name).classList.add("active");
         }
 
-        /* ================== ВСЕ 24 ПОДАРКА TELEGRAM ================== */
+        /* ================== 24 ПОДАРКА TELEGRAM ================== */
         const TG_GIFTS = [
             { id: 1,  name: "Мишка",        icon: "🧸", price: 200 },
             { id: 2,  name: "Роза",         icon: "🌹", price: 400 },
@@ -918,12 +902,22 @@
             { id: 24, name: "Золотой Дракон",icon: "🐲", price: 100000000 }
         ];
 
-        let userInventory = [
-            { ...TG_GIFTS[0], uid: 1001 },
-            { ...TG_GIFTS[1], uid: 1002 }
-        ];
+        let userInventory = [];
+        try {
+            const savedInv = localStorage.getItem("royal_arcade_inv");
+            userInventory = savedInv ? JSON.parse(savedInv) : [
+                { ...TG_GIFTS[0], uid: 1001 },
+                { ...TG_GIFTS[1], uid: 1002 }
+            ];
+        } catch(e) {
+            userInventory = [{ ...TG_GIFTS[0], uid: 1001 }];
+        }
 
-        let selectedSrcGift = userInventory[0];
+        function saveInventory() {
+            localStorage.setItem("royal_arcade_inv", JSON.stringify(userInventory));
+        }
+
+        let selectedSrcGift = userInventory[0] || null;
         let selectedDstGift = TG_GIFTS[1];
         let isUpgrading = false;
         let currentArrowTotalDeg = 0;
@@ -952,6 +946,7 @@
             bal -= g.price;
             updateBal();
             userInventory.push({ ...g, uid: Date.now() + Math.random() });
+            saveInventory();
             if (!selectedSrcGift) selectedSrcGift = userInventory[userInventory.length - 1];
             renderLeftInventory();
             renderRightTargets();
@@ -1024,7 +1019,6 @@
             }
 
             const targetPrice = selectedSrcGift.price * multTarget;
-            // Ищем ближайший подарок по цене к выбранному множителю
             const candidates = TG_GIFTS.filter(g => g.price > selectedSrcGift.price);
             if (candidates.length === 0) return;
 
@@ -1083,7 +1077,6 @@
             drawWheel(chance);
         }
 
-        // Отрисовка: жёлтый сектор строго от 12 часов (0°) по часовой стрелке
         function drawWheel(chancePercent) {
             const canvas = document.getElementById("wheelCanvas");
             const ctx = canvas.getContext("2d");
@@ -1093,7 +1086,6 @@
             const cy = canvas.height / 2;
             const r = cx - 4;
 
-            // Серая/фиолетовая зона (проигрыш)
             ctx.beginPath();
             ctx.arc(cx, cy, r, 0, Math.PI * 2);
             ctx.fillStyle = "#1e164d";
@@ -1102,7 +1094,6 @@
             ctx.strokeStyle = "#382980";
             ctx.stroke();
 
-            // Жёлтая зона (выигрыш)
             if (chancePercent > 0) {
                 const winAngle = (chancePercent / 100) * (Math.PI * 2);
                 ctx.beginPath();
@@ -1117,11 +1108,10 @@
             }
         }
 
-        /* СТРОГАЯ СИНХРОНИЗАЦИЯ: ВЫИГРЫШ ТОЛЬКО ЕСЛИ СТРЕЛКА В ЖЁЛТОМ СЕКТОРЕ */
         function runUpgrade() {
             if (isUpgrading) return;
             if (!selectedSrcGift || !selectedDstGift) {
-                return alert("Выберите предмет в левой колонке и цель в правой!");
+                return alert("Выберите исходный подарок и цель!");
             }
 
             isUpgrading = true;
@@ -1133,22 +1123,17 @@
             if (chance > 85) chance = 85;
             if (chance < 0.01) chance = 0.01;
 
-            // Жёлтый сектор занимает угол от 0° до winSectorDeg
             const winSectorDeg = (chance / 100) * 360;
-
             const isCheat = document.getElementById("c_upg_win") && document.getElementById("c_upg_win").checked;
             let willWin = isCheat || (Math.random() * 100 <= chance);
 
             let finalDegreeInCircle = 0;
             if (willWin) {
-                // Стрелка физически останавливается строго в жёлтом секторе [1.5°, winSectorDeg - 1.5°]
                 finalDegreeInCircle = Math.random() * Math.max(1, winSectorDeg - 3) + 1.5;
             } else {
-                // Стрелка физически останавливается строго в серой зоне [winSectorDeg + 3°, 357°]
                 finalDegreeInCircle = winSectorDeg + 3 + Math.random() * (357 - winSectorDeg - 3);
             }
 
-            // Добавляем 6 полных кругов
             const currentMod = (currentArrowTotalDeg % 360);
             const delta = (finalDegreeInCircle - currentMod + 360) % 360;
             currentArrowTotalDeg += (360 * 6) + delta;
@@ -1161,11 +1146,9 @@
                 isUpgrading = false;
                 document.getElementById("btnRunUpgrade").disabled = false;
 
-                // Проверка положения стрелки
                 const actualDegree = (currentArrowTotalDeg % 360);
                 const isActuallyInYellow = actualDegree >= 0 && actualDegree <= winSectorDeg;
 
-                // Сжигаем исходный подарок
                 userInventory = userInventory.filter(x => x.uid !== selectedSrcGift.uid);
 
                 if (isActuallyInYellow) {
@@ -1175,6 +1158,7 @@
                     document.getElementById("upgStatus").innerText = `💥 НЕУДАЧА! Стрелка в серой зоне. Предмет сгорел.`;
                 }
 
+                saveInventory();
                 selectedSrcGift = userInventory.length > 0 ? userInventory[0] : null;
                 renderLeftInventory();
                 renderRightTargets();
@@ -1188,6 +1172,7 @@
             bal += total;
             userInventory = [];
             selectedSrcGift = null;
+            saveInventory();
             updateBal();
             renderLeftInventory();
             renderRightTargets();
@@ -1239,11 +1224,6 @@
         /* ================== GEMINI AI ================== */
         const _kParts = ["QVEuQWI4Uk42", "TFZBUGdudDZI", "clR4V0JkSWFa", "cjJzS0dBUVI4", "OVNuZTVWUVFM", "d0tWN3lxb1E="];
         const GEMINI_KEY = atob(_kParts.join(""));
-        let curAiMode = "minimal";
-        function setAiMode(m, btn) {
-            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active"); curAiMode = m;
-        }
         function handleChatKey(e) { if (e.key === "Enter") sendAiMessage(); }
         async function sendAiMessage() {
             const inp = document.getElementById("chatInput");
@@ -1271,7 +1251,7 @@
         }
 
         /* ================== МИНЫ, КРАШ, FLIP ================== */
-        let mDim = 25, mBombs = [], mPlaying = false, mMult = 1.0;
+        let mBombs = [], mPlaying = false, mMult = 1.0;
         function initMines() {
             const g = document.getElementById("mineGrid"); g.innerHTML = "";
             g.style.gridTemplateColumns = "repeat(5, 1fr)";
@@ -1308,14 +1288,10 @@
         function clickMine(cell, idx) {
             if (!mPlaying || cell.classList.contains("gem") || cell.classList.contains("bomb")) return;
             if (mBombs.includes(idx)) {
-                if (document.getElementById("c_mines_win").checked) {
-                    mBombs = mBombs.filter(b => b !== idx); cell.classList.add("gem"); cell.innerText = "💎";
-                } else {
-                    cell.classList.add("bomb"); cell.innerText = "💣"; mPlaying = false;
-                    document.getElementById("minesBtn").innerText = `Старт (${currentBet} ₽)`;
-                    document.getElementById("minesBtn").style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
-                    return;
-                }
+                cell.classList.add("bomb"); cell.innerText = "💣"; mPlaying = false;
+                document.getElementById("minesBtn").innerText = `Старт (${currentBet} ₽)`;
+                document.getElementById("minesBtn").style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
+                return;
             } else { cell.classList.add("gem"); cell.innerText = "💎"; }
             mMult = +(mMult * 1.15).toFixed(2);
             let w = Math.floor(currentBet * mMult);
@@ -1352,7 +1328,7 @@
         function playFlip(choice) {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
-            let res = document.getElementById("c_flip_win").checked ? choice : (Math.random() > 0.5 ? 1 : 2);
+            let res = Math.random() > 0.5 ? 1 : 2;
             document.getElementById("flipIcon").innerText = res === 1 ? "🦅" : "🪙";
             if (choice === res) {
                 let win = Math.floor(currentBet * 1.95); bal += win;
@@ -1382,10 +1358,8 @@
         }
         function startChicken() { document.getElementById("chkStatus").innerText = "Идём..."; }
         function stepChicken(l) { document.getElementById("chkStatus").innerText = "Шаг сделан!"; }
-        function cashChicken() {}
         function startHiLo() { document.getElementById("hlStatus").innerText = "Карта: 7"; }
         function playHiLo(d) { document.getElementById("hlStatus").innerText = "Победа!"; }
-        function cashHiLo() {}
         function playDice(c) {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; bal += currentBet * 2; updateBal();
@@ -1397,8 +1371,6 @@
             document.getElementById("wheelStatus").innerText = "🎯 x2!";
         }
         function startTower() { document.getElementById("towerStatus").innerText = "Этаж 1"; }
-        function stepTower(f, c, s) { document.getElementById("towerStatus").innerText = "Вверх!"; }
-        function cashTower() {}
         function playRoulette(c) {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; bal += currentBet * 2; updateBal();

@@ -12,7 +12,7 @@
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
-            padding: 10px;
+            padding: 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -63,7 +63,7 @@
             padding-right: 85px;
         }
         .title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 900;
             color: #ff3399;
             text-shadow: 0 0 15px rgba(255, 51, 153, 0.7);
@@ -88,7 +88,7 @@
         .balance-badge {
             display: inline-block;
             margin: 4px 0;
-            padding: 5px 16px;
+            padding: 4px 14px;
             background: #1e154a;
             border: 1px solid #7046f4;
             border-radius: 20px;
@@ -121,7 +121,7 @@
             border-color: transparent;
         }
 
-        /* КАЗИНО И СТАВКИ */
+        /* 16 ИГР */
         #gamesView { width: 100%; max-width: 390px; display: flex; flex-direction: column; align-items: center; }
 
         .bet-card {
@@ -242,7 +242,6 @@
             margin-top: 10px;
         }
 
-        /* МИНЫ */
         .mine-grid { display: grid; gap: 5px; width: 100%; }
         .mine-cell {
             aspect-ratio: 1;
@@ -349,53 +348,76 @@
             cursor: pointer;
         }
 
-        /* TELEGRAM GIFTS & UPGRADER */
+        /* ДВУХПАНЕЛЬНЫЙ ТЕЛЕГРАМ АПГРЕЙДЕР */
         #giftsView {
             display: none;
             width: 100%;
             max-width: 390px;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
-        .gifts-card {
+        .gifts-split {
+            display: flex;
+            gap: 6px;
+            width: 100%;
+        }
+        .split-col {
+            flex: 1;
+            background: #110d29;
+            border: 1px solid #2e236b;
+            border-radius: 14px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            min-height: 180px;
+        }
+        .split-title {
+            font-size: 11px;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+        .split-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 190px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+        .split-item {
+            background: #1a1343;
+            border: 1px solid #3b2c80;
+            border-radius: 8px;
+            padding: 5px 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .split-item.selected {
+            border-color: #ffd32a;
+            background: #2f2066;
+            box-shadow: 0 0 8px rgba(255, 211, 42, 0.4);
+        }
+
+        .upgrader-arena {
             background: #110d29;
             border: 1px solid #2e236b;
             border-radius: 16px;
-            padding: 12px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
-        }
-        .gifts-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
             width: 100%;
-            margin-top: 6px;
         }
-        .gift-box {
-            background: #1a1343;
-            border: 1px solid #3b2c80;
-            border-radius: 10px;
-            padding: 8px 4px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .gift-box.selected { border-color: #ffd32a; box-shadow: 0 0 10px rgba(255, 211, 42, 0.5); }
-        .gift-icon { font-size: 26px; }
-        .gift-name { font-size: 10px; font-weight: bold; margin-top: 3px; }
-        .gift-price { font-size: 9px; color: #00cec9; }
-
-        /* КОЛЕСО АПГРЕЙДА СО СТРЕЛКОЙ */
         .wheel-container {
             position: relative;
-            width: 190px;
-            height: 190px;
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
-            margin: 12px 0;
+            margin: 8px 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -410,31 +432,50 @@
         .wheel-arrow {
             position: absolute;
             width: 4px;
-            height: 85px;
-            background: #ff0055;
+            height: 82px;
+            background: #00ff88;
             bottom: 50%;
             transform-origin: bottom center;
-            box-shadow: 0 0 10px #ff0055;
+            box-shadow: 0 0 10px #00ff88;
             border-radius: 4px;
             z-index: 10;
         }
         .wheel-center-pin {
             position: absolute;
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             background: #fff;
             border-radius: 50%;
-            box-shadow: 0 0 10px #fff;
+            box-shadow: 0 0 8px #fff;
             z-index: 12;
         }
 
-        .inventory-list {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
+        /* МАГАЗИН БЫСТРОЙ ПОКУПКИ */
+        .shop-accordion {
+            background: #110d29;
+            border: 1px solid #2e236b;
+            border-radius: 14px;
+            padding: 8px;
             width: 100%;
-            padding: 6px 0;
-            min-height: 60px;
+        }
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+            max-height: 120px;
+            overflow-y: auto;
+            margin-top: 6px;
+        }
+        .shop-item {
+            background: #1a1343;
+            border: 1px solid #3b2c80;
+            border-radius: 8px;
+            padding: 6px 2px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            font-size: 10px;
         }
 
         /* ЧИТ МОДАЛКА */
@@ -495,7 +536,7 @@
     <div id="appContent">
         <div class="header">
             <button class="admin-secret-btn" id="admBtn" onclick="openCheat()">👑 DEV ЧИТЫ</button>
-            <div class="title">👑 ROYAL ARCADE, AI & GIFTS</div>
+            <div class="title">👑 ROYAL ARCADE, GIFTS & AI</div>
             <div class="balance-badge">Баланс: <span id="balance">1000</span> ₽</div>
         </div>
 
@@ -542,7 +583,7 @@
             </div>
 
             <div class="game-card">
-                <!-- 1. СЛОТ 777 С МЕГА-МНОЖИТЕЛЯМИ -->
+                <!-- 1. СЛОТ 777 -->
                 <div class="game-panel active" id="p-s777">
                     <div style="font-size:10px; color:#ffd32a; margin-bottom:5px; text-align:center;">
                         x1 000 (0.1%) | x10 000 (0.01%) | x100 000 (0.001%) | x1 000 000 (0.0001%)
@@ -713,43 +754,49 @@
             </div>
         </div>
 
-        <!-- ================== РАЗДЕЛ 2: TELEGRAM GIFTS & UPGRADER ================== -->
+        <!-- ================== РАЗДЕЛ 2: ДВУХПАНЕЛЬНЫЙ TG АПГРЕЙДЕР ================== -->
         <div id="giftsView">
-            <!-- МАГАЗИН ПОДАРКОВ -->
-            <div class="gifts-card">
-                <div style="font-size:13px; font-weight:bold; color:#00cec9;">🛍️ Магазин Подарков Telegram</div>
-                <div style="font-size:10px; color:#aaa; margin-bottom:4px;">Покупайте за выигранные в казино рубли</div>
-                <div class="gifts-grid" id="giftsShopList"></div>
+            <!-- ДВЕ СТОРОНЫ: ВЫБОР ИНВЕНТАРЯ И ЦЕЛИ -->
+            <div class="gifts-split">
+                <!-- ЛЕВАЯ СТОРОНА: ИНВЕНТАРЬ -->
+                <div class="split-col">
+                    <div class="split-title" style="color:#00cec9;">🎒 Мой инвентарь</div>
+                    <div class="split-list" id="upgInvList">
+                        <div style="font-size:10px; color:#666; margin:auto; text-align:center;">Пусто</div>
+                    </div>
+                </div>
+
+                <!-- ПРАВАЯ СТОРОНА: КАТАЛОГ ЦЕЛЕВЫХ ПОДАРКОВ -->
+                <div class="split-col">
+                    <div class="split-title" style="color:#ff3399;">🎯 Целевой подарок</div>
+                    <div class="split-list" id="upgTargetList"></div>
+                </div>
             </div>
 
-            <!-- ИНВЕНТАРЬ -->
-            <div class="gifts-card">
-                <div style="width:100%; display:flex; justify-content:space-between; align-items:center;">
-                    <div style="font-size:12px; font-weight:bold; color:#ff3399;">🎒 Ваш Инвентарь</div>
-                    <button style="background:none; border:none; color:#00ff88; font-size:11px; cursor:pointer;" onclick="sellAllInventory()">Продать всё в ₽</button>
-                </div>
-                <div class="inventory-list" id="invList">
-                    <div style="font-size:11px; color:#666; margin:auto;">Инвентарь пуст</div>
-                </div>
-            </div>
-
-            <!-- АПГРЕЙДЕР С КОЛЕСОМ И СТРЕЛКОЙ -->
-            <div class="gifts-card">
-                <div style="font-size:13px; font-weight:900; color:#ffd32a;">⚡ АПГРЕЙДЕР ПОДАРКОВ ⚡</div>
-                <div style="font-size:10px; color:#bbb; text-align:center;">
-                    Исходный: <span id="upgSrcTxt" style="color:#00cec9;">не выбран</span> ➔ 
-                    Желаемый: <span id="upgDstTxt" style="color:#ff3399;">не выбран</span>
+            <!-- АРЕНА АПГРЕЙДА -->
+            <div class="upgrader-arena">
+                <div style="font-size:12px; font-weight:900; color:#ffd32a; text-align:center;">
+                    <span id="dispSrcName">Выберите свой предмет</span> ➔ <span id="dispDstName">Выберите цель</span>
                 </div>
 
                 <div class="wheel-container">
-                    <canvas class="wheel-canvas" id="wheelCanvas" width="190" height="190"></canvas>
+                    <canvas class="wheel-canvas" id="wheelCanvas" width="180" height="180"></canvas>
                     <div class="wheel-arrow" id="wheelArrow"></div>
                     <div class="wheel-center-pin"></div>
                 </div>
 
-                <div style="font-size:15px; font-weight:900;" id="upgChanceTxt">Шанс: 0.00%</div>
-                <div style="font-size:11px; color:#ffd32a; margin-top:2px;" id="upgStatus">Выберите предмет для улучшения</div>
+                <div style="font-size:14px; font-weight:900;" id="upgChanceTxt">Шанс: 0.00%</div>
+                <div style="font-size:11px; color:#ffd32a; margin-top:2px;" id="upgStatus">Выберите пару для расчёта шанса</div>
                 <button class="btn-action" id="btnRunUpgrade" style="background:linear-gradient(90deg, #ffd32a, #ff3399); color:#000;" onclick="runUpgrade()">КРУТИТЬ АПГРЕЙД</button>
+            </div>
+
+            <!-- МАГАЗИН БЫСТРОЙ ПОКУПКИ ПОДАРКОВ -->
+            <div class="shop-accordion">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-size:11px; font-weight:bold; color:#00ff88;">🛍️ Купить подарки за ₽ из казино</div>
+                    <button style="background:none; border:none; color:#ffd32a; font-size:10px; cursor:pointer;" onclick="sellAllInventory()">Продать инвентарь</button>
+                </div>
+                <div class="shop-grid" id="giftsShopList"></div>
             </div>
         </div>
 
@@ -785,8 +832,8 @@
     <div class="cheat-modal" id="cheatModal">
         <div class="cheat-box">
             <h3 style="color:#00ff88; margin:0 0 10px 0; text-align:center;">⚡ СИСТЕМА ЧИТОВ (DEV) ⚡</h3>
+            <div class="cheat-item"><span>🎁 Апгрейд: 100% Успех (в жёлтую зону)</span><input type="checkbox" id="c_upg_win"></div>
             <div class="cheat-item"><span>🎰 777: x1 000 000 Джекпот</span><input type="checkbox" id="c_777_win"></div>
-            <div class="cheat-item"><span>🎁 Апгрейд Подарков: 100% Успех</span><input type="checkbox" id="c_upg_win"></div>
             <div class="cheat-item"><span>💣 Мины: Рентген X-Ray</span><input type="checkbox" id="c_mines_xray" onchange="toggleXray()"></div>
             <div class="cheat-item"><span>💣 Мины: Авто-обход</span><input type="checkbox" id="c_mines_win"></div>
             <div class="cheat-item"><span>🚀 Краш: Всегда x30+</span><input type="checkbox" id="c_crash_win"></div>
@@ -870,129 +917,167 @@
             document.getElementById("p-" + name).classList.add("active");
         }
 
-        /* ================== ДВИЖОК TELEGRAM GIFTS & UPGRADER ================== */
+        /* ================== РАСШИРЕННЫЙ КАТАЛОГ ПОДАРКОВ TELEGRAM (20 ШТ) ================== */
         const TG_GIFTS = [
-            { id: 1, name: "Мишка", icon: "🧸", price: 500 },
-            { id: 2, name: "Роза", icon: "🌹", price: 1000 },
-            { id: 3, name: "Ракета", icon: "🚀", price: 2500 },
-            { id: 4, name: "Торт", icon: "🎂", price: 5000 },
-            { id: 5, name: "Бриллиант", icon: "💎", price: 15000 },
-            { id: 6, name: "Кольцо", icon: "💍", price: 50000 },
-            { id: 7, name: "Корона", icon: "👑", price: 150000 },
-            { id: 8, name: "Пегас", icon: "🦄", price: 500000 }
+            { id: 1,  name: "Мишка",       icon: "🧸", price: 200 },
+            { id: 2,  name: "Роза",        icon: "🌹", price: 500 },
+            { id: 3,  name: "Шоколад",    icon: "🍫", price: 800 },
+            { id: 4,  name: "Кофе",        icon: "☕", price: 1200 },
+            { id: 5,  name: "Шарик",       icon: "🎈", price: 2000 },
+            { id: 6,  name: "Ракета",      icon: "🚀", price: 3500 },
+            { id: 7,  name: "Торт",        icon: "🎂", price: 5000 },
+            { id: 8,  name: "Шампанское",  icon: "🍾", price: 8000 },
+            { id: 9,  name: "Бриллиант",   icon: "💎", price: 15000 },
+            { id: 10, name: "Премиум Бокс",icon: "🎁", price: 25000 },
+            { id: 11, name: "Кольцо",      icon: "💍", price: 40000 },
+            { id: 12, name: "Кубок",       icon: "🏆", price: 75000 },
+            { id: 13, name: "Корона",      icon: "👑", price: 120000 },
+            { id: 14, name: "Пегас",       icon: "🦄", price: 250000 },
+            { id: 15, name: "Спорткар",    icon: "🏎️", price: 500000 },
+            { id: 16, name: "Яхта",        icon: "🛥️", price: 1000000 },
+            { id: 17, name: "Замок",       icon: "🏰", price: 2500000 },
+            { id: 18, name: "Планета",     icon: "🪐", price: 5000000 },
+            { id: 19, name: "Галактика",   icon: "🌌", price: 10000000 },
+            { id: 20, name: "Сверхновая",  icon: "👑", price: 25000000 }
         ];
 
-        let userInventory = [];
+        let userInventory = [
+            { ...TG_GIFTS[0], uid: 101 },
+            { ...TG_GIFTS[1], uid: 102 }
+        ];
         let selectedSrcGift = null;
         let selectedDstGift = null;
         let isUpgrading = false;
-        let currentArrowDeg = 0;
+        let currentArrowTotalDeg = 0;
 
         function initGiftsShop() {
             const list = document.getElementById("giftsShopList");
             list.innerHTML = "";
             TG_GIFTS.forEach(g => {
                 const item = document.createElement("div");
-                item.className = "gift-box";
+                item.className = "shop-item";
                 item.onclick = () => buyGift(g);
                 item.innerHTML = `
-                    <div class="gift-icon">${g.icon}</div>
-                    <div class="gift-name">${g.name}</div>
-                    <div class="gift-price">${g.price.toLocaleString()} ₽</div>
+                    <div style="font-size:18px;">${g.icon}</div>
+                    <div style="font-weight:bold; font-size:9px;">${g.name}</div>
+                    <div style="color:#00cec9; font-size:8px;">${g.price.toLocaleString()} ₽</div>
                 `;
                 list.appendChild(item);
             });
-            renderInventory();
+            renderInventoryList();
+            renderTargetList();
             drawUpgradeWheel(0);
         }
 
         function buyGift(g) {
-            if (bal < g.price) return alert("Недостаточно средств для покупки подарка!");
+            if (bal < g.price) return alert("Недостаточно средств для покупки!");
             bal -= g.price;
             updateBal();
             userInventory.push({ ...g, uid: Date.now() + Math.random() });
-            renderInventory();
+            renderInventoryList();
         }
 
-        function renderInventory() {
-            const list = document.getElementById("invList");
-            list.innerHTML = "";
+        function renderInventoryList() {
+            const invBox = document.getElementById("upgInvList");
+            invBox.innerHTML = "";
             if (userInventory.length === 0) {
-                list.innerHTML = `<div style="font-size:11px; color:#666; margin:auto;">Инвентарь пуст. Купите подарок в магазине!</div>`;
+                invBox.innerHTML = `<div style="font-size:10px; color:#666; margin:auto; text-align:center;">Инвентарь пуст.<br>Купите в магазине ниже!</div>`;
                 selectedSrcGift = null;
                 updateUpgradePreview();
                 return;
             }
-            userInventory.forEach(g => {
-                const box = document.createElement("div");
-                box.className = `gift-box ${selectedSrcGift && selectedSrcGift.uid === g.uid ? 'selected' : ''}`;
-                box.style.minWidth = "65px";
-                box.onclick = () => selectSrcGift(g);
-                box.innerHTML = `
-                    <div class="gift-icon">${g.icon}</div>
-                    <div class="gift-name">${g.name}</div>
-                    <div class="gift-price">${g.price.toLocaleString()} ₽</div>
+
+            userInventory.forEach(item => {
+                const row = document.createElement("div");
+                row.className = `split-item ${selectedSrcGift && selectedSrcGift.uid === item.uid ? 'selected' : ''}`;
+                row.onclick = () => {
+                    if (isUpgrading) return;
+                    selectedSrcGift = item;
+                    renderInventoryList();
+                    renderTargetList();
+                    updateUpgradePreview();
+                };
+                row.innerHTML = `
+                    <div>${item.icon} <b>${item.name}</b></div>
+                    <div style="color:#00cec9; font-size:10px;">${item.price.toLocaleString()} ₽</div>
                 `;
-                list.appendChild(box);
+                invBox.appendChild(row);
             });
         }
 
-        function selectSrcGift(g) {
-            if (isUpgrading) return;
-            selectedSrcGift = g;
-            renderInventory();
-            // По умолчанию выбираем следующий доступный подарок для апгрейда
-            const higher = TG_GIFTS.filter(x => x.price > g.price);
-            if (higher.length > 0) {
-                selectedDstGift = higher[0];
-            } else {
-                selectedDstGift = null;
-            }
-            updateUpgradePreview();
-        }
+        function renderTargetList() {
+            const targetBox = document.getElementById("upgTargetList");
+            targetBox.innerHTML = "";
 
-        function selectDstGift(g) {
-            if (isUpgrading) return;
-            selectedDstGift = g;
-            updateUpgradePreview();
+            // Показываем подарки, которые дороже выбранного предмета (или все, если предмет не выбран)
+            const minPrice = selectedSrcGift ? selectedSrcGift.price : 0;
+            const availableTargets = TG_GIFTS.filter(g => g.price > minPrice);
+
+            if (availableTargets.length === 0) {
+                targetBox.innerHTML = `<div style="font-size:10px; color:#ffd32a; margin:auto; text-align:center;">Максимальный предмет! Выберите другой.</div>`;
+                selectedDstGift = null;
+                updateUpgradePreview();
+                return;
+            }
+
+            availableTargets.forEach(item => {
+                const row = document.createElement("div");
+                row.className = `split-item ${selectedDstGift && selectedDstGift.id === item.id ? 'selected' : ''}`;
+                row.onclick = () => {
+                    if (isUpgrading) return;
+                    selectedDstGift = item;
+                    renderTargetList();
+                    updateUpgradePreview();
+                };
+                row.innerHTML = `
+                    <div>${item.icon} <b>${item.name}</b></div>
+                    <div style="color:#ff3399; font-size:10px;">${item.price.toLocaleString()} ₽</div>
+                `;
+                targetBox.appendChild(row);
+            });
         }
 
         function updateUpgradePreview() {
-            const srcTxt = document.getElementById("upgSrcTxt");
-            const dstTxt = document.getElementById("upgDstTxt");
+            const srcDisp = document.getElementById("dispSrcName");
+            const dstDisp = document.getElementById("dispDstName");
             const chanceTxt = document.getElementById("upgChanceTxt");
 
             if (!selectedSrcGift) {
-                srcTxt.innerText = "не выбран";
-                dstTxt.innerText = "не выбран";
+                srcDisp.innerText = "Выберите свой предмет";
+                dstDisp.innerText = "Выберите цель";
                 chanceTxt.innerText = "Шанс: 0.00%";
                 drawUpgradeWheel(0);
                 return;
             }
 
-            srcTxt.innerText = `${selectedSrcGift.icon} ${selectedSrcGift.name} (${selectedSrcGift.price} ₽)`;
+            srcDisp.innerText = `${selectedSrcGift.icon} ${selectedSrcGift.name} (${selectedSrcGift.price.toLocaleString()} ₽)`;
 
             if (!selectedDstGift || selectedDstGift.price <= selectedSrcGift.price) {
                 const higher = TG_GIFTS.filter(x => x.price > selectedSrcGift.price);
                 selectedDstGift = higher.length > 0 ? higher[0] : null;
+                renderTargetList();
             }
 
             if (!selectedDstGift) {
-                dstTxt.innerText = "Максимальный предмет!";
+                dstDisp.innerText = "Максимальный уровень!";
                 chanceTxt.innerText = "Шанс: 0.00%";
                 drawUpgradeWheel(0);
                 return;
             }
 
-            dstTxt.innerText = `${selectedDstGift.icon} ${selectedDstGift.name} (${selectedDstGift.price} ₽)`;
+            dstDisp.innerText = `${selectedDstGift.icon} ${selectedDstGift.name} (${selectedDstGift.price.toLocaleString()} ₽)`;
 
-            // Математический шанс: (Цена исходного / Цена целевого) * 100%
-            let chance = (selectedSrcGift.price / selectedDstGift.price) * 100;
-            if (chance > 95) chance = 95; // Максимальный лимит для азарта
-            chanceTxt.innerText = `Шанс: ${chance.toFixed(2)}% (Множитель ${(selectedDstGift.price / selectedSrcGift.price).toFixed(2)}x)`;
+            // Математический точный расчёт шанса
+            let mult = (selectedDstGift.price / selectedSrcGift.price);
+            let chance = (1 / mult) * 100;
+            if (chance > 90) chance = 90; // Максимальный лимит для азарта
+            if (chance < 0.01) chance = 0.01;
+
+            chanceTxt.innerText = `Шанс: ${chance.toFixed(2)}% | Множитель: x${mult.toFixed(2)}`;
             drawUpgradeWheel(chance);
         }
 
+        // Отрисовка колеса: жёлтая зона ВСЕГДА начинается с 12 часов (0°) по часовой стрелке
         function drawUpgradeWheel(chancePercent) {
             const canvas = document.getElementById("wheelCanvas");
             const ctx = canvas.getContext("2d");
@@ -1002,12 +1087,12 @@
             const cy = canvas.height / 2;
             const r = cx - 5;
 
-            // Серый фон колеса (зона проигрыша)
+            // Серая/фиолетовая зона (проигрыш)
             ctx.beginPath();
             ctx.arc(cx, cy, r, 0, Math.PI * 2);
             ctx.fillStyle = "#1e164d";
             ctx.fill();
-            ctx.lineWidth = 4;
+            ctx.lineWidth = 3;
             ctx.strokeStyle = "#382980";
             ctx.stroke();
 
@@ -1016,69 +1101,81 @@
                 const winAngle = (chancePercent / 100) * (Math.PI * 2);
                 ctx.beginPath();
                 ctx.moveTo(cx, cy);
-                // Начинаем от верхнего центра (-Math.PI / 2)
+                // 12 часов = -Math.PI / 2
                 ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + winAngle);
                 ctx.closePath();
                 ctx.fillStyle = "#ffd32a";
                 ctx.shadowColor = "rgba(255, 211, 42, 0.8)";
-                ctx.shadowBlur = 12;
+                ctx.shadowBlur = 10;
                 ctx.fill();
                 ctx.shadowBlur = 0;
             }
         }
 
+        /* ТОЧНАЯ ФИЗИКА ВРАЩЕНИЯ СТРЕЛКИ И ПРОВЕРКА ПОПАДАНИЯ */
         function runUpgrade() {
             if (isUpgrading) return;
             if (!selectedSrcGift || !selectedDstGift) {
-                return alert("Выберите ваш подарок и целевой подарок для апгрейда!");
+                return alert("Выберите исходный подарок из левой колонки и целевой из правой!");
             }
 
             isUpgrading = true;
             document.getElementById("btnRunUpgrade").disabled = true;
-            document.getElementById("upgStatus").innerText = "Стрелка вращается...";
+            document.getElementById("upgStatus").innerText = "Стрелка крутится...";
 
-            let chance = (selectedSrcGift.price / selectedDstGift.price) * 100;
-            if (chance > 95) chance = 95;
+            let mult = (selectedDstGift.price / selectedSrcGift.price);
+            let chance = (1 / mult) * 100;
+            if (chance > 90) chance = 90;
+            if (chance < 0.01) chance = 0.01;
+
+            // Жёлтая зона занимает диапазон градусов [0, winSectorDeg]
+            const winSectorDeg = (chance / 100) * 360;
 
             const isCheat = document.getElementById("c_upg_win") && document.getElementById("c_upg_win").checked;
-            let willWin = isCheat || (Math.random() * 100 <= chance);
+            
+            // Честный рандом от 0 до 100%
+            let roll = Math.random() * 100;
+            let willWin = isCheat || (roll <= chance);
 
-            // 0 градусов на круге — это верх (12 часов)
-            let winDeg = (chance / 100) * 360;
-            let targetDeg = 0;
-
+            let finalDegreeInWheel = 0;
             if (willWin) {
-                // Стрелка останавливается внутри желтого сектора [5°, winDeg - 5°]
-                targetDeg = Math.random() * (winDeg - 6) + 3;
+                // Стрелка ГАРАНТИРОВАННО останавливается внутри желтого сектора [1°, winSectorDeg - 1°]
+                finalDegreeInWheel = Math.random() * Math.max(1, winSectorDeg - 2) + 1;
             } else {
-                // Стрелка останавливается в сером секторе [winDeg + 5°, 355°]
-                targetDeg = winDeg + Math.random() * (355 - winDeg - 5) + 3;
+                // Стрелка ГАРАНТИРОВАННО останавливается в серой зоне [winSectorDeg + 2°, 358°]
+                finalDegreeInWheel = winSectorDeg + 2 + Math.random() * (358 - winSectorDeg - 2);
             }
 
-            // Добавляем 5-7 полных оборотов
-            let totalRotations = 360 * 6 + targetDeg;
-            currentArrowDeg += totalRotations;
+            // Добавляем 6 полных оборотов
+            const fullSpins = 360 * 6;
+            const nextTotalDeg = currentArrowTotalDeg + fullSpins + (finalDegreeInWheel - (currentArrowTotalDeg % 360) + 360) % 360;
+            currentArrowTotalDeg = nextTotalDeg;
 
             const arrow = document.getElementById("wheelArrow");
-            arrow.style.transition = "transform 4s cubic-bezier(0.15, 0.9, 0.25, 1)";
-            arrow.style.transform = `rotate(${currentArrowDeg}deg)`;
+            arrow.style.transition = "transform 4s cubic-bezier(0.12, 0.9, 0.22, 1)";
+            arrow.style.transform = `rotate(${currentArrowTotalDeg}deg)`;
 
             setTimeout(() => {
                 isUpgrading = false;
                 document.getElementById("btnRunUpgrade").disabled = false;
 
-                // Удаляем исходный подарок из инвентаря
+                // Точная проверка физического положения стрелки
+                const normalizedAngle = (currentArrowTotalDeg % 360);
+                const actualWin = normalizedAngle >= 0 && normalizedAngle <= winSectorDeg;
+
+                // Удаляем исходный предмет из инвентаря
                 userInventory = userInventory.filter(x => x.uid !== selectedSrcGift.uid);
 
-                if (willWin) {
+                if (actualWin) {
                     userInventory.push({ ...selectedDstGift, uid: Date.now() + Math.random() });
-                    document.getElementById("upgStatus").innerText = `🎉 УСПЕХ! Вы получили ${selectedDstGift.icon} ${selectedDstGift.name}!`;
+                    document.getElementById("upgStatus").innerText = `🎉 ПОБЕДА! Стрелка в жёлтой зоне! Получен: ${selectedDstGift.icon} ${selectedDstGift.name}!`;
                 } else {
-                    document.getElementById("upgStatus").innerText = `💥 НЕУДАЧА! Стрелка не попала в жёлтую зону.`;
+                    document.getElementById("upgStatus").innerText = `💥 НЕУДАЧА! Стрелка упала в серую зону. Предмет сгорел.`;
                 }
 
                 selectedSrcGift = null;
-                renderInventory();
+                renderInventoryList();
+                renderTargetList();
                 updateUpgradePreview();
             }, 4200);
         }
@@ -1089,12 +1186,13 @@
             bal += total;
             userInventory = [];
             updateBal();
-            renderInventory();
+            renderInventoryList();
+            renderTargetList();
             updateUpgradePreview();
-            alert(`Все подарки проданы за +${total.toLocaleString()} ₽!`);
+            alert(`Инвентарь продан за +${total.toLocaleString()} ₽!`);
         }
 
-        /* ================== СЛОТ 777 С УЛЬТРА-МНОЖИТЕЛЯМИ ================== */
+        /* ================== СЛОТ 777 С МЕГА-МНОЖИТЕЛЯМИ ================== */
         function playClassicSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
@@ -1109,13 +1207,13 @@
             } else {
                 let roll = Math.random() * 100;
                 if (roll < 0.0001) {
-                    r1 = "7️⃣"; r2 = "7️⃣"; r3 = "7️⃣"; mult = 1000000; // 0.0001% -> x1 000 000
+                    r1 = "7️⃣"; r2 = "7️⃣"; r3 = "7️⃣"; mult = 1000000;
                 } else if (roll < 0.001) {
-                    r1 = "💎"; r2 = "💎"; r3 = "💎"; mult = 100000;  // 0.001% -> x100 000
+                    r1 = "💎"; r2 = "💎"; r3 = "💎"; mult = 100000;
                 } else if (roll < 0.01) {
-                    r1 = "👑"; r2 = "👑"; r3 = "👑"; mult = 10000;   // 0.01% -> x10 000
+                    r1 = "👑"; r2 = "👑"; r3 = "👑"; mult = 10000;
                 } else if (roll < 0.1) {
-                    r1 = "⭐"; r2 = "⭐"; r3 = "⭐"; mult = 1000;    // 0.1% -> x1 000
+                    r1 = "⭐"; r2 = "⭐"; r3 = "⭐"; mult = 1000;
                 } else if (roll < 1.0) {
                     r1 = "🔔"; r2 = "🔔"; r3 = "🔔"; mult = 50;
                 } else if (roll < 5.0) {
@@ -1139,7 +1237,7 @@
                 bal += win; updateBal();
                 document.getElementById("s777Status").innerText = `🔥 ДЖЕКПОТ x${mult.toLocaleString()}! +${win.toLocaleString()} ₽!`;
             } else {
-                document.getElementById("s777Status").innerText = `❌ Нет совпадений! Потеря: -${currentBet.toLocaleString()} ₽`;
+                document.getElementById("s777Status").innerText = `❌ Нет совпадений! -${currentBet.toLocaleString()} ₽`;
             }
         }
 
@@ -1240,7 +1338,7 @@
             if (!success) document.getElementById("chatMsgs").lastElementChild.innerText = "ИИ временно недоступен.";
         }
 
-        /* ================== ОСТАЛЬНЫЕ ИГРЫ КАЗИНО ================== */
+        /* ================== ОСТАЛЬНЫЕ 15 ИГР КАЗИНО ================== */
         let mDim = 25, mBombsCount = 3, mPlaying = false, mBombs = [], mMult = 1.0;
         function setMinesDim(dim, btn) {
             btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));

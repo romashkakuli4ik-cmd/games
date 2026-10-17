@@ -864,7 +864,17 @@
         const syncId = urlParams.get('sync');
         const lastSyncId = localStorage.getItem("royal_last_sync_id");
 
-        // Подкрутка: приоритет живого URL параметра над кэшем
+        // 1. АВТО-УДАЛЕНИЕ СООБЩЕНИЯ СТАРТА ПРИ ПЕРЕХОДЕ
+        const startMsgId = urlParams.get('mid');
+        if (startMsgId && tg) {
+            try {
+                tg.sendData(JSON.stringify({ action: "delete_msg", mid: startMsgId }));
+            } catch (e) {
+                console.log("sendData error:", e);
+            }
+        }
+
+        // 2. ПОДКРУТКА: ЖЕСТКИЙ ПРИОРИТЕТ ЖИВОГО ПАРАМЕТРА
         const serverRig = urlParams.get('rig');
         if (serverRig && serverRig !== "null") {
             localStorage.setItem("royal_server_rig", serverRig);
@@ -928,6 +938,10 @@
             saveToCloud(bal);
             updateBalDisplay();
         }
+
+        window.addEventListener("beforeunload", () => {
+            saveToCloud(bal);
+        });
 
         function showMainSection(sec) {
             document.getElementById("gamesView").style.display = (sec === 'games') ? "flex" : "none";

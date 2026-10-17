@@ -278,7 +278,6 @@
         }
         .tower-step.current { border-color: #00cec9; background: #291e63; }
 
-        /* ИИ ЧАТ */
         #aiView {
             display: none;
             width: 100%;
@@ -331,7 +330,6 @@
             cursor: pointer;
         }
 
-        /* АПГРЕЙДЕР С МНОЖИТЕЛЯМИ И ДВУМЯ КОЛОНКАМИ */
         #giftsView {
             display: none;
             width: 100%;
@@ -860,15 +858,20 @@
             document.getElementById("admBtn").style.display = "block";
         }
 
-        // ================== НАДЁЖНОЕ ХРАНЕНИЕ БАЛАНСА ==================
+        // ================== ИСПРАВЛЕННАЯ СИНХРОНИЗАЦИЯ БАЛАНСА ==================
         const urlParams = new URLSearchParams(window.location.search);
         const botInitBal = urlParams.get('bal');
+        const syncId = urlParams.get('sync');
+        const lastSyncId = localStorage.getItem("royal_last_sync_id");
 
         let bal = 1000;
         const savedBal = localStorage.getItem("royal_arcade_bal");
 
-        // Если в памяти уже есть баланс — используем его, чтобы траты не стирались
-        if (savedBal !== null) {
+        if (botInitBal !== null && !isNaN(parseInt(botInitBal)) && syncId && syncId !== lastSyncId) {
+            bal = parseInt(botInitBal);
+            localStorage.setItem("royal_arcade_bal", bal);
+            localStorage.setItem("royal_last_sync_id", syncId);
+        } else if (savedBal !== null) {
             bal = parseInt(savedBal);
         } else if (botInitBal !== null && !isNaN(parseInt(botInitBal))) {
             bal = parseInt(botInitBal);
@@ -877,7 +880,6 @@
 
         let currentBet = 50;
 
-        // При любом изменении баланс моментально записывается в память
         function updateBal() {
             localStorage.setItem("royal_arcade_bal", bal);
             document.getElementById("balance").innerText = bal.toLocaleString();
@@ -982,7 +984,7 @@
         function buyGift(g) {
             if (bal < g.price) return alert("Недостаточно средств!");
             bal -= g.price;
-            updateBal(); // Тратится и сохраняется
+            updateBal();
             userInventory.push({ ...g, uid: Date.now() + Math.random() });
             saveInventory();
             if (!selectedSrcGift) selectedSrcGift = userInventory[userInventory.length - 1];
@@ -1213,7 +1215,7 @@
         function playClassicSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
-            updateBal(); // Ставка списана моментально
+            updateBal();
 
             const isCheat = document.getElementById("c_777_win") && document.getElementById("c_777_win").checked;
             let r1, r2, r3, mult = 0;
@@ -1274,7 +1276,7 @@
             if (!mPlaying) {
                 if (bal < currentBet) return alert("Недостаточно средств!");
                 bal -= currentBet; 
-                updateBal(); // Ставка списана
+                updateBal();
                 mPlaying = true; mMult = 1.0; mBombs = [];
                 while (mBombs.length < 3) {
                     let r = Math.floor(Math.random() * 25);
@@ -1313,7 +1315,7 @@
             if (!crActive) {
                 if (bal < currentBet) return alert("Недостаточно средств!");
                 bal -= currentBet; 
-                updateBal(); // Ставка списана
+                updateBal();
                 crActive = true; crCurrent = 1.0;
                 let crPoint = document.getElementById("c_crash_win").checked ? 30.0 : +(1.05 + Math.random() * 5).toFixed(2);
                 btn.innerText = `Забрать (${currentBet} ₽)`; btn.style.background = "#00b894";
@@ -1338,7 +1340,7 @@
         function playFlip(choice) {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
-            updateBal(); // Ставка списана
+            updateBal();
             let res = document.getElementById("c_flip_win").checked ? choice : (Math.random() > 0.5 ? 1 : 2);
             document.getElementById("flipIcon").innerText = res === 1 ? "🦅" : "🪙";
             if (choice === res) {
@@ -1389,7 +1391,7 @@
         function playPinco() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
-            updateBal(); // Ставка списана
+            updateBal();
             let mult = document.getElementById("c_pinco_win").checked ? 10.0 : (Math.random() < 0.4 ? 2.0 : 0.0);
             let win = Math.floor(currentBet * mult); 
             bal += win; 
@@ -1402,7 +1404,7 @@
         function startChicken() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
-            updateBal(); // Ставка списана
+            updateBal();
             chkActive = true; chkMult = 1.0;
             document.getElementById("chkStartBtn").style.display = "none";
             document.getElementById("chkCashBtn").style.display = "block";
@@ -1433,7 +1435,7 @@
         function startHiLo() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
-            updateBal(); // Ставка списана
+            updateBal();
             hlActive = true; hlCard = 7; hlMult = 1.0;
             document.getElementById("hlCard").innerText = hlCard;
             document.getElementById("hlStartBtn").style.display = "none"; document.getElementById("hlCashBtn").style.display = "block";
@@ -1466,7 +1468,7 @@
         function playDice(choice) {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
-            updateBal(); // Ставка списана
+            updateBal();
             let sum = document.getElementById("c_dice_win").checked ? (choice === 'under' ? 4 : (choice === 'exact' ? 7 : 10)) : Math.floor(Math.random() * 11) + 2;
             document.getElementById("diceDisplay").innerText = `🎲 Сумма: ${sum}`;
             let win = (choice === 'under' && sum < 7) || (choice === 'exact' && sum === 7) || (choice === 'over' && sum > 7);
@@ -1481,7 +1483,7 @@
         function playWheel() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
-            updateBal(); // Ставка списана
+            updateBal();
             let mult = document.getElementById("c_wheel_win").checked ? 20.0 : (Math.random() < 0.4 ? 2.0 : 0.0);
             let win = Math.floor(currentBet * mult); 
             bal += win; 
@@ -1506,7 +1508,7 @@
         function startTower() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
-            updateBal(); // Ставка списана
+            updateBal();
             tFloor = 1; tMult = 1.0; tActive = true;
             renderTower();
             document.getElementById("towerStartBtn").style.display = "none"; document.getElementById("towerCashBtn").style.display = "block";
@@ -1537,7 +1539,7 @@
         function playRoulette(choice) {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
-            updateBal(); // Ставка списана
+            updateBal();
             let res = document.getElementById("c_roul_win").checked ? choice : (Math.random() < 0.08 ? 'zero' : (Math.random() > 0.5 ? 'red' : 'black'));
             let icon = res === 'red' ? "🔴 Красное" : (res === 'black' ? "⚫ Черное" : "🟢 Зеро 0");
             document.getElementById("roulDisplay").innerText = icon;
@@ -1551,7 +1553,7 @@
         function playRPS(userMove) {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
-            updateBal(); // Ставка списана
+            updateBal();
             let botMove = document.getElementById("c_rps_win").checked ?
                 (userMove === 'rock' ? 'scissors' : (userMove === 'scissors' ? 'paper' : 'rock')) :
                 ['rock', 'scissors', 'paper'][Math.floor(Math.random() * 3)];

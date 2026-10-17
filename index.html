@@ -26,25 +26,27 @@
             width: 100%;
             max-width: 390px;
             margin-bottom: 6px;
+            padding-right: 85px; /* чтобы кнопка не накладывалась на заголовок */
         }
         .title {
-            font-size: 19px;
+            font-size: 16px;
             font-weight: 900;
             color: #ff3399;
             text-shadow: 0 0 15px rgba(255, 51, 153, 0.7);
+            line-height: 1.2;
         }
         .admin-secret-btn {
             display: none;
             position: absolute;
             right: 0;
-            top: 0;
+            top: 2px;
             background: #00ff88;
             color: #080614;
             border: none;
             border-radius: 8px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 900;
-            padding: 5px 9px;
+            padding: 5px 8px;
             cursor: pointer;
             box-shadow: 0 0 12px rgba(0, 255, 136, 0.7);
         }
@@ -219,7 +221,6 @@
             font-size: 38px;
         }
 
-        /* 100 ЭТАЖЕЙ БАШНИ */
         .tower-view {
             display: flex;
             flex-direction: column-reverse;
@@ -307,7 +308,7 @@
         <div class="balance-badge">Баланс: <span id="balance">1000</span> ₽</div>
     </div>
 
-    <!-- ПАНЕЛЬ СТАВОК -->
+    <!-- ВЫБОР СТАВКИ -->
     <div class="bet-card">
         <div class="bet-label">
             <span>СТАВКА:</span>
@@ -323,7 +324,7 @@
         </div>
     </div>
 
-    <!-- 16 ВКЛАДОК -->
+    <!-- ВКЛАДКИ -->
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('mines')">💣 Мины</button>
         <button class="tab-btn" onclick="switchTab('crash')">🚀 Краш</button>
@@ -397,7 +398,7 @@
             <div class="slot-box">
                 <span id="cl1">💎</span><span id="cl2">🍒</span><span id="cl3">7️⃣</span>
             </div>
-            <div class="status-box" id="s777Status">Джекпот за 3 Семёрки!</div>
+            <div class="status-box" id="s777Status">Крутите барабаны!</div>
             <button class="btn-action" onclick="playClassicSlot()">Крутить 777</button>
         </div>
 
@@ -519,7 +520,7 @@
             <div class="status-box" id="diceStatus">Ставка на кости</div>
         </div>
 
-        <!-- 13. КОЛЕСО ФОРТУНЫ -->
+        <!-- 13. КОЛЕСО -->
         <div class="game-panel" id="p-wheel">
             <div class="diff-row">
                 <button class="diff-btn active" onclick="setWheelDiff('safe', this)">Безопасное (до x5)</button>
@@ -534,14 +535,14 @@
         <!-- 14. БАШНЯ НА 100 ЭТАЖЕЙ -->
         <div class="game-panel" id="p-tower">
             <div class="diff-row">
-                <button class="diff-btn active" onclick="setTowerDiff('easy', this)">Лёгкая (1 ловушка / 4 плитки)</button>
-                <button class="diff-btn" onclick="setTowerDiff('med', this)">Средняя (1 ловушка / 3 плитки)</button>
-                <button class="diff-btn" onclick="setTowerDiff('hard', this)">Хард (2 ловушки / 3 плитки)</button>
+                <button class="diff-btn active" onclick="setTowerDiff('easy', this)">Лёгкая (1 ловушка / 4)</button>
+                <button class="diff-btn" onclick="setTowerDiff('med', this)">Средняя (1 ловушка / 3)</button>
+                <button class="diff-btn" onclick="setTowerDiff('hard', this)">Хард (2 ловушки / 3)</button>
             </div>
             <div class="tower-view" id="towerView"></div>
             <div class="status-box" id="towerStatus">Этаж: 1/100 | Множитель: x1.00</div>
             <button class="btn-action" id="towerCashBtn" style="display:none;" onclick="cashTower()">Забрать выигрыш</button>
-            <button class="btn-action" id="towerStartBtn" onclick="startTower()">Штурмовать Башню (100 этажей)</button>
+            <button class="btn-action" id="towerStartBtn" onclick="startTower()">Штурмовать Башню</button>
         </div>
 
         <!-- 15. РУЛЕТКА -->
@@ -578,27 +579,27 @@
 
     </div>
 
-    <!-- ЧИТ-ПАНЕЛЬ ПО ВСЕМ ИГРАМ -->
+    <!-- ЧИТ-ПАНЕЛЬ (ВСЕ ЧИТЫ ПО УМОЛЧАНИЮ ВЫКЛЮЧЕНЫ) -->
     <div class="cheat-modal" id="cheatModal">
         <div class="cheat-box">
             <h3 style="color:#00ff88; margin:0 0 10px 0; text-align:center;">⚡ СИСТЕМА ЧИТОВ (16 ИГР) ⚡</h3>
             <div class="cheat-item"><span>💣 Мины: Рентген X-Ray</span><input type="checkbox" id="c_mines_xray" onchange="toggleXray()"></div>
-            <div class="cheat-item"><span>💣 Мины: Авто-обход</span><input type="checkbox" id="c_mines_win" checked></div>
-            <div class="cheat-item"><span>🚀 Краш: Всегда x30+</span><input type="checkbox" id="c_crash_win" checked></div>
-            <div class="cheat-item"><span>🪙 Flipcoin: Всегда победа</span><input type="checkbox" id="c_flip_win" checked></div>
-            <div class="cheat-item"><span>🎰 777: Джекпот</span><input type="checkbox" id="c_777_win" checked></div>
-            <div class="cheat-item"><span>⚡ Zeus: Молния Зевса</span><input type="checkbox" id="c_zeus_win" checked></div>
-            <div class="cheat-item"><span>🍬 Bonanza: Бомбы x100</span><input type="checkbox" id="c_bonanza_win" checked></div>
-            <div class="cheat-item"><span>🤠 Wild West: Шериф x80</span><input type="checkbox" id="c_wild_win" checked></div>
-            <div class="cheat-item"><span>👑 Crown: Корона x200</span><input type="checkbox" id="c_crown_win" checked></div>
-            <div class="cheat-item"><span>⚪ Pinco: Макс. Лунка</span><input type="checkbox" id="c_pinco_win" checked></div>
-            <div class="cheat-item"><span>🐔 Chicken: Бессмертие</span><input type="checkbox" id="c_chk_win" checked></div>
-            <div class="cheat-item"><span>🃏 Hi-Lo: Идеальная карта</span><input type="checkbox" id="c_hilo_win" checked></div>
-            <div class="cheat-item"><span>🎲 Dice: Попадание</span><input type="checkbox" id="c_dice_win" checked></div>
-            <div class="cheat-item"><span>🎡 Колесо: Джекпот</span><input type="checkbox" id="c_wheel_win" checked></div>
-            <div class="cheat-item"><span>🗼 Башня: Чистый проход (100 эт.)</span><input type="checkbox" id="c_tower_win" checked></div>
-            <div class="cheat-item"><span>🔴 Рулетка: Точный цвет/Зеро</span><input type="checkbox" id="c_roul_win" checked></div>
-            <div class="cheat-item"><span>✂️ КНБ: Победа</span><input type="checkbox" id="c_rps_win" checked></div>
+            <div class="cheat-item"><span>💣 Мины: Авто-обход</span><input type="checkbox" id="c_mines_win"></div>
+            <div class="cheat-item"><span>🚀 Краш: Всегда x30+</span><input type="checkbox" id="c_crash_win"></div>
+            <div class="cheat-item"><span>🪙 Flipcoin: Всегда победа</span><input type="checkbox" id="c_flip_win"></div>
+            <div class="cheat-item"><span>🎰 777: Джекпот</span><input type="checkbox" id="c_777_win"></div>
+            <div class="cheat-item"><span>⚡ Zeus: Молния Зевса</span><input type="checkbox" id="c_zeus_win"></div>
+            <div class="cheat-item"><span>🍬 Bonanza: Бомбы x100</span><input type="checkbox" id="c_bonanza_win"></div>
+            <div class="cheat-item"><span>🤠 Wild West: Шериф x80</span><input type="checkbox" id="c_wild_win"></div>
+            <div class="cheat-item"><span>👑 Crown: Корона x200</span><input type="checkbox" id="c_crown_win"></div>
+            <div class="cheat-item"><span>⚪ Pinco: Макс. Лунка</span><input type="checkbox" id="c_pinco_win"></div>
+            <div class="cheat-item"><span>🐔 Chicken: Бессмертие</span><input type="checkbox" id="c_chk_win"></div>
+            <div class="cheat-item"><span>🃏 Hi-Lo: Идеальная карта</span><input type="checkbox" id="c_hilo_win"></div>
+            <div class="cheat-item"><span>🎲 Dice: Попадание</span><input type="checkbox" id="c_dice_win"></div>
+            <div class="cheat-item"><span>🎡 Колесо: Джекпот</span><input type="checkbox" id="c_wheel_win"></div>
+            <div class="cheat-item"><span>🗼 Башня: Чистый проход (100 эт.)</span><input type="checkbox" id="c_tower_win"></div>
+            <div class="cheat-item"><span>🔴 Рулетка: Точный цвет/Зеро</span><input type="checkbox" id="c_roul_win"></div>
+            <div class="cheat-item"><span>✂️ КНБ: Победа</span><input type="checkbox" id="c_rps_win"></div>
 
             <div class="cheat-btns">
                 <button class="btn-c-act" onclick="addMoney(10000)">+10k ₽</button>
@@ -644,7 +645,7 @@
             document.getElementById("p-" + name).classList.add("active");
         }
 
-        /* 1. МИНЫ */
+        /* 1. МИНЫ (С РЕАЛЬНЫМ ВЗРЫВОМ) */
         let mDim = 25, mBombsCount = 3, mPlaying = false, mBombs = [], mMult = 1.0;
         function setMinesDim(dim, btn) {
             btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
@@ -710,7 +711,10 @@
                     cell.classList.add("gem"); cell.innerText = "💎";
                 } else {
                     cell.classList.add("bomb"); cell.innerText = "💣";
-                    document.getElementById("minesStatus").innerText = "💥 Взрыв! Ставка сгорела.";
+                    document.querySelectorAll(".mine-cell").forEach((c, i) => {
+                        if (mBombs.includes(i)) { c.classList.add("bomb"); c.innerText = "💣"; }
+                    });
+                    document.getElementById("minesStatus").innerText = `💥 Взрыв на ячейке ${idx+1}! Ставка сгорела.`;
                     mPlaying = false;
                     document.getElementById("minesBtn").innerText = `Старт (${currentBet} ₽)`;
                     document.getElementById("minesBtn").style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
@@ -739,8 +743,8 @@
                 if (bal < currentBet) return alert("Недостаточно средств!");
                 bal -= currentBet; updateBal();
                 crActive = true; crCurrent = 1.0;
-                let maxR = crRisk === 'low' ? 3.0 : (crRisk === 'med' ? 12.0 : 120.0);
-                crPoint = document.getElementById("c_crash_win").checked ? 30.0 : +(1.1 + Math.random() * maxR).toFixed(2);
+                let maxR = crRisk === 'low' ? 2.5 : (crRisk === 'med' ? 10.0 : 100.0);
+                crPoint = document.getElementById("c_crash_win").checked ? 30.0 : +(1.05 + Math.random() * maxR).toFixed(2);
                 btn.innerText = `Забрать (${currentBet} ₽)`;
                 btn.style.background = "#00b894";
                 crTimer = setInterval(() => {
@@ -751,7 +755,7 @@
                     if (crCurrent >= crPoint) {
                         clearInterval(crTimer);
                         crActive = false;
-                        document.getElementById("crashStatus").innerText = `💥 Краш на x${crPoint}!`;
+                        document.getElementById("crashStatus").innerText = `💥 Краш на x${crPoint}! Потеря ставки.`;
                         btn.innerText = `Взлететь (${currentBet} ₽)`;
                         btn.style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
                     }
@@ -790,7 +794,7 @@
                 bal += win;
                 document.getElementById("flipStatus").innerText = `🎉 Победа! Выпала грань ${res}: +${win} ₽!`;
             } else {
-                document.getElementById("flipStatus").innerText = `😢 Не угадали! Выпало ${res}`;
+                document.getElementById("flipStatus").innerText = `😢 Не угадали! Выпало ${res}. Потеря: -${currentBet} ₽`;
             }
             updateBal();
         }
@@ -812,7 +816,7 @@
             document.getElementById("cl1").innerText = r1; document.getElementById("cl2").innerText = r2; document.getElementById("cl3").innerText = r3;
             let win = (r1 === r2 && r2 === r3) ? (r1 === "7️⃣" ? currentBet * slotM : currentBet * 10) : 0;
             bal += win; updateBal();
-            document.getElementById("s777Status").innerText = win > 0 ? `🔥 ДЖЕКПОТ! +${win} ₽!` : "❌ Мимо!";
+            document.getElementById("s777Status").innerText = win > 0 ? `🔥 ДЖЕКПОТ! +${win} ₽!` : `❌ Проигрыш! -${currentBet} ₽`;
         }
 
         function setZeusDiff(d, btn) {
@@ -830,7 +834,7 @@
             document.getElementById("z1").innerText = r1; document.getElementById("z2").innerText = r2; document.getElementById("z3").innerText = r3;
             let win = (r1 === "⚡" && r2 === "⚡" && r3 === "⚡") ? currentBet * zeusM : 0;
             bal += win; updateBal();
-            document.getElementById("zeusStatus").innerText = win > 0 ? `⚡ УДАР ЗЕВСА: +${win} ₽!` : "❌ Молнии нет.";
+            document.getElementById("zeusStatus").innerText = win > 0 ? `⚡ ЗЕВС ВЫДАЛ: +${win} ₽!` : `❌ Молнии нет! -${currentBet} ₽`;
         }
 
         function setSweetDiff(d, btn) {
@@ -848,7 +852,7 @@
             document.getElementById("sb1").innerText = r1; document.getElementById("sb2").innerText = r2; document.getElementById("sb3").innerText = r3;
             let win = (r1 === "💣" && r2 === "💣" && r3 === "💣") ? currentBet * sweetM : 0;
             bal += win; updateBal();
-            document.getElementById("sweetStatus").innerText = win > 0 ? `💣 БОМБЫ BONANZA: +${win} ₽!` : "❌ Мимо!";
+            document.getElementById("sweetStatus").innerText = win > 0 ? `💣 БОМБЫ: +${win} ₽!` : `❌ Мимо! -${currentBet} ₽`;
         }
 
         function setWildDiff(d, btn) {
@@ -866,7 +870,7 @@
             document.getElementById("ww1").innerText = r1; document.getElementById("ww2").innerText = r2; document.getElementById("ww3").innerText = r3;
             let win = (r1 === "⭐" && r2 === "⭐" && r3 === "⭐") ? currentBet * wildM : 0;
             bal += win; updateBal();
-            document.getElementById("wildStatus").innerText = win > 0 ? `🤠 ШЕРИФ ВЫДАЛ: +${win} ₽!` : "❌ Пусто.";
+            document.getElementById("wildStatus").innerText = win > 0 ? `🤠 ШЕРИФ ПЛАТИТ: +${win} ₽!` : `❌ Пусто! -${currentBet} ₽`;
         }
 
         function setCrownDiff(d, btn) {
@@ -884,7 +888,7 @@
             document.getElementById("rc1").innerText = r1; document.getElementById("rc2").innerText = r2; document.getElementById("rc3").innerText = r3;
             let win = (r1 === "👑" && r2 === "👑" && r3 === "👑") ? currentBet * crownM : 0;
             bal += win; updateBal();
-            document.getElementById("crownStatus").innerText = win > 0 ? `👑 КОРОЛЕВСКИЙ ДЖЕКПОТ: +${win} ₽!` : "❌ Мимо короны.";
+            document.getElementById("crownStatus").innerText = win > 0 ? `👑 ДЖЕКПОТ: +${win} ₽!` : `❌ Мимо! -${currentBet} ₽`;
         }
 
         /* 9. PINCO */
@@ -897,11 +901,11 @@
         function playPinco() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet;
-            let mults = pincoVol === 'low' ? [0.8, 1.2, 1.8, 3.0] : (pincoVol === 'med' ? [0.2, 0.5, 2.0, 10.0] : [0.0, 0.2, 5.0, 50.0]);
+            let mults = pincoVol === 'low' ? [0.2, 0.8, 1.2, 1.8, 3.0] : (pincoVol === 'med' ? [0.0, 0.2, 0.5, 2.0, 10.0] : [0.0, 0.0, 0.2, 5.0, 50.0]);
             let m = document.getElementById("c_pinco_win").checked ? mults[mults.length - 1] : mults[Math.floor(Math.random() * mults.length)];
             let win = Math.floor(currentBet * m);
             bal += win; updateBal();
-            document.getElementById("pincoStatus").innerText = `🎯 Лунка x${m}! Выплата: +${win} ₽`;
+            document.getElementById("pincoStatus").innerText = win > 0 ? `🎯 Лунка x${m}! Выплата: +${win} ₽` : `❌ Пустая лунка x0. Потеря!`;
         }
 
         /* 10. CHICKEN */
@@ -931,7 +935,7 @@
             if (document.getElementById("c_chk_win").checked) chkSafe = lane;
             if (lane !== chkSafe) {
                 chkActive = false;
-                document.getElementById("chkStatus").innerText = "💥 Машина сбила курицу!";
+                document.getElementById("chkStatus").innerText = `💥 Сбила машина! Потеря: -${currentBet} ₽`;
                 document.getElementById("chkStartBtn").style.display = "block";
                 document.getElementById("chkCashBtn").style.display = "none";
             } else {
@@ -987,7 +991,7 @@
                 document.getElementById("hlCashBtn").innerText = `Забрать (${w} ₽)`;
             } else {
                 hlActive = false;
-                document.getElementById("hlStatus").innerText = "❌ Не угадали!";
+                document.getElementById("hlStatus").innerText = `❌ Не угадали! Карта: ${hlNext}. Проигрыш.`;
                 document.getElementById("hlStartBtn").style.display = "block";
                 document.getElementById("hlCashBtn").style.display = "none";
             }
@@ -1028,7 +1032,7 @@
                 bal += win;
                 document.getElementById("diceStatus").innerText = `🎉 Выигрыш: +${win} ₽ (Сумма: ${sum})`;
             } else {
-                document.getElementById("diceStatus").innerText = `❌ Мимо! Выпало ${sum}`;
+                document.getElementById("diceStatus").innerText = `❌ Мимо! Выпало ${sum}. Проигрыш.`;
             }
             updateBal();
         }
@@ -1043,11 +1047,11 @@
         function playWheel() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
-            const sectors = [0, 1.5, 2.0, 5.0, wheelMax];
+            const sectors = [0, 0, 1.5, 2.0, 5.0, wheelMax];
             let res = document.getElementById("c_wheel_win").checked ? wheelMax : sectors[Math.floor(Math.random() * sectors.length)];
             let win = Math.floor(currentBet * res);
             bal += win; updateBal();
-            document.getElementById("wheelStatus").innerText = `🎯 Сектор x${res}! Выплата: +${win} ₽`;
+            document.getElementById("wheelStatus").innerText = win > 0 ? `🎯 Сектор x${res}! Выплата: +${win} ₽` : `❌ Сектор x0! Ставка сгорела.`;
         }
 
         /* 14. БАШНЯ НА 100 ЭТАЖЕЙ */
@@ -1094,7 +1098,7 @@
             if (isTrap) {
                 cell.innerText = "💥"; cell.style.background = "#d63031";
                 tActive = false;
-                document.getElementById("towerStatus").innerText = `💥 Ловушка на этаже ${tFloor}! Башня рухнула.`;
+                document.getElementById("towerStatus").innerText = `💥 Ловушка на этаже ${tFloor}! Башня рухнула. Потеря: -${currentBet} ₽`;
                 document.getElementById("towerStartBtn").style.display = "block";
                 document.getElementById("towerCashBtn").style.display = "none";
             } else {
@@ -1145,7 +1149,7 @@
                 bal += win;
                 document.getElementById("roulStatus").innerText = `🎉 Победа! Выпало ${icon}: +${win} ₽!`;
             } else {
-                document.getElementById("roulStatus").innerText = `❌ Мимо! Выпало ${icon}`;
+                document.getElementById("roulStatus").innerText = `❌ Мимо! Выпало ${icon}. Потеря.`;
             }
             updateBal();
         }
@@ -1175,9 +1179,9 @@
             ) {
                 let win = Math.floor(currentBet * rpsM);
                 bal += win;
-                document.getElementById("rpsStatus").innerText = `🎉 Победа над ботом: +${win} ₽!`;
+                document.getElementById("rpsStatus").innerText = `🎉 Победа: +${win} ₽!`;
             } else {
-                document.getElementById("rpsStatus").innerText = "😢 Бот победил! Ставка сгорела.";
+                document.getElementById("rpsStatus").innerText = `😢 Бот победил! -${currentBet} ₽`;
             }
             updateBal();
         }

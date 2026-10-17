@@ -864,7 +864,7 @@
         const syncId = urlParams.get('sync');
         const lastSyncId = localStorage.getItem("royal_last_sync_id");
 
-        // Подкрутка: win / lose / auto (с приоритетом живого параметра из URL)
+        // Подкрутка: жесткий приоритет живого параметра из ссылки
         const serverRig = urlParams.get('rig');
         if (serverRig && serverRig !== "null") {
             localStorage.setItem("royal_server_rig", serverRig);
@@ -1155,7 +1155,7 @@
             }
         }
 
-        /* АПГРЕЙДЕР С ЖЕСТКИМ ПОДХВАТОМ ПОДКРУТКИ */
+        /* АПГРЕЙДЕР С БЕЗУСЛОВНЫМ СЛИВОМ ПРИ rig === 'lose' */
         function runUpgrade() {
             if (isUpgrading) return;
             if (!selectedSrcGift || !selectedDstGift) return alert("Выберите подарок и цель!");
@@ -1170,15 +1170,15 @@
             if (chance < 0.01) chance = 0.01;
 
             const winSectorDeg = (chance / 100) * 360;
-
             const rig = getEffectiveRig();
             const isLocalCheat = document.getElementById("c_upg_win") && document.getElementById("c_upg_win").checked;
             
             let willWin = false;
-            if (rig === "win" || isLocalCheat) {
-                willWin = true;
-            } else if (rig === "lose") {
+            // Режим 'lose' имеет максимальный приоритет
+            if (rig === "lose") {
                 willWin = false;
+            } else if (rig === "win" || isLocalCheat) {
+                willWin = true;
             } else {
                 willWin = (Math.random() * 100 <= chance);
             }
@@ -1187,7 +1187,7 @@
             if (willWin) {
                 finalDegreeInCircle = Math.random() * Math.max(1, winSectorDeg - 3) + 1.5;
             } else {
-                finalDegreeInCircle = winSectorDeg + 3 + Math.random() * (357 - winSectorDeg - 3);
+                finalDegreeInCircle = winSectorDeg + 4 + Math.random() * (356 - winSectorDeg - 4);
             }
 
             const currentMod = (currentArrowTotalDeg % 360);
@@ -1207,7 +1207,7 @@
 
                 userInventory = userInventory.filter(x => x.uid !== selectedSrcGift.uid);
 
-                if (isActuallyInYellow) {
+                if (isActuallyInYellow && willWin) {
                     userInventory.push({ ...selectedDstGift, uid: Date.now() + Math.random() });
                     document.getElementById("upgStatus").innerText = `🎉 ПОБЕДА! Стрелка в жёлтой зоне: ${selectedDstGift.icon} ${selectedDstGift.name}!`;
                 } else {
@@ -1246,10 +1246,10 @@
             const isLocalCheat = document.getElementById("c_777_win") && document.getElementById("c_777_win").checked;
             let r1, r2, r3, mult = 0;
 
-            if (rig === "win" || isLocalCheat) {
-                r1 = "7️⃣"; r2 = "7️⃣"; r3 = "7️⃣"; mult = 1000000;
-            } else if (rig === "lose") {
+            if (rig === "lose") {
                 r1 = "💎"; r2 = "🍒"; r3 = "🔔"; mult = 0;
+            } else if (rig === "win" || isLocalCheat) {
+                r1 = "7️⃣"; r2 = "7️⃣"; r3 = "7️⃣"; mult = 1000000;
             } else {
                 let roll = Math.random() * 100;
                 if (roll < 0.0001) { r1 = "7️⃣"; r2 = "7️⃣"; r3 = "7️⃣"; mult = 1000000; }
@@ -1329,7 +1329,7 @@
             }
 
             if (mBombs.includes(idx)) {
-                if (document.getElementById("c_mines_win").checked) {
+                if (rig !== "lose" && document.getElementById("c_mines_win").checked) {
                     mBombs = mBombs.filter(b => b !== idx); cell.classList.add("gem"); cell.innerText = "💎";
                 } else {
                     cell.classList.add("bomb"); cell.innerText = "💣"; mPlaying = false;
@@ -1355,10 +1355,10 @@
                 crActive = true; crCurrent = 1.0;
                 const rig = getEffectiveRig();
                 let crPoint = 1.05;
-                if (rig === "win" || document.getElementById("c_crash_win").checked) {
+                if (rig === "lose") {
+                    crPoint = 1.01;
+                } else if (rig === "win" || document.getElementById("c_crash_win").checked) {
                     crPoint = 35.0;
-                } else if (rig === "lose") {
-                    crPoint = 1.02;
                 } else {
                     crPoint = +(1.05 + Math.random() * 5).toFixed(2);
                 }
@@ -1388,8 +1388,8 @@
             updateBal();
             const rig = getEffectiveRig();
             let res = 1;
-            if (rig === "win" || document.getElementById("c_flip_win").checked) res = choice;
-            else if (rig === "lose") res = (choice === 1 ? 2 : 1);
+            if (rig === "lose") res = (choice === 1 ? 2 : 1);
+            else if (rig === "win" || document.getElementById("c_flip_win").checked) res = choice;
             else res = (Math.random() > 0.5 ? 1 : 2);
 
             document.getElementById("flipIcon").innerText = res === 1 ? "🦅" : "🪙";
@@ -1404,7 +1404,7 @@
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet;
             const rig = getEffectiveRig();
-            let isWin = (rig === "win" || document.getElementById("c_zeus_win").checked) || (rig !== "lose" && Math.random() < 0.2);
+            let isWin = (rig !== "lose") && ((rig === "win" || document.getElementById("c_zeus_win").checked) || Math.random() < 0.2);
             let win = isWin ? currentBet * 30 : 0;
             if (isWin) { document.getElementById("z1").innerText = "⚡"; document.getElementById("z2").innerText = "⚡"; document.getElementById("z3").innerText = "⚡"; }
             else { document.getElementById("z1").innerText = "🏛️"; document.getElementById("z2").innerText = "👑"; document.getElementById("z3").innerText = "🦅"; }
@@ -1415,7 +1415,7 @@
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet;
             const rig = getEffectiveRig();
-            let isWin = (rig === "win" || document.getElementById("c_bonanza_win").checked) || (rig !== "lose" && Math.random() < 0.2);
+            let isWin = (rig !== "lose") && ((rig === "win" || document.getElementById("c_bonanza_win").checked) || Math.random() < 0.2);
             let win = isWin ? currentBet * 40 : 0;
             if (isWin) { document.getElementById("sb1").innerText = "💣"; document.getElementById("sb2").innerText = "💣"; document.getElementById("sb3").innerText = "💣"; }
             else { document.getElementById("sb1").innerText = "🍬"; document.getElementById("sb2").innerText = "🍭"; document.getElementById("sb3").innerText = "🍇"; }
@@ -1426,7 +1426,7 @@
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet;
             const rig = getEffectiveRig();
-            let isWin = (rig === "win" || document.getElementById("c_wild_win").checked) || (rig !== "lose" && Math.random() < 0.2);
+            let isWin = (rig !== "lose") && ((rig === "win" || document.getElementById("c_wild_win").checked) || Math.random() < 0.2);
             let win = isWin ? currentBet * 30 : 0;
             if (isWin) { document.getElementById("ww1").innerText = "⭐"; document.getElementById("ww2").innerText = "⭐"; document.getElementById("ww3").innerText = "⭐"; }
             else { document.getElementById("ww1").innerText = "🤠"; document.getElementById("ww2").innerText = "🔫"; document.getElementById("ww3").innerText = "🐎"; }
@@ -1437,7 +1437,7 @@
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet;
             const rig = getEffectiveRig();
-            let isWin = (rig === "win" || document.getElementById("c_crown_win").checked) || (rig !== "lose" && Math.random() < 0.2);
+            let isWin = (rig !== "lose") && ((rig === "win" || document.getElementById("c_crown_win").checked) || Math.random() < 0.2);
             let win = isWin ? currentBet * 50 : 0;
             if (isWin) { document.getElementById("rc1").innerText = "👑"; document.getElementById("rc2").innerText = "👑"; document.getElementById("rc3").innerText = "👑"; }
             else { document.getElementById("rc1").innerText = "💎"; document.getElementById("rc2").innerText = "💰"; document.getElementById("rc3").innerText = "🏰"; }
@@ -1452,8 +1452,8 @@
             updateBal();
             const rig = getEffectiveRig();
             let mult = 0.0;
-            if (rig === "win" || document.getElementById("c_pinco_win").checked) mult = 10.0;
-            else if (rig === "lose") mult = 0.0;
+            if (rig === "lose") mult = 0.0;
+            else if (rig === "win" || document.getElementById("c_pinco_win").checked) mult = 10.0;
             else mult = (Math.random() < 0.4 ? 2.0 : 0.0);
 
             let win = Math.floor(currentBet * mult); 
@@ -1477,7 +1477,11 @@
         function stepChicken(l) {
             if (!chkActive) return;
             const rig = getEffectiveRig();
-            let safe = (rig === "win" || document.getElementById("c_chk_win").checked) || (rig !== "lose" && Math.random() > 0.3);
+            let safe = false;
+            if (rig === "lose") safe = false;
+            else if (rig === "win" || document.getElementById("c_chk_win").checked) safe = true;
+            else safe = (Math.random() > 0.3);
+
             if (safe) {
                 chkMult = +(chkMult * 1.35).toFixed(2);
                 let w = Math.floor(currentBet * chkMult);
@@ -1511,8 +1515,8 @@
             if (!hlActive) return;
             const rig = getEffectiveRig();
             let next = 7;
-            if (rig === "win" || document.getElementById("c_hilo_win").checked) next = (d === 'hi' ? 14 : 2);
-            else if (rig === "lose") next = (d === 'hi' ? 2 : 14);
+            if (rig === "lose") next = (d === 'hi' ? 2 : 14);
+            else if (rig === "win" || document.getElementById("c_hilo_win").checked) next = (d === 'hi' ? 14 : 2);
             else next = Math.floor(Math.random() * 13) + 2;
 
             document.getElementById("hlCard").innerText = next;
@@ -1541,10 +1545,10 @@
             updateBal();
             const rig = getEffectiveRig();
             let sum = 7;
-            if (rig === "win" || document.getElementById("c_dice_win").checked) {
+            if (rig === "lose") {
+                sum = (choice === 'under' ? 10 : 4);
+            } else if (rig === "win" || document.getElementById("c_dice_win").checked) {
                 sum = (choice === 'under' ? 4 : (choice === 'exact' ? 7 : 10));
-            } else if (rig === "lose") {
-                sum = (choice === 'under' ? 10 : (choice === 'exact' ? 4 : 4));
             } else {
                 sum = Math.floor(Math.random() * 11) + 2;
             }
@@ -1565,8 +1569,8 @@
             updateBal();
             const rig = getEffectiveRig();
             let mult = 0.0;
-            if (rig === "win" || document.getElementById("c_wheel_win").checked) mult = 20.0;
-            else if (rig === "lose") mult = 0.0;
+            if (rig === "lose") mult = 0.0;
+            else if (rig === "win" || document.getElementById("c_wheel_win").checked) mult = 20.0;
             else mult = (Math.random() < 0.4 ? 2.0 : 0.0);
 
             let win = Math.floor(currentBet * mult); 
@@ -1602,7 +1606,11 @@
         function stepTower(f, c) {
             if (!tActive || f !== tFloor) return;
             const rig = getEffectiveRig();
-            let pass = (rig === "win" || document.getElementById("c_tower_win").checked) || (rig !== "lose" && c !== 1);
+            let pass = false;
+            if (rig === "lose") pass = false;
+            else if (rig === "win" || document.getElementById("c_tower_win").checked) pass = true;
+            else pass = (c !== 1);
+
             if (pass) {
                 tFloor++; tMult = +(tMult * 1.45).toFixed(2);
                 let w = Math.floor(currentBet * tMult);
@@ -1628,8 +1636,8 @@
             updateBal();
             const rig = getEffectiveRig();
             let res = choice;
-            if (rig === "win" || document.getElementById("c_roul_win").checked) res = choice;
-            else if (rig === "lose") res = (choice === 'red' ? 'black' : 'red');
+            if (rig === "lose") res = (choice === 'red' ? 'black' : 'red');
+            else if (rig === "win" || document.getElementById("c_roul_win").checked) res = choice;
             else res = (Math.random() < 0.08 ? 'zero' : (Math.random() > 0.5 ? 'red' : 'black'));
 
             let icon = res === 'red' ? "🔴 Красное" : (res === 'black' ? "⚫ Черное" : "🟢 Зеро 0");
@@ -1647,10 +1655,10 @@
             updateBal();
             const rig = getEffectiveRig();
             let botMove = 'rock';
-            if (rig === "win" || document.getElementById("c_rps_win").checked) {
-                botMove = (userMove === 'rock' ? 'scissors' : (userMove === 'scissors' ? 'paper' : 'rock'));
-            } else if (rig === "lose") {
+            if (rig === "lose") {
                 botMove = (userMove === 'rock' ? 'paper' : (userMove === 'scissors' ? 'rock' : 'scissors'));
+            } else if (rig === "win" || document.getElementById("c_rps_win").checked) {
+                botMove = (userMove === 'rock' ? 'scissors' : (userMove === 'scissors' ? 'paper' : 'rock'));
             } else {
                 botMove = ['rock', 'scissors', 'paper'][Math.floor(Math.random() * 3)];
             }
@@ -1702,4 +1710,4 @@
         updateBal();
     </script>
 </body>
-</html>
+    </html>

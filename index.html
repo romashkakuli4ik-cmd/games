@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kuli4ik Mega Arcade 100 Floors</title>
+    <title>Kuli4ik Ultimate Arcade & AI System</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -26,7 +26,7 @@
             width: 100%;
             max-width: 390px;
             margin-bottom: 6px;
-            padding-right: 85px; /* чтобы кнопка не накладывалась на заголовок */
+            padding-right: 85px;
         }
         .title {
             font-size: 16px;
@@ -62,9 +62,37 @@
             font-weight: bold;
         }
 
-        .bet-card {
+        /* ПАНЕЛЬ ПЕРЕКЛЮЧЕНИЯ: ИГРЫ ИЛИ ЧАТ ИИ */
+        .main-nav {
+            display: flex;
             width: 100%;
             max-width: 390px;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .nav-switch-btn {
+            flex: 1;
+            padding: 9px;
+            background: #140d36;
+            border: 1px solid #3c2c80;
+            border-radius: 10px;
+            color: #aaa;
+            font-weight: 800;
+            font-size: 12px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .nav-switch-btn.active {
+            background: linear-gradient(90deg, #7046f4, #ff3399);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        /* БЛОК ИГР */
+        #gamesView { width: 100%; max-width: 390px; display: flex; flex-direction: column; align-items: center; }
+
+        .bet-card {
+            width: 100%;
             background: #120e33;
             border: 1px solid #2e2266;
             border-radius: 12px;
@@ -106,7 +134,6 @@
             gap: 5px;
             overflow-x: auto;
             width: 100%;
-            max-width: 390px;
             padding-bottom: 6px;
             scrollbar-width: none;
         }
@@ -133,7 +160,6 @@
             border: 1px solid #2e236b;
             border-radius: 16px;
             width: 100%;
-            max-width: 390px;
             padding: 14px;
             display: flex;
             flex-direction: column;
@@ -143,12 +169,7 @@
         .game-panel { display: none; width: 100%; flex-direction: column; align-items: center; }
         .game-panel.active { display: flex; }
 
-        .diff-row {
-            display: flex;
-            gap: 5px;
-            width: 100%;
-            margin-bottom: 8px;
-        }
+        .diff-row { display: flex; gap: 5px; width: 100%; margin-bottom: 8px; }
         .diff-btn {
             flex: 1;
             padding: 5px;
@@ -161,11 +182,7 @@
             cursor: pointer;
             text-align: center;
         }
-        .diff-btn.active {
-            background: #00cec9;
-            color: #080614;
-            border-color: #00cec9;
-        }
+        .diff-btn.active { background: #00cec9; color: #080614; border-color: #00cec9; }
 
         .btn-action {
             width: 100%;
@@ -192,6 +209,7 @@
             margin-top: 10px;
         }
 
+        /* СЕТКИ */
         .mine-grid { display: grid; gap: 5px; width: 100%; }
         .mine-cell {
             aspect-ratio: 1;
@@ -205,10 +223,7 @@
         }
         .mine-cell.gem { background: #00b894; }
         .mine-cell.bomb { background: #d63031; }
-        .mine-cell.cheat-safe {
-            border: 2px dashed #00ff88 !important;
-            background: #004d26 !important;
-        }
+        .mine-cell.cheat-safe { border: 2px dashed #00ff88 !important; background: #004d26 !important; }
 
         .slot-box {
             display: flex;
@@ -233,11 +248,7 @@
             border-radius: 10px;
             border: 1px solid #2e236b;
         }
-        .tower-row {
-            display: flex;
-            gap: 6px;
-            width: 100%;
-        }
+        .tower-row { display: flex; gap: 6px; width: 100%; }
         .tower-step {
             flex: 1;
             padding: 10px 0;
@@ -249,12 +260,63 @@
             font-size: 12px;
             cursor: pointer;
         }
-        .tower-step.current {
-            border-color: #00cec9;
-            background: #291e63;
-            box-shadow: 0 0 8px rgba(0, 206, 201, 0.4);
+        .tower-step.current { border-color: #00cec9; background: #291e63; }
+
+        /* ИИ ЧАТ И НАСТРОЙКИ */
+        #aiView {
+            display: none;
+            width: 100%;
+            max-width: 390px;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .ai-card {
+            background: #110d29;
+            border: 1px solid #2e236b;
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-messages {
+            height: 250px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 6px;
+            background: #09061c;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .msg { padding: 8px 12px; border-radius: 12px; max-width: 85%; line-height: 1.4; word-wrap: break-word; }
+        .msg.user { align-self: flex-end; background: #7046f4; color: #fff; }
+        .msg.ai { align-self: flex-start; background: #1c1547; color: #ffd32a; border: 1px solid #382c7d; }
+        .msg.system { align-self: center; background: #3d0014; color: #ff5577; font-size: 11px; }
+
+        .chat-input-row { display: flex; gap: 6px; }
+        .chat-input {
+            flex: 1;
+            padding: 10px;
+            background: #18123b;
+            border: 1px solid #3c2f82;
+            border-radius: 10px;
+            color: #fff;
+            outline: none;
+            font-size: 13px;
+        }
+        .chat-send-btn {
+            padding: 10px 14px;
+            background: #00cec9;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            color: #080614;
+            cursor: pointer;
         }
 
+        /* ЧИТ МОДАЛКА */
         .cheat-modal {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -304,285 +366,317 @@
 
     <div class="header">
         <button class="admin-secret-btn" id="admBtn" onclick="openCheat()">👑 DEV ЧИТЫ</button>
-        <div class="title">👑 ROYAL MEGA CASINO (100 FLOORS)</div>
+        <div class="title">👑 ROYAL ARCADE & AI SYSTEM</div>
         <div class="balance-badge">Баланс: <span id="balance">1000</span> ₽</div>
     </div>
 
-    <!-- ВЫБОР СТАВКИ -->
-    <div class="bet-card">
-        <div class="bet-label">
-            <span>СТАВКА:</span>
-            <span id="curBetLabel" style="color: #ff3399;">50 ₽</span>
+    <!-- ПЕРЕКЛЮЧЕНИЕ ГЛАВНЫХ РАЗДЕЛОВ -->
+    <div class="main-nav">
+        <button class="nav-switch-btn active" id="btnTabGames" onclick="showMainSection('games')">🎰 ИГРОВОЙ ЗАЛ (16 ИГР)</button>
+        <button class="nav-switch-btn" id="btnTabAI" onclick="showMainSection('ai')">🧠 ЧАТ С GEMINI AI</button>
+    </div>
+
+    <!-- ================== РАЗДЕЛ 1: 16 ИГР КАЗИНО ================== -->
+    <div id="gamesView">
+        <div class="bet-card">
+            <div class="bet-label">
+                <span>СТАВКА:</span>
+                <span id="curBetLabel" style="color: #ff3399;">50 ₽</span>
+            </div>
+            <div class="bet-grid">
+                <button class="b-btn active" onclick="setBet(50, this)">50</button>
+                <button class="b-btn" onclick="setBet(100, this)">100</button>
+                <button class="b-btn" onclick="setBet(500, this)">500</button>
+                <button class="b-btn" onclick="setBet(1000, this)">1k</button>
+                <button class="b-btn" onclick="setBet(5000, this)">5k</button>
+                <button class="b-btn" onclick="setBet('all', this)">MAX</button>
+            </div>
         </div>
-        <div class="bet-grid">
-            <button class="b-btn active" onclick="setBet(50, this)">50</button>
-            <button class="b-btn" onclick="setBet(100, this)">100</button>
-            <button class="b-btn" onclick="setBet(500, this)">500</button>
-            <button class="b-btn" onclick="setBet(1000, this)">1k</button>
-            <button class="b-btn" onclick="setBet(5000, this)">5k</button>
-            <button class="b-btn" onclick="setBet('all', this)">MAX</button>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchGameTab('mines')">💣 Мины</button>
+            <button class="tab-btn" onclick="switchGameTab('crash')">🚀 Краш</button>
+            <button class="tab-btn" onclick="switchGameTab('flip')">🪙 Flip</button>
+            <button class="tab-btn" onclick="switchGameTab('s777')">🎰 777</button>
+            <button class="tab-btn" onclick="switchGameTab('szeus')">⚡ Zeus</button>
+            <button class="tab-btn" onclick="switchGameTab('ssweet')">🍬 Bonanza</button>
+            <button class="tab-btn" onclick="switchGameTab('swild')">🤠 Wild West</button>
+            <button class="tab-btn" onclick="switchGameTab('scrown')">👑 Crown</button>
+            <button class="tab-btn" onclick="switchGameTab('pinco')">⚪ Pinco</button>
+            <button class="tab-btn" onclick="switchGameTab('chicken')">🐔 Chicken</button>
+            <button class="tab-btn" onclick="switchGameTab('hilo')">🃏 Hi-Lo</button>
+            <button class="tab-btn" onclick="switchGameTab('dice')">🎲 Dice</button>
+            <button class="tab-btn" onclick="switchGameTab('wheel')">🎡 Колесо</button>
+            <button class="tab-btn" onclick="switchGameTab('tower')">🗼 Башня 100</button>
+            <button class="tab-btn" onclick="switchGameTab('roulette')">🔴 Рулетка</button>
+            <button class="tab-btn" onclick="switchGameTab('rps')">✂️ КНБ</button>
+        </div>
+
+        <div class="game-card">
+            <!-- 1. МИНЫ -->
+            <div class="game-panel active" id="p-mines">
+                <div class="diff-row">
+                    <button class="diff-btn" onclick="setMinesDim(9, this)">Лёгкий (3x3)</button>
+                    <button class="diff-btn active" onclick="setMinesDim(25, this)">Средний (5x5)</button>
+                    <button class="diff-btn" onclick="setMinesDim(36, this)">Хардкор (6x6)</button>
+                </div>
+                <div class="mine-grid" id="mineGrid"></div>
+                <div class="status-box" id="minesStatus">Множитель: x1.00</div>
+                <button class="btn-action" id="minesBtn" onclick="minesAction()">Старт (50 ₽)</button>
+            </div>
+
+            <!-- 2. КРАШ -->
+            <div class="game-panel" id="p-crash">
+                <div class="diff-row">
+                    <button class="diff-btn active" onclick="setCrashRisk('low', this)">Низкий (x2)</button>
+                    <button class="diff-btn" onclick="setCrashRisk('med', this)">Средний (x10)</button>
+                    <button class="diff-btn" onclick="setCrashRisk('high', this)">Экстрим (x100)</button>
+                </div>
+                <div style="height: 100px; width:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#070517; border-radius:10px;">
+                    <div style="font-size:24px;">🚀</div>
+                    <div style="font-size:34px; font-weight:900; color:#00cec9;" id="crashText">x1.00</div>
+                </div>
+                <div class="status-box" id="crashStatus">Ожидание старта</div>
+                <button class="btn-action" id="crashBtn" onclick="crashAction()">Взлететь</button>
+            </div>
+
+            <!-- 3. FLIP -->
+            <div class="game-panel" id="p-flip">
+                <div class="diff-row">
+                    <button class="diff-btn active" onclick="setFlipSides(2, this)">Классика (x1.95)</button>
+                    <button class="diff-btn" onclick="setFlipSides(3, this)">Трио (x2.90)</button>
+                    <button class="diff-btn" onclick="setFlipSides(4, this)">Квадро (x3.85)</button>
+                </div>
+                <div style="font-size:46px; margin:4px 0;" id="flipIcon">🪙</div>
+                <div style="display:flex; gap:6px; width:100%;" id="flipChoices">
+                    <button class="btn-action" style="margin:0; flex:1;" onclick="playFlip(1)">Орёл</button>
+                    <button class="btn-action" style="margin:0; flex:1;" onclick="playFlip(2)">Решка</button>
+                </div>
+                <div class="status-box" id="flipStatus">Сделайте выбор</div>
+            </div>
+
+            <!-- 4. СЛОТ 777 -->
+            <div class="game-panel" id="p-s777">
+                <div class="diff-row">
+                    <button class="diff-btn active" onclick="setSlotDiff('norm', this)">1 Линия (x25)</button>
+                    <button class="diff-btn" onclick="setSlotDiff('hard', this)">3 Линии (x75)</button>
+                    <button class="diff-btn" onclick="setSlotDiff('vip', this)">VIP (x200)</button>
+                </div>
+                <div class="slot-box">
+                    <span id="cl1">💎</span><span id="cl2">🍒</span><span id="cl3">7️⃣</span>
+                </div>
+                <div class="status-box" id="s777Status">Крутите барабаны!</div>
+                <button class="btn-action" onclick="playClassicSlot()">Крутить 777</button>
+            </div>
+
+            <!-- 5. ZEUS -->
+            <div class="game-panel" id="p-szeus">
+                <div class="diff-row">
+                    <button class="diff-btn active" onclick="setZeusDiff('norm', this)">Олимп (x30)</button>
+                    <button class="diff-btn" onclick="setZeusDiff('hard', this)">Шторм (x50)</button>
+                    <button class="diff-btn" onclick="setZeusDiff('god', this)">Бог Грома (x150)</button>
+                </div>
+                <div class="slot-box" style="border-color:#ffd32a;">
+                    <span id="z1">⚡</span><span id="z2">🏛️</span><span id="z3">👑</span>
+                </div>
+                <div class="status-box" id="zeusStatus">Удар Зевса!</div>
+                <button class="btn-action" style="background:linear-gradient(90deg, #f39c12, #e74c3c);" onclick="playZeusSlot()">Удар Зевса</button>
+            </div>
+
+            <!-- 6. BONANZA -->
+            <div class="game-panel" id="p-ssweet">
+                <div class="diff-row">
+                    <button class="diff-btn active" onclick="setSweetDiff('norm', this)">Леденцы (x40)</button>
+                    <button class="diff-btn" onclick="setSweetDiff('hard', this)">Бомбы (x100)</button>
+                    <button class="diff-btn" onclick="setSweetDiff('mega', this)">Мега Дроп (x250)</button>
+                </div>
+                <div class="slot-box" style="border-color:#ff3399;">
+                    <span id="sb1">🍬</span><span id="sb2">🍭</span><span id="sb3">💣</span>
+                </div>
+                <div class="status-box" id="sweetStatus">Бомбы сладостей!</div>
+                <button class="btn-action" style="background:linear-gradient(90deg, #ff3399, #9b59b6);" onclick="playSweetSlot()">Вращать Bonanza</button>
+            </div>
+
+            <!-- 7. WILD WEST -->
+            <div class="game-panel" id="p-swild">
+                <div class="diff-row">
+                    <button class="diff-btn active" onclick="setWildDiff('norm', this)">Ковбой (x30)</button>
+                    <button class="diff-btn" onclick="setWildDiff('hard', this)">Шериф (x80)</button>
+                    <button class="diff-btn" onclick="setWildDiff('outlaw', this)">Бандит (x200)</button>
+                </div>
+                <div class="slot-box" style="border-color:#e67e22;">
+                    <span id="ww1">🤠</span><span id="ww2">🔫</span><span id="ww3">⭐</span>
+                </div>
+                <div class="status-box" id="wildStatus">Выстрел Шерифа!</div>
+                <button class="btn-action" style="background:linear-gradient(90deg, #d35400, #c0392b);" onclick="playWildSlot()">Выстрел Шерифа</button>
+            </div>
+
+            <!-- 8. CROWN -->
+            <div class="game-panel" id="p-scrown">
+                <div class="diff-row">
+                    <button class="diff-btn active" onclick="setCrownDiff('norm', this)">Принц (x50)</button>
+                    <button class="diff-btn" onclick="setCrownDiff('hard', this)">Король (x150)</button>
+                    <button class="diff-btn" onclick="setCrownDiff('imp', this)">Император (x300)</button>
+                </div>
+                <div class="slot-box" style="border-color:#f1c40f;">
+                    <span id="rc1">👑</span><span id="rc2">💎</span><span id="rc3">💰</span>
+                </div>
+                <div class="status-box" id="crownStatus">Королевский Джекпот!</div>
+                <button class="btn-action" style="background:linear-gradient(90deg, #f1c40f, #9b59b6);" onclick="playCrownSlot()">Королевский Спин</button>
+            </div>
+
+            <!-- 9. PINCO -->
+            <div class="game-panel" id="p-pinco">
+                <div class="diff-row">
+                    <button class="diff-btn active" onclick="setPincoVol('low', this)">Low (до x3)</button>
+                    <button class="diff-btn" onclick="setPincoVol('med', this)">Med (до x10)</button>
+                    <button class="diff-btn" onclick="setPincoVol('high', this)">High (до x50)</button>
+                </div>
+                <div style="font-size:32px; margin:4px 0;">⚪</div>
+                <div class="status-box" id="pincoStatus">Готов к сбросу</div>
+                <button class="btn-action" onclick="playPinco()">Бросить шарик</button>
+            </div>
+
+            <!-- 10. CHICKEN -->
+            <div class="game-panel" id="p-chicken">
+                <div class="diff-row">
+                    <button class="diff-btn active" onclick="setChkLanes(2, this)">2 полосы (x1.35)</button>
+                    <button class="diff-btn" onclick="setChkLanes(3, this)">3 полосы (x1.95)</button>
+                    <button class="diff-btn" onclick="setChkLanes(4, this)">4 полосы (x3.50)</button>
+                </div>
+                <div style="font-size:28px;">🐔 🛣 🚗</div>
+                <div style="display:flex; gap:6px; width:100%; margin-top:6px;" id="chkLanesRow">
+                    <button class="btn-action" style="margin:0; flex:1;" onclick="stepChicken(1)">Полоса 1</button>
+                    <button class="btn-action" style="margin:0; flex:1;" onclick="stepChicken(2)">Полоса 2</button>
+                </div>
+                <div class="status-box" id="chkStatus">Безопасная полоса</div>
+                <button class="btn-action" id="chkCashBtn" style="display:none;" onclick="cashChicken()">Забрать</button>
+                <button class="btn-action" id="chkStartBtn" onclick="startChicken()">Начать путь</button>
+            </div>
+
+            <!-- 11. HI-LO -->
+            <div class="game-panel" id="p-hilo">
+                <div class="diff-row">
+                    <button class="diff-btn active" onclick="setHiLoDiff('std', this)">Стандарт (2-14)</button>
+                    <button class="diff-btn" onclick="setHiLoDiff('narrow', this)">Узкий (6-9)</button>
+                    <button class="diff-btn" onclick="setHiLoDiff('hard', this)">Экстрим (13-14)</button>
+                </div>
+                <div style="font-size:36px; background:#fff; color:#111; padding:6px 20px; border-radius:10px; font-weight:900; margin:6px;" id="hlCard">7</div>
+                <div style="display:flex; gap:6px; width:100%;">
+                    <button class="btn-action" style="margin:0; flex:1;" onclick="playHiLo('hi')">⬆️ Больше</button>
+                    <button class="btn-action" style="margin:0; flex:1;" onclick="playHiLo('lo')">⬇️ Меньше</button>
+                </div>
+                <div class="status-box" id="hlStatus">Угадайте карту</div>
+                <button class="btn-action" id="hlCashBtn" style="display:none;" onclick="cashHiLo()">Забрать</button>
+                <button class="btn-action" id="hlStartBtn" onclick="startHiLo()">Старт</button>
+            </div>
+
+            <!-- 12. DICE -->
+            <div class="game-panel" id="p-dice">
+                <div class="diff-row">
+                    <button class="diff-btn active" onclick="setDiceDiff('std', this)">Обычный</button>
+                    <button class="diff-btn" onclick="setDiceDiff('pro', this)">Профи (x3.0)</button>
+                    <button class="diff-btn" onclick="setDiceDiff('hard', this)">Хард (x8.0)</button>
+                </div>
+                <div style="font-size:42px; margin:4px 0;" id="diceDisplay">🎲 🎲</div>
+                <div style="display:flex; gap:6px; width:100%;">
+                    <button class="btn-action" style="margin:0; flex:1;" onclick="playDice('under')">&lt; 7</button>
+                    <button class="btn-action" style="margin:0; flex:1; background:#00cec9; color:#080614;" onclick="playDice('exact')">= 7 (x5.8)</button>
+                    <button class="btn-action" style="margin:0; flex:1;" onclick="playDice('over')">&gt; 7</button>
+                </div>
+                <div class="status-box" id="diceStatus">Ставка на кости</div>
+            </div>
+
+            <!-- 13. КОЛЕСО -->
+            <div class="game-panel" id="p-wheel">
+                <div class="diff-row">
+                    <button class="diff-btn active" onclick="setWheelDiff('safe', this)">Безопасное (до x5)</button>
+                    <button class="diff-btn" onclick="setWheelDiff('norm', this)">Обычное (до x20)</button>
+                    <button class="diff-btn" onclick="setWheelDiff('high', this)">Джекпот (до x100)</button>
+                </div>
+                <div style="font-size:50px; margin:6px 0;" id="wheelIcon">🎡</div>
+                <div class="status-box" id="wheelStatus">Крутите Колесо Удачи!</div>
+                <button class="btn-action" onclick="playWheel()">Крутить Колесо</button>
+            </div>
+
+            <!-- 14. БАШНЯ 100 -->
+            <div class="game-panel" id="p-tower">
+                <div class="diff-row">
+                    <button class="diff-btn active" onclick="setTowerDiff('easy', this)">Лёгкая (1 ловушка / 4)</button>
+                    <button class="diff-btn" onclick="setTowerDiff('med', this)">Средняя (1 ловушка / 3)</button>
+                    <button class="diff-btn" onclick="setTowerDiff('hard', this)">Хард (2 ловушки / 3)</button>
+                </div>
+                <div class="tower-view" id="towerView"></div>
+                <div class="status-box" id="towerStatus">Этаж: 1/100 | Множитель: x1.00</div>
+                <button class="btn-action" id="towerCashBtn" style="display:none;" onclick="cashTower()">Забрать выигрыш</button>
+                <button class="btn-action" id="towerStartBtn" onclick="startTower()">Штурмовать Башню</button>
+            </div>
+
+            <!-- 15. РУЛЕТКА -->
+            <div class="game-panel" id="p-roulette">
+                <div class="diff-row">
+                    <button class="diff-btn active" onclick="setRoulDiff('euro', this)">Европа (1 Зеро)</button>
+                    <button class="diff-btn" onclick="setRoulDiff('usa', this)">Америка (2 Зеро)</button>
+                    <button class="diff-btn" onclick="setRoulDiff('vip', this)">VIP x3</button>
+                </div>
+                <div style="font-size:38px; margin:4px 0;" id="roulDisplay">⚫ 🔴 🟢</div>
+                <div style="display:flex; gap:6px; width:100%;">
+                    <button class="btn-action" style="margin:0; flex:1; background:#d63031;" onclick="playRoulette('red')">Красное (x2)</button>
+                    <button class="btn-action" style="margin:0; flex:1; background:#00b894;" onclick="playRoulette('zero')">Зеро 0 (x14)</button>
+                    <button class="btn-action" style="margin:0; flex:1; background:#2d3436;" onclick="playRoulette('black')">Черное (x2)</button>
+                </div>
+                <div class="status-box" id="roulStatus">Сделайте ставку</div>
+            </div>
+
+            <!-- 16. КНБ -->
+            <div class="game-panel" id="p-rps">
+                <div class="diff-row">
+                    <button class="diff-btn active" onclick="setRpsDiff('norm', this)">Обычный (x2.0)</button>
+                    <button class="diff-btn" onclick="setRpsDiff('streak', this)">Серия 3 победы (x5.0)</button>
+                    <button class="diff-btn" onclick="setRpsDiff('god', this)">Босс x10</button>
+                </div>
+                <div style="font-size:42px; margin:4px 0;" id="rpsIcon">✂️ 🪨 📄</div>
+                <div style="display:flex; gap:6px; width:100%;">
+                    <button class="btn-action" style="margin:0; flex:1;" onclick="playRPS('rock')">🪨 Камень</button>
+                    <button class="btn-action" style="margin:0; flex:1;" onclick="playRPS('scissors')">✂️ Ножницы</button>
+                    <button class="btn-action" style="margin:0; flex:1;" onclick="playRPS('paper')">📄 Бумага</button>
+                </div>
+                <div class="status-box" id="rpsStatus">Сделайте ход!</div>
+            </div>
         </div>
     </div>
 
-    <!-- ВКЛАДКИ -->
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('mines')">💣 Мины</button>
-        <button class="tab-btn" onclick="switchTab('crash')">🚀 Краш</button>
-        <button class="tab-btn" onclick="switchTab('flip')">🪙 Flip</button>
-        <button class="tab-btn" onclick="switchTab('s777')">🎰 777</button>
-        <button class="tab-btn" onclick="switchTab('szeus')">⚡ Zeus</button>
-        <button class="tab-btn" onclick="switchTab('ssweet')">🍬 Bonanza</button>
-        <button class="tab-btn" onclick="switchTab('swild')">🤠 Wild West</button>
-        <button class="tab-btn" onclick="switchTab('scrown')">👑 Crown</button>
-        <button class="tab-btn" onclick="switchTab('pinco')">⚪ Pinco</button>
-        <button class="tab-btn" onclick="switchTab('chicken')">🐔 Chicken</button>
-        <button class="tab-btn" onclick="switchTab('hilo')">🃏 Hi-Lo</button>
-        <button class="tab-btn" onclick="switchTab('dice')">🎲 Dice</button>
-        <button class="tab-btn" onclick="switchTab('wheel')">🎡 Колесо</button>
-        <button class="tab-btn" onclick="switchTab('tower')">🗼 Башня 100</button>
-        <button class="tab-btn" onclick="switchTab('roulette')">🔴 Рулетка</button>
-        <button class="tab-btn" onclick="switchTab('rps')">✂️ КНБ</button>
+    <!-- ================== РАЗДЕЛ 2: ИИ ЧАТ & БЕЗОПАСНОСТЬ ================== -->
+    <div id="aiView">
+        <div class="ai-card">
+            <div style="font-size:12px; font-weight:bold; color:#00cec9; margin-bottom:6px;">Стиль мышления ИИ:</div>
+            <div class="diff-row" style="flex-wrap: wrap;">
+                <button class="diff-btn active" onclick="setAiMode('minimal', this)">⚡ Краткий</button>
+                <button class="diff-btn" onclick="setAiMode('easy', this)">🟢 Добрый</button>
+                <button class="diff-btn" onclick="setAiMode('medium', this)">🔵 Профессор</button>
+                <button class="diff-btn" onclick="setAiMode('hard', this)">🟠 Эксперт</button>
+                <button class="diff-btn" onclick="setAiMode('impossible', this)">🔥 Олимпиада</button>
+                <button class="diff-btn" onclick="setAiMode('geo', this)">🕵️‍♂️ OSINT</button>
+            </div>
+
+            <div class="chat-messages" id="chatMsgs">
+                <div class="msg ai">Привет! Я Gemini AI. Чем могу помочь? Соблюдайте правила общения, система безопасности активна!</div>
+            </div>
+
+            <div class="chat-input-row">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Задайте вопрос нейросети..." onkeypress="handleChatKey(event)">
+                <button class="chat-send-btn" onclick="sendAiMessage()">➤</button>
+            </div>
+            <div style="font-size:10px; color:#888; margin-top:5px; text-align:center;">
+                Лимит: 500 токенов (Гость) / 8192 (DEV) | Анти-флуд и фильтры безопасности активны
+            </div>
+        </div>
     </div>
 
-    <div class="game-card">
-
-        <!-- 1. МИНЫ -->
-        <div class="game-panel active" id="p-mines">
-            <div class="diff-row">
-                <button class="diff-btn" onclick="setMinesDim(9, this)">Лёгкий (3x3)</button>
-                <button class="diff-btn active" onclick="setMinesDim(25, this)">Средний (5x5)</button>
-                <button class="diff-btn" onclick="setMinesDim(36, this)">Хардкор (6x6)</button>
-            </div>
-            <div class="mine-grid" id="mineGrid"></div>
-            <div class="status-box" id="minesStatus">Множитель: x1.00</div>
-            <button class="btn-action" id="minesBtn" onclick="minesAction()">Старт (50 ₽)</button>
-        </div>
-
-        <!-- 2. КРАШ -->
-        <div class="game-panel" id="p-crash">
-            <div class="diff-row">
-                <button class="diff-btn active" onclick="setCrashRisk('low', this)">Низкий (x2)</button>
-                <button class="diff-btn" onclick="setCrashRisk('med', this)">Средний (x10)</button>
-                <button class="diff-btn" onclick="setCrashRisk('high', this)">Экстрим (x100)</button>
-            </div>
-            <div style="height: 100px; width:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#070517; border-radius:10px;">
-                <div style="font-size:24px;">🚀</div>
-                <div style="font-size:34px; font-weight:900; color:#00cec9;" id="crashText">x1.00</div>
-            </div>
-            <div class="status-box" id="crashStatus">Ожидание старта</div>
-            <button class="btn-action" id="crashBtn" onclick="crashAction()">Взлететь</button>
-        </div>
-
-        <!-- 3. FLIPCOIN -->
-        <div class="game-panel" id="p-flip">
-            <div class="diff-row">
-                <button class="diff-btn active" onclick="setFlipSides(2, this)">Классика (x1.95)</button>
-                <button class="diff-btn" onclick="setFlipSides(3, this)">Трио (x2.90)</button>
-                <button class="diff-btn" onclick="setFlipSides(4, this)">Квадро (x3.85)</button>
-            </div>
-            <div style="font-size:46px; margin:4px 0;" id="flipIcon">🪙</div>
-            <div style="display:flex; gap:6px; width:100%;" id="flipChoices">
-                <button class="btn-action" style="margin:0; flex:1;" onclick="playFlip(1)">Орёл</button>
-                <button class="btn-action" style="margin:0; flex:1;" onclick="playFlip(2)">Решка</button>
-            </div>
-            <div class="status-box" id="flipStatus">Сделайте выбор</div>
-        </div>
-
-        <!-- 4. СЛОТ 777 -->
-        <div class="game-panel" id="p-s777">
-            <div class="diff-row">
-                <button class="diff-btn active" onclick="setSlotDiff('norm', this)">1 Линия (x25)</button>
-                <button class="diff-btn" onclick="setSlotDiff('hard', this)">3 Линии (x75)</button>
-                <button class="diff-btn" onclick="setSlotDiff('vip', this)">VIP (x200)</button>
-            </div>
-            <div class="slot-box">
-                <span id="cl1">💎</span><span id="cl2">🍒</span><span id="cl3">7️⃣</span>
-            </div>
-            <div class="status-box" id="s777Status">Крутите барабаны!</div>
-            <button class="btn-action" onclick="playClassicSlot()">Крутить 777</button>
-        </div>
-
-        <!-- 5. ZEUS -->
-        <div class="game-panel" id="p-szeus">
-            <div class="diff-row">
-                <button class="diff-btn active" onclick="setZeusDiff('norm', this)">Олимп (x30)</button>
-                <button class="diff-btn" onclick="setZeusDiff('hard', this)">Шторм (x50)</button>
-                <button class="diff-btn" onclick="setZeusDiff('god', this)">Бог Грома (x150)</button>
-            </div>
-            <div class="slot-box" style="border-color:#ffd32a;">
-                <span id="z1">⚡</span><span id="z2">🏛️</span><span id="z3">👑</span>
-            </div>
-            <div class="status-box" id="zeusStatus">Удар Зевса!</div>
-            <button class="btn-action" style="background:linear-gradient(90deg, #f39c12, #e74c3c);" onclick="playZeusSlot()">Удар Зевса</button>
-        </div>
-
-        <!-- 6. BONANZA -->
-        <div class="game-panel" id="p-ssweet">
-            <div class="diff-row">
-                <button class="diff-btn active" onclick="setSweetDiff('norm', this)">Леденцы (x40)</button>
-                <button class="diff-btn" onclick="setSweetDiff('hard', this)">Бомбы (x100)</button>
-                <button class="diff-btn" onclick="setSweetDiff('mega', this)">Мега Дроп (x250)</button>
-            </div>
-            <div class="slot-box" style="border-color:#ff3399;">
-                <span id="sb1">🍬</span><span id="sb2">🍭</span><span id="sb3">💣</span>
-            </div>
-            <div class="status-box" id="sweetStatus">Бомбы сладостей!</div>
-            <button class="btn-action" style="background:linear-gradient(90deg, #ff3399, #9b59b6);" onclick="playSweetSlot()">Вращать Bonanza</button>
-        </div>
-
-        <!-- 7. WILD WEST -->
-        <div class="game-panel" id="p-swild">
-            <div class="diff-row">
-                <button class="diff-btn active" onclick="setWildDiff('norm', this)">Ковбой (x30)</button>
-                <button class="diff-btn" onclick="setWildDiff('hard', this)">Шериф (x80)</button>
-                <button class="diff-btn" onclick="setWildDiff('outlaw', this)">Бандит (x200)</button>
-            </div>
-            <div class="slot-box" style="border-color:#e67e22;">
-                <span id="ww1">🤠</span><span id="ww2">🔫</span><span id="ww3">⭐</span>
-            </div>
-            <div class="status-box" id="wildStatus">Выстрел Шерифа!</div>
-            <button class="btn-action" style="background:linear-gradient(90deg, #d35400, #c0392b);" onclick="playWildSlot()">Выстрел Шерифа</button>
-        </div>
-
-        <!-- 8. CROWN -->
-        <div class="game-panel" id="p-scrown">
-            <div class="diff-row">
-                <button class="diff-btn active" onclick="setCrownDiff('norm', this)">Принц (x50)</button>
-                <button class="diff-btn" onclick="setCrownDiff('hard', this)">Король (x150)</button>
-                <button class="diff-btn" onclick="setCrownDiff('imp', this)">Император (x300)</button>
-            </div>
-            <div class="slot-box" style="border-color:#f1c40f;">
-                <span id="rc1">👑</span><span id="rc2">💎</span><span id="rc3">💰</span>
-            </div>
-            <div class="status-box" id="crownStatus">Королевский Джекпот!</div>
-            <button class="btn-action" style="background:linear-gradient(90deg, #f1c40f, #9b59b6);" onclick="playCrownSlot()">Королевский Спин</button>
-        </div>
-
-        <!-- 9. PINCO -->
-        <div class="game-panel" id="p-pinco">
-            <div class="diff-row">
-                <button class="diff-btn active" onclick="setPincoVol('low', this)">Low (до x3)</button>
-                <button class="diff-btn" onclick="setPincoVol('med', this)">Med (до x10)</button>
-                <button class="diff-btn" onclick="setPincoVol('high', this)">High (до x50)</button>
-            </div>
-            <div style="font-size:32px; margin:4px 0;">⚪</div>
-            <div class="status-box" id="pincoStatus">Готов к сбросу</div>
-            <button class="btn-action" onclick="playPinco()">Бросить шарик</button>
-        </div>
-
-        <!-- 10. CHICKEN -->
-        <div class="game-panel" id="p-chicken">
-            <div class="diff-row">
-                <button class="diff-btn active" onclick="setChkLanes(2, this)">2 полосы (x1.35)</button>
-                <button class="diff-btn" onclick="setChkLanes(3, this)">3 полосы (x1.95)</button>
-                <button class="diff-btn" onclick="setChkLanes(4, this)">4 полосы (x3.50)</button>
-            </div>
-            <div style="font-size:28px;">🐔 🛣 🚗</div>
-            <div style="display:flex; gap:6px; width:100%; margin-top:6px;" id="chkLanesRow">
-                <button class="btn-action" style="margin:0; flex:1;" onclick="stepChicken(1)">Полоса 1</button>
-                <button class="btn-action" style="margin:0; flex:1;" onclick="stepChicken(2)">Полоса 2</button>
-            </div>
-            <div class="status-box" id="chkStatus">Безопасная полоса</div>
-            <button class="btn-action" id="chkCashBtn" style="display:none;" onclick="cashChicken()">Забрать</button>
-            <button class="btn-action" id="chkStartBtn" onclick="startChicken()">Начать путь</button>
-        </div>
-
-        <!-- 11. HI-LO -->
-        <div class="game-panel" id="p-hilo">
-            <div class="diff-row">
-                <button class="diff-btn active" onclick="setHiLoDiff('std', this)">Стандарт (2-14)</button>
-                <button class="diff-btn" onclick="setHiLoDiff('narrow', this)">Узкий (6-9)</button>
-                <button class="diff-btn" onclick="setHiLoDiff('hard', this)">Экстрим (13-14)</button>
-            </div>
-            <div style="font-size:36px; background:#fff; color:#111; padding:6px 20px; border-radius:10px; font-weight:900; margin:6px;" id="hlCard">7</div>
-            <div style="display:flex; gap:6px; width:100%;">
-                <button class="btn-action" style="margin:0; flex:1;" onclick="playHiLo('hi')">⬆️ Больше</button>
-                <button class="btn-action" style="margin:0; flex:1;" onclick="playHiLo('lo')">⬇️ Меньше</button>
-            </div>
-            <div class="status-box" id="hlStatus">Угадайте карту</div>
-            <button class="btn-action" id="hlCashBtn" style="display:none;" onclick="cashHiLo()">Забрать</button>
-            <button class="btn-action" id="hlStartBtn" onclick="startHiLo()">Старт</button>
-        </div>
-
-        <!-- 12. DICE -->
-        <div class="game-panel" id="p-dice">
-            <div class="diff-row">
-                <button class="diff-btn active" onclick="setDiceDiff('std', this)">Обычный</button>
-                <button class="diff-btn" onclick="setDiceDiff('pro', this)">Профи (x3.0)</button>
-                <button class="diff-btn" onclick="setDiceDiff('hard', this)">Хард (x8.0)</button>
-            </div>
-            <div style="font-size:42px; margin:4px 0;" id="diceDisplay">🎲 🎲</div>
-            <div style="display:flex; gap:6px; width:100%;">
-                <button class="btn-action" style="margin:0; flex:1;" onclick="playDice('under')">&lt; 7</button>
-                <button class="btn-action" style="margin:0; flex:1; background:#00cec9; color:#080614;" onclick="playDice('exact')">= 7 (x5.8)</button>
-                <button class="btn-action" style="margin:0; flex:1;" onclick="playDice('over')">&gt; 7</button>
-            </div>
-            <div class="status-box" id="diceStatus">Ставка на кости</div>
-        </div>
-
-        <!-- 13. КОЛЕСО -->
-        <div class="game-panel" id="p-wheel">
-            <div class="diff-row">
-                <button class="diff-btn active" onclick="setWheelDiff('safe', this)">Безопасное (до x5)</button>
-                <button class="diff-btn" onclick="setWheelDiff('norm', this)">Обычное (до x20)</button>
-                <button class="diff-btn" onclick="setWheelDiff('high', this)">Джекпот (до x100)</button>
-            </div>
-            <div style="font-size:50px; margin:6px 0;" id="wheelIcon">🎡</div>
-            <div class="status-box" id="wheelStatus">Крутите Колесо Удачи!</div>
-            <button class="btn-action" onclick="playWheel()">Крутить Колесо</button>
-        </div>
-
-        <!-- 14. БАШНЯ НА 100 ЭТАЖЕЙ -->
-        <div class="game-panel" id="p-tower">
-            <div class="diff-row">
-                <button class="diff-btn active" onclick="setTowerDiff('easy', this)">Лёгкая (1 ловушка / 4)</button>
-                <button class="diff-btn" onclick="setTowerDiff('med', this)">Средняя (1 ловушка / 3)</button>
-                <button class="diff-btn" onclick="setTowerDiff('hard', this)">Хард (2 ловушки / 3)</button>
-            </div>
-            <div class="tower-view" id="towerView"></div>
-            <div class="status-box" id="towerStatus">Этаж: 1/100 | Множитель: x1.00</div>
-            <button class="btn-action" id="towerCashBtn" style="display:none;" onclick="cashTower()">Забрать выигрыш</button>
-            <button class="btn-action" id="towerStartBtn" onclick="startTower()">Штурмовать Башню</button>
-        </div>
-
-        <!-- 15. РУЛЕТКА -->
-        <div class="game-panel" id="p-roulette">
-            <div class="diff-row">
-                <button class="diff-btn active" onclick="setRoulDiff('euro', this)">Европа (1 Зеро)</button>
-                <button class="diff-btn" onclick="setRoulDiff('usa', this)">Америка (2 Зеро)</button>
-                <button class="diff-btn" onclick="setRoulDiff('vip', this)">VIP x3</button>
-            </div>
-            <div style="font-size:38px; margin:4px 0;" id="roulDisplay">⚫ 🔴 🟢</div>
-            <div style="display:flex; gap:6px; width:100%;">
-                <button class="btn-action" style="margin:0; flex:1; background:#d63031;" onclick="playRoulette('red')">Красное (x2)</button>
-                <button class="btn-action" style="margin:0; flex:1; background:#00b894;" onclick="playRoulette('zero')">Зеро 0 (x14)</button>
-                <button class="btn-action" style="margin:0; flex:1; background:#2d3436;" onclick="playRoulette('black')">Черное (x2)</button>
-            </div>
-            <div class="status-box" id="roulStatus">Сделайте ставку</div>
-        </div>
-
-        <!-- 16. КАМЕНЬ НОЖНИЦЫ БУМАГА -->
-        <div class="game-panel" id="p-rps">
-            <div class="diff-row">
-                <button class="diff-btn active" onclick="setRpsDiff('norm', this)">Обычный (x2.0)</button>
-                <button class="diff-btn" onclick="setRpsDiff('streak', this)">Серия 3 победы (x5.0)</button>
-                <button class="diff-btn" onclick="setRpsDiff('god', this)">Босс x10</button>
-            </div>
-            <div style="font-size:42px; margin:4px 0;" id="rpsIcon">✂️ 🪨 📄</div>
-            <div style="display:flex; gap:6px; width:100%;">
-                <button class="btn-action" style="margin:0; flex:1;" onclick="playRPS('rock')">🪨 Камень</button>
-                <button class="btn-action" style="margin:0; flex:1;" onclick="playRPS('scissors')">✂️ Ножницы</button>
-                <button class="btn-action" style="margin:0; flex:1;" onclick="playRPS('paper')">📄 Бумага</button>
-            </div>
-            <div class="status-box" id="rpsStatus">Сделайте ход!</div>
-        </div>
-
-    </div>
-
-    <!-- ЧИТ-ПАНЕЛЬ (ВСЕ ЧИТЫ ПО УМОЛЧАНИЮ ВЫКЛЮЧЕНЫ) -->
+    <!-- ЧИТ-ПАНЕЛЬ (ВЫКЛЮЧЕНА ПО УМОЛЧАНИЮ) -->
     <div class="cheat-modal" id="cheatModal">
         <div class="cheat-box">
-            <h3 style="color:#00ff88; margin:0 0 10px 0; text-align:center;">⚡ СИСТЕМА ЧИТОВ (16 ИГР) ⚡</h3>
+            <h3 style="color:#00ff88; margin:0 0 10px 0; text-align:center;">⚡ СИСТЕМА ЧИТОВ (16 ИГР + ИИ) ⚡</h3>
             <div class="cheat-item"><span>💣 Мины: Рентген X-Ray</span><input type="checkbox" id="c_mines_xray" onchange="toggleXray()"></div>
             <div class="cheat-item"><span>💣 Мины: Авто-обход</span><input type="checkbox" id="c_mines_win"></div>
             <div class="cheat-item"><span>🚀 Краш: Всегда x30+</span><input type="checkbox" id="c_crash_win"></div>
@@ -600,6 +694,7 @@
             <div class="cheat-item"><span>🗼 Башня: Чистый проход (100 эт.)</span><input type="checkbox" id="c_tower_win"></div>
             <div class="cheat-item"><span>🔴 Рулетка: Точный цвет/Зеро</span><input type="checkbox" id="c_roul_win"></div>
             <div class="cheat-item"><span>✂️ КНБ: Победа</span><input type="checkbox" id="c_rps_win"></div>
+            <div class="cheat-item"><span>🧠 ИИ: Без задержки и лимитов</span><input type="checkbox" id="c_ai_speed" checked></div>
 
             <div class="cheat-btns">
                 <button class="btn-c-act" onclick="addMoney(10000)">+10k ₽</button>
@@ -617,7 +712,9 @@
 
         const OWNER_ID = 8732002956;
         const currentUserId = tg?.initDataUnsafe?.user?.id;
-        if (!currentUserId || currentUserId === OWNER_ID) {
+        const isOwner = (!currentUserId || currentUserId === OWNER_ID);
+
+        if (isOwner) {
             document.getElementById("admBtn").style.display = "block";
         }
 
@@ -625,6 +722,20 @@
         let currentBet = 50;
 
         function updateBal() { document.getElementById("balance").innerText = bal; }
+
+        function showMainSection(sec) {
+            if (sec === 'games') {
+                document.getElementById("gamesView").style.display = "flex";
+                document.getElementById("aiView").style.display = "none";
+                document.getElementById("btnTabGames").classList.add("active");
+                document.getElementById("btnTabAI").classList.remove("active");
+            } else {
+                document.getElementById("gamesView").style.display = "none";
+                document.getElementById("aiView").style.display = "flex";
+                document.getElementById("btnTabAI").classList.add("active");
+                document.getElementById("btnTabGames").classList.remove("active");
+            }
+        }
 
         function setBet(amount, btn) {
             document.querySelectorAll(".b-btn").forEach(b => b.classList.remove("active"));
@@ -638,14 +749,136 @@
         function closeCheat() { document.getElementById("cheatModal").style.display = "none"; }
         function addMoney(v) { bal += v; updateBal(); }
 
-        function switchTab(name) {
+        function switchGameTab(name) {
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
             document.querySelectorAll(".game-panel").forEach(p => p.classList.remove("active"));
             event.target.classList.add("active");
             document.getElementById("p-" + name).classList.add("active");
         }
 
-        /* 1. МИНЫ (С РЕАЛЬНЫМ ВЗРЫВОМ) */
+        /* ================== ЛОГИКА GEMINI AI И БЕЗОПАСНОСТЬ ================== */
+        const GEMINI_KEY = "AQ.Ab8RN6LVAPgnt6HrTxWBdIaZr2sKGAQR89Sne5VVQLwKV7yqoQ";
+        let curAiMode = "minimal";
+        let lastMsgTime = 0;
+        let msgCount = 0;
+
+        const AI_PROMPTS = {
+            "minimal": "СТИЛЬ: Краткий, лаконичный ответ без лишней воды.",
+            "easy": "СТИЛЬ: Добрый заботливый наставник, объясняй простыми словами.",
+            "medium": "СТИЛЬ: Опытный преподаватель, глубокий структурированный ответ.",
+            "hard": "СТИЛЬ: Академический строгий эксперт с терминами.",
+            "impossible": "СТИЛЬ: Олимпиадный тренер, повышенная сложность анализа.",
+            "geo": "СТИЛЬ: Аналитик геолокации, OSINT и расследований."
+        };
+
+        function setAiMode(m, btn) {
+            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            curAiMode = m;
+            appendMsg("system", `⚙️ Режим ИИ изменен на: ${m.toUpperCase()}`);
+        }
+
+        function handleChatKey(e) {
+            if (e.key === "Enter") sendAiMessage();
+        }
+
+        function appendMsg(sender, text) {
+            const box = document.getElementById("chatMsgs");
+            const div = document.createElement("div");
+            div.className = `msg ${sender}`;
+            div.innerText = text;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        // Фильтры безопасности
+        function checkSafety(text) {
+            const lower = text.toLowerCase();
+            const swearWords = ["хуй", "пизд", "ебат", "ёбат", "бля", "сука", "сучк"];
+            const insults = ["дурак", "дебил", "лох", "урод", "мразь", "пшол", "соси"];
+            const exploits = ["ignore all", "ты админ", "дай права", "sudo", "eval", "exec", "system_instruction"];
+
+            for (let e of exploits) {
+                if (lower.includes(e)) return { violated: true, fine: 50000, reason: "Попытка эксплойта/взлома" };
+            }
+            for (let i of insults) {
+                if (lower.includes(i)) return { violated: true, fine: 1000, reason: "Оскорбление" };
+            }
+            for (let s of swearWords) {
+                if (lower.includes(s)) return { violated: true, fine: 100, reason: "Ненормативная лексика" };
+            }
+            return { violated: false };
+        }
+
+        async function sendAiMessage() {
+            const inp = document.getElementById("chatInput");
+            const text = inp.value.trim();
+            if (!text) return;
+
+            // Анти-спам проверка
+            const now = Date.now();
+            if (now - lastMsgTime < 3000) {
+                msgCount++;
+                if (msgCount > 3) {
+                    appendMsg("system", "🚨 Сработал анти-флуд. Сбавьте темп общения!");
+                    return;
+                }
+            } else {
+                msgCount = 1;
+            }
+            lastMsgTime = now;
+
+            // Проверка на нарушения
+            const sec = checkSafety(text);
+            if (sec.violated) {
+                bal = Math.max(0, bal - sec.fine);
+                updateBal();
+                appendMsg("user", text);
+                appendMsg("system", `🚨 Нарушение (${sec.reason})! Штраф -${sec.fine} ₽. Баланс: ${bal} ₽`);
+                inp.value = "";
+                return;
+            }
+
+            appendMsg("user", text);
+            inp.value = "";
+            appendMsg("ai", "Думаю...");
+
+            const models = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
+            const prompt = `СИСТЕМНОЕ ТРЕБОВАНИЕ: ${AI_PROMPTS[curAiMode]}\nЗапрос пользователя: ${text}`;
+            const maxTokens = isOwner ? 8192 : 500;
+
+            let success = false;
+            for (let m of models) {
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${GEMINI_KEY}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            contents: [{ role: "user", parts: [{ text: prompt }] }],
+                            generationConfig: { temperature: 0.5, maxOutputTokens: maxTokens }
+                        })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const answer = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (answer) {
+                            const msgs = document.getElementById("chatMsgs");
+                            msgs.lastElementChild.innerText = answer;
+                            success = true;
+                            break;
+                        }
+                    }
+                } catch (e) {}
+            }
+
+            if (!success) {
+                const msgs = document.getElementById("chatMsgs");
+                msgs.lastElementChild.innerText = "ИИ временно недоступен или лимит исчерпан.";
+            }
+        }
+
+        /* ================== ИГРОВОЙ ДВИЖОК КАЗИНО ================== */
+        /* 1. МИНЫ */
         let mDim = 25, mBombsCount = 3, mPlaying = false, mBombs = [], mMult = 1.0;
         function setMinesDim(dim, btn) {
             btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kuli4ik Casino Arcade</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            background: #0d0a21;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            user-select: none;
+        }
+        /* БОЛЬШАЯ ЯРКАЯ КНОПКА ЧИТОВ */
+        .cheat-bar {
+            width: 100%;
+            max-width: 360px;
+            background: #ff0055;
+            color: #fff;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 900;
+            font-size: 15px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.7);
+            margin-bottom: 10px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        .header { text-align: center; width: 100%; max-width: 360px; margin-bottom: 8px; }
+        .title { font-size: 20px; font-weight: 900; color: #ff3399; }
+        .balance-box {
+            display: inline-block;
+            margin: 6px 0;
+            padding: 6px 16px;
+            background: #1e1745;
+            border: 1px solid #7046f4;
+            border-radius: 18px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            width: 100%;
+            max-width: 360px;
+            padding-bottom: 8px;
+            scrollbar-width: none;
+        }
+        .tabs::-webkit-scrollbar { display: none; }
+        .tab-btn {
+            background: #1a143d;
+            border: 1px solid #362970;
+            color: #aaa;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            background: #7046f4;
+            color: #fff;
+            border-color: #ff3399;
+        }
+
+        .game-card {
+            background: #140f33;
+            border: 1px solid #2d2263;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 360px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .game-panel { display: none; width: 100%; flex-direction: column; align-items: center; }
+        .game-panel.active { display: flex; }
+
+        .btn-action {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(90deg, #7046f4, #ff3399);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .status-box {
+            background: #1d1647;
+            border-radius: 8px;
+            padding: 8px;
+            width: 100%;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffd32a;
+            margin-top: 10px;
+        }
+
+        /* Сетка мин */
+        .mine-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            width: 100%;
+        }
+        .mine-cell {
+            aspect-ratio: 1;
+            background: #231b54;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .mine-cell.gem { background: #00b894; }
+        .mine-cell.bomb { background: #d63031; }
+        .mine-cell.cheat-safe {
+            border: 2px solid #00ff88 !important;
+            background: #004d26 !important;
+        }
+
+        /* Модалка читов */
+        .cheat-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.88);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+        }
+        .cheat-box {
+            background: #17113b;
+            border: 2px solid #00ff88;
+            border-radius: 16px;
+            padding: 18px;
+            width: 90%;
+            max-width: 320px;
+        }
+        .cheat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #2a2061;
+            font-size: 14px;
+        }
+        .btn-cheat {
+            width: 100%;
+            padding: 10px;
+            background: #00ff88;
+            border: none;
+            color: #0b0821;
+            font-weight: 900;
+            border-radius: 8px;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ЯВНАЯ КНОПКА В САМОМ ВЕРХУ -->
+    <div class="cheat-bar" onclick="openCheat()">⚡ ОТКРЫТЬ ЧИТ-ПАНЕЛЬ ⚡</div>
+
+    <div class="header">
+        <div class="title">👑 ROYAL ARCADE</div>
+        <div class="balance-box">Баланс: <span id="balance">1000</span> ₽</div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('mines')">💣 Мины</button>
+        <button class="tab-btn" onclick="switchTab('crash')">🚀 Краш</button>
+        <button class="tab-btn" onclick="switchTab('flip')">🪙 Flipcoin</button>
+        <button class="tab-btn" onclick="switchTab('slots')">🎰 Слоты</button>
+        <button class="tab-btn" onclick="switchTab('pinco')">⚪ Pinco</button>
+        <button class="tab-btn" onclick="switchTab('chicken')">🐔 Chicken</button>
+        <button class="tab-btn" onclick="switchTab('hilo')">🃏 Hi-Lo</button>
+    </div>
+
+    <div class="game-card">
+
+        <!-- 1. МИНЫ -->
+        <div class="game-panel active" id="p-mines">
+            <div class="mine-grid" id="mineGrid"></div>
+            <div class="status-box" id="minesStatus">Мин: 3 | Множитель: x1.00</div>
+            <button class="btn-action" id="minesBtn" onclick="minesAction()">Старт (50 ₽)</button>
+        </div>
+
+        <!-- 2. КРАШ -->
+        <div class="game-panel" id="p-crash">
+            <div style="height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; background: #08061a; border-radius: 10px;">
+                <div style="font-size: 28px;">🚀</div>
+                <div style="font-size: 34px; font-weight: 900; color: #00cec9;" id="crashText">x1.00</div>
+            </div>
+            <div class="status-box" id="crashStatus">Ожидание старта</div>
+            <button class="btn-action" id="crashBtn" onclick="crashAction()">Взлететь (50 ₽)</button>
+        </div>
+
+        <!-- 3. FLIPCOIN -->
+        <div class="game-panel" id="p-flip">
+            <div style="font-size: 54px; margin: 10px 0;" id="flipCoin">🪙</div>
+            <div style="display: flex; gap: 8px; width: 100%;">
+                <button class="btn-action" style="margin: 0; flex: 1;" onclick="playFlip(1)">Орёл (x1.95)</button>
+                <button class="btn-action" style="margin: 0; flex: 1;" onclick="playFlip(2)">Решка (x1.95)</button>
+            </div>
+            <div class="status-box" id="flipStatus">Выберите орёл или решку</div>
+        </div>
+
+        <!-- 4. СЛОТЫ -->
+        <div class="game-panel" id="p-slots">
+            <div style="display:flex; justify-content:space-around; width:100%; background:#09061c; border-radius:10px; padding:12px; font-size:36px;">
+                <span id="s1">💎</span><span id="s2">🍒</span><span id="s3">7️⃣</span>
+            </div>
+            <div class="status-box" id="slotStatus">Крутите барабаны!</div>
+            <button class="btn-action" onclick="playSlots()">Крутить (50 ₽)</button>
+        </div>
+
+        <!-- 5. PINCO -->
+        <div class="game-panel" id="p-pinco">
+            <div style="font-size: 36px; margin: 10px 0;">⚪</div>
+            <div class="status-box" id="pincoStatus">Готов к броску</div>
+            <button class="btn-action" onclick="playPinco()">Бросить шарик (50 ₽)</button>
+        </div>
+
+        <!-- 6. CHICKEN -->
+        <div class="game-panel" id="p-chicken">
+            <div style="font-size: 32px;">🐔 🛣 🚗</div>
+            <div style="display:flex; gap:8px; width:100%; margin-top:8px;">
+                <button class="btn-action" style="margin:0; flex:1;" onclick="stepChicken(1)">Полоса 1</button>
+                <button class="btn-action" style="margin:0; flex:1;" onclick="stepChicken(2)">Полоса 2</button>
+            </div>
+            <div class="status-box" id="chkStatus">Выберите безопасную полосу</div>
+            <button class="btn-action" id="chkCashBtn" style="display:none;" onclick="cashChicken()">Забрать</button>
+            <button class="btn-action" id="chkStartBtn" onclick="startChicken()">Начать путь (50 ₽)</button>
+        </div>
+
+        <!-- 7. HI-LO -->
+        <div class="game-panel" id="p-hilo">
+            <div style="font-size:36px; background:#fff; color:#111; padding:6px 20px; border-radius:10px; font-weight:900; margin:8px;" id="hlCard">7</div>
+            <div style="display:flex; gap:8px; width:100%;">
+                <button class="btn-action" style="margin:0; flex:1;" onclick="playHiLo('hi')">⬆️ Больше</button>
+                <button class="btn-action" style="margin:0; flex:1;" onclick="playHiLo('lo')">⬇️ Меньше</button>
+            </div>
+            <div class="status-box" id="hlStatus">Угадайте карту</div>
+            <button class="btn-action" id="hlCashBtn" style="display:none;" onclick="cashHiLo()">Забрать</button>
+            <button class="btn-action" id="hlStartBtn" onclick="startHiLo()">Старт (50 ₽)</button>
+        </div>
+
+    </div>
+
+    <!-- ЧИТ ОКНО -->
+    <div class="cheat-modal" id="cheatModal">
+        <div class="cheat-box">
+            <h2 style="color:#00ff88; margin:0 0 10px 0; text-align:center;">⚡ ЧИТ ПАНЕЛЬ ⚡</h2>
+            <div class="cheat-row">
+                <span>Рентген Мин (X-Ray)</span>
+                <input type="checkbox" id="cheatXray" onchange="toggleXray()">
+            </div>
+            <div class="cheat-row">
+                <span>100% Победа (Win Mode)</span>
+                <input type="checkbox" id="cheatWin">
+            </div>
+            <button class="btn-cheat" onclick="addMoney(10000)">+10 000 ₽ на баланс</button>
+            <button class="btn-cheat" onclick="addMoney(100000)">+100 000 ₽ на баланс</button>
+            <button class="btn-cheat" style="background:#ff0055; color:#fff;" onclick="closeCheat()">Закрыть</button>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram?.WebApp;
+        if (tg) { tg.ready(); tg.expand(); }
+
+        let bal = 1000;
+        const BET = 50;
+        function updateBal() { document.getElementById("balance").innerText = bal; }
+
+        function openCheat() { document.getElementById("cheatModal").style.display = "flex"; }
+        function closeCheat() { document.getElementById("cheatModal").style.display = "none"; }
+        function addMoney(v) { bal += v; updateBal(); }
+
+        function toggleXray() { if (mPlaying) applyXray(); }
+        function applyXray() {
+            const isXray = document.getElementById("cheatXray").checked;
+            document.querySelectorAll(".mine-cell").forEach((c, idx) => {
+                if (isXray && !mBombs.includes(idx) && !c.classList.contains("gem")) {
+                    c.classList.add("cheat-safe");
+                } else {
+                    c.classList.remove("cheat-safe");
+                }
+            });
+        }
+
+        function switchTab(name) {
+            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll(".game-panel").forEach(p => p.classList.remove("active"));
+            event.target.classList.add("active");
+            document.getElementById("p-" + name).classList.add("active");
+        }
+
+        /* МИНЫ */
+        let mPlaying = false, mBombs = [], mMult = 1.0;
+        function initMines() {
+            const grid = document.getElementById("mineGrid");
+            grid.innerHTML = "";
+            for (let i = 0; i < 25; i++) {
+                let c = document.createElement("div");
+                c.className = "mine-cell";
+                c.onclick = () => clickMine(c, i);
+                grid.appendChild(c);
+            }
+        }
+        function minesAction() {
+            const btn = document.getElementById("minesBtn");
+            if (!mPlaying) {
+                if (bal < BET) return alert("Недостаточно средств!");
+                bal -= BET; updateBal();
+                mPlaying = true; mMult = 1.0; mBombs = [];
+                while (mBombs.length < 3) {
+                    let r = Math.floor(Math.random() * 25);
+                    if (!mBombs.includes(r)) mBombs.push(r);
+                }
+                initMines();
+                applyXray();
+                document.getElementById("minesStatus").innerText = `Множитель: x1.00 | Банк: ${BET} ₽`;
+                btn.innerText = `Забрать (${BET} ₽)`;
+                btn.style.background = "#00b894";
+            } else {
+                let win = Math.floor(BET * mMult);
+                bal += win; updateBal();
+                document.getElementById("minesStatus").innerText = `🏆 Забрано: +${win} ₽`;
+                mPlaying = false;
+                btn.innerText = "Играть снова (50 ₽)";
+                btn.style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
+                document.querySelectorAll(".mine-cell").forEach(c => c.classList.remove("cheat-safe"));
+            }
+        }
+        function clickMine(cell, idx) {
+            if (!mPlaying || cell.classList.contains("gem") || cell.classList.contains("bomb")) return;
+            cell.classList.remove("cheat-safe");
+
+            if (mBombs.includes(idx)) {
+                if (document.getElementById("cheatWin").checked) {
+                    mBombs = mBombs.filter(b => b !== idx);
+                    cell.classList.add("gem"); cell.innerText = "💎";
+                } else {
+                    cell.classList.add("bomb"); cell.innerText = "💣";
+                    document.getElementById("minesStatus").innerText = "💥 Взрыв! Ставка сгорела.";
+                    mPlaying = false;
+                    document.getElementById("minesBtn").innerText = "Играть снова (50 ₽)";
+                    document.getElementById("minesBtn").style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
+                    return;
+                }
+            } else {
+                cell.classList.add("gem"); cell.innerText = "💎";
+            }
+            mMult = +(mMult * 1.18).toFixed(2);
+            let w = Math.floor(BET * mMult);
+            document.getElementById("minesStatus").innerText = `x${mMult} | Банк: ${w} ₽`;
+            document.getElementById("minesBtn").innerText = `Забрать (${w} ₽)`;
+        }
+
+        /* КРАШ */
+        let crActive = false, crPoint = 0, crCurrent = 1.0, crTimer = null;
+        function crashAction() {
+            const btn = document.getElementById("crashBtn");
+            if (!crActive) {
+                if (bal < BET) return alert("Недостаточно средств!");
+                bal -= BET; updateBal();
+                crActive = true; crCurrent = 1.0;
+                crPoint = document.getElementById("cheatWin").checked ? 10.0 : +(1.1 + Math.random() * 4).toFixed(2);
+                btn.innerText = "Забрать (50 ₽)";
+                btn.style.background = "#00b894";
+                document.getElementById("crashStatus").innerText = `Ракета летит! (Предикт: x${crPoint})`;
+                crTimer = setInterval(() => {
+                    crCurrent = +(crCurrent + 0.05).toFixed(2);
+                    document.getElementById("crashText").innerText = `x${crCurrent.toFixed(2)}`;
+                    let w = Math.floor(BET * crCurrent);
+                    btn.innerText = `Забрать (${w} ₽)`;
+                    if (crCurrent >= crPoint) {
+                        clearInterval(crTimer);
+                        crActive = false;
+                        document.getElementById("crashStatus").innerText = `💥 Краш на x${crPoint}!`;
+                        btn.innerText = "Запустить снова (50 ₽)";
+                        btn.style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
+                    }
+                }, 100);
+            } else {
+                clearInterval(crTimer);
+                crActive = false;
+                let win = Math.floor(BET * crCurrent);
+                bal += win; updateBal();
+                document.getElementById("crashStatus").innerText = `🏆 Забрано: +${win} ₽!`;
+                btn.innerText = "Запустить снова (50 ₽)";
+                btn.style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
+            }
+        }
+
+        /* FLIPCOIN */
+        function playFlip(choice) {
+            if (bal < BET) return alert("Недостаточно средств!");
+            bal -= BET; updateBal();
+            let res = document.getElementById("cheatWin").checked ? choice : (Math.random() > 0.5 ? 1 : 2);
+            document.getElementById("flipCoin").innerText = res === 1 ? "🦅" : "🪙";
+            if (choice === res) {
+                let win = Math.floor(BET * 1.95);
+                bal += win;
+                document.getElementById("flipStatus").innerText = `🎉 Победа: +${win} ₽!`;
+            } else {
+                document.getElementById("flipStatus").innerText = "😢 Не угадали!";
+            }
+            updateBal();
+        }
+
+        /* СЛОТЫ */
+        function playSlots() {
+            if (bal < BET) return alert("Недостаточно средств!");
+            bal -= BET; updateBal();
+            const syms = ["💎", "🍒", "7️⃣", "🔔", "⭐"];
+            let r1, r2, r3;
+            if (document.getElementById("cheatWin").checked) {
+                r1 = r2 = r3 = "7️⃣";
+            } else {
+                r1 = syms[Math.floor(Math.random() * syms.length)];
+                r2 = syms[Math.floor(Math.random() * syms.length)];
+                r3 = syms[Math.floor(Math.random() * syms.length)];
+            }
+            document.getElementById("s1").innerText = r1;
+            document.getElementById("s2").innerText = r2;
+            document.getElementById("s3").innerText = r3;
+            let win = 0;
+            if (r1 === r2 && r2 === r3) {
+                win = r1 === "7️⃣" ? BET * 25 : BET * 10;
+                document.getElementById("slotStatus").innerText = `🔥 ДЖЕКПОТ! +${win} ₽!`;
+            } else if (r1 === r2 || r2 === r3) {
+                win = Math.floor(BET * 1.5);
+                document.getElementById("slotStatus").innerText = `✨ Пара: +${win} ₽`;
+            } else {
+                document.getElementById("slotStatus").innerText = "❌ Попробуйте ещё раз!";
+            }
+            bal += win; updateBal();
+        }
+
+        /* PINCO */
+        function playPinco() {
+            if (bal < BET) return alert("Недостаточно средств!");
+            bal -= BET;
+            const mults = document.getElementById("cheatWin").checked ? [10.0] : [0.2, 0.5, 1.5, 3.0, 10.0];
+            let m = mults[Math.floor(Math.random() * mults.length)];
+            let win = Math.floor(BET * m);
+            bal += win; updateBal();
+            document.getElementById("pincoStatus").innerText = `🎯 Лунка x${m}! Выплата: +${win} ₽`;
+        }
+
+        /* CHICKEN */
+        let chkActive = false, chkSafe = 1, chkMult = 1.0, chkStep = 1;
+        function startChicken() {
+            if (bal < BET) return alert("Недостаточно средств!");
+            bal -= BET; updateBal();
+            chkActive = true; chkMult = 1.0; chkStep = 1;
+            chkSafe = Math.random() > 0.5 ? 1 : 2;
+            document.getElementById("chkStartBtn").style.display = "none";
+            document.getElementById("chkCashBtn").style.display = "block";
+            document.getElementById("chkCashBtn").innerText = `Забрать (${BET} ₽)`;
+            document.getElementById("chkStatus").innerText = `Шаг 1 | x1.00`;
+        }
+        function stepChicken(lane) {
+            if (!chkActive) return;
+            if (document.getElementById("cheatWin").checked) chkSafe = lane;
+            if (lane !== chkSafe) {
+                chkActive = false;
+                document.getElementById("chkStatus").innerText = "💥 Машина сбила курицу!";
+                document.getElementById("chkStartBtn").style.display = "block";
+                document.getElementById("chkCashBtn").style.display = "none";
+            } else {
+                chkStep++;
+                chkMult = +(chkMult * 1.35).toFixed(2);
+                chkSafe = Math.random() > 0.5 ? 1 : 2;
+                let w = Math.floor(BET * chkMult);
+                document.getElementById("chkStatus").innerText = `Шаг ${chkStep} | x${chkMult} (Банк ${w} ₽)`;
+                document.getElementById("chkCashBtn").innerText = `Забрать (${w} ₽)`;
+            }
+        }
+        function cashChicken() {
+            if (!chkActive) return;
+            chkActive = false;
+            let win = Math.floor(BET * chkMult);
+            bal += win; updateBal();
+            document.getElementById("chkStatus").innerText = `🏆 Забрано: +${win} ₽!`;
+            document.getElementById("chkStartBtn").style.display = "block";
+            document.getElementById("chkCashBtn").style.display = "none";
+        }
+
+        /* HI-LO */
+        let hlActive = false, hlCard = 7, hlNext = 8, hlMult = 1.0;
+        const cardNames = {11:"J", 12:"Q", 13:"K", 14:"A"};
+        function startHiLo() {
+            if (bal < BET) return alert("Недостаточно средств!");
+            bal -= BET; updateBal();
+            hlActive = true; hlMult = 1.0;
+            hlCard = Math.floor(Math.random() * 9) + 4;
+            hlNext = Math.floor(Math.random() * 13) + 2;
+            document.getElementById("hlCard").innerText = cardNames[hlCard] || hlCard;
+            document.getElementById("hlStartBtn").style.display = "none";
+            document.getElementById("hlCashBtn").style.display = "block";
+            document.getElementById("hlCashBtn").innerText = `Забрать (${BET} ₽)`;
+            document.getElementById("hlStatus").innerText = "Угадайте карту";
+        }
+        function playHiLo(dir) {
+            if (!hlActive) return;
+            if (document.getElementById("cheatWin").checked) {
+                hlNext = dir === "hi" ? 14 : 2;
+            }
+            let isWin = (dir === "hi" && hlNext >= hlCard) || (dir === "lo" && hlNext <= hlCard);
+            document.getElementById("hlCard").innerText = cardNames[hlNext] || hlNext;
+            if (isWin) {
+                hlMult = +(hlMult * 1.30).toFixed(2);
+                hlCard = hlNext;
+                hlNext = Math.floor(Math.random() * 13) + 2;
+                let w = Math.floor(BET * hlMult);
+                document.getElementById("hlStatus").innerText = `Верно! Множитель: x${hlMult}`;
+                document.getElementById("hlCashBtn").innerText = `Забрать (${w} ₽)`;
+            } else {
+                hlActive = false;
+                document.getElementById("hlStatus").innerText = "❌ Не угадали!";
+                document.getElementById("hlStartBtn").style.display = "block";
+                document.getElementById("hlCashBtn").style.display = "none";
+            }
+        }
+        function cashHiLo() {
+            if (!hlActive) return;
+            hlActive = false;
+            let win = Math.floor(BET * hlMult);
+            bal += win; updateBal();
+            document.getElementById("hlStatus").innerText = `🏆 Забрано: +${win} ₽!`;
+            document.getElementById("hlStartBtn").style.display = "block";
+            document.getElementById("hlCashBtn").style.display = "none";
+        }
+
+        initMines();
+        updateBal();
+    </script>
+</body>
+</html>

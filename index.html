@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kuli4ik Ultimate Arcade & AI System</title>
+    <title>Kuli4ik Ultimate Arcade, AI & Telegram Gifts</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -63,7 +63,7 @@
             padding-right: 85px;
         }
         .title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 900;
             color: #ff3399;
             text-shadow: 0 0 15px rgba(255, 51, 153, 0.7);
@@ -92,7 +92,7 @@
             background: #1e154a;
             border: 1px solid #7046f4;
             border-radius: 20px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
         }
 
@@ -100,18 +100,18 @@
             display: flex;
             width: 100%;
             max-width: 390px;
-            gap: 6px;
+            gap: 4px;
             margin-bottom: 8px;
         }
         .nav-switch-btn {
             flex: 1;
-            padding: 9px;
+            padding: 8px 4px;
             background: #140d36;
             border: 1px solid #3c2c80;
             border-radius: 10px;
             color: #aaa;
             font-weight: 800;
-            font-size: 12px;
+            font-size: 10.5px;
             cursor: pointer;
             text-align: center;
         }
@@ -121,6 +121,7 @@
             border-color: transparent;
         }
 
+        /* КАЗИНО И СТАВКИ */
         #gamesView { width: 100%; max-width: 390px; display: flex; flex-direction: column; align-items: center; }
 
         .bet-card {
@@ -241,6 +242,7 @@
             margin-top: 10px;
         }
 
+        /* МИНЫ */
         .mine-grid { display: grid; gap: 5px; width: 100%; }
         .mine-cell {
             aspect-ratio: 1;
@@ -293,6 +295,7 @@
         }
         .tower-step.current { border-color: #00cec9; background: #291e63; }
 
+        /* ИИ ЧАТ */
         #aiView {
             display: none;
             width: 100%;
@@ -346,6 +349,95 @@
             cursor: pointer;
         }
 
+        /* TELEGRAM GIFTS & UPGRADER */
+        #giftsView {
+            display: none;
+            width: 100%;
+            max-width: 390px;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .gifts-card {
+            background: #110d29;
+            border: 1px solid #2e236b;
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .gifts-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            width: 100%;
+            margin-top: 6px;
+        }
+        .gift-box {
+            background: #1a1343;
+            border: 1px solid #3b2c80;
+            border-radius: 10px;
+            padding: 8px 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .gift-box.selected { border-color: #ffd32a; box-shadow: 0 0 10px rgba(255, 211, 42, 0.5); }
+        .gift-icon { font-size: 26px; }
+        .gift-name { font-size: 10px; font-weight: bold; margin-top: 3px; }
+        .gift-price { font-size: 9px; color: #00cec9; }
+
+        /* КОЛЕСО АПГРЕЙДА СО СТРЕЛКОЙ */
+        .wheel-container {
+            position: relative;
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+        .wheel-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border-radius: 50%;
+        }
+        .wheel-arrow {
+            position: absolute;
+            width: 4px;
+            height: 85px;
+            background: #ff0055;
+            bottom: 50%;
+            transform-origin: bottom center;
+            box-shadow: 0 0 10px #ff0055;
+            border-radius: 4px;
+            z-index: 10;
+        }
+        .wheel-center-pin {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #fff;
+            z-index: 12;
+        }
+
+        .inventory-list {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            width: 100%;
+            padding: 6px 0;
+            min-height: 60px;
+        }
+
+        /* ЧИТ МОДАЛКА */
         .cheat-modal {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -403,15 +495,17 @@
     <div id="appContent">
         <div class="header">
             <button class="admin-secret-btn" id="admBtn" onclick="openCheat()">👑 DEV ЧИТЫ</button>
-            <div class="title">👑 ROYAL ARCADE & AI SYSTEM</div>
+            <div class="title">👑 ROYAL ARCADE, AI & GIFTS</div>
             <div class="balance-badge">Баланс: <span id="balance">1000</span> ₽</div>
         </div>
 
         <div class="main-nav">
-            <button class="nav-switch-btn active" id="btnTabGames" onclick="showMainSection('games')">🎰 ИГРОВОЙ ЗАЛ (16 ИГР)</button>
-            <button class="nav-switch-btn" id="btnTabAI" onclick="showMainSection('ai')">🧠 ЧАТ С GEMINI AI</button>
+            <button class="nav-switch-btn active" id="btnTabGames" onclick="showMainSection('games')">🎰 16 ИГР</button>
+            <button class="nav-switch-btn" id="btnTabGifts" onclick="showMainSection('gifts')">🎁 TG АПГРЕЙДЕР</button>
+            <button class="nav-switch-btn" id="btnTabAI" onclick="showMainSection('ai')">🧠 GEMINI AI</button>
         </div>
 
+        <!-- ================== РАЗДЕЛ 1: КАЗИНО (16 ИГР) ================== -->
         <div id="gamesView">
             <div class="bet-card">
                 <div class="bet-label">
@@ -429,10 +523,10 @@
             </div>
 
             <div class="tabs">
-                <button class="tab-btn active" onclick="switchGameTab('mines')">💣 Мины</button>
+                <button class="tab-btn active" onclick="switchGameTab('s777')">🎰 777 (Мега)</button>
+                <button class="tab-btn" onclick="switchGameTab('mines')">💣 Мины</button>
                 <button class="tab-btn" onclick="switchGameTab('crash')">🚀 Краш</button>
                 <button class="tab-btn" onclick="switchGameTab('flip')">🪙 Flip</button>
-                <button class="tab-btn" onclick="switchGameTab('s777')">🎰 777</button>
                 <button class="tab-btn" onclick="switchGameTab('szeus')">⚡ Zeus</button>
                 <button class="tab-btn" onclick="switchGameTab('ssweet')">🍬 Bonanza</button>
                 <button class="tab-btn" onclick="switchGameTab('swild')">🤠 Wild West</button>
@@ -448,8 +542,20 @@
             </div>
 
             <div class="game-card">
-                <!-- 1. МИНЫ -->
-                <div class="game-panel active" id="p-mines">
+                <!-- 1. СЛОТ 777 С МЕГА-МНОЖИТЕЛЯМИ -->
+                <div class="game-panel active" id="p-s777">
+                    <div style="font-size:10px; color:#ffd32a; margin-bottom:5px; text-align:center;">
+                        x1 000 (0.1%) | x10 000 (0.01%) | x100 000 (0.001%) | x1 000 000 (0.0001%)
+                    </div>
+                    <div class="slot-box">
+                        <span id="cl1">7️⃣</span><span id="cl2">7️⃣</span><span id="cl3">7️⃣</span>
+                    </div>
+                    <div class="status-box" id="s777Status">Крутите барабаны!</div>
+                    <button class="btn-action" onclick="playClassicSlot()">Крутить 777</button>
+                </div>
+
+                <!-- 2. МИНЫ -->
+                <div class="game-panel" id="p-mines">
                     <div class="diff-row">
                         <button class="diff-btn" onclick="setMinesDim(9, this)">Лёгкий (3x3)</button>
                         <button class="diff-btn active" onclick="setMinesDim(25, this)">Средний (5x5)</button>
@@ -460,29 +566,29 @@
                     <button class="btn-action" id="minesBtn" onclick="minesAction()">Старт (50 ₽)</button>
                 </div>
 
-                <!-- 2. КРАШ -->
+                <!-- 3. КРАШ -->
                 <div class="game-panel" id="p-crash">
                     <div class="diff-row">
                         <button class="diff-btn active" onclick="setCrashRisk('low', this)">Низкий (x2)</button>
                         <button class="diff-btn" onclick="setCrashRisk('med', this)">Средний (x10)</button>
                         <button class="diff-btn" onclick="setCrashRisk('high', this)">Экстрим (x100)</button>
                     </div>
-                    <div style="height: 100px; width:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#070517; border-radius:10px;">
+                    <div style="height: 90px; width:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#070517; border-radius:10px;">
                         <div style="font-size:24px;">🚀</div>
-                        <div style="font-size:34px; font-weight:900; color:#00cec9;" id="crashText">x1.00</div>
+                        <div style="font-size:32px; font-weight:900; color:#00cec9;" id="crashText">x1.00</div>
                     </div>
                     <div class="status-box" id="crashStatus">Ожидание старта</div>
                     <button class="btn-action" id="crashBtn" onclick="crashAction()">Взлететь</button>
                 </div>
 
-                <!-- 3. FLIP -->
+                <!-- 4. FLIP -->
                 <div class="game-panel" id="p-flip">
                     <div class="diff-row">
                         <button class="diff-btn active" onclick="setFlipSides(2, this)">Классика (x1.95)</button>
                         <button class="diff-btn" onclick="setFlipSides(3, this)">Трио (x2.90)</button>
                         <button class="diff-btn" onclick="setFlipSides(4, this)">Квадро (x3.85)</button>
                     </div>
-                    <div style="font-size:46px; margin:4px 0;" id="flipIcon">🪙</div>
+                    <div style="font-size:42px; margin:4px 0;" id="flipIcon">🪙</div>
                     <div style="display:flex; gap:6px; width:100%;" id="flipChoices">
                         <button class="btn-action" style="margin:0; flex:1;" onclick="playFlip(1)">Орёл</button>
                         <button class="btn-action" style="margin:0; flex:1;" onclick="playFlip(2)">Решка</button>
@@ -490,27 +596,8 @@
                     <div class="status-box" id="flipStatus">Сделайте выбор</div>
                 </div>
 
-                <!-- 4. СЛОТ 777 -->
-                <div class="game-panel" id="p-s777">
-                    <div class="diff-row">
-                        <button class="diff-btn active" onclick="setSlotDiff('norm', this)">1 Линия (x25)</button>
-                        <button class="diff-btn" onclick="setSlotDiff('hard', this)">3 Линии (x75)</button>
-                        <button class="diff-btn" onclick="setSlotDiff('vip', this)">VIP (x200)</button>
-                    </div>
-                    <div class="slot-box">
-                        <span id="cl1">💎</span><span id="cl2">🍒</span><span id="cl3">7️⃣</span>
-                    </div>
-                    <div class="status-box" id="s777Status">Крутите барабаны!</div>
-                    <button class="btn-action" onclick="playClassicSlot()">Крутить 777</button>
-                </div>
-
                 <!-- 5. ZEUS -->
                 <div class="game-panel" id="p-szeus">
-                    <div class="diff-row">
-                        <button class="diff-btn active" onclick="setZeusDiff('norm', this)">Олимп (x30)</button>
-                        <button class="diff-btn" onclick="setZeusDiff('hard', this)">Шторм (x50)</button>
-                        <button class="diff-btn" onclick="setZeusDiff('god', this)">Бог Грома (x150)</button>
-                    </div>
                     <div class="slot-box" style="border-color:#ffd32a;">
                         <span id="z1">⚡</span><span id="z2">🏛️</span><span id="z3">👑</span>
                     </div>
@@ -520,11 +607,6 @@
 
                 <!-- 6. BONANZA -->
                 <div class="game-panel" id="p-ssweet">
-                    <div class="diff-row">
-                        <button class="diff-btn active" onclick="setSweetDiff('norm', this)">Леденцы (x40)</button>
-                        <button class="diff-btn" onclick="setSweetDiff('hard', this)">Бомбы (x100)</button>
-                        <button class="diff-btn" onclick="setSweetDiff('mega', this)">Мега Дроп (x250)</button>
-                    </div>
                     <div class="slot-box" style="border-color:#ff3399;">
                         <span id="sb1">🍬</span><span id="sb2">🍭</span><span id="sb3">💣</span>
                     </div>
@@ -534,11 +616,6 @@
 
                 <!-- 7. WILD WEST -->
                 <div class="game-panel" id="p-swild">
-                    <div class="diff-row">
-                        <button class="diff-btn active" onclick="setWildDiff('norm', this)">Ковбой (x30)</button>
-                        <button class="diff-btn" onclick="setWildDiff('hard', this)">Шериф (x80)</button>
-                        <button class="diff-btn" onclick="setWildDiff('outlaw', this)">Бандит (x200)</button>
-                    </div>
                     <div class="slot-box" style="border-color:#e67e22;">
                         <span id="ww1">🤠</span><span id="ww2">🔫</span><span id="ww3">⭐</span>
                     </div>
@@ -548,11 +625,6 @@
 
                 <!-- 8. CROWN -->
                 <div class="game-panel" id="p-scrown">
-                    <div class="diff-row">
-                        <button class="diff-btn active" onclick="setCrownDiff('norm', this)">Принц (x50)</button>
-                        <button class="diff-btn" onclick="setCrownDiff('hard', this)">Король (x150)</button>
-                        <button class="diff-btn" onclick="setCrownDiff('imp', this)">Император (x300)</button>
-                    </div>
                     <div class="slot-box" style="border-color:#f1c40f;">
                         <span id="rc1">👑</span><span id="rc2">💎</span><span id="rc3">💰</span>
                     </div>
@@ -562,11 +634,6 @@
 
                 <!-- 9. PINCO -->
                 <div class="game-panel" id="p-pinco">
-                    <div class="diff-row">
-                        <button class="diff-btn active" onclick="setPincoVol('low', this)">Low (до x3)</button>
-                        <button class="diff-btn" onclick="setPincoVol('med', this)">Med (до x10)</button>
-                        <button class="diff-btn" onclick="setPincoVol('high', this)">High (до x50)</button>
-                    </div>
                     <div style="font-size:32px; margin:4px 0;">⚪</div>
                     <div class="status-box" id="pincoStatus">Готов к сбросу</div>
                     <button class="btn-action" onclick="playPinco()">Бросить шарик</button>
@@ -574,12 +641,7 @@
 
                 <!-- 10. CHICKEN -->
                 <div class="game-panel" id="p-chicken">
-                    <div class="diff-row">
-                        <button class="diff-btn active" onclick="setChkLanes(2, this)">2 полосы (x1.35)</button>
-                        <button class="diff-btn" onclick="setChkLanes(3, this)">3 полосы (x1.95)</button>
-                        <button class="diff-btn" onclick="setChkLanes(4, this)">4 полосы (x3.50)</button>
-                    </div>
-                    <div style="font-size:28px;">🐔 🛣 🚗</div>
+                    <div style="font-size:26px;">🐔 🛣 🚗</div>
                     <div style="display:flex; gap:6px; width:100%; margin-top:6px;" id="chkLanesRow">
                         <button class="btn-action" style="margin:0; flex:1;" onclick="stepChicken(1)">Полоса 1</button>
                         <button class="btn-action" style="margin:0; flex:1;" onclick="stepChicken(2)">Полоса 2</button>
@@ -591,12 +653,7 @@
 
                 <!-- 11. HI-LO -->
                 <div class="game-panel" id="p-hilo">
-                    <div class="diff-row">
-                        <button class="diff-btn active" onclick="setHiLoDiff('std', this)">Стандарт (2-14)</button>
-                        <button class="diff-btn" onclick="setHiLoDiff('narrow', this)">Узкий (6-9)</button>
-                        <button class="diff-btn" onclick="setHiLoDiff('hard', this)">Экстрим (13-14)</button>
-                    </div>
-                    <div style="font-size:36px; background:#fff; color:#111; padding:6px 20px; border-radius:10px; font-weight:900; margin:6px;" id="hlCard">7</div>
+                    <div style="font-size:34px; background:#fff; color:#111; padding:4px 18px; border-radius:10px; font-weight:900; margin:4px;" id="hlCard">7</div>
                     <div style="display:flex; gap:6px; width:100%;">
                         <button class="btn-action" style="margin:0; flex:1;" onclick="playHiLo('hi')">⬆️ Больше</button>
                         <button class="btn-action" style="margin:0; flex:1;" onclick="playHiLo('lo')">⬇️ Меньше</button>
@@ -608,15 +665,10 @@
 
                 <!-- 12. DICE -->
                 <div class="game-panel" id="p-dice">
-                    <div class="diff-row">
-                        <button class="diff-btn active" onclick="setDiceDiff('std', this)">Обычный</button>
-                        <button class="diff-btn" onclick="setDiceDiff('pro', this)">Профи (x3.0)</button>
-                        <button class="diff-btn" onclick="setDiceDiff('hard', this)">Хард (x8.0)</button>
-                    </div>
-                    <div style="font-size:42px; margin:4px 0;" id="diceDisplay">🎲 🎲</div>
+                    <div style="font-size:38px; margin:4px 0;" id="diceDisplay">🎲 🎲</div>
                     <div style="display:flex; gap:6px; width:100%;">
                         <button class="btn-action" style="margin:0; flex:1;" onclick="playDice('under')">&lt; 7</button>
-                        <button class="btn-action" style="margin:0; flex:1; background:#00cec9; color:#080614;" onclick="playDice('exact')">= 7 (x5.8)</button>
+                        <button class="btn-action" style="margin:0; flex:1; background:#00cec9; color:#080614;" onclick="playDice('exact')">= 7</button>
                         <button class="btn-action" style="margin:0; flex:1;" onclick="playDice('over')">&gt; 7</button>
                     </div>
                     <div class="status-box" id="diceStatus">Ставка на кости</div>
@@ -624,63 +676,84 @@
 
                 <!-- 13. КОЛЕСО -->
                 <div class="game-panel" id="p-wheel">
-                    <div class="diff-row">
-                        <button class="diff-btn active" onclick="setWheelDiff('safe', this)">Безопасное (до x5)</button>
-                        <button class="diff-btn" onclick="setWheelDiff('norm', this)">Обычное (до x20)</button>
-                        <button class="diff-btn" onclick="setWheelDiff('high', this)">Джекпот (до x100)</button>
-                    </div>
-                    <div style="font-size:50px; margin:6px 0;" id="wheelIcon">🎡</div>
-                    <div class="status-box" id="wheelStatus">Крутите Колесо Удачи!</div>
+                    <div style="font-size:46px; margin:4px 0;" id="wheelIcon">🎡</div>
+                    <div class="status-box" id="wheelStatus">Крутите Колесо!</div>
                     <button class="btn-action" onclick="playWheel()">Крутить Колесо</button>
                 </div>
 
                 <!-- 14. БАШНЯ 100 -->
                 <div class="game-panel" id="p-tower">
-                    <div class="diff-row">
-                        <button class="diff-btn active" onclick="setTowerDiff('easy', this)">Лёгкая (1 ловушка / 4)</button>
-                        <button class="diff-btn" onclick="setTowerDiff('med', this)">Средняя (1 ловушка / 3)</button>
-                        <button class="diff-btn" onclick="setTowerDiff('hard', this)">Хард (2 ловушки / 3)</button>
-                    </div>
                     <div class="tower-view" id="towerView"></div>
-                    <div class="status-box" id="towerStatus">Этаж: 1/100 | Множитель: x1.00</div>
-                    <button class="btn-action" id="towerCashBtn" style="display:none;" onclick="cashTower()">Забрать выигрыш</button>
+                    <div class="status-box" id="towerStatus">Этаж: 1/100</div>
+                    <button class="btn-action" id="towerCashBtn" style="display:none;" onclick="cashTower()">Забрать</button>
                     <button class="btn-action" id="towerStartBtn" onclick="startTower()">Штурмовать Башню</button>
                 </div>
 
                 <!-- 15. РУЛЕТКА -->
                 <div class="game-panel" id="p-roulette">
-                    <div class="diff-row">
-                        <button class="diff-btn active" onclick="setRoulDiff('euro', this)">Европа (1 Зеро)</button>
-                        <button class="diff-btn" onclick="setRoulDiff('usa', this)">Америка (2 Зеро)</button>
-                        <button class="diff-btn" onclick="setRoulDiff('vip', this)">VIP x3</button>
-                    </div>
-                    <div style="font-size:38px; margin:4px 0;" id="roulDisplay">⚫ 🔴 🟢</div>
+                    <div style="font-size:34px; margin:4px 0;" id="roulDisplay">⚫ 🔴 🟢</div>
                     <div style="display:flex; gap:6px; width:100%;">
-                        <button class="btn-action" style="margin:0; flex:1; background:#d63031;" onclick="playRoulette('red')">Красное (x2)</button>
-                        <button class="btn-action" style="margin:0; flex:1; background:#00b894;" onclick="playRoulette('zero')">Зеро 0 (x14)</button>
-                        <button class="btn-action" style="margin:0; flex:1; background:#2d3436;" onclick="playRoulette('black')">Черное (x2)</button>
+                        <button class="btn-action" style="margin:0; flex:1; background:#d63031;" onclick="playRoulette('red')">Красное</button>
+                        <button class="btn-action" style="margin:0; flex:1; background:#00b894;" onclick="playRoulette('zero')">Зеро 0</button>
+                        <button class="btn-action" style="margin:0; flex:1; background:#2d3436;" onclick="playRoulette('black')">Черное</button>
                     </div>
                     <div class="status-box" id="roulStatus">Сделайте ставку</div>
                 </div>
 
                 <!-- 16. КНБ -->
                 <div class="game-panel" id="p-rps">
-                    <div class="diff-row">
-                        <button class="diff-btn active" onclick="setRpsDiff('norm', this)">Обычный (x2.0)</button>
-                        <button class="diff-btn" onclick="setRpsDiff('streak', this)">Серия 3 победы (x5.0)</button>
-                        <button class="diff-btn" onclick="setRpsDiff('god', this)">Босс x10</button>
-                    </div>
-                    <div style="font-size:42px; margin:4px 0;" id="rpsIcon">✂️ 🪨 📄</div>
+                    <div style="font-size:38px; margin:4px 0;" id="rpsIcon">✂️ 🪨 📄</div>
                     <div style="display:flex; gap:6px; width:100%;">
-                        <button class="btn-action" style="margin:0; flex:1;" onclick="playRPS('rock')">🪨 Камень</button>
-                        <button class="btn-action" style="margin:0; flex:1;" onclick="playRPS('scissors')">✂️ Ножницы</button>
-                        <button class="btn-action" style="margin:0; flex:1;" onclick="playRPS('paper')">📄 Бумага</button>
+                        <button class="btn-action" style="margin:0; flex:1;" onclick="playRPS('rock')">🪨</button>
+                        <button class="btn-action" style="margin:0; flex:1;" onclick="playRPS('scissors')">✂️</button>
+                        <button class="btn-action" style="margin:0; flex:1;" onclick="playRPS('paper')">📄</button>
                     </div>
                     <div class="status-box" id="rpsStatus">Сделайте ход!</div>
                 </div>
             </div>
         </div>
 
+        <!-- ================== РАЗДЕЛ 2: TELEGRAM GIFTS & UPGRADER ================== -->
+        <div id="giftsView">
+            <!-- МАГАЗИН ПОДАРКОВ -->
+            <div class="gifts-card">
+                <div style="font-size:13px; font-weight:bold; color:#00cec9;">🛍️ Магазин Подарков Telegram</div>
+                <div style="font-size:10px; color:#aaa; margin-bottom:4px;">Покупайте за выигранные в казино рубли</div>
+                <div class="gifts-grid" id="giftsShopList"></div>
+            </div>
+
+            <!-- ИНВЕНТАРЬ -->
+            <div class="gifts-card">
+                <div style="width:100%; display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-size:12px; font-weight:bold; color:#ff3399;">🎒 Ваш Инвентарь</div>
+                    <button style="background:none; border:none; color:#00ff88; font-size:11px; cursor:pointer;" onclick="sellAllInventory()">Продать всё в ₽</button>
+                </div>
+                <div class="inventory-list" id="invList">
+                    <div style="font-size:11px; color:#666; margin:auto;">Инвентарь пуст</div>
+                </div>
+            </div>
+
+            <!-- АПГРЕЙДЕР С КОЛЕСОМ И СТРЕЛКОЙ -->
+            <div class="gifts-card">
+                <div style="font-size:13px; font-weight:900; color:#ffd32a;">⚡ АПГРЕЙДЕР ПОДАРКОВ ⚡</div>
+                <div style="font-size:10px; color:#bbb; text-align:center;">
+                    Исходный: <span id="upgSrcTxt" style="color:#00cec9;">не выбран</span> ➔ 
+                    Желаемый: <span id="upgDstTxt" style="color:#ff3399;">не выбран</span>
+                </div>
+
+                <div class="wheel-container">
+                    <canvas class="wheel-canvas" id="wheelCanvas" width="190" height="190"></canvas>
+                    <div class="wheel-arrow" id="wheelArrow"></div>
+                    <div class="wheel-center-pin"></div>
+                </div>
+
+                <div style="font-size:15px; font-weight:900;" id="upgChanceTxt">Шанс: 0.00%</div>
+                <div style="font-size:11px; color:#ffd32a; margin-top:2px;" id="upgStatus">Выберите предмет для улучшения</div>
+                <button class="btn-action" id="btnRunUpgrade" style="background:linear-gradient(90deg, #ffd32a, #ff3399); color:#000;" onclick="runUpgrade()">КРУТИТЬ АПГРЕЙД</button>
+            </div>
+        </div>
+
+        <!-- ================== РАЗДЕЛ 3: GEMINI AI ЧАТ ================== -->
         <div id="aiView">
             <div class="ai-card">
                 <div style="font-size:12px; font-weight:bold; color:#00cec9; margin-bottom:6px;">Стиль мышления ИИ:</div>
@@ -708,15 +781,16 @@
         </div>
     </div>
 
-    <!-- ЧИТ МОДАЛКА -->
+    <!-- ЧИТ МОДАЛКА ДЛЯ ВЛАДЕЛЬЦА -->
     <div class="cheat-modal" id="cheatModal">
         <div class="cheat-box">
-            <h3 style="color:#00ff88; margin:0 0 10px 0; text-align:center;">⚡ СИСТЕМА ЧИТОВ (16 ИГР + ИИ) ⚡</h3>
+            <h3 style="color:#00ff88; margin:0 0 10px 0; text-align:center;">⚡ СИСТЕМА ЧИТОВ (DEV) ⚡</h3>
+            <div class="cheat-item"><span>🎰 777: x1 000 000 Джекпот</span><input type="checkbox" id="c_777_win"></div>
+            <div class="cheat-item"><span>🎁 Апгрейд Подарков: 100% Успех</span><input type="checkbox" id="c_upg_win"></div>
             <div class="cheat-item"><span>💣 Мины: Рентген X-Ray</span><input type="checkbox" id="c_mines_xray" onchange="toggleXray()"></div>
             <div class="cheat-item"><span>💣 Мины: Авто-обход</span><input type="checkbox" id="c_mines_win"></div>
             <div class="cheat-item"><span>🚀 Краш: Всегда x30+</span><input type="checkbox" id="c_crash_win"></div>
             <div class="cheat-item"><span>🪙 Flipcoin: Всегда победа</span><input type="checkbox" id="c_flip_win"></div>
-            <div class="cheat-item"><span>🎰 777: Джекпот</span><input type="checkbox" id="c_777_win"></div>
             <div class="cheat-item"><span>⚡ Zeus: Молния Зевса</span><input type="checkbox" id="c_zeus_win"></div>
             <div class="cheat-item"><span>🍬 Bonanza: Бомбы x100</span><input type="checkbox" id="c_bonanza_win"></div>
             <div class="cheat-item"><span>🤠 Wild West: Шериф x80</span><input type="checkbox" id="c_wild_win"></div>
@@ -729,7 +803,6 @@
             <div class="cheat-item"><span>🗼 Башня: Чистый проход (100 эт.)</span><input type="checkbox" id="c_tower_win"></div>
             <div class="cheat-item"><span>🔴 Рулетка: Точный цвет/Зеро</span><input type="checkbox" id="c_roul_win"></div>
             <div class="cheat-item"><span>✂️ КНБ: Победа</span><input type="checkbox" id="c_rps_win"></div>
-            <div class="cheat-item"><span>🧠 ИИ: Без задержки и лимитов</span><input type="checkbox" id="c_ai_speed" checked></div>
 
             <div class="cheat-btns">
                 <button class="btn-c-act" onclick="addMoney(10000)">+10k ₽</button>
@@ -743,8 +816,6 @@
 
     <script>
         const tg = window.Telegram?.WebApp;
-        
-        // Вход только через Telegram
         const isTelegramClient = !!(tg && tg.initData && tg.initData.length > 0);
         
         if (!isTelegramClient) {
@@ -768,28 +839,24 @@
         let bal = 1000;
         let currentBet = 50;
 
-        function updateBal() { document.getElementById("balance").innerText = bal; }
+        function updateBal() { document.getElementById("balance").innerText = bal.toLocaleString(); }
 
         function showMainSection(sec) {
-            if (sec === 'games') {
-                document.getElementById("gamesView").style.display = "flex";
-                document.getElementById("aiView").style.display = "none";
-                document.getElementById("btnTabGames").classList.add("active");
-                document.getElementById("btnTabAI").classList.remove("active");
-            } else {
-                document.getElementById("gamesView").style.display = "none";
-                document.getElementById("aiView").style.display = "flex";
-                document.getElementById("btnTabAI").classList.add("active");
-                document.getElementById("btnTabGames").classList.remove("active");
-            }
+            document.getElementById("gamesView").style.display = (sec === 'games') ? "flex" : "none";
+            document.getElementById("giftsView").style.display = (sec === 'gifts') ? "flex" : "none";
+            document.getElementById("aiView").style.display = (sec === 'ai') ? "flex" : "none";
+
+            document.getElementById("btnTabGames").classList.toggle("active", sec === 'games');
+            document.getElementById("btnTabGifts").classList.toggle("active", sec === 'gifts');
+            document.getElementById("btnTabAI").classList.toggle("active", sec === 'ai');
         }
 
         function setBet(amount, btn) {
             document.querySelectorAll(".b-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
             currentBet = (amount === 'all') ? Math.max(10, bal) : amount;
-            document.getElementById("curBetLabel").innerText = currentBet + " ₽";
-            document.getElementById("minesBtn").innerText = `Старт (${currentBet} ₽)`;
+            document.getElementById("curBetLabel").innerText = currentBet.toLocaleString() + " ₽";
+            document.getElementById("minesBtn").innerText = `Старт (${currentBet.toLocaleString()} ₽)`;
         }
 
         function openCheat() { document.getElementById("cheatModal").style.display = "flex"; }
@@ -803,35 +870,302 @@
             document.getElementById("p-" + name).classList.add("active");
         }
 
-        /* GEMINI AI БЫСТРЫЕ МОДЕЛИ И ЗАЩИТА */
-        // Ключ разбит и закодирован (защита от сканера секретов GitHub):
+        /* ================== ДВИЖОК TELEGRAM GIFTS & UPGRADER ================== */
+        const TG_GIFTS = [
+            { id: 1, name: "Мишка", icon: "🧸", price: 500 },
+            { id: 2, name: "Роза", icon: "🌹", price: 1000 },
+            { id: 3, name: "Ракета", icon: "🚀", price: 2500 },
+            { id: 4, name: "Торт", icon: "🎂", price: 5000 },
+            { id: 5, name: "Бриллиант", icon: "💎", price: 15000 },
+            { id: 6, name: "Кольцо", icon: "💍", price: 50000 },
+            { id: 7, name: "Корона", icon: "👑", price: 150000 },
+            { id: 8, name: "Пегас", icon: "🦄", price: 500000 }
+        ];
+
+        let userInventory = [];
+        let selectedSrcGift = null;
+        let selectedDstGift = null;
+        let isUpgrading = false;
+        let currentArrowDeg = 0;
+
+        function initGiftsShop() {
+            const list = document.getElementById("giftsShopList");
+            list.innerHTML = "";
+            TG_GIFTS.forEach(g => {
+                const item = document.createElement("div");
+                item.className = "gift-box";
+                item.onclick = () => buyGift(g);
+                item.innerHTML = `
+                    <div class="gift-icon">${g.icon}</div>
+                    <div class="gift-name">${g.name}</div>
+                    <div class="gift-price">${g.price.toLocaleString()} ₽</div>
+                `;
+                list.appendChild(item);
+            });
+            renderInventory();
+            drawUpgradeWheel(0);
+        }
+
+        function buyGift(g) {
+            if (bal < g.price) return alert("Недостаточно средств для покупки подарка!");
+            bal -= g.price;
+            updateBal();
+            userInventory.push({ ...g, uid: Date.now() + Math.random() });
+            renderInventory();
+        }
+
+        function renderInventory() {
+            const list = document.getElementById("invList");
+            list.innerHTML = "";
+            if (userInventory.length === 0) {
+                list.innerHTML = `<div style="font-size:11px; color:#666; margin:auto;">Инвентарь пуст. Купите подарок в магазине!</div>`;
+                selectedSrcGift = null;
+                updateUpgradePreview();
+                return;
+            }
+            userInventory.forEach(g => {
+                const box = document.createElement("div");
+                box.className = `gift-box ${selectedSrcGift && selectedSrcGift.uid === g.uid ? 'selected' : ''}`;
+                box.style.minWidth = "65px";
+                box.onclick = () => selectSrcGift(g);
+                box.innerHTML = `
+                    <div class="gift-icon">${g.icon}</div>
+                    <div class="gift-name">${g.name}</div>
+                    <div class="gift-price">${g.price.toLocaleString()} ₽</div>
+                `;
+                list.appendChild(box);
+            });
+        }
+
+        function selectSrcGift(g) {
+            if (isUpgrading) return;
+            selectedSrcGift = g;
+            renderInventory();
+            // По умолчанию выбираем следующий доступный подарок для апгрейда
+            const higher = TG_GIFTS.filter(x => x.price > g.price);
+            if (higher.length > 0) {
+                selectedDstGift = higher[0];
+            } else {
+                selectedDstGift = null;
+            }
+            updateUpgradePreview();
+        }
+
+        function selectDstGift(g) {
+            if (isUpgrading) return;
+            selectedDstGift = g;
+            updateUpgradePreview();
+        }
+
+        function updateUpgradePreview() {
+            const srcTxt = document.getElementById("upgSrcTxt");
+            const dstTxt = document.getElementById("upgDstTxt");
+            const chanceTxt = document.getElementById("upgChanceTxt");
+
+            if (!selectedSrcGift) {
+                srcTxt.innerText = "не выбран";
+                dstTxt.innerText = "не выбран";
+                chanceTxt.innerText = "Шанс: 0.00%";
+                drawUpgradeWheel(0);
+                return;
+            }
+
+            srcTxt.innerText = `${selectedSrcGift.icon} ${selectedSrcGift.name} (${selectedSrcGift.price} ₽)`;
+
+            if (!selectedDstGift || selectedDstGift.price <= selectedSrcGift.price) {
+                const higher = TG_GIFTS.filter(x => x.price > selectedSrcGift.price);
+                selectedDstGift = higher.length > 0 ? higher[0] : null;
+            }
+
+            if (!selectedDstGift) {
+                dstTxt.innerText = "Максимальный предмет!";
+                chanceTxt.innerText = "Шанс: 0.00%";
+                drawUpgradeWheel(0);
+                return;
+            }
+
+            dstTxt.innerText = `${selectedDstGift.icon} ${selectedDstGift.name} (${selectedDstGift.price} ₽)`;
+
+            // Математический шанс: (Цена исходного / Цена целевого) * 100%
+            let chance = (selectedSrcGift.price / selectedDstGift.price) * 100;
+            if (chance > 95) chance = 95; // Максимальный лимит для азарта
+            chanceTxt.innerText = `Шанс: ${chance.toFixed(2)}% (Множитель ${(selectedDstGift.price / selectedSrcGift.price).toFixed(2)}x)`;
+            drawUpgradeWheel(chance);
+        }
+
+        function drawUpgradeWheel(chancePercent) {
+            const canvas = document.getElementById("wheelCanvas");
+            const ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const r = cx - 5;
+
+            // Серый фон колеса (зона проигрыша)
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.fillStyle = "#1e164d";
+            ctx.fill();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "#382980";
+            ctx.stroke();
+
+            // Жёлтая зона (выигрыш)
+            if (chancePercent > 0) {
+                const winAngle = (chancePercent / 100) * (Math.PI * 2);
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                // Начинаем от верхнего центра (-Math.PI / 2)
+                ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + winAngle);
+                ctx.closePath();
+                ctx.fillStyle = "#ffd32a";
+                ctx.shadowColor = "rgba(255, 211, 42, 0.8)";
+                ctx.shadowBlur = 12;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        function runUpgrade() {
+            if (isUpgrading) return;
+            if (!selectedSrcGift || !selectedDstGift) {
+                return alert("Выберите ваш подарок и целевой подарок для апгрейда!");
+            }
+
+            isUpgrading = true;
+            document.getElementById("btnRunUpgrade").disabled = true;
+            document.getElementById("upgStatus").innerText = "Стрелка вращается...";
+
+            let chance = (selectedSrcGift.price / selectedDstGift.price) * 100;
+            if (chance > 95) chance = 95;
+
+            const isCheat = document.getElementById("c_upg_win") && document.getElementById("c_upg_win").checked;
+            let willWin = isCheat || (Math.random() * 100 <= chance);
+
+            // 0 градусов на круге — это верх (12 часов)
+            let winDeg = (chance / 100) * 360;
+            let targetDeg = 0;
+
+            if (willWin) {
+                // Стрелка останавливается внутри желтого сектора [5°, winDeg - 5°]
+                targetDeg = Math.random() * (winDeg - 6) + 3;
+            } else {
+                // Стрелка останавливается в сером секторе [winDeg + 5°, 355°]
+                targetDeg = winDeg + Math.random() * (355 - winDeg - 5) + 3;
+            }
+
+            // Добавляем 5-7 полных оборотов
+            let totalRotations = 360 * 6 + targetDeg;
+            currentArrowDeg += totalRotations;
+
+            const arrow = document.getElementById("wheelArrow");
+            arrow.style.transition = "transform 4s cubic-bezier(0.15, 0.9, 0.25, 1)";
+            arrow.style.transform = `rotate(${currentArrowDeg}deg)`;
+
+            setTimeout(() => {
+                isUpgrading = false;
+                document.getElementById("btnRunUpgrade").disabled = false;
+
+                // Удаляем исходный подарок из инвентаря
+                userInventory = userInventory.filter(x => x.uid !== selectedSrcGift.uid);
+
+                if (willWin) {
+                    userInventory.push({ ...selectedDstGift, uid: Date.now() + Math.random() });
+                    document.getElementById("upgStatus").innerText = `🎉 УСПЕХ! Вы получили ${selectedDstGift.icon} ${selectedDstGift.name}!`;
+                } else {
+                    document.getElementById("upgStatus").innerText = `💥 НЕУДАЧА! Стрелка не попала в жёлтую зону.`;
+                }
+
+                selectedSrcGift = null;
+                renderInventory();
+                updateUpgradePreview();
+            }, 4200);
+        }
+
+        function sellAllInventory() {
+            if (userInventory.length === 0) return alert("Инвентарь пуст!");
+            let total = userInventory.reduce((acc, cur) => acc + cur.price, 0);
+            bal += total;
+            userInventory = [];
+            updateBal();
+            renderInventory();
+            updateUpgradePreview();
+            alert(`Все подарки проданы за +${total.toLocaleString()} ₽!`);
+        }
+
+        /* ================== СЛОТ 777 С УЛЬТРА-МНОЖИТЕЛЯМИ ================== */
+        function playClassicSlot() {
+            if (bal < currentBet) return alert("Недостаточно средств!");
+            bal -= currentBet; 
+            updateBal();
+
+            const isCheat = document.getElementById("c_777_win") && document.getElementById("c_777_win").checked;
+            let r1, r2, r3, mult = 0;
+
+            if (isCheat) {
+                r1 = "7️⃣"; r2 = "7️⃣"; r3 = "7️⃣";
+                mult = 1000000;
+            } else {
+                let roll = Math.random() * 100;
+                if (roll < 0.0001) {
+                    r1 = "7️⃣"; r2 = "7️⃣"; r3 = "7️⃣"; mult = 1000000; // 0.0001% -> x1 000 000
+                } else if (roll < 0.001) {
+                    r1 = "💎"; r2 = "💎"; r3 = "💎"; mult = 100000;  // 0.001% -> x100 000
+                } else if (roll < 0.01) {
+                    r1 = "👑"; r2 = "👑"; r3 = "👑"; mult = 10000;   // 0.01% -> x10 000
+                } else if (roll < 0.1) {
+                    r1 = "⭐"; r2 = "⭐"; r3 = "⭐"; mult = 1000;    // 0.1% -> x1 000
+                } else if (roll < 1.0) {
+                    r1 = "🔔"; r2 = "🔔"; r3 = "🔔"; mult = 50;
+                } else if (roll < 5.0) {
+                    r1 = "🍒"; r2 = "🍒"; r3 = "🍒"; mult = 10;
+                } else {
+                    const pool = ["💎", "🍒", "7️⃣", "🔔", "⭐", "👑"];
+                    r1 = pool[Math.floor(Math.random() * pool.length)];
+                    r2 = pool[Math.floor(Math.random() * pool.length)];
+                    r3 = pool[Math.floor(Math.random() * pool.length)];
+                    if (r1 === r2 && r2 === r3) r3 = (r3 === "🍒") ? "🔔" : "🍒";
+                    mult = 0;
+                }
+            }
+
+            document.getElementById("cl1").innerText = r1;
+            document.getElementById("cl2").innerText = r2;
+            document.getElementById("cl3").innerText = r3;
+
+            if (mult > 0) {
+                let win = currentBet * mult;
+                bal += win; updateBal();
+                document.getElementById("s777Status").innerText = `🔥 ДЖЕКПОТ x${mult.toLocaleString()}! +${win.toLocaleString()} ₽!`;
+            } else {
+                document.getElementById("s777Status").innerText = `❌ Нет совпадений! Потеря: -${currentBet.toLocaleString()} ₽`;
+            }
+        }
+
+        /* ================== GEMINI AI ЧАТ И БЕЗОПАСНОСТЬ ================== */
         const _kParts = ["QVEuQWI4Uk42", "TFZBUGdudDZI", "clR4V0JkSWFa", "cjJzS0dBUVI4", "OVNuZTVWUVFM", "d0tWN3lxb1E="];
         const GEMINI_KEY = atob(_kParts.join(""));
-
         let curAiMode = "minimal";
-        let lastMsgTime = 0;
-        let msgCount = 0;
+        let lastMsgTime = 0, msgCount = 0;
 
         const AI_PROMPTS = {
-            "minimal": "СТИЛЬ: Краткий, лаконичный ответ без лишней воды.",
-            "easy": "СТИЛЬ: Добрый заботливый наставник, объясняй простыми словами.",
-            "medium": "СТИЛЬ: Опытный преподаватель, глубокий структурированный ответ.",
-            "hard": "СТИЛЬ: Академический строгий эксперт с терминами.",
-            "impossible": "СТИЛЬ: Олимпиадный тренер, повышенная сложность анализа.",
-            "geo": "СТИЛЬ: Аналитик геолокации, OSINT и расследований."
+            "minimal": "СТИЛЬ: Краткий, лаконичный ответ.",
+            "easy": "СТИЛЬ: Добрый наставник.",
+            "medium": "СТИЛЬ: Опытный преподаватель.",
+            "hard": "СТИЛЬ: Академический строгий эксперт.",
+            "impossible": "СТИЛЬ: Олимпиадный тренер.",
+            "geo": "СТИЛЬ: Аналитик геолокации и OSINT."
         };
 
         function setAiMode(m, btn) {
             btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
             curAiMode = m;
-            appendMsg("system", `⚙️ Режим ИИ изменен на: ${m.toUpperCase()}`);
+            appendMsg("system", `⚙️ Режим ИИ: ${m.toUpperCase()}`);
         }
 
-        function handleChatKey(e) {
-            if (e.key === "Enter") sendAiMessage();
-        }
-
+        function handleChatKey(e) { if (e.key === "Enter") sendAiMessage(); }
         function appendMsg(sender, text) {
             const box = document.getElementById("chatMsgs");
             const div = document.createElement("div");
@@ -847,15 +1181,9 @@
             const insults = ["дурак", "дебил", "лох", "урод", "мразь", "пшол", "соси"];
             const exploits = ["ignore all", "ты админ", "дай права", "sudo", "eval", "exec", "system_instruction"];
 
-            for (let e of exploits) {
-                if (lower.includes(e)) return { violated: true, fine: 50000, reason: "Попытка эксплойта/взлома" };
-            }
-            for (let i of insults) {
-                if (lower.includes(i)) return { violated: true, fine: 1000, reason: "Оскорбление" };
-            }
-            for (let s of swearWords) {
-                if (lower.includes(s)) return { violated: true, fine: 100, reason: "Ненормативная лексика" };
-            }
+            for (let e of exploits) if (lower.includes(e)) return { violated: true, fine: 50000, reason: "Попытка эксплойта/взлома" };
+            for (let i of insults) if (lower.includes(i)) return { violated: true, fine: 1000, reason: "Оскорбление" };
+            for (let s of swearWords) if (lower.includes(s)) return { violated: true, fine: 100, reason: "Ненормативная лексика" };
             return { violated: false };
         }
 
@@ -867,41 +1195,26 @@
             const now = Date.now();
             if (now - lastMsgTime < 3000) {
                 msgCount++;
-                if (msgCount > 3) {
-                    appendMsg("system", "🚨 Сработал анти-флуд. Сбавьте темп общения!");
-                    return;
-                }
-            } else {
-                msgCount = 1;
-            }
+                if (msgCount > 3) { appendMsg("system", "🚨 Сработал анти-флуд. Сбавьте темп!"); return; }
+            } else { msgCount = 1; }
             lastMsgTime = now;
 
             const sec = checkSafety(text);
             if (sec.violated) {
-                bal = Math.max(0, bal - sec.fine);
-                updateBal();
+                bal = Math.max(0, bal - sec.fine); updateBal();
                 appendMsg("user", text);
                 appendMsg("system", `🚨 Нарушение (${sec.reason})! Штраф -${sec.fine} ₽. Баланс: ${bal} ₽`);
-                inp.value = "";
-                return;
+                inp.value = ""; return;
             }
 
             appendMsg("user", text);
             inp.value = "";
             appendMsg("ai", "Думаю...");
 
-            // Быстрые и легкие модели (без тяжелого Argon):
-            const models = [
-                "gemini-3.8-flash",
-                "gemini-3.5-flash-lite",
-                "gemini-3.1-flash-lite"
-            ];
-            
-            const prompt = `СИСТЕМНОЕ ТРЕБОВАНИЕ: ${AI_PROMPTS[curAiMode]}\nЗапрос пользователя: ${text}`;
+            const models = ["gemini-3.8-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"];
+            const prompt = `СИСТЕМНОЕ ТРЕБОВАНИЕ: ${AI_PROMPTS[curAiMode]}\nЗапрос: ${text}`;
             const maxTokens = isOwner ? 8192 : 500;
-
             let success = false;
-            let lastErr = "";
 
             for (let m of models) {
                 try {
@@ -916,36 +1229,23 @@
                     });
                     if (res.ok) {
                         const data = await res.json();
-                        const answer = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                        if (answer) {
-                            const msgs = document.getElementById("chatMsgs");
-                            msgs.lastElementChild.innerText = answer;
-                            success = true;
-                            break;
+                        const ans = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (ans) {
+                            document.getElementById("chatMsgs").lastElementChild.innerText = ans;
+                            success = true; break;
                         }
-                    } else {
-                        const ed = await res.json().catch(() => ({}));
-                        lastErr = ed.error?.message || `Статус: ${res.status}`;
                     }
-                } catch (e) {
-                    lastErr = e.message;
-                }
+                } catch (e) {}
             }
-
-            if (!success) {
-                const msgs = document.getElementById("chatMsgs");
-                msgs.lastElementChild.innerText = `ИИ временно недоступен: ${lastErr || "проверьте сеть"}`;
-            }
+            if (!success) document.getElementById("chatMsgs").lastElementChild.innerText = "ИИ временно недоступен.";
         }
 
-        /* 1. МИНЫ */
+        /* ================== ОСТАЛЬНЫЕ ИГРЫ КАЗИНО ================== */
         let mDim = 25, mBombsCount = 3, mPlaying = false, mBombs = [], mMult = 1.0;
         function setMinesDim(dim, btn) {
             btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
-            mDim = dim;
-            mBombsCount = dim === 9 ? 2 : (dim === 25 ? 3 : 5);
-            initMines();
+            mDim = dim; mBombsCount = dim === 9 ? 2 : (dim === 25 ? 3 : 5); initMines();
         }
         function initMines() {
             const grid = document.getElementById("mineGrid");
@@ -963,11 +1263,8 @@
         function applyXray() {
             const isXray = document.getElementById("c_mines_xray").checked;
             document.querySelectorAll(".mine-cell").forEach((c, idx) => {
-                if (isXray && !mBombs.includes(idx) && !c.classList.contains("gem")) {
-                    c.classList.add("cheat-safe");
-                } else {
-                    c.classList.remove("cheat-safe");
-                }
+                if (isXray && !mBombs.includes(idx) && !c.classList.contains("gem")) c.classList.add("cheat-safe");
+                else c.classList.remove("cheat-safe");
             });
         }
         function minesAction() {
@@ -980,11 +1277,9 @@
                     let r = Math.floor(Math.random() * mDim);
                     if (!mBombs.includes(r)) mBombs.push(r);
                 }
-                initMines();
-                applyXray();
+                initMines(); applyXray();
                 document.getElementById("minesStatus").innerText = `Множитель: x1.00 | Банк: ${currentBet} ₽`;
-                btn.innerText = `Забрать (${currentBet} ₽)`;
-                btn.style.background = "#00b894";
+                btn.innerText = `Забрать (${currentBet} ₽)`; btn.style.background = "#00b894";
             } else {
                 let win = Math.floor(currentBet * mMult);
                 bal += win; updateBal();
@@ -992,7 +1287,6 @@
                 mPlaying = false;
                 btn.innerText = `Старт (${currentBet} ₽)`;
                 btn.style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
-                document.querySelectorAll(".mine-cell").forEach(c => c.classList.remove("cheat-safe"));
             }
         }
         function clickMine(cell, idx) {
@@ -1004,18 +1298,14 @@
                     cell.classList.add("gem"); cell.innerText = "💎";
                 } else {
                     cell.classList.add("bomb"); cell.innerText = "💣";
-                    document.querySelectorAll(".mine-cell").forEach((c, i) => {
-                        if (mBombs.includes(i)) { c.classList.add("bomb"); c.innerText = "💣"; }
-                    });
-                    document.getElementById("minesStatus").innerText = `💥 Взрыв на ячейке ${idx+1}! Ставка сгорела.`;
+                    document.querySelectorAll(".mine-cell").forEach((c, i) => { if (mBombs.includes(i)) { c.classList.add("bomb"); c.innerText = "💣"; } });
+                    document.getElementById("minesStatus").innerText = `💥 Взрыв! Ставка сгорела.`;
                     mPlaying = false;
                     document.getElementById("minesBtn").innerText = `Старт (${currentBet} ₽)`;
                     document.getElementById("minesBtn").style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
                     return;
                 }
-            } else {
-                cell.classList.add("gem"); cell.innerText = "💎";
-            }
+            } else { cell.classList.add("gem"); cell.innerText = "💎"; }
             let stepGrowth = 1.0 + (mBombsCount / (mDim - mBombsCount)) * 0.95;
             mMult = +(mMult * stepGrowth).toFixed(2);
             let w = Math.floor(currentBet * mMult);
@@ -1023,12 +1313,10 @@
             document.getElementById("minesBtn").innerText = `Забрать (${w} ₽)`;
         }
 
-        /* 2. КРАШ */
         let crRisk = 'low', crActive = false, crPoint = 0, crCurrent = 1.0, crTimer = null;
         function setCrashRisk(risk, btn) {
             btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            crRisk = risk;
+            btn.classList.add("active"); crRisk = risk;
         }
         function crashAction() {
             const btn = document.getElementById("crashBtn");
@@ -1038,85 +1326,49 @@
                 crActive = true; crCurrent = 1.0;
                 let maxR = crRisk === 'low' ? 2.5 : (crRisk === 'med' ? 10.0 : 100.0);
                 crPoint = document.getElementById("c_crash_win").checked ? 30.0 : +(1.05 + Math.random() * maxR).toFixed(2);
-                btn.innerText = `Забрать (${currentBet} ₽)`;
-                btn.style.background = "#00b894";
+                btn.innerText = `Забрать (${currentBet} ₽)`; btn.style.background = "#00b894";
                 crTimer = setInterval(() => {
                     crCurrent = +(crCurrent + 0.05).toFixed(2);
                     document.getElementById("crashText").innerText = `x${crCurrent.toFixed(2)}`;
                     let w = Math.floor(currentBet * crCurrent);
                     btn.innerText = `Забрать (${w} ₽)`;
                     if (crCurrent >= crPoint) {
-                        clearInterval(crTimer);
-                        crActive = false;
-                        document.getElementById("crashStatus").innerText = `💥 Краш на x${crPoint}! Потеря ставки.`;
-                        btn.innerText = `Взлететь (${currentBet} ₽)`;
-                        btn.style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
+                        clearInterval(crTimer); crActive = false;
+                        document.getElementById("crashStatus").innerText = `💥 Краш на x${crPoint}!`;
+                        btn.innerText = `Взлететь (${currentBet} ₽)`; btn.style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
                     }
                 }, 90);
             } else {
-                clearInterval(crTimer);
-                crActive = false;
+                clearInterval(crTimer); crActive = false;
                 let win = Math.floor(currentBet * crCurrent);
                 bal += win; updateBal();
                 document.getElementById("crashStatus").innerText = `🏆 Забрано: +${win} ₽!`;
-                btn.innerText = `Взлететь (${currentBet} ₽)`;
-                btn.style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
+                btn.innerText = `Взлететь (${currentBet} ₽)`; btn.style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
             }
         }
 
-        /* 3. FLIPCOIN */
         let flipSides = 2;
         function setFlipSides(s, btn) {
             btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            flipSides = s;
-            const container = document.getElementById("flipChoices");
-            container.innerHTML = "";
-            for (let i = 1; i <= s; i++) {
-                container.innerHTML += `<button class="btn-action" style="margin:0; flex:1;" onclick="playFlip(${i})">Грань ${i}</button>`;
-            }
+            btn.classList.add("active"); flipSides = s;
+            const container = document.getElementById("flipChoices"); container.innerHTML = "";
+            for (let i = 1; i <= s; i++) container.innerHTML += `<button class="btn-action" style="margin:0; flex:1;" onclick="playFlip(${i})">Грань ${i}</button>`;
         }
         function playFlip(choice) {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
             let res = document.getElementById("c_flip_win").checked ? choice : Math.floor(Math.random() * flipSides) + 1;
-            document.getElementById("flipIcon").innerText = res === 1 ? "🦅" : (res === 2 ? "🪙" : "🎲");
+            document.getElementById("flipIcon").innerText = res === 1 ? "🦅" : "🪙";
             let mult = flipSides === 2 ? 1.95 : (flipSides === 3 ? 2.90 : 3.85);
             if (choice === res) {
-                let win = Math.floor(currentBet * mult);
-                bal += win;
+                let win = Math.floor(currentBet * mult); bal += win;
                 document.getElementById("flipStatus").innerText = `🎉 Победа! Выпала грань ${res}: +${win} ₽!`;
             } else {
-                document.getElementById("flipStatus").innerText = `😢 Не угадали! Выпало ${res}. Потеря: -${currentBet} ₽`;
+                document.getElementById("flipStatus").innerText = `😢 Не угадали! Выпало ${res}.`;
             }
             updateBal();
         }
 
-        /* 4-8. СЛОТЫ */
-        let slotM = 25, zeusM = 30, sweetM = 40, wildM = 30, crownM = 50;
-        function setSlotDiff(d, btn) {
-            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            slotM = d === 'norm' ? 25 : (d === 'hard' ? 75 : 200);
-        }
-        function playClassicSlot() {
-            if (bal < currentBet) return alert("Недостаточно средств!");
-            bal -= currentBet; updateBal();
-            let syms = ["💎", "🍒", "7️⃣", "🔔", "⭐"];
-            let r1 = document.getElementById("c_777_win").checked ? "7️⃣" : syms[Math.floor(Math.random() * syms.length)];
-            let r2 = document.getElementById("c_777_win").checked ? "7️⃣" : syms[Math.floor(Math.random() * syms.length)];
-            let r3 = document.getElementById("c_777_win").checked ? "7️⃣" : syms[Math.floor(Math.random() * syms.length)];
-            document.getElementById("cl1").innerText = r1; document.getElementById("cl2").innerText = r2; document.getElementById("cl3").innerText = r3;
-            let win = (r1 === r2 && r2 === r3) ? (r1 === "7️⃣" ? currentBet * slotM : currentBet * 10) : 0;
-            bal += win; updateBal();
-            document.getElementById("s777Status").innerText = win > 0 ? `🔥 ДЖЕКПОТ! +${win} ₽!` : `❌ Проигрыш! -${currentBet} ₽`;
-        }
-
-        function setZeusDiff(d, btn) {
-            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            zeusM = d === 'norm' ? 30 : (d === 'hard' ? 50 : 150);
-        }
         function playZeusSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
@@ -1125,16 +1377,11 @@
             let r2 = document.getElementById("c_zeus_win").checked ? "⚡" : syms[Math.floor(Math.random() * syms.length)];
             let r3 = document.getElementById("c_zeus_win").checked ? "⚡" : syms[Math.floor(Math.random() * syms.length)];
             document.getElementById("z1").innerText = r1; document.getElementById("z2").innerText = r2; document.getElementById("z3").innerText = r3;
-            let win = (r1 === "⚡" && r2 === "⚡" && r3 === "⚡") ? currentBet * zeusM : 0;
+            let win = (r1 === "⚡" && r2 === "⚡" && r3 === "⚡") ? currentBet * 30 : 0;
             bal += win; updateBal();
-            document.getElementById("zeusStatus").innerText = win > 0 ? `⚡ ЗЕВС ВЫДАЛ: +${win} ₽!` : `❌ Молнии нет! -${currentBet} ₽`;
+            document.getElementById("zeusStatus").innerText = win > 0 ? `⚡ ЗЕВС ВЫДАЛ: +${win} ₽!` : `❌ Проигрыш!`;
         }
 
-        function setSweetDiff(d, btn) {
-            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            sweetM = d === 'norm' ? 40 : (d === 'hard' ? 100 : 250);
-        }
         function playSweetSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
@@ -1143,16 +1390,11 @@
             let r2 = document.getElementById("c_bonanza_win").checked ? "💣" : syms[Math.floor(Math.random() * syms.length)];
             let r3 = document.getElementById("c_bonanza_win").checked ? "💣" : syms[Math.floor(Math.random() * syms.length)];
             document.getElementById("sb1").innerText = r1; document.getElementById("sb2").innerText = r2; document.getElementById("sb3").innerText = r3;
-            let win = (r1 === "💣" && r2 === "💣" && r3 === "💣") ? currentBet * sweetM : 0;
+            let win = (r1 === "💣" && r2 === "💣" && r3 === "💣") ? currentBet * 40 : 0;
             bal += win; updateBal();
-            document.getElementById("sweetStatus").innerText = win > 0 ? `💣 БОМБЫ: +${win} ₽!` : `❌ Мимо! -${currentBet} ₽`;
+            document.getElementById("sweetStatus").innerText = win > 0 ? `💣 БОМБЫ: +${win} ₽!` : `❌ Мимо!`;
         }
 
-        function setWildDiff(d, btn) {
-            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            wildM = d === 'norm' ? 30 : (d === 'hard' ? 80 : 200);
-        }
         function playWildSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
@@ -1161,16 +1403,11 @@
             let r2 = document.getElementById("c_wild_win").checked ? "⭐" : syms[Math.floor(Math.random() * syms.length)];
             let r3 = document.getElementById("c_wild_win").checked ? "⭐" : syms[Math.floor(Math.random() * syms.length)];
             document.getElementById("ww1").innerText = r1; document.getElementById("ww2").innerText = r2; document.getElementById("ww3").innerText = r3;
-            let win = (r1 === "⭐" && r2 === "⭐" && r3 === "⭐") ? currentBet * wildM : 0;
+            let win = (r1 === "⭐" && r2 === "⭐" && r3 === "⭐") ? currentBet * 30 : 0;
             bal += win; updateBal();
-            document.getElementById("wildStatus").innerText = win > 0 ? `🤠 ШЕРИФ ПЛАТИТ: +${win} ₽!` : `❌ Пусто! -${currentBet} ₽`;
+            document.getElementById("wildStatus").innerText = win > 0 ? `🤠 ВЫИГРЫШ: +${win} ₽!` : `❌ Мимо!`;
         }
 
-        function setCrownDiff(d, btn) {
-            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            crownM = d === 'norm' ? 50 : (d === 'hard' ? 150 : 300);
-        }
         function playCrownSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
@@ -1179,45 +1416,25 @@
             let r2 = document.getElementById("c_crown_win").checked ? "👑" : syms[Math.floor(Math.random() * syms.length)];
             let r3 = document.getElementById("c_crown_win").checked ? "👑" : syms[Math.floor(Math.random() * syms.length)];
             document.getElementById("rc1").innerText = r1; document.getElementById("rc2").innerText = r2; document.getElementById("rc3").innerText = r3;
-            let win = (r1 === "👑" && r2 === "👑" && r3 === "👑") ? currentBet * crownM : 0;
+            let win = (r1 === "👑" && r2 === "👑" && r3 === "👑") ? currentBet * 50 : 0;
             bal += win; updateBal();
-            document.getElementById("crownStatus").innerText = win > 0 ? `👑 ДЖЕКПОТ: +${win} ₽!` : `❌ Мимо! -${currentBet} ₽`;
+            document.getElementById("crownStatus").innerText = win > 0 ? `👑 ДЖЕКПОТ: +${win} ₽!` : `❌ Мимо!`;
         }
 
-        /* 9. PINCO */
-        let pincoVol = 'low';
-        function setPincoVol(v, btn) {
-            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            pincoVol = v;
-        }
         function playPinco() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet;
-            let mults = pincoVol === 'low' ? [0.2, 0.8, 1.2, 1.8, 3.0] : (pincoVol === 'med' ? [0.0, 0.2, 0.5, 2.0, 10.0] : [0.0, 0.0, 0.2, 5.0, 50.0]);
-            let m = document.getElementById("c_pinco_win").checked ? mults[mults.length - 1] : mults[Math.floor(Math.random() * mults.length)];
-            let win = Math.floor(currentBet * m);
-            bal += win; updateBal();
-            document.getElementById("pincoStatus").innerText = win > 0 ? `🎯 Лунка x${m}! Выплата: +${win} ₽` : `❌ Пустая лунка x0. Потеря!`;
+            let mults = [0.0, 0.2, 0.5, 2.0, 10.0];
+            let m = document.getElementById("c_pinco_win").checked ? 10.0 : mults[Math.floor(Math.random() * mults.length)];
+            let win = Math.floor(currentBet * m); bal += win; updateBal();
+            document.getElementById("pincoStatus").innerText = win > 0 ? `🎯 Лунка x${m}! Выплата: +${win} ₽` : `❌ Пустая лунка x0.`;
         }
 
-        /* 10. CHICKEN */
-        let chkLanes = 2, chkActive = false, chkSafe = 1, chkMult = 1.0, chkStep = 1;
-        function setChkLanes(l, btn) {
-            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            chkLanes = l;
-            const row = document.getElementById("chkLanesRow");
-            row.innerHTML = "";
-            for (let i = 1; i <= l; i++) {
-                row.innerHTML += `<button class="btn-action" style="margin:0; flex:1;" onclick="stepChicken(${i})">Полоса ${i}</button>`;
-            }
-        }
+        let chkActive = false, chkSafe = 1, chkMult = 1.0, chkStep = 1;
         function startChicken() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
-            chkActive = true; chkMult = 1.0; chkStep = 1;
-            chkSafe = Math.floor(Math.random() * chkLanes) + 1;
+            chkActive = true; chkMult = 1.0; chkStep = 1; chkSafe = Math.floor(Math.random() * 2) + 1;
             document.getElementById("chkStartBtn").style.display = "none";
             document.getElementById("chkCashBtn").style.display = "block";
             document.getElementById("chkCashBtn").innerText = `Забрать (${currentBet} ₽)`;
@@ -1227,15 +1444,10 @@
             if (!chkActive) return;
             if (document.getElementById("c_chk_win").checked) chkSafe = lane;
             if (lane !== chkSafe) {
-                chkActive = false;
-                document.getElementById("chkStatus").innerText = `💥 Сбила машина! Потеря: -${currentBet} ₽`;
-                document.getElementById("chkStartBtn").style.display = "block";
-                document.getElementById("chkCashBtn").style.display = "none";
+                chkActive = false; document.getElementById("chkStatus").innerText = `💥 Сбила машина! Проигрыш.`;
+                document.getElementById("chkStartBtn").style.display = "block"; document.getElementById("chkCashBtn").style.display = "none";
             } else {
-                chkStep++;
-                let stepGrowth = chkLanes === 2 ? 1.35 : (chkLanes === 3 ? 1.95 : 3.50);
-                chkMult = +(chkMult * stepGrowth).toFixed(2);
-                chkSafe = Math.floor(Math.random() * chkLanes) + 1;
+                chkStep++; chkMult = +(chkMult * 1.35).toFixed(2); chkSafe = Math.floor(Math.random() * 2) + 1;
                 let w = Math.floor(currentBet * chkMult);
                 document.getElementById("chkStatus").innerText = `Шаг ${chkStep} | x${chkMult} (${w} ₽)`;
                 document.getElementById("chkCashBtn").innerText = `Забрать (${w} ₽)`;
@@ -1243,29 +1455,18 @@
         }
         function cashChicken() {
             if (!chkActive) return;
-            chkActive = false;
-            let win = Math.floor(currentBet * chkMult);
-            bal += win; updateBal();
-            document.getElementById("chkStatus").innerText = `🏆 Забрано: +${win} ₽!`;
-            document.getElementById("chkStartBtn").style.display = "block";
-            document.getElementById("chkCashBtn").style.display = "none";
+            chkActive = false; let win = Math.floor(currentBet * chkMult);
+            bal += win; updateBal(); document.getElementById("chkStatus").innerText = `🏆 Забрано: +${win} ₽!`;
+            document.getElementById("chkStartBtn").style.display = "block"; document.getElementById("chkCashBtn").style.display = "none";
         }
 
-        /* 11. HI-LO */
-        let hlDiff = 'std', hlActive = false, hlCard = 7, hlNext = 8, hlMult = 1.0;
-        function setHiLoDiff(d, btn) {
-            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            hlDiff = d;
-        }
+        let hlActive = false, hlCard = 7, hlNext = 8, hlMult = 1.0;
         function startHiLo() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
-            hlActive = true; hlMult = 1.0; hlCard = 7;
-            hlNext = hlDiff === 'narrow' ? (Math.random() > 0.5 ? 9 : 6) : (hlDiff === 'hard' ? 14 : Math.floor(Math.random() * 13) + 2);
+            hlActive = true; hlMult = 1.0; hlCard = 7; hlNext = Math.floor(Math.random() * 13) + 2;
             document.getElementById("hlCard").innerText = hlCard;
-            document.getElementById("hlStartBtn").style.display = "none";
-            document.getElementById("hlCashBtn").style.display = "block";
+            document.getElementById("hlStartBtn").style.display = "none"; document.getElementById("hlCashBtn").style.display = "block";
             document.getElementById("hlCashBtn").innerText = `Забрать (${currentBet} ₽)`;
             document.getElementById("hlStatus").innerText = "Угадайте карту";
         }
@@ -1275,95 +1476,55 @@
             let isWin = (dir === "hi" && hlNext >= hlCard) || (dir === "lo" && hlNext <= hlCard);
             document.getElementById("hlCard").innerText = hlNext;
             if (isWin) {
-                let g = hlDiff === 'narrow' ? 2.20 : (hlDiff === 'hard' ? 3.50 : 1.30);
-                hlMult = +(hlMult * g).toFixed(2);
-                hlCard = hlNext;
-                hlNext = Math.floor(Math.random() * 13) + 2;
-                let w = Math.floor(currentBet * hlMult);
-                document.getElementById("hlStatus").innerText = `Верно! Множитель: x${hlMult}`;
+                hlMult = +(hlMult * 1.30).toFixed(2); hlCard = hlNext; hlNext = Math.floor(Math.random() * 13) + 2;
+                let w = Math.floor(currentBet * hlMult); document.getElementById("hlStatus").innerText = `Верно! x${hlMult}`;
                 document.getElementById("hlCashBtn").innerText = `Забрать (${w} ₽)`;
             } else {
-                hlActive = false;
-                document.getElementById("hlStatus").innerText = `❌ Не угадали! Карта: ${hlNext}. Проигрыш.`;
-                document.getElementById("hlStartBtn").style.display = "block";
-                document.getElementById("hlCashBtn").style.display = "none";
+                hlActive = false; document.getElementById("hlStatus").innerText = `❌ Не угадали! Проигрыш.`;
+                document.getElementById("hlStartBtn").style.display = "block"; document.getElementById("hlCashBtn").style.display = "none";
             }
         }
         function cashHiLo() {
             if (!hlActive) return;
-            hlActive = false;
-            let win = Math.floor(currentBet * hlMult);
-            bal += win; updateBal();
-            document.getElementById("hlStatus").innerText = `🏆 Забрано: +${win} ₽!`;
-            document.getElementById("hlStartBtn").style.display = "block";
-            document.getElementById("hlCashBtn").style.display = "none";
+            hlActive = false; let win = Math.floor(currentBet * hlMult);
+            bal += win; updateBal(); document.getElementById("hlStatus").innerText = `🏆 Забрано: +${win} ₽!`;
+            document.getElementById("hlStartBtn").style.display = "block"; document.getElementById("hlCashBtn").style.display = "none";
         }
 
-        /* 12. DICE */
-        let diceM = 2.0;
-        function setDiceDiff(d, btn) {
-            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            diceM = d === 'std' ? 2.0 : (d === 'pro' ? 3.0 : 8.0);
-        }
         function playDice(choice) {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
             let d1 = Math.floor(Math.random() * 6) + 1, d2 = Math.floor(Math.random() * 6) + 1;
             if (document.getElementById("c_dice_win").checked) {
-                if (choice === 'under') { d1 = 2; d2 = 3; }
-                else if (choice === 'exact') { d1 = 3; d2 = 4; }
-                else { d1 = 5; d2 = 5; }
+                if (choice === 'under') { d1 = 2; d2 = 3; } else if (choice === 'exact') { d1 = 3; d2 = 4; } else { d1 = 5; d2 = 5; }
             }
             let sum = d1 + d2;
             const diceIcons = ["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
             document.getElementById("diceDisplay").innerText = `${diceIcons[d1]} ${diceIcons[d2]} (${sum})`;
             let isWin = (choice === 'under' && sum < 7) || (choice === 'exact' && sum === 7) || (choice === 'over' && sum > 7);
             if (isWin) {
-                let m = choice === 'exact' ? 5.8 : diceM;
-                let win = Math.floor(currentBet * m);
-                bal += win;
-                document.getElementById("diceStatus").innerText = `🎉 Выигрыш: +${win} ₽ (Сумма: ${sum})`;
-            } else {
-                document.getElementById("diceStatus").innerText = `❌ Мимо! Выпало ${sum}. Проигрыш.`;
-            }
+                let m = choice === 'exact' ? 5.8 : 2.0; let win = Math.floor(currentBet * m);
+                bal += win; document.getElementById("diceStatus").innerText = `🎉 Выигрыш: +${win} ₽!`;
+            } else { document.getElementById("diceStatus").innerText = `❌ Мимо! Выпало ${sum}.`; }
             updateBal();
         }
 
-        /* 13. КОЛЕСО */
-        let wheelMax = 20.0;
-        function setWheelDiff(d, btn) {
-            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            wheelMax = d === 'safe' ? 5.0 : (d === 'norm' ? 20.0 : 100.0);
-        }
         function playWheel() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
-            const sectors = [0, 0, 1.5, 2.0, 5.0, wheelMax];
-            let res = document.getElementById("c_wheel_win").checked ? wheelMax : sectors[Math.floor(Math.random() * sectors.length)];
-            let win = Math.floor(currentBet * res);
-            bal += win; updateBal();
-            document.getElementById("wheelStatus").innerText = win > 0 ? `🎯 Сектор x${res}! Выплата: +${win} ₽` : `❌ Сектор x0! Ставка сгорела.`;
+            const sectors = [0, 0, 1.5, 2.0, 5.0, 20.0];
+            let res = document.getElementById("c_wheel_win").checked ? 20.0 : sectors[Math.floor(Math.random() * sectors.length)];
+            let win = Math.floor(currentBet * res); bal += win; updateBal();
+            document.getElementById("wheelStatus").innerText = win > 0 ? `🎯 x${res}! +${win} ₽` : `❌ x0.`;
         }
 
-        /* 14. БАШНЯ НА 100 ЭТАЖЕЙ */
-        let tDiff = 'med', tFloor = 1, tActive = false, tMult = 1.0;
-        function setTowerDiff(d, btn) {
-            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            tDiff = d;
-        }
+        let tFloor = 1, tActive = false, tMult = 1.0;
         function renderTowerFloors() {
-            const v = document.getElementById("towerView");
-            v.innerHTML = "";
-            let tilesCount = tDiff === 'easy' ? 4 : 3;
-            let startF = Math.max(1, tFloor - 2);
-            let endF = Math.min(100, tFloor + 3);
+            const v = document.getElementById("towerView"); v.innerHTML = "";
+            let startF = Math.max(1, tFloor - 2), endF = Math.min(100, tFloor + 3);
             for (let f = startF; f <= endF; f++) {
-                let row = document.createElement("div");
-                row.className = "tower-row";
-                for (let c = 1; c <= tilesCount; c++) {
+                let row = document.createElement("div"); row.className = "tower-row";
+                for (let c = 1; c <= 3; c++) {
                     let st = document.createElement("div");
                     st.className = `tower-step ${f === tFloor ? 'current' : ''}`;
                     st.innerText = f === tFloor ? `Эт. ${f}` : `${f}`;
@@ -1376,60 +1537,38 @@
         function startTower() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
-            tFloor = 1; tActive = true; tMult = 1.0;
-            renderTowerFloors();
-            document.getElementById("towerStartBtn").style.display = "none";
-            document.getElementById("towerCashBtn").style.display = "block";
+            tFloor = 1; tActive = true; tMult = 1.0; renderTowerFloors();
+            document.getElementById("towerStartBtn").style.display = "none"; document.getElementById("towerCashBtn").style.display = "block";
             document.getElementById("towerCashBtn").innerText = `Забрать (${currentBet} ₽)`;
-            document.getElementById("towerStatus").innerText = `Этаж: 1/100 | Выберите плитку`;
+            document.getElementById("towerStatus").innerText = `Этаж: 1/100`;
         }
         function stepTower(f, c, cell) {
             if (!tActive || f !== tFloor) return;
-            let tilesCount = tDiff === 'easy' ? 4 : 3;
-            let trapsCount = tDiff === 'hard' ? 2 : 1;
-            let isTrap = (c <= trapsCount) && !document.getElementById("c_tower_win").checked;
+            let isTrap = (c === 1) && !document.getElementById("c_tower_win").checked;
             if (isTrap) {
-                cell.innerText = "💥"; cell.style.background = "#d63031";
-                tActive = false;
-                document.getElementById("towerStatus").innerText = `💥 Ловушка на этаже ${tFloor}! Башня рухнула. Потеря: -${currentBet} ₽`;
-                document.getElementById("towerStartBtn").style.display = "block";
-                document.getElementById("towerCashBtn").style.display = "none";
+                cell.innerText = "💥"; cell.style.background = "#d63031"; tActive = false;
+                document.getElementById("towerStatus").innerText = `💥 Ловушка! Башня рухнула.`;
+                document.getElementById("towerStartBtn").style.display = "block"; document.getElementById("towerCashBtn").style.display = "none";
             } else {
-                cell.innerText = "⭐"; cell.style.background = "#00b894";
-                tFloor++;
-                let stepGrowth = tDiff === 'easy' ? 1.25 : (tDiff === 'med' ? 1.45 : 2.10);
-                tMult = +(tMult * stepGrowth).toFixed(2);
-                let w = Math.floor(currentBet * tMult);
+                cell.innerText = "⭐"; cell.style.background = "#00b894"; tFloor++;
+                tMult = +(tMult * 1.45).toFixed(2); let w = Math.floor(currentBet * tMult);
                 if (tFloor > 100) {
-                    tActive = false;
-                    bal += w; updateBal();
-                    document.getElementById("towerStatus").innerText = `🏆 ПОКОРЕН 100-Й ЭТАЖ! Выигрыш: +${w} ₽!`;
-                    document.getElementById("towerStartBtn").style.display = "block";
-                    document.getElementById("towerCashBtn").style.display = "none";
+                    tActive = false; bal += w; updateBal();
+                    document.getElementById("towerStatus").innerText = `🏆 ПОКОРЕН 100-Й ЭТАЖ! +${w} ₽!`;
+                    document.getElementById("towerStartBtn").style.display = "block"; document.getElementById("towerCashBtn").style.display = "none";
                 } else {
-                    renderTowerFloors();
-                    document.getElementById("towerStatus").innerText = `Этаж: ${tFloor}/100 | x${tMult} (${w} ₽)`;
+                    renderTowerFloors(); document.getElementById("towerStatus").innerText = `Этаж: ${tFloor}/100 | x${tMult} (${w} ₽)`;
                     document.getElementById("towerCashBtn").innerText = `Забрать (${w} ₽)`;
                 }
             }
         }
         function cashTower() {
             if (!tActive) return;
-            tActive = false;
-            let win = Math.floor(currentBet * tMult);
-            bal += win; updateBal();
-            document.getElementById("towerStatus").innerText = `🏆 Забрано на ${tFloor} этаже: +${win} ₽!`;
-            document.getElementById("towerStartBtn").style.display = "block";
-            document.getElementById("towerCashBtn").style.display = "none";
+            tActive = false; let win = Math.floor(currentBet * tMult);
+            bal += win; updateBal(); document.getElementById("towerStatus").innerText = `🏆 Забрано: +${win} ₽!`;
+            document.getElementById("towerStartBtn").style.display = "block"; document.getElementById("towerCashBtn").style.display = "none";
         }
 
-        /* 15. РУЛЕТКА */
-        let zeroM = 14.0;
-        function setRoulDiff(d, btn) {
-            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            zeroM = d === 'euro' ? 14.0 : (d === 'usa' ? 18.0 : 36.0);
-        }
         function playRoulette(choice) {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
@@ -1437,23 +1576,12 @@
             let icon = res === 'red' ? "🔴 Красное" : (res === 'black' ? "⚫ Черное" : "🟢 Зеро 0");
             document.getElementById("roulDisplay").innerText = icon;
             if (choice === res) {
-                let m = choice === 'zero' ? zeroM : 2.0;
-                let win = Math.floor(currentBet * m);
-                bal += win;
-                document.getElementById("roulStatus").innerText = `🎉 Победа! Выпало ${icon}: +${win} ₽!`;
-            } else {
-                document.getElementById("roulStatus").innerText = `❌ Мимо! Выпало ${icon}. Потеря.`;
-            }
+                let m = choice === 'zero' ? 14.0 : 2.0; let win = Math.floor(currentBet * m);
+                bal += win; document.getElementById("roulStatus").innerText = `🎉 Победа: +${win} ₽!`;
+            } else { document.getElementById("roulStatus").innerText = `❌ Мимо! Выпало ${icon}.`; }
             updateBal();
         }
 
-        /* 16. КНБ */
-        let rpsM = 2.0;
-        function setRpsDiff(d, btn) {
-            btn.parentElement.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            rpsM = d === 'norm' ? 2.0 : (d === 'streak' ? 5.0 : 10.0);
-        }
         function playRPS(userMove) {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; updateBal();
@@ -1463,23 +1591,19 @@
             const icons = {'rock':'🪨', 'scissors':'✂️', 'paper':'📄'};
             document.getElementById("rpsIcon").innerText = `${icons[userMove]} vs ${icons[botMove]}`;
             if (userMove === botMove) {
-                bal += currentBet;
-                document.getElementById("rpsStatus").innerText = "🤝 Ничья! Возврат ставки.";
+                bal += currentBet; document.getElementById("rpsStatus").innerText = "🤝 Ничья! Возврат.";
             } else if (
                 (userMove === 'rock' && botMove === 'scissors') ||
                 (userMove === 'scissors' && botMove === 'paper') ||
                 (userMove === 'paper' && botMove === 'rock')
             ) {
-                let win = Math.floor(currentBet * rpsM);
-                bal += win;
-                document.getElementById("rpsStatus").innerText = `🎉 Победа: +${win} ₽!`;
-            } else {
-                document.getElementById("rpsStatus").innerText = `😢 Бот победил! -${currentBet} ₽`;
-            }
+                let win = Math.floor(currentBet * 2.0); bal += win; document.getElementById("rpsStatus").innerText = `🎉 Победа: +${win} ₽!`;
+            } else { document.getElementById("rpsStatus").innerText = `😢 Бот победил!`; }
             updateBal();
         }
 
         initMines();
+        initGiftsShop();
         setBet(50, document.querySelector(".b-btn.active"));
         updateBal();
     </script>

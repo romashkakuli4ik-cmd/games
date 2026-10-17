@@ -551,7 +551,7 @@
         <div class="header">
             <button class="admin-secret-btn" id="admBtn" onclick="openCheat()">👑 DEV ЧИТЫ</button>
             <div class="title">👑 ROYAL ARCADE, GIFTS & AI</div>
-            <div class="balance-badge">Баланс: <span id="balance">1000</span> ₽</div>
+            <div class="balance-badge">Баланс: <span id="balance">1 000</span> ₽</div>
         </div>
 
         <div class="main-nav">
@@ -836,6 +836,7 @@
                 <button class="btn-c-act" onclick="addMoney(100000)">+100k ₽</button>
                 <button class="btn-c-act" onclick="addMoney(1000000)">+1M ₽</button>
                 <button class="btn-c-act" onclick="addMoney(10000000)">+10M ₽</button>
+                <button class="btn-c-act" style="background:#ff9f43; color:#000; grid-column: span 2;" onclick="resetStuckBal(100000000n)">🔄 Сбросить баланс до 100M ₽</button>
                 <button class="btn-c-act" style="background:#ff3399; color:#fff; grid-column: span 2;" onclick="closeCheat()">Закрыть</button>
             </div>
         </div>
@@ -890,54 +891,52 @@
             return localStorage.getItem("royal_server_rig") || "auto";
         }
 
-        // ================== БЕЗОПАСНАЯ РАБОТА С БАЛАНСОМ (БЕЗ NaN И ОБНУЛЕНИЙ) ==================
-        function safeParseMoney(val, fallback = 1000) {
-            if (val === null || val === undefined) return fallback;
+        // ================== БЕСКОНЕЧНЫЙ БАЛАНС ЧЕРЕЗ BIGINT (БЕЗ ЗАВИСАНИЙ И 1 ₽) ==================
+        function toBig(v, fallback = 1000n) {
             try {
-                let s = String(val).trim();
-                if (s.includes('e+') || s.includes('E+')) {
+                if (v === null || v === undefined) return fallback;
+                let s = String(v).split('.')[0].trim();
+                if (s.toLowerCase().includes('e+')) {
                     let parts = s.toLowerCase().split('e+');
-                    let base = parseFloat(parts[0]);
-                    let exp = parseInt(parts[1]);
-                    if (exp > 15) return 9000000000000000;
-                    return Math.floor(base * Math.pow(10, exp));
+                    let base = BigInt(parts[0].split('.')[0]);
+                    let exp = parseInt(parts[1], 10);
+                    return base * (10n ** BigInt(exp));
                 }
-                let num = parseInt(s, 10);
-                if (isNaN(num) || !isFinite(num)) return fallback;
-                return Math.max(0, num);
+                let clean = s.replace(/[^0-9]/g, '');
+                return clean.length > 0 ? BigInt(clean) : fallback;
             } catch (e) {
                 return fallback;
             }
         }
 
-        function formatMoney(num) {
-            if (typeof num !== 'number' || isNaN(num)) num = 0;
-            return Math.floor(num).toLocaleString('ru-RU');
+        function formatMoney(val) {
+            try {
+                let s = val.toString();
+                return s.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            } catch (e) {
+                return "0";
+            }
         }
 
         const savedBal = localStorage.getItem("royal_arcade_bal");
         const botInitBal = urlParams.get('bal');
         const isPayTransfer = urlParams.get('pay') === '1';
 
-        let bal = 1000;
+        let bal = 1000n;
 
         if (savedBal !== null && !isPayTransfer) {
-            bal = safeParseMoney(savedBal, 1000);
+            bal = toBig(savedBal, 1000n);
         } else if (botInitBal !== null) {
-            bal = safeParseMoney(botInitBal, 1000);
-            localStorage.setItem("royal_arcade_bal", bal.toString());
-        } else {
-            bal = 1000;
+            bal = toBig(botInitBal, 1000n);
             localStorage.setItem("royal_arcade_bal", bal.toString());
         }
 
-        // Очистка параметров URL от зацикливания
         if (window.history.replaceState) {
             const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
             window.history.replaceState({path: cleanUrl}, '', cleanUrl);
         }
 
-        let currentBet = 50;
+        let currentBet = 50n;
 
         function updateBalDisplay() {
             const balEl = document.getElementById("balance");
@@ -945,35 +944,21 @@
         }
 
         function updateBal() {
-            if (typeof bal !== 'number' || isNaN(bal) || !isFinite(bal)) {
-                bal = 1000;
-            }
-            // Лимит безопасности JS (до 9 квадриллионов), чтобы избежать 1 ₽ / NaN
-            if (bal > 9000000000000000) {
-                bal = 9000000000000000;
-            }
-            bal = Math.max(0, Math.floor(bal));
+            if (bal < 0n) bal = 0n;
             localStorage.setItem("royal_arcade_bal", bal.toString());
             updateBalDisplay();
-        }
-
-        function showMainSection(sec) {
-            document.getElementById("gamesView").style.display = (sec === 'games') ? "flex" : "none";
-            document.getElementById("giftsView").style.display = (sec === 'gifts') ? "flex" : "none";
-            document.getElementById("aiView").style.display = (sec === 'ai') ? "flex" : "none";
-
-            document.getElementById("btnTabGames").classList.toggle("active", sec === 'games');
-            document.getElementById("btnTabGifts").classList.toggle("active", sec === 'gifts');
-            document.getElementById("btnTabAI").classList.toggle("active", sec === 'ai');
         }
 
         function setBet(amount, btn) {
             document.querySelectorAll(".b-btn").forEach(b => b.classList.remove("active"));
             if (btn) btn.classList.add("active");
+            
             if (amount === 'all') {
-                currentBet = Math.max(10, Math.min(bal, 100000000000000));
+                // Если баланс огромен, ставим не более 10 триллионов за спин, чтобы не ломать логику
+                const maxBetCap = 10000000000000n;
+                currentBet = bal > maxBetCap ? maxBetCap : (bal > 10n ? bal : 10n);
             } else {
-                currentBet = parseInt(amount, 10) || 50;
+                currentBet = BigInt(amount);
             }
             document.getElementById("curBetLabel").innerText = formatMoney(currentBet) + " ₽";
             const mBtn = document.getElementById("minesBtn");
@@ -984,7 +969,13 @@
 
         function openCheat() { document.getElementById("cheatModal").style.display = "flex"; }
         function closeCheat() { document.getElementById("cheatModal").style.display = "none"; }
-        function addMoney(v) { bal += v; updateBal(); }
+        function addMoney(v) { bal += BigInt(v); updateBal(); }
+
+        function resetStuckBal(targetAmount = 100000000n) {
+            bal = BigInt(targetAmount);
+            updateBal();
+            alert("Баланс успешно сброшен на: " + formatMoney(bal) + " ₽");
+        }
 
         function switchGameTab(name) {
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -993,7 +984,7 @@
             document.getElementById("p-" + name).classList.add("active");
         }
 
-        /* 99 ПОДАРКОВ TELEGRAM ПОЛНЫЙ КАТАЛОГ */
+        /* 99 ПОДАРКОВ TELEGRAM ПОЛНЫЙ КАТАЛОГ СО СКРИНШОТОВ */
         const TG_GIFTS = [
             { id: 1,   name: "Кулич пасхальный", icon: "🧁", price: 75 },
             { id: 2,   name: "Красная звезда", icon: "⭐", price: 100 },
@@ -1136,8 +1127,9 @@
         }
 
         function buyGift(g) {
-            if (bal < g.price) return alert("Недостаточно средств!");
-            bal -= g.price;
+            let giftCost = BigInt(g.price);
+            if (bal < giftCost) return alert("Недостаточно средств!");
+            bal -= giftCost;
             updateBal();
             userInventory.push({ ...g, uid: Date.now() + Math.random() });
             saveInventory();
@@ -1362,7 +1354,8 @@
 
         function sellAllInventory() {
             if (userInventory.length === 0) return alert("Инвентарь пуст!");
-            let total = userInventory.reduce((acc, cur) => acc + cur.price, 0);
+            let total = 0n;
+            userInventory.forEach(cur => total += BigInt(cur.price));
             bal += total;
             userInventory = [];
             selectedSrcGift = null;
@@ -1374,36 +1367,37 @@
             alert(`Инвентарь продан за +${formatMoney(total)} ₽!`);
         }
 
-        /* 1. СЛОТ 777 (С ЗАЩИТОЙ ОТ ПЕРЕПОЛНЕНИЯ) */
+        /* 1. СЛОТ 777 (ПОЛНЫЙ РАСЧЕТ ЧЕРЕЗ BIGINT) */
         function playClassicSlot() {
-            const bet = Math.min(bal, Math.max(10, parseInt(currentBet, 10) || 50));
-            if (bal < bet) return alert("Недостаточно средств!");
+            const bet = currentBet > bal ? bal : currentBet;
+            if (bet <= 0n || bal < bet) return alert("Недостаточно средств!");
+            
             bal -= bet; 
             updateBal();
 
             const rig = getEffectiveRig();
             const isLocalCheat = document.getElementById("c_777_win") && document.getElementById("c_777_win").checked;
-            let r1, r2, r3, mult = 0;
+            let r1, r2, r3, mult = 0n;
 
             if (rig === "lose") {
-                r1 = "💎"; r2 = "🍒"; r3 = "🔔"; mult = 0;
+                r1 = "💎"; r2 = "🍒"; r3 = "🔔"; mult = 0n;
             } else if (rig === "win" || isLocalCheat) {
-                r1 = "7️⃣"; r2 = "7️⃣"; r3 = "7️⃣"; mult = 1000000;
+                r1 = "7️⃣"; r2 = "7️⃣"; r3 = "7️⃣"; mult = 1000000n;
             } else {
                 let roll = Math.random() * 100;
-                if (roll < 0.0001) { r1 = "7️⃣"; r2 = "7️⃣"; r3 = "7️⃣"; mult = 1000000; }
-                else if (roll < 0.001) { r1 = "💎"; r2 = "💎"; r3 = "💎"; mult = 100000; }
-                else if (roll < 0.01) { r1 = "👑"; r2 = "👑"; r3 = "👑"; mult = 10000; }
-                else if (roll < 0.1) { r1 = "⭐"; r2 = "⭐"; r3 = "⭐"; mult = 1000; }
-                else if (roll < 1.0) { r1 = "🔔"; r2 = "🔔"; r3 = "🔔"; mult = 50; }
-                else if (roll < 5.0) { r1 = "🍒"; r2 = "🍒"; r3 = "🍒"; mult = 10; }
+                if (roll < 0.0001) { r1 = "7️⃣"; r2 = "7️⃣"; r3 = "7️⃣"; mult = 1000000n; }
+                else if (roll < 0.001) { r1 = "💎"; r2 = "💎"; r3 = "💎"; mult = 100000n; }
+                else if (roll < 0.01) { r1 = "👑"; r2 = "👑"; r3 = "👑"; mult = 10000n; }
+                else if (roll < 0.1) { r1 = "⭐"; r2 = "⭐"; r3 = "⭐"; mult = 1000n; }
+                else if (roll < 1.0) { r1 = "🔔"; r2 = "🔔"; r3 = "🔔"; mult = 50n; }
+                else if (roll < 5.0) { r1 = "🍒"; r2 = "🍒"; r3 = "🍒"; mult = 10n; }
                 else {
                     const pool = ["💎", "🍒", "7️⃣", "🔔", "⭐", "👑"];
                     r1 = pool[Math.floor(Math.random() * pool.length)];
                     r2 = pool[Math.floor(Math.random() * pool.length)];
                     r3 = pool[Math.floor(Math.random() * pool.length)];
                     if (r1 === r2 && r2 === r3) r3 = (r3 === "🍒") ? "🔔" : "🍒";
-                    mult = 0;
+                    mult = 0n;
                 }
             }
 
@@ -1411,7 +1405,7 @@
             document.getElementById("cl2").innerText = r2;
             document.getElementById("cl3").innerText = r3;
 
-            if (mult > 0) {
+            if (mult > 0n) {
                 let win = bet * mult;
                 bal += win; 
                 updateBal();
@@ -1440,9 +1434,9 @@
         }
         function minesAction() {
             const btn = document.getElementById("minesBtn");
-            const bet = Math.min(bal, Math.max(10, parseInt(currentBet, 10) || 50));
+            const bet = currentBet > bal ? bal : currentBet;
             if (!mPlaying) {
-                if (bal < bet) return alert("Недостаточно средств!");
+                if (bal < bet || bet <= 0n) return alert("Недостаточно средств!");
                 bal -= bet; 
                 updateBal();
                 mPlaying = true; mMult = 1.0; mBombs = [];
@@ -1453,7 +1447,7 @@
                 initMines(); toggleXray();
                 btn.innerText = `Забрать (${formatMoney(bet)} ₽)`; btn.style.background = "#00b894";
             } else {
-                let win = Math.floor(bet * mMult);
+                let win = BigInt(Math.floor(Number(bet) * mMult));
                 bal += win; updateBal(); mPlaying = false;
                 btn.innerText = `Старт (${formatMoney(bet)} ₽)`; btn.style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
             }
@@ -1479,7 +1473,7 @@
                 }
             } else { cell.classList.add("gem"); cell.innerText = "💎"; }
             mMult = +(mMult * 1.15).toFixed(2);
-            let w = Math.floor(currentBet * mMult);
+            let w = BigInt(Math.floor(Number(currentBet) * mMult));
             document.getElementById("minesStatus").innerText = `x${mMult} | Банк: ${formatMoney(w)} ₽`;
             document.getElementById("minesBtn").innerText = `Забрать (${formatMoney(w)} ₽)`;
         }
@@ -1488,9 +1482,9 @@
         let crActive = false, crCurrent = 1.0, crTimer = null;
         function crashAction() {
             const btn = document.getElementById("crashBtn");
-            const bet = Math.min(bal, Math.max(10, parseInt(currentBet, 10) || 50));
+            const bet = currentBet > bal ? bal : currentBet;
             if (!crActive) {
-                if (bal < bet) return alert("Недостаточно средств!");
+                if (bal < bet || bet <= 0n) return alert("Недостаточно средств!");
                 bal -= bet; 
                 updateBal();
                 crActive = true; crCurrent = 1.0;
@@ -1516,7 +1510,7 @@
                 }, 90);
             } else {
                 clearInterval(crTimer); crActive = false;
-                let win = Math.floor(bet * crCurrent); bal += win; updateBal();
+                let win = BigInt(Math.floor(Number(bet) * crCurrent)); bal += win; updateBal();
                 document.getElementById("crashStatus").innerText = `🏆 Забрано: +${formatMoney(win)} ₽!`;
                 btn.innerText = `Взлететь (${formatMoney(bet)} ₽)`; btn.style.background = "linear-gradient(90deg, #7046f4, #ff3399)";
             }
@@ -1524,8 +1518,8 @@
 
         /* 4. FLIPCOIN */
         function playFlip(choice) {
-            const bet = Math.min(bal, Math.max(10, parseInt(currentBet, 10) || 50));
-            if (bal < bet) return alert("Недостаточно средств!");
+            const bet = currentBet > bal ? bal : currentBet;
+            if (bal < bet || bet <= 0n) return alert("Недостаточно средств!");
             bal -= bet; 
             updateBal();
             const rig = getEffectiveRig();
@@ -1536,84 +1530,84 @@
 
             document.getElementById("flipIcon").innerText = res === 1 ? "🦅" : "🪙";
             if (choice === res) {
-                let win = Math.floor(bet * 1.95); bal += win; updateBal();
+                let win = (bet * 195n) / 100n; bal += win; updateBal();
                 document.getElementById("flipStatus").innerText = `🎉 Победа: +${formatMoney(win)} ₽!`;
             } else { document.getElementById("flipStatus").innerText = `😢 Не угадали!`; }
         }
 
         /* 5-8. СЛОТЫ */
         function playZeusSlot() {
-            const bet = Math.min(bal, Math.max(10, parseInt(currentBet, 10) || 50));
-            if (bal < bet) return alert("Недостаточно средств!");
+            const bet = currentBet > bal ? bal : currentBet;
+            if (bal < bet || bet <= 0n) return alert("Недостаточно средств!");
             bal -= bet; updateBal();
             const rig = getEffectiveRig();
             let isWin = (rig !== "lose") && ((rig === "win" || document.getElementById("c_zeus_win").checked) || Math.random() < 0.2);
-            let win = isWin ? bet * 30 : 0;
+            let win = isWin ? bet * 30n : 0n;
             if (isWin) { document.getElementById("z1").innerText = "⚡"; document.getElementById("z2").innerText = "⚡"; document.getElementById("z3").innerText = "⚡"; }
             else { document.getElementById("z1").innerText = "🏛️"; document.getElementById("z2").innerText = "👑"; document.getElementById("z3").innerText = "🦅"; }
             bal += win; updateBal();
-            document.getElementById("zeusStatus").innerText = win > 0 ? `⚡ ЗЕВС: +${formatMoney(win)} ₽!` : "❌ Мимо!";
+            document.getElementById("zeusStatus").innerText = win > 0n ? `⚡ ЗЕВС: +${formatMoney(win)} ₽!` : "❌ Мимо!";
         }
         function playSweetSlot() {
-            const bet = Math.min(bal, Math.max(10, parseInt(currentBet, 10) || 50));
-            if (bal < bet) return alert("Недостаточно средств!");
+            const bet = currentBet > bal ? bal : currentBet;
+            if (bal < bet || bet <= 0n) return alert("Недостаточно средств!");
             bal -= bet; updateBal();
             const rig = getEffectiveRig();
             let isWin = (rig !== "lose") && ((rig === "win" || document.getElementById("c_bonanza_win").checked) || Math.random() < 0.2);
-            let win = isWin ? bet * 40 : 0;
+            let win = isWin ? bet * 40n : 0n;
             if (isWin) { document.getElementById("sb1").innerText = "💣"; document.getElementById("sb2").innerText = "💣"; document.getElementById("sb3").innerText = "💣"; }
             else { document.getElementById("sb1").innerText = "🍬"; document.getElementById("sb2").innerText = "🍭"; document.getElementById("sb3").innerText = "🍇"; }
             bal += win; updateBal();
-            document.getElementById("sweetStatus").innerText = win > 0 ? `💣 БОМБЫ: +${formatMoney(win)} ₽!` : "❌ Мимо!";
+            document.getElementById("sweetStatus").innerText = win > 0n ? `💣 БОМБЫ: +${formatMoney(win)} ₽!` : "❌ Мимо!";
         }
         function playWildSlot() {
-            const bet = Math.min(bal, Math.max(10, parseInt(currentBet, 10) || 50));
-            if (bal < bet) return alert("Недостаточно средств!");
+            const bet = currentBet > bal ? bal : currentBet;
+            if (bal < bet || bet <= 0n) return alert("Недостаточно средств!");
             bal -= bet; updateBal();
             const rig = getEffectiveRig();
             let isWin = (rig !== "lose") && ((rig === "win" || document.getElementById("c_wild_win").checked) || Math.random() < 0.2);
-            let win = isWin ? bet * 30 : 0;
+            let win = isWin ? bet * 30n : 0n;
             if (isWin) { document.getElementById("ww1").innerText = "⭐"; document.getElementById("ww2").innerText = "⭐"; document.getElementById("ww3").innerText = "⭐"; }
             else { document.getElementById("ww1").innerText = "🤠"; document.getElementById("ww2").innerText = "🔫"; document.getElementById("ww3").innerText = "🐎"; }
             bal += win; updateBal();
-            document.getElementById("wildStatus").innerText = win > 0 ? `🤠 ВЫИГРЫШ: +${formatMoney(win)} ₽!` : "❌ Мимо!";
+            document.getElementById("wildStatus").innerText = win > 0n ? `🤠 ВЫИГРЫШ: +${formatMoney(win)} ₽!` : "❌ Мимо!";
         }
         function playCrownSlot() {
-            const bet = Math.min(bal, Math.max(10, parseInt(currentBet, 10) || 50));
-            if (bal < bet) return alert("Недостаточно средств!");
+            const bet = currentBet > bal ? bal : currentBet;
+            if (bal < bet || bet <= 0n) return alert("Недостаточно средств!");
             bal -= bet; updateBal();
             const rig = getEffectiveRig();
             let isWin = (rig !== "lose") && ((rig === "win" || document.getElementById("c_crown_win").checked) || Math.random() < 0.2);
-            let win = isWin ? bet * 50 : 0;
+            let win = isWin ? bet * 50n : 0n;
             if (isWin) { document.getElementById("rc1").innerText = "👑"; document.getElementById("rc2").innerText = "👑"; document.getElementById("rc3").innerText = "👑"; }
             else { document.getElementById("rc1").innerText = "💎"; document.getElementById("rc2").innerText = "💰"; document.getElementById("rc3").innerText = "🏰"; }
             bal += win; updateBal();
-            document.getElementById("crownStatus").innerText = win > 0 ? `👑 ДЖЕКПОТ: +${formatMoney(win)} ₽!` : "❌ Мимо!";
+            document.getElementById("crownStatus").innerText = win > 0n ? `👑 ДЖЕКПОТ: +${formatMoney(win)} ₽!` : "❌ Мимо!";
         }
 
         /* 9. PINCO */
         function playPinco() {
-            const bet = Math.min(bal, Math.max(10, parseInt(currentBet, 10) || 50));
-            if (bal < bet) return alert("Недостаточно средств!");
+            const bet = currentBet > bal ? bal : currentBet;
+            if (bal < bet || bet <= 0n) return alert("Недостаточно средств!");
             bal -= bet; 
             updateBal();
             const rig = getEffectiveRig();
-            let mult = 0.0;
-            if (rig === "lose") mult = 0.0;
-            else if (rig === "win" || document.getElementById("c_pinco_win").checked) mult = 10.0;
-            else mult = (Math.random() < 0.4 ? 2.0 : 0.0);
+            let mult = 0n;
+            if (rig === "lose") mult = 0n;
+            else if (rig === "win" || document.getElementById("c_pinco_win").checked) mult = 10n;
+            else mult = (Math.random() < 0.4 ? 2n : 0n);
 
-            let win = Math.floor(bet * mult); 
+            let win = bet * mult; 
             bal += win; 
             updateBal();
-            document.getElementById("pincoStatus").innerText = win > 0 ? `🎯 Лунка x${mult}: +${formatMoney(win)} ₽` : "❌ Мимо!";
+            document.getElementById("pincoStatus").innerText = win > 0n ? `🎯 Лунка x${formatMoney(mult)}: +${formatMoney(win)} ₽` : "❌ Мимо!";
         }
 
         /* 10. CHICKEN */
         let chkActive = false, chkMult = 1.0;
         function startChicken() {
-            const bet = Math.min(bal, Math.max(10, parseInt(currentBet, 10) || 50));
-            if (bal < bet) return alert("Недостаточно средств!");
+            const bet = currentBet > bal ? bal : currentBet;
+            if (bal < bet || bet <= 0n) return alert("Недостаточно средств!");
             bal -= bet; 
             updateBal();
             chkActive = true; chkMult = 1.0;
@@ -1632,7 +1626,7 @@
 
             if (safe) {
                 chkMult = +(chkMult * 1.35).toFixed(2);
-                let w = Math.floor(currentBet * chkMult);
+                let w = BigInt(Math.floor(Number(currentBet) * chkMult));
                 document.getElementById("chkStatus").innerText = `x${chkMult} (${formatMoney(w)} ₽)`;
                 document.getElementById("chkCashBtn").innerText = `Забрать (${formatMoney(w)} ₽)`;
             } else {
@@ -1642,7 +1636,7 @@
         }
         function cashChicken() {
             if (!chkActive) return;
-            chkActive = false; let win = Math.floor(currentBet * chkMult);
+            chkActive = false; let win = BigInt(Math.floor(Number(currentBet) * chkMult));
             bal += win; updateBal(); document.getElementById("chkStatus").innerText = `🏆 Забрано: +${formatMoney(win)} ₽!`;
             document.getElementById("chkStartBtn").style.display = "block"; document.getElementById("chkCashBtn").style.display = "none";
         }
@@ -1650,8 +1644,8 @@
         /* 11. HI-LO */
         let hlActive = false, hlCard = 7, hlMult = 1.0;
         function startHiLo() {
-            const bet = Math.min(bal, Math.max(10, parseInt(currentBet, 10) || 50));
-            if (bal < bet) return alert("Недостаточно средств!");
+            const bet = currentBet > bal ? bal : currentBet;
+            if (bal < bet || bet <= 0n) return alert("Недостаточно средств!");
             bal -= bet; 
             updateBal();
             hlActive = true; hlCard = 7; hlMult = 1.0;
@@ -1672,7 +1666,7 @@
             let win = (d === 'hi' && next >= hlCard) || (d === 'lo' && next <= hlCard);
             if (win) {
                 hlMult = +(hlMult * 1.3).toFixed(2); hlCard = next;
-                let w = Math.floor(currentBet * hlMult);
+                let w = BigInt(Math.floor(Number(currentBet) * hlMult));
                 document.getElementById("hlStatus").innerText = `Верно! x${hlMult}`;
                 document.getElementById("hlCashBtn").innerText = `Забрать (${formatMoney(w)} ₽)`;
             } else {
@@ -1682,15 +1676,15 @@
         }
         function cashHiLo() {
             if (!hlActive) return;
-            hlActive = false; let win = Math.floor(currentBet * hlMult);
+            hlActive = false; let win = BigInt(Math.floor(Number(currentBet) * hlMult));
             bal += win; updateBal(); document.getElementById("hlStatus").innerText = `🏆 Забрано: +${formatMoney(win)} ₽!`;
             document.getElementById("hlStartBtn").style.display = "block"; document.getElementById("hlCashBtn").style.display = "none";
         }
 
         /* 12. DICE */
         function playDice(choice) {
-            const bet = Math.min(bal, Math.max(10, parseInt(currentBet, 10) || 50));
-            if (bal < bet) return alert("Недостаточно средств!");
+            const bet = currentBet > bal ? bal : currentBet;
+            if (bal < bet || bet <= 0n) return alert("Недостаточно средств!");
             bal -= bet; 
             updateBal();
             const rig = getEffectiveRig();
@@ -1706,7 +1700,8 @@
             document.getElementById("diceDisplay").innerText = `🎲 Сумма: ${sum}`;
             let win = (choice === 'under' && sum < 7) || (choice === 'exact' && sum === 7) || (choice === 'over' && sum > 7);
             if (win) {
-                let m = choice === 'exact' ? 5.8 : 2.0; let w = Math.floor(bet * m);
+                let m = choice === 'exact' ? 58n : 20n; 
+                let w = (bet * m) / 10n;
                 bal += w; updateBal();
                 document.getElementById("diceStatus").innerText = `🎉 Победа: +${formatMoney(w)} ₽!`;
             } else { document.getElementById("diceStatus").innerText = "❌ Мимо!"; }
@@ -1714,20 +1709,20 @@
 
         /* 13. КОЛЕСО */
         function playWheel() {
-            const bet = Math.min(bal, Math.max(10, parseInt(currentBet, 10) || 50));
-            if (bal < bet) return alert("Недостаточно средств!");
+            const bet = currentBet > bal ? bal : currentBet;
+            if (bal < bet || bet <= 0n) return alert("Недостаточно средств!");
             bal -= bet; 
             updateBal();
             const rig = getEffectiveRig();
-            let mult = 0.0;
-            if (rig === "lose") mult = 0.0;
-            else if (rig === "win" || document.getElementById("c_wheel_win").checked) mult = 20.0;
-            else mult = (Math.random() < 0.4 ? 2.0 : 0.0);
+            let mult = 0n;
+            if (rig === "lose") mult = 0n;
+            else if (rig === "win" || document.getElementById("c_wheel_win").checked) mult = 20n;
+            else mult = (Math.random() < 0.4 ? 2n : 0n);
 
-            let win = Math.floor(bet * mult); 
+            let win = bet * mult; 
             bal += win; 
             updateBal();
-            document.getElementById("wheelStatus").innerText = win > 0 ? `🎯 x${mult}: +${formatMoney(win)} ₽!` : "❌ Сектор x0";
+            document.getElementById("wheelStatus").innerText = win > 0n ? `🎯 x${formatMoney(mult)}: +${formatMoney(win)} ₽!` : "❌ Сектор x0";
         }
 
         /* 14. БАШНЯ 100 */
@@ -1745,8 +1740,8 @@
             }
         }
         function startTower() {
-            const bet = Math.min(bal, Math.max(10, parseInt(currentBet, 10) || 50));
-            if (bal < bet) return alert("Недостаточно средств!");
+            const bet = currentBet > bal ? bal : currentBet;
+            if (bal < bet || bet <= 0n) return alert("Недостаточно средств!");
             bal -= bet; 
             updateBal();
             tFloor = 1; tMult = 1.0; tActive = true;
@@ -1765,7 +1760,7 @@
 
             if (pass) {
                 tFloor++; tMult = +(tMult * 1.45).toFixed(2);
-                let w = Math.floor(currentBet * tMult);
+                let w = BigInt(Math.floor(Number(currentBet) * tMult));
                 renderTower();
                 document.getElementById("towerStatus").innerText = `Этаж: ${tFloor}/100 | x${tMult} (${formatMoney(w)} ₽)`;
                 document.getElementById("towerCashBtn").innerText = `Забрать (${formatMoney(w)} ₽)`;
@@ -1776,15 +1771,15 @@
         }
         function cashTower() {
             if (!tActive) return;
-            tActive = false; let win = Math.floor(currentBet * tMult);
+            tActive = false; let win = BigInt(Math.floor(Number(currentBet) * tMult));
             bal += win; updateBal(); document.getElementById("towerStatus").innerText = `🏆 Забрано: +${formatMoney(win)} ₽!`;
             document.getElementById("towerStartBtn").style.display = "block"; document.getElementById("towerCashBtn").style.display = "none";
         }
 
         /* 15. РУЛЕТКА */
         function playRoulette(choice) {
-            const bet = Math.min(bal, Math.max(10, parseInt(currentBet, 10) || 50));
-            if (bal < bet) return alert("Недостаточно средств!");
+            const bet = currentBet > bal ? bal : currentBet;
+            if (bal < bet || bet <= 0n) return alert("Недостаточно средств!");
             bal -= bet; 
             updateBal();
             const rig = getEffectiveRig();
@@ -1796,15 +1791,17 @@
             let icon = res === 'red' ? "🔴 Красное" : (res === 'black' ? "⚫ Черное" : "🟢 Зеро 0");
             document.getElementById("roulDisplay").innerText = icon;
             if (choice === res) {
-                let m = choice === 'zero' ? 14.0 : 2.0; let win = Math.floor(bet * m);
-                bal += win; updateBal(); document.getElementById("roulStatus").innerText = `🎉 Победа: +${formatMoney(win)} ₽!`;
+                let m = choice === 'zero' ? 14n : 2n; 
+                let win = bet * m;
+                bal += win; updateBal(); 
+                document.getElementById("roulStatus").innerText = `🎉 Победа: +${formatMoney(win)} ₽!`;
             } else { document.getElementById("roulStatus").innerText = `❌ Мимо! Выпало ${icon}.`; }
         }
 
         /* 16. КНБ */
         function playRPS(userMove) {
-            const bet = Math.min(bal, Math.max(10, parseInt(currentBet, 10) || 50));
-            if (bal < bet) return alert("Недостаточно средств!");
+            const bet = currentBet > bal ? bal : currentBet;
+            if (bal < bet || bet <= 0n) return alert("Недостаточно средств!");
             bal -= bet; 
             updateBal();
             const rig = getEffectiveRig();
@@ -1826,7 +1823,7 @@
                 (userMove === 'scissors' && botMove === 'paper') ||
                 (userMove === 'paper' && botMove === 'rock')
             ) {
-                let win = Math.floor(bet * 2.0); bal += win; updateBal(); document.getElementById("rpsStatus").innerText = `🎉 Победа: +${formatMoney(win)} ₽!`;
+                let win = bet * 2n; bal += win; updateBal(); document.getElementById("rpsStatus").innerText = `🎉 Победа: +${formatMoney(win)} ₽!`;
             } else { document.getElementById("rpsStatus").innerText = "😢 Бот победил!"; }
         }
 
@@ -1864,4 +1861,4 @@
         updateBal();
     </script>
 </body>
-                                                                   </html>
+</html>

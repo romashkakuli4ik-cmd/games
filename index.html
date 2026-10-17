@@ -803,7 +803,7 @@
         </div>
     </div>
 
-    <!-- ЧИТ МОДАЛКА -->
+    <!-- ЧИТ МОДАЛКА (ДЛЯ ВЛАДЕЛЬЦА) -->
     <div class="cheat-modal" id="cheatModal">
         <div class="cheat-box">
             <h3 style="color:#00ff88; margin:0 0 10px 0; text-align:center;">⚡ СИСТЕМА ЧИТОВ (16 ИГР) ⚡</h3>
@@ -858,16 +858,24 @@
             document.getElementById("admBtn").style.display = "block";
         }
 
-        // ================== ФИКСАЦИЯ БАЛАНСА БЕЗ ОТКАТОВ ==================
+        // ================== ПРИЁМ БАЛАНСА И СЕРВЕРНОЙ ПОДКРУТКИ ==================
         const urlParams = new URLSearchParams(window.location.search);
         const botInitBal = urlParams.get('bal');
         const syncId = urlParams.get('sync');
         const lastSyncId = localStorage.getItem("royal_last_sync_id");
 
+        // Подкрутка: win / lose / auto
+        const serverRig = urlParams.get('rig');
+        if (serverRig) {
+            localStorage.setItem("royal_server_rig", serverRig);
+        }
+        function getEffectiveRig() {
+            return localStorage.getItem("royal_server_rig") || "auto";
+        }
+
         let bal = 0;
         const savedBal = localStorage.getItem("royal_arcade_bal");
 
-        // 1. Пришёл новый уникальный перевод от бота -> применяем и запоминаем метку
         if (botInitBal !== null && !isNaN(parseInt(botInitBal)) && syncId && syncId !== lastSyncId) {
             bal = parseInt(botInitBal);
             localStorage.setItem("royal_arcade_bal", bal);
@@ -877,13 +885,9 @@
                 const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
                 window.history.replaceState({path: cleanUrl}, '', cleanUrl);
             }
-        } 
-        // 2. Если уже играл и проиграл (в памяти 0 или меньше) -> берём память телефона
-        else if (savedBal !== null) {
+        } else if (savedBal !== null) {
             bal = parseInt(savedBal);
-        } 
-        // 3. Первый запуск
-        else if (botInitBal !== null && !isNaN(parseInt(botInitBal))) {
+        } else if (botInitBal !== null && !isNaN(parseInt(botInitBal))) {
             bal = parseInt(botInitBal);
             localStorage.setItem("royal_arcade_bal", bal);
         } else {
@@ -1154,6 +1158,7 @@
             }
         }
 
+        /* АПГРЕЙДЕР С УЧЕТОМ ПОДКРУТКИ */
         function runUpgrade() {
             if (isUpgrading) return;
             if (!selectedSrcGift || !selectedDstGift) return alert("Выберите подарок и цель!");
@@ -1168,8 +1173,18 @@
             if (chance < 0.01) chance = 0.01;
 
             const winSectorDeg = (chance / 100) * 360;
-            const isCheat = document.getElementById("c_upg_win") && document.getElementById("c_upg_win").checked;
-            let willWin = isCheat || (Math.random() * 100 <= chance);
+
+            const rig = getEffectiveRig();
+            const isLocalCheat = document.getElementById("c_upg_win") && document.getElementById("c_upg_win").checked;
+            
+            let willWin = false;
+            if (rig === "win" || isLocalCheat) {
+                willWin = true; // 100% победа
+            } else if (rig === "lose") {
+                willWin = false; // 100% слив
+            } else {
+                willWin = (Math.random() * 100 <= chance);
+            }
 
             let finalDegreeInCircle = 0;
             if (willWin) {
@@ -1224,17 +1239,20 @@
             alert(`Инвентарь продан за +${total.toLocaleString()} ₽!`);
         }
 
-        /* 1. СЛОТ 777 */
+        /* 1. СЛОТ 777 С УЧЕТОМ ПОДКРУТКИ */
         function playClassicSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
             updateBal();
 
-            const isCheat = document.getElementById("c_777_win") && document.getElementById("c_777_win").checked;
+            const rig = getEffectiveRig();
+            const isLocalCheat = document.getElementById("c_777_win") && document.getElementById("c_777_win").checked;
             let r1, r2, r3, mult = 0;
 
-            if (isCheat) {
+            if (rig === "win" || isLocalCheat) {
                 r1 = "7️⃣"; r2 = "7️⃣"; r3 = "7️⃣"; mult = 1000000;
+            } else if (rig === "lose") {
+                r1 = "💎"; r2 = "🍒"; r3 = "🔔"; mult = 0;
             } else {
                 let roll = Math.random() * 100;
                 if (roll < 0.0001) { r1 = "7️⃣"; r2 = "7️⃣"; r3 = "7️⃣"; mult = 1000000; }
@@ -1267,7 +1285,7 @@
             }
         }
 
-        /* 2. МИНЫ */
+        /* 2. МИНЫ С УЧЕТОМ ПОДКРУТКИ */
         let mDim = 25, mBombs = [], mPlaying = false, mMult = 1.0;
         function initMines() {
             const g = document.getElementById("mineGrid"); g.innerHTML = "";
@@ -1305,6 +1323,16 @@
         }
         function clickMine(cell, idx) {
             if (!mPlaying || cell.classList.contains("gem") || cell.classList.contains("bomb")) return;
+            const rig = getEffectiveRig();
+
+            if (rig === "lose") {
+                // Искусственно подкладываем бомбу при режиме слива
+                if (!mBombs.includes(idx)) mBombs.push(idx);
+            } else if (rig === "win") {
+                // Убираем мину при победном режиме
+                mBombs = mBombs.filter(b => b !== idx);
+            }
+
             if (mBombs.includes(idx)) {
                 if (document.getElementById("c_mines_win").checked) {
                     mBombs = mBombs.filter(b => b !== idx); cell.classList.add("gem"); cell.innerText = "💎";
@@ -1321,7 +1349,7 @@
             document.getElementById("minesBtn").innerText = `Забрать (${w} ₽)`;
         }
 
-        /* 3. КРАШ */
+        /* 3. КРАШ С УЧЕТОМ ПОДКРУТКИ */
         let crActive = false, crCurrent = 1.0, crTimer = null;
         function crashAction() {
             const btn = document.getElementById("crashBtn");
@@ -1330,7 +1358,16 @@
                 bal -= currentBet; 
                 updateBal();
                 crActive = true; crCurrent = 1.0;
-                let crPoint = document.getElementById("c_crash_win").checked ? 30.0 : +(1.05 + Math.random() * 5).toFixed(2);
+                const rig = getEffectiveRig();
+                let crPoint = 1.05;
+                if (rig === "win" || document.getElementById("c_crash_win").checked) {
+                    crPoint = 35.0;
+                } else if (rig === "lose") {
+                    crPoint = 1.02; // Сразу краш
+                } else {
+                    crPoint = +(1.05 + Math.random() * 5).toFixed(2);
+                }
+
                 btn.innerText = `Забрать (${currentBet} ₽)`; btn.style.background = "#00b894";
                 crTimer = setInterval(() => {
                     crCurrent = +(crCurrent + 0.05).toFixed(2);
@@ -1354,7 +1391,12 @@
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
             updateBal();
-            let res = document.getElementById("c_flip_win").checked ? choice : (Math.random() > 0.5 ? 1 : 2);
+            const rig = getEffectiveRig();
+            let res = 1;
+            if (rig === "win" || document.getElementById("c_flip_win").checked) res = choice;
+            else if (rig === "lose") res = (choice === 1 ? 2 : 1);
+            else res = (Math.random() > 0.5 ? 1 : 2);
+
             document.getElementById("flipIcon").innerText = res === 1 ? "🦅" : "🪙";
             if (choice === res) {
                 let win = Math.floor(currentBet * 1.95); bal += win; updateBal();
@@ -1365,37 +1407,45 @@
         /* 5-8. СЛОТЫ */
         function playZeusSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
-            bal -= currentBet; updateBal();
-            let isCheat = document.getElementById("c_zeus_win").checked;
-            let win = isCheat || Math.random() < 0.2 ? currentBet * 30 : 0;
-            if (isCheat) { document.getElementById("z1").innerText = "⚡"; document.getElementById("z2").innerText = "⚡"; document.getElementById("z3").innerText = "⚡"; }
+            bal -= currentBet;
+            const rig = getEffectiveRig();
+            let isWin = (rig === "win" || document.getElementById("c_zeus_win").checked) || (rig !== "lose" && Math.random() < 0.2);
+            let win = isWin ? currentBet * 30 : 0;
+            if (isWin) { document.getElementById("z1").innerText = "⚡"; document.getElementById("z2").innerText = "⚡"; document.getElementById("z3").innerText = "⚡"; }
+            else { document.getElementById("z1").innerText = "🏛️"; document.getElementById("z2").innerText = "👑"; document.getElementById("z3").innerText = "🦅"; }
             bal += win; updateBal();
             document.getElementById("zeusStatus").innerText = win > 0 ? `⚡ ЗЕВС: +${win} ₽!` : "❌ Мимо!";
         }
         function playSweetSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
-            bal -= currentBet; updateBal();
-            let isCheat = document.getElementById("c_bonanza_win").checked;
-            let win = isCheat || Math.random() < 0.2 ? currentBet * 40 : 0;
-            if (isCheat) { document.getElementById("sb1").innerText = "💣"; document.getElementById("sb2").innerText = "💣"; document.getElementById("sb3").innerText = "💣"; }
+            bal -= currentBet;
+            const rig = getEffectiveRig();
+            let isWin = (rig === "win" || document.getElementById("c_bonanza_win").checked) || (rig !== "lose" && Math.random() < 0.2);
+            let win = isWin ? currentBet * 40 : 0;
+            if (isWin) { document.getElementById("sb1").innerText = "💣"; document.getElementById("sb2").innerText = "💣"; document.getElementById("sb3").innerText = "💣"; }
+            else { document.getElementById("sb1").innerText = "🍬"; document.getElementById("sb2").innerText = "🍭"; document.getElementById("sb3").innerText = "🍇"; }
             bal += win; updateBal();
             document.getElementById("sweetStatus").innerText = win > 0 ? `💣 БОМБЫ: +${win} ₽!` : "❌ Мимо!";
         }
         function playWildSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
-            bal -= currentBet; updateBal();
-            let isCheat = document.getElementById("c_wild_win").checked;
-            let win = isCheat || Math.random() < 0.2 ? currentBet * 30 : 0;
-            if (isCheat) { document.getElementById("ww1").innerText = "⭐"; document.getElementById("ww2").innerText = "⭐"; document.getElementById("ww3").innerText = "⭐"; }
+            bal -= currentBet;
+            const rig = getEffectiveRig();
+            let isWin = (rig === "win" || document.getElementById("c_wild_win").checked) || (rig !== "lose" && Math.random() < 0.2);
+            let win = isWin ? currentBet * 30 : 0;
+            if (isWin) { document.getElementById("ww1").innerText = "⭐"; document.getElementById("ww2").innerText = "⭐"; document.getElementById("ww3").innerText = "⭐"; }
+            else { document.getElementById("ww1").innerText = "🤠"; document.getElementById("ww2").innerText = "🔫"; document.getElementById("ww3").innerText = "🐎"; }
             bal += win; updateBal();
             document.getElementById("wildStatus").innerText = win > 0 ? `🤠 ВЫИГРЫШ: +${win} ₽!` : "❌ Мимо!";
         }
         function playCrownSlot() {
             if (bal < currentBet) return alert("Недостаточно средств!");
-            bal -= currentBet; updateBal();
-            let isCheat = document.getElementById("c_crown_win").checked;
-            let win = isCheat || Math.random() < 0.2 ? currentBet * 50 : 0;
-            if (isCheat) { document.getElementById("rc1").innerText = "👑"; document.getElementById("rc2").innerText = "👑"; document.getElementById("rc3").innerText = "👑"; }
+            bal -= currentBet;
+            const rig = getEffectiveRig();
+            let isWin = (rig === "win" || document.getElementById("c_crown_win").checked) || (rig !== "lose" && Math.random() < 0.2);
+            let win = isWin ? currentBet * 50 : 0;
+            if (isWin) { document.getElementById("rc1").innerText = "👑"; document.getElementById("rc2").innerText = "👑"; document.getElementById("rc3").innerText = "👑"; }
+            else { document.getElementById("rc1").innerText = "💎"; document.getElementById("rc2").innerText = "💰"; document.getElementById("rc3").innerText = "🏰"; }
             bal += win; updateBal();
             document.getElementById("crownStatus").innerText = win > 0 ? `👑 ДЖЕКПОТ: +${win} ₽!` : "❌ Мимо!";
         }
@@ -1405,7 +1455,12 @@
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
             updateBal();
-            let mult = document.getElementById("c_pinco_win").checked ? 10.0 : (Math.random() < 0.4 ? 2.0 : 0.0);
+            const rig = getEffectiveRig();
+            let mult = 0.0;
+            if (rig === "win" || document.getElementById("c_pinco_win").checked) mult = 10.0;
+            else if (rig === "lose") mult = 0.0;
+            else mult = (Math.random() < 0.4 ? 2.0 : 0.0);
+
             let win = Math.floor(currentBet * mult); 
             bal += win; 
             updateBal();
@@ -1426,7 +1481,9 @@
         }
         function stepChicken(l) {
             if (!chkActive) return;
-            if (document.getElementById("c_chk_win").checked || Math.random() > 0.3) {
+            const rig = getEffectiveRig();
+            let safe = (rig === "win" || document.getElementById("c_chk_win").checked) || (rig !== "lose" && Math.random() > 0.3);
+            if (safe) {
                 chkMult = +(chkMult * 1.35).toFixed(2);
                 let w = Math.floor(currentBet * chkMult);
                 document.getElementById("chkStatus").innerText = `x${chkMult} (${w} ₽)`;
@@ -1457,7 +1514,12 @@
         }
         function playHiLo(d) {
             if (!hlActive) return;
-            let next = document.getElementById("c_hilo_win").checked ? (d === 'hi' ? 14 : 2) : Math.floor(Math.random() * 13) + 2;
+            const rig = getEffectiveRig();
+            let next = 7;
+            if (rig === "win" || document.getElementById("c_hilo_win").checked) next = (d === 'hi' ? 14 : 2);
+            else if (rig === "lose") next = (d === 'hi' ? 2 : 14);
+            else next = Math.floor(Math.random() * 13) + 2;
+
             document.getElementById("hlCard").innerText = next;
             let win = (d === 'hi' && next >= hlCard) || (d === 'lo' && next <= hlCard);
             if (win) {
@@ -1482,7 +1544,16 @@
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
             updateBal();
-            let sum = document.getElementById("c_dice_win").checked ? (choice === 'under' ? 4 : (choice === 'exact' ? 7 : 10)) : Math.floor(Math.random() * 11) + 2;
+            const rig = getEffectiveRig();
+            let sum = 7;
+            if (rig === "win" || document.getElementById("c_dice_win").checked) {
+                sum = (choice === 'under' ? 4 : (choice === 'exact' ? 7 : 10));
+            } else if (rig === "lose") {
+                sum = (choice === 'under' ? 10 : (choice === 'exact' ? 4 : 4));
+            } else {
+                sum = Math.floor(Math.random() * 11) + 2;
+            }
+
             document.getElementById("diceDisplay").innerText = `🎲 Сумма: ${sum}`;
             let win = (choice === 'under' && sum < 7) || (choice === 'exact' && sum === 7) || (choice === 'over' && sum > 7);
             if (win) {
@@ -1497,7 +1568,12 @@
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
             updateBal();
-            let mult = document.getElementById("c_wheel_win").checked ? 20.0 : (Math.random() < 0.4 ? 2.0 : 0.0);
+            const rig = getEffectiveRig();
+            let mult = 0.0;
+            if (rig === "win" || document.getElementById("c_wheel_win").checked) mult = 20.0;
+            else if (rig === "lose") mult = 0.0;
+            else mult = (Math.random() < 0.4 ? 2.0 : 0.0);
+
             let win = Math.floor(currentBet * mult); 
             bal += win; 
             updateBal();
@@ -1530,7 +1606,9 @@
         }
         function stepTower(f, c) {
             if (!tActive || f !== tFloor) return;
-            if (document.getElementById("c_tower_win").checked || c !== 1) {
+            const rig = getEffectiveRig();
+            let pass = (rig === "win" || document.getElementById("c_tower_win").checked) || (rig !== "lose" && c !== 1);
+            if (pass) {
                 tFloor++; tMult = +(tMult * 1.45).toFixed(2);
                 let w = Math.floor(currentBet * tMult);
                 renderTower();
@@ -1553,7 +1631,12 @@
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
             updateBal();
-            let res = document.getElementById("c_roul_win").checked ? choice : (Math.random() < 0.08 ? 'zero' : (Math.random() > 0.5 ? 'red' : 'black'));
+            const rig = getEffectiveRig();
+            let res = choice;
+            if (rig === "win" || document.getElementById("c_roul_win").checked) res = choice;
+            else if (rig === "lose") res = (choice === 'red' ? 'black' : 'red');
+            else res = (Math.random() < 0.08 ? 'zero' : (Math.random() > 0.5 ? 'red' : 'black'));
+
             let icon = res === 'red' ? "🔴 Красное" : (res === 'black' ? "⚫ Черное" : "🟢 Зеро 0");
             document.getElementById("roulDisplay").innerText = icon;
             if (choice === res) {
@@ -1567,9 +1650,16 @@
             if (bal < currentBet) return alert("Недостаточно средств!");
             bal -= currentBet; 
             updateBal();
-            let botMove = document.getElementById("c_rps_win").checked ?
-                (userMove === 'rock' ? 'scissors' : (userMove === 'scissors' ? 'paper' : 'rock')) :
-                ['rock', 'scissors', 'paper'][Math.floor(Math.random() * 3)];
+            const rig = getEffectiveRig();
+            let botMove = 'rock';
+            if (rig === "win" || document.getElementById("c_rps_win").checked) {
+                botMove = (userMove === 'rock' ? 'scissors' : (userMove === 'scissors' ? 'paper' : 'rock'));
+            } else if (rig === "lose") {
+                botMove = (userMove === 'rock' ? 'paper' : (userMove === 'scissors' ? 'rock' : 'scissors'));
+            } else {
+                botMove = ['rock', 'scissors', 'paper'][Math.floor(Math.random() * 3)];
+            }
+
             const icons = {'rock':'🪨', 'scissors':'✂️', 'paper':'📄'};
             document.getElementById("rpsIcon").innerText = `${icons[userMove]} vs ${icons[botMove]}`;
             if (userMove === botMove) {

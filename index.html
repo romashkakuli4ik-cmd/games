@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Royal Arcade Real Games & Star Upgrade</title>
+    <title>Royal Arcade Real Games & Dynamic Star</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -399,7 +399,7 @@
             font-weight: 900;
         }
 
-        /* АПГРЕЙДЕР СО ЗВЕЗДОЙ */
+        /* АПГРЕЙДЕР СО СЛУЧАЙНОЙ ДИНАМИЧЕСКОЙ ЗВЕЗДОЙ */
         #giftsView { display: none; width: 100%; flex-direction: column; gap: 8px; }
         .mult-panel {
             display: grid;
@@ -795,7 +795,7 @@
             </div>
         </div>
 
-        <!-- TG АПГРЕЙДЕР СО ЗВЕЗДОЙ -->
+        <!-- TG АПГРЕЙДЕР СО СЛУЧАЙНОЙ ДИНАМИЧЕСКОЙ ЗВЕЗДОЙ -->
         <div id="giftsView">
             <div class="star-badge-banner" id="starBonusBanner">
                 <span>🌟 БОНУС ЗВЕЗДЫ: <span id="starSpinsCount">5</span> бесплатных попыток</span>
@@ -835,7 +835,7 @@
                     <div class="wheel-center-pin"></div>
                 </div>
 
-                <div style="font-size:13.5px; font-weight:900;" id="upgChanceTxt">Шанс: 50.00% | ⭐ Звезда: 5 бонусных прокрутов</div>
+                <div style="font-size:13px; font-weight:900;" id="upgChanceTxt">Шанс: 50.00% | ⭐ Звезда: 5 бонусных прокрутов</div>
                 <div style="font-size:11px; color:var(--accent-gold); margin-top:2px;" id="upgStatus">Жёлтый: победа | ⭐ Звезда: 5 бесплатных спинов без сгорания!</div>
                 
                 <div class="extra-upg-controls">
@@ -875,6 +875,11 @@
             <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #281d59; font-size:12px;">
                 <span>100% Победа во всех играх</span>
                 <input type="checkbox" id="c_master_win">
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #281d59; font-size:12px;">
+                <span>⭐ Всегда попадать на Звёздочку</span>
+                <input type="checkbox" id="c_star_always">
             </div>
 
             <div class="custom-money-box">
@@ -1386,7 +1391,7 @@
             }
         }
 
-        /* 8. ПОДАРКИ TELEGRAM & АПГРЕЙДЕР СО ЗВЕЗДОЙ (130+) */
+        /* 8. ПОДАРКИ TELEGRAM & АПГРЕЙДЕР (130+ ШТ.) */
         const TG_GIFTS = [
             { id: 1, name: "Кулич пасхальный", icon: "🧁", price: 75 },
             { id: 2, name: "Красная звезда", icon: "⭐", price: 100 },
@@ -1528,10 +1533,29 @@
         let currentArrowTotalDeg = 0;
         let forcedFifty = false;
 
-        // ЗВЕЗДНЫЙ БОНУС
+        // ДИНАМИЧЕСКАЯ ЗВЕЗДОЧКА В СЛУЧАЙНЫХ МЕСТАХ
         let starBonusActive = false;
         let starSpinsLeft = 0;
-        const STAR_SECTOR_SIZE_DEG = 22; // Размер зоны со звездочкой
+        let currentStarSectorDeg = 24; // меняется в зависимости от цены
+        let currentStarStartDeg = 240;  // меняется в случайные места
+
+        // Функция вычисления размера и случайной позиции звёздочки
+        function calculateDynamicStar(targetPrice, winSectorDeg) {
+            // Чем дороже скин, тем больше размер сектора звезды
+            if (targetPrice < 2000) currentStarSectorDeg = 16;
+            else if (targetPrice < 10000) currentStarSectorDeg = 22;
+            else if (targetPrice < 100000) currentStarSectorDeg = 28;
+            else if (targetPrice < 2000000) currentStarSectorDeg = 36;
+            else currentStarSectorDeg = 45;
+
+            // Звезда должна размещаться в СЛУЧАЙНОМ месте вне сектора победы
+            let availableSpan = 360 - winSectorDeg - currentStarSectorDeg - 10;
+            if (availableSpan > 10) {
+                currentStarStartDeg = (winSectorDeg + 5 + Math.random() * availableSpan) % 360;
+            } else {
+                currentStarStartDeg = (360 - currentStarSectorDeg - 5);
+            }
+        }
 
         function initGiftsShop() {
             const list = document.getElementById("giftsShopList");
@@ -1695,8 +1719,11 @@
                 if (chance < 0.1) chance = 0.1;
             }
 
+            let winSectorDeg = (chance / 100) * 360;
+            calculateDynamicStar(selectedDstGift.price, winSectorDeg);
+
             let multText = (selectedDstGift.price / selectedSrcGift.price).toFixed(2);
-            chanceTxt.innerText = `Шанс: ${chance.toFixed(2)}% (Множитель ${multText}x) | ⭐ Звезда активна`;
+            chanceTxt.innerText = `Шанс: ${chance.toFixed(2)}% (${multText}x) | ⭐ Звезда: ${currentStarSectorDeg.toFixed(0)}°`;
             drawWheel(chance);
         }
 
@@ -1710,7 +1737,7 @@
             const cy = canvas.height / 2;
             const r = cx - 4;
 
-            // Серый базовый круг
+            // Серый базовый круг (проигрыш)
             ctx.beginPath();
             ctx.arc(cx, cy, r, 0, Math.PI * 2);
             ctx.fillStyle = "#1e164d";
@@ -1719,7 +1746,7 @@
             ctx.strokeStyle = "#382980";
             ctx.stroke();
 
-            // Жёлтый сектор победы
+            // Жёлтый сектор победы (начинается с верхней точки -90 градусов)
             if (chancePercent > 0) {
                 const winAngle = (chancePercent / 100) * (Math.PI * 2);
                 ctx.beginPath();
@@ -1727,18 +1754,19 @@
                 ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + winAngle);
                 ctx.closePath();
                 ctx.fillStyle = "#ffd200";
-                ctx.shadowColor = "rgba(255, 210, 0, 0.8)";
+                ctx.shadowColor = "rgba(255, 210, 0, 0.85)";
                 ctx.shadowBlur = 10;
                 ctx.fill();
                 ctx.shadowBlur = 0;
             }
 
-            // Фиолетовый сектор со звёздочкой ⭐
-            const starAngleRad = (STAR_SECTOR_SIZE_DEG / 360) * (Math.PI * 2);
-            const starStartRad = -Math.PI / 2 - starAngleRad;
+            // Фиолетовый динамический сектор со звёздочкой в СЛУЧАЙНОМ месте
+            const starStartRad = -Math.PI / 2 + (currentStarStartDeg / 360) * (Math.PI * 2);
+            const starAngleRad = (currentStarSectorDeg / 360) * (Math.PI * 2);
+
             ctx.beginPath();
             ctx.moveTo(cx, cy);
-            ctx.arc(cx, cy, r, starStartRad, -Math.PI / 2);
+            ctx.arc(cx, cy, r, starStartRad, starStartRad + starAngleRad);
             ctx.closePath();
             ctx.fillStyle = "#9b51e0";
             ctx.shadowColor = "rgba(155, 81, 224, 0.9)";
@@ -1746,20 +1774,21 @@
             ctx.fill();
             ctx.shadowBlur = 0;
 
-            // Текст со звёздочкой внутри сектора
+            // Рисуем эмодзи звезды по центру сектора
             ctx.save();
             ctx.translate(cx, cy);
             ctx.rotate(starStartRad + starAngleRad / 2);
             ctx.fillStyle = "#ffffff";
-            ctx.font = "bold 16px sans-serif";
+            let starFontSize = currentStarSectorDeg > 30 ? 18 : 14;
+            ctx.font = `bold ${starFontSize}px sans-serif`;
             ctx.textAlign = "center";
-            ctx.fillText("⭐", r * 0.7, 5);
+            ctx.fillText("⭐", r * 0.72, 5);
             ctx.restore();
         }
 
         function runUpgrade() {
             if (isUpgrading) return;
-            if (!selectedSrcGift || !selectedDstGift) return alert("Выберите подарок и цель!");
+            if (!selectedSrcGift || !selectedDstGift) return alert("Выберите предмет и цель!");
 
             isUpgrading = true;
             document.getElementById("btnRunUpgrade").disabled = true;
@@ -1774,23 +1803,25 @@
             }
 
             const winSectorDeg = (chance / 100) * 360;
-            const starSectorDeg = STAR_SECTOR_SIZE_DEG;
 
             const rig = getEffectiveRig();
             const masterWin = document.getElementById("c_master_win") && document.getElementById("c_master_win").checked;
+            const starAlwaysCheat = document.getElementById("c_star_always") && document.getElementById("c_star_always").checked;
 
-            // Выбор исхода: Звезда, Победа или Проигрыш
+            // Выбор исхода
             let outcome = 'lose';
             let roll = Math.random() * 100;
 
-            if (rig === "win" || masterWin) {
+            if (starAlwaysCheat) {
+                outcome = 'star'; // Принудительный чит на звезду
+            } else if (rig === "win" || masterWin) {
                 outcome = 'win';
             } else if (rig === "lose") {
                 outcome = 'lose';
             } else {
-                if (roll < 12.0) {
-                    outcome = 'star'; // 12% шанс на звезду
-                } else if (roll < (12.0 + chance)) {
+                if (roll < 15.0) {
+                    outcome = 'star';
+                } else if (roll < (15.0 + chance)) {
                     outcome = 'win';
                 } else {
                     outcome = 'lose';
@@ -1799,17 +1830,20 @@
 
             let targetDegInCircle = 0;
             if (outcome === 'star') {
-                targetDegInCircle = 360 - starSectorDeg + 3 + Math.random() * (starSectorDeg - 6);
+                // Точно в середину динамической зоны со звездочкой
+                targetDegInCircle = (currentStarStartDeg + currentStarSectorDeg / 2) % 360;
             } else if (outcome === 'win') {
+                // Внутрь желтого сектора победы
                 targetDegInCircle = 2 + Math.random() * Math.max(2, winSectorDeg - 4);
             } else {
-                let greyStart = winSectorDeg + 4;
-                let greyEnd = 360 - starSectorDeg - 4;
-                if (greyEnd > greyStart) {
-                    targetDegInCircle = greyStart + Math.random() * (greyEnd - greyStart);
-                } else {
-                    targetDegInCircle = winSectorDeg + 5;
+                // Внутрь серого сектора
+                let safeGreyStart = (winSectorDeg + 3) % 360;
+                let candidate = safeGreyStart + Math.random() * 50;
+                // Избегаем сектора звезды
+                if (candidate >= currentStarStartDeg && candidate <= currentStarStartDeg + currentStarSectorDeg) {
+                    candidate = (currentStarStartDeg + currentStarSectorDeg + 5) % 360;
                 }
+                targetDegInCircle = candidate;
             }
 
             const currentMod = (currentArrowTotalDeg % 360);
@@ -1829,7 +1863,7 @@
                     starSpinsLeft = 5;
                     document.getElementById("starSpinsCount").innerText = starSpinsLeft;
                     document.getElementById("starBonusBanner").style.display = "flex";
-                    document.getElementById("upgStatus").innerText = `🌟 ВЫПАЛА ЗВЁЗДОЧКА! 5 спинов: предмет НЕ сгорает при неудаче!`;
+                    document.getElementById("upgStatus").innerText = `🌟 ЗВЁЗДОЧКА ПОЙМАНА! 5 спинов: предмет НЕ сгорает при проигрыше!`;
                 } else if (outcome === 'win') {
                     userInventory = userInventory.filter(x => x.uid !== selectedSrcGift.uid);
                     userInventory.push({ ...selectedDstGift, uid: Date.now() + Math.random() });
@@ -1847,7 +1881,7 @@
                 } else {
                     if (starBonusActive) {
                         starSpinsLeft--;
-                        document.getElementById("upgStatus").innerText = `🛡️ Неудача, но звёздная защита сохранила предмет! (Осталось попыток: ${starSpinsLeft})`;
+                        document.getElementById("upgStatus").innerText = `🛡️ Звезда спасла предмет от сгорания! (Осталось попыток: ${starSpinsLeft})`;
                         if (starSpinsLeft <= 0) {
                             starBonusActive = false;
                             document.getElementById("starBonusBanner").style.display = "none";

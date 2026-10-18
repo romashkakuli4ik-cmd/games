@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ROMAN | Real P2P Messenger & Arcade</title>
+    <title>ROMAN | Instant P2P Mesh & Real Arcade</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
@@ -260,7 +260,7 @@
             cursor: pointer; font-size: 9.5px;
         }
 
-        /* ПОЛНОЦЕННЫЙ P2P МЕССЕНДЖЕР ROMAN */
+        /* ПОЛНОЦЕННЫЙ P2P МЕССЕНДЖЕР ROMAN C АВТО-ОТВЕТОМ */
         #romanChatView { display: none; width: 100%; flex-direction: column; gap: 8px; }
         .messenger-card {
             background: var(--card-bg); border: 1px solid rgba(0, 240, 255, 0.4);
@@ -554,22 +554,22 @@
             </div>
         </div>
 
-        <!-- 3. НАСТОЯЩИЙ P2P МЕССЕНДЖЕР ROMAN (БЕЗ ЭХО И ЗАГЛУШЕК) -->
+        <!-- 3. МГНОВЕННЫЙ P2P МЕССЕНДЖЕР ROMAN БЕЗ ЗАПРОСОВ И ОКОН -->
         <div id="romanChatView">
             <div class="messenger-card">
                 <div class="peer-id-row">
-                    <span>Ваш личный P2P ID:</span>
+                    <span>Ваш P2P ID:</span>
                     <span class="peer-id-val" id="myPeerIdDisplay">Подключение...</span>
                 </div>
 
                 <div class="connect-box">
-                    <input type="text" class="connect-input" id="targetPeerInput" placeholder="Вставьте P2P ID собеседника">
-                    <button class="btn-m-action" onclick="connectToPeer()">Связаться</button>
+                    <input type="text" class="connect-input" id="targetPeerInput" placeholder="P2P ID собеседника">
+                    <button class="btn-m-action" onclick="connectToPeer()">Подключить</button>
                 </div>
 
                 <div class="call-bar">
-                    <button class="btn-call-act" onclick="makeP2PCall(false)">📞 Голосовой вызов</button>
-                    <button class="btn-call-act" onclick="makeP2PCall(true)">📹 Видеозвонок</button>
+                    <button class="btn-call-act" onclick="makeP2PCall(false)">📞 Голос</button>
+                    <button class="btn-call-act" onclick="makeP2PCall(true)">📹 Видео</button>
                     <button class="btn-call-act danger" id="endP2PCallBtn" style="display:none;" onclick="endP2PCall()">🛑 Сброс</button>
                 </div>
 
@@ -582,8 +582,8 @@
                 <!-- Сообщения -->
                 <div class="m-messages" id="romanMsgList">
                     <div class="m-bubble in">
-                        <div class="m-bubble-meta"><span>Система ROMAN</span><span>Инфо</span></div>
-                        Скопируйте ваш P2P ID и отправьте другу. Когда друг вставит его и нажмёт «Связаться», откроется защищённый прямой канал связи!
+                        <div class="m-bubble-meta"><span>ROMAN P2P</span><span>Мгновенный вход</span></div>
+                        Автоматическое мгновенное соединение активировано. Никаких подтверждений и запросов — собеседник сразу подключается к прямому мосту!
                     </div>
                 </div>
 
@@ -600,7 +600,7 @@
         <div id="aiView">
             <div class="ai-card">
                 <div class="chat-messages" id="chatMsgs">
-                    <div class="msg ai">Привет! Я Gemini AI. Чем могу помочь по пенальти, подаркам или анонимной связи?</div>
+                    <div class="msg ai">Привет! Я Gemini AI. Чем могу помочь по пенальти, подаркам или связи?</div>
                 </div>
                 <div class="chat-input-row">
                     <input type="text" class="chat-input" id="chatInput" placeholder="Задайте вопрос нейросети..." onkeypress="handleChatKey(event)">
@@ -1483,14 +1483,13 @@
             alert(`Инвентарь продан за +${formatMoney(total)} ₽!`);
         }
 
-        /* 9. НАСТОЯЩИЙ P2P МЕССЕНДЖЕР ROMAN (PEERJS) */
+        /* 9. НАСТОЯЩИЙ P2P МЕССЕНДЖЕР ROMAN C АВТО-ОТВЕТОМ */
         let myPeer = null;
         let activeDataConn = null;
         let activeMediaCall = null;
         let myLocalStream = null;
 
         function initRomanP2P() {
-            // Создаем уникальный Peer ID на основе Telegram ID пользователя
             const defaultId = currentUserId ? `roman_${currentUserId}` : `roman_${Math.floor(Math.random()*899999+100000)}`;
             myPeer = new Peer(defaultId, {
                 debug: 1,
@@ -1506,23 +1505,18 @@
                 document.getElementById('myPeerIdDisplay').innerText = id;
             });
 
-            // Входящее текстовое P2P соединение
+            // Входящее текстовое P2P соединение — принимается АВТОМАТИЧЕСКИ без подтверждений
             myPeer.on('connection', (conn) => {
                 activeDataConn = conn;
                 setupDataEvents();
-                appendRomanChatMsg("Успешное прямое P2P соединение с собеседником!", "in", "ROMAN");
+                appendRomanChatMsg("Собеседник мгновенно подключен к каналу!", "in", "ROMAN");
             });
 
-            // Входящий видео/аудио звонок
+            // Входящий видео/аудио звонок — АВТО-ОТВЕТ БЕЗ confirm()
             myPeer.on('call', async (call) => {
                 const isVideo = call.metadata && call.metadata.video;
-                const accept = confirm(`Входящий ${isVideo ? 'видеозвонок' : 'аудиозвонок'} от ${call.peer}. Ответить?`);
-                if (!accept) {
-                    call.close();
-                    return;
-                }
-
                 try {
+                    // Активируем поток устройства и сразу отвечаем на вызов
                     myLocalStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: isVideo });
                     document.getElementById("localVid").srcObject = myLocalStream;
                     document.getElementById("romanVideoArea").style.display = "block";
@@ -1536,8 +1530,9 @@
                     });
 
                     call.on('close', () => endP2PCall(false));
+                    appendRomanChatMsg(isVideo ? "📹 Видеозвонок активирован!" : "📞 Аудиозвонок активирован!", "in", call.peer);
                 } catch(e) {
-                    alert("Ошибка доступа к камере/микрофону: " + e.message);
+                    appendRomanChatMsg("Ошибка медиа-доступа: " + e.message, "in", "ROMAN");
                 }
             });
         }
@@ -1547,15 +1542,16 @@
             if (!targetId) return alert("Введите P2P ID собеседника!");
             if (targetId === myPeer.id) return alert("Нельзя подключиться к самому себе!");
 
+            // Мгновенное прямое подключение без статуса ожидания
             activeDataConn = myPeer.connect(targetId, { reliable: true });
             setupDataEvents();
-            appendRomanChatMsg(`Отправлен запрос на соединение к: ${targetId}`, "out", "ВЫ");
+            appendRomanChatMsg(`Прямое соединение с ${targetId} установлено!`, "out", "ВЫ");
         }
 
         function setupDataEvents() {
             if (!activeDataConn) return;
             activeDataConn.on('open', () => {
-                appendRomanChatMsg("Канал связи открыт! Теперь вы можете общаться.", "in", "ROMAN");
+                appendRomanChatMsg("Прямой канал открыт. Можно мгновенно писать и слать файлы.", "in", "ROMAN");
             });
             activeDataConn.on('data', (data) => {
                 if (data.type === 'text') {
@@ -1576,7 +1572,7 @@
             if (!text) return;
 
             if (!activeDataConn || !activeDataConn.open) {
-                return alert("Сначала подключитесь к собеседнику через поле «P2P ID собеседника»!");
+                return alert("Сначала укажите P2P ID собеседника и нажмите «Подключить»!");
             }
 
             activeDataConn.send({ type: 'text', text: text });
@@ -1589,7 +1585,7 @@
             if (!file) return;
 
             if (!activeDataConn || !activeDataConn.open) {
-                return alert("Сначала подключитесь к собеседнику через поле «P2P ID собеседника»!");
+                return alert("Сначала укажите P2P ID собеседника и нажмите «Подключить»!");
             }
 
             const reader = new FileReader();
@@ -1603,7 +1599,7 @@
 
         async function makeP2PCall(video) {
             const targetId = document.getElementById('targetPeerInput').value.trim();
-            if (!targetId) return alert("Введите P2P ID собеседника для звонка!");
+            if (!targetId) return alert("Введите P2P ID собеседника для вызова!");
 
             try {
                 myLocalStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: video });
@@ -1619,6 +1615,7 @@
                 });
 
                 call.on('close', () => endP2PCall(false));
+                appendRomanChatMsg(`Идёт прямой вызов к: ${targetId}...`, "out", "ВЫ");
             } catch(e) {
                 alert("Ошибка доступа к камере/микрофону: " + e.message);
             }

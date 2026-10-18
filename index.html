@@ -20,32 +20,6 @@
             user-select: none;
         }
 
-        #accessDeniedScreen {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: #080516;
-            z-index: 1000000;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 24px;
-            text-align: center;
-        }
-        .denied-icon { font-size: 64px; margin-bottom: 15px; }
-        .denied-title { font-size: 20px; font-weight: 900; color: #ff0055; margin-bottom: 10px; }
-        .denied-desc { font-size: 14px; color: #aaa; line-height: 1.5; margin-bottom: 20px; max-width: 300px; }
-        .denied-btn {
-            background: linear-gradient(90deg, #7046f4, #ff3399);
-            color: #fff;
-            padding: 12px 24px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 800;
-            font-size: 14px;
-            box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
-        }
-
         #appContent {
             display: flex;
             width: 100%;
@@ -514,7 +488,7 @@
         .cheat-modal {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.94);
+            background: rgba(0, 0, 0, 0.95);
             display: none;
             justify-content: center;
             align-items: center;
@@ -530,11 +504,32 @@
             max-height: 86vh;
             overflow-y: auto;
         }
+        .custom-money-box {
+            background: #0c0824;
+            border: 1px solid #3c2c80;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .custom-money-input {
+            width: 100%;
+            padding: 8px;
+            background: #1e154a;
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            outline: none;
+        }
         .cheat-btns {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 6px;
-            margin-top: 10px;
+            margin-top: 6px;
         }
         .btn-c-act {
             padding: 8px;
@@ -549,13 +544,6 @@
     </style>
 </head>
 <body>
-
-    <div id="accessDeniedScreen">
-        <div class="denied-icon">🛡️⛔</div>
-        <div class="denied-title">ДОСТУП ЗАПРЕЩЁН</div>
-        <div class="denied-desc">Вход разрешён исключительно через официального Telegram-бота.</div>
-        <a href="https://t.me/Kuli4ik_bot" class="denied-btn">Перейти в Telegram-бота</a>
-    </div>
 
     <div id="appContent">
         <div class="header">
@@ -727,20 +715,29 @@
         </div>
     </div>
 
-    <!-- ЧИТ МОДАЛКА (ДЛЯ ВЛАДЕЛЬЦА) -->
+    <!-- ЧИТ МОДАЛКА (С ПРИБАВЛЕНИЕМ ЛЮБОЙ СУММЫ) -->
     <div class="cheat-modal" id="cheatModal">
         <div class="cheat-box">
             <h3 style="color:#00ff88; margin:0 0 10px 0; text-align:center;">⚡ СИСТЕМА ЧИТОВ (50 ИГР) ⚡</h3>
             <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #281d59; font-size:12px;">
-                <span>100% Победа во всех 50 играх</span>
+                <span>100% Победа во всех играх</span>
                 <input type="checkbox" id="c_master_win">
             </div>
+
+            <div class="custom-money-box">
+                <span style="font-size:11px; color:#ffd32a; font-weight:bold;">💵 Ввести любую сумму (1 ₽, 100 млрд и т.д.):</span>
+                <input type="number" class="custom-money-input" id="customMoneyVal" placeholder="Например: 100000000000" min="1">
+                <div style="display:flex; gap:6px;">
+                    <button class="btn-c-act" style="flex:1;" onclick="applyCustomAdd()">➕ Прибавить</button>
+                    <button class="btn-c-act" style="flex:1; background:#00cec9;" onclick="applyCustomSet()">🎯 Установить</button>
+                </div>
+            </div>
+
             <div class="cheat-btns">
-                <button class="btn-c-act" onclick="addMoney(100000)">+100k ₽</button>
+                <button class="btn-c-act" onclick="addMoney(1)">+1 ₽</button>
                 <button class="btn-c-act" onclick="addMoney(1000000)">+1M ₽</button>
-                <button class="btn-c-act" onclick="addMoney(10000000)">+10M ₽</button>
                 <button class="btn-c-act" onclick="addMoney(100000000)">+100M ₽</button>
-                <button class="btn-c-act" style="background:#ff9f43; color:#000; grid-column: span 2;" onclick="resetStuckBal(100000000)">🔄 Сбросить баланс до 100M ₽</button>
+                <button class="btn-c-act" onclick="addMoney(1000000000)">+1 Млрд ₽</button>
                 <button class="btn-c-act" style="background:#ff3399; color:#fff; grid-column: span 2;" onclick="closeCheat()">Закрыть</button>
             </div>
         </div>
@@ -748,19 +745,12 @@
 
     <script>
         const tg = window.Telegram?.WebApp;
-        
-        // Исправлено: заглушка больше никогда не блокирует Telegram
         try {
             if (tg) {
                 tg.ready();
                 tg.expand();
             }
         } catch(e) {}
-        
-        const deniedScreen = document.getElementById("accessDeniedScreen");
-        const appContent = document.getElementById("appContent");
-        if (deniedScreen) deniedScreen.style.display = "none";
-        if (appContent) appContent.style.display = "flex";
 
         const OWNER_ID = 8732002956;
         const currentUserId = tg?.initDataUnsafe?.user?.id;
@@ -798,8 +788,8 @@
             return localStorage.getItem("royal_server_rig") || "auto";
         }
 
-        // ================== БЕЗОПАСНАЯ РАБОТА С БАЛАНСОМ ==================
-        function safeParse(val, fallback = 1000) {
+        // ================== СИНХРОНИЗАЦИЯ БАЛАНСА БЕЗ ПОТОЛКА И СБОЕВ ==================
+        function safeParseMoney(val, fallback = 1000) {
             if (val === null || val === undefined) return fallback;
             try {
                 let s = String(val).trim();
@@ -807,10 +797,10 @@
                     let parts = s.toLowerCase().split('e+');
                     let base = parseFloat(parts[0]);
                     let exp = parseInt(parts[1], 10);
-                    if (exp > 14) return 100000000000000;
                     return Math.floor(base * Math.pow(10, exp));
                 }
-                let num = parseInt(s.replace(/[^0-9]/g, ''), 10);
+                let clean = s.replace(/[^0-9]/g, '');
+                let num = parseInt(clean, 10);
                 if (isNaN(num) || !isFinite(num)) return fallback;
                 return Math.max(0, num);
             } catch (e) {
@@ -834,10 +824,14 @@
 
         let bal = 1000;
 
-        if (savedBal !== null && !isPayTransfer) {
-            bal = safeParse(savedBal, 1000);
+        // Если бот явно передал пополнение через /pay — приоритет у бота!
+        if (isPayTransfer && botInitBal !== null) {
+            bal = safeParseMoney(botInitBal, 1000);
+            localStorage.setItem("royal_arcade_bal", bal.toString());
+        } else if (savedBal !== null) {
+            bal = safeParseMoney(savedBal, 1000);
         } else if (botInitBal !== null) {
-            bal = safeParse(botInitBal, 1000);
+            bal = safeParseMoney(botInitBal, 1000);
             localStorage.setItem("royal_arcade_bal", bal.toString());
         }
 
@@ -856,8 +850,7 @@
         }
 
         function updateBal() {
-            if (typeof bal !== 'number' || isNaN(bal) || !isFinite(bal)) bal = 1000;
-            if (bal > 9000000000000000) bal = 9000000000000000;
+            if (typeof bal !== 'number' || isNaN(bal) || !isFinite(bal)) bal = 0;
             bal = Math.max(0, Math.floor(bal));
             localStorage.setItem("royal_arcade_bal", bal.toString());
             updateBalDisplay();
@@ -909,10 +902,29 @@
 
         function openCheat() { const m = document.getElementById("cheatModal"); if (m) m.style.display = "flex"; }
         function closeCheat() { const m = document.getElementById("cheatModal"); if (m) m.style.display = "none"; }
-        function addMoney(v) { bal += v; updateBal(); }
-        function resetStuckBal(amt = 100000000) { bal = amt; updateBal(); alert("Баланс сброшен на: " + formatMoney(bal) + " ₽"); }
+        
+        function addMoney(v) { 
+            bal += v; 
+            updateBal(); 
+        }
 
-        /* 50 ПОЛНОЦЕННЫХ ИГР КАТАЛОГА */
+        function applyCustomAdd() {
+            const val = parseInt(document.getElementById("customMoneyVal").value, 10);
+            if (!val || isNaN(val) || val <= 0) return alert("Введите корректную сумму!");
+            bal += val;
+            updateBal();
+            alert(`Успешно начислено: +${formatMoney(val)} ₽!`);
+        }
+
+        function applyCustomSet() {
+            const val = parseInt(document.getElementById("customMoneyVal").value, 10);
+            if (isNaN(val) || val < 0) return alert("Введите корректную сумму!");
+            bal = val;
+            updateBal();
+            alert(`Баланс установлен на: ${formatMoney(val)} ₽!`);
+        }
+
+        /* 50 ПОЛНОЦЕННЫХ ИГР */
         const CATALOG_50_GAMES = [
             { id: "s777", name: "🎰 777 Mega", custom: true },
             { id: "mines", name: "💣 Мины (3-24)", custom: true },
@@ -1304,7 +1316,7 @@
             }
         }
 
-        /* ПОДАРКИ TELEGRAM & АПГРЕЙДЕР (99 ШТ.) */
+        /* ПОДАРКИ TELEGRAM & АПГРЕЙДЕР (99 ШТ.)[span_0](start_span)[span_0](end_span)[span_1](start_span)[span_1](end_span)[span_2](start_span)[span_2](end_span) */
         const TG_GIFTS = [
             { id: 1, name: "Кулич пасхальный", icon: "🧁", price: 75 },
             { id: 2, name: "Красная звезда", icon: "⭐", price: 100 },

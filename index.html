@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ROMAN | Arcade & E2EE Anonymous Messenger</title>
+    <title>ROMAN | Real P2P Messenger & Arcade</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root {
             --bg-main: #08051a;
-            --card-bg: rgba(19, 13, 44, 0.9);
+            --card-bg: rgba(19, 13, 44, 0.92);
             --accent-pink: #ff007f;
             --accent-cyan: #00f0ff;
             --accent-gold: #ffd200;
             --accent-green: #00ff88;
-            --accent-purple: #9b51e0;
             --border-color: #271c5b;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
@@ -260,54 +260,66 @@
             cursor: pointer; font-size: 9.5px;
         }
 
-        /* ВКЛАДКА: АНОНИМНЫЙ МЕССЕНДЖЕР ROMAN */
+        /* ПОЛНОЦЕННЫЙ P2P МЕССЕНДЖЕР ROMAN */
         #romanChatView { display: none; width: 100%; flex-direction: column; gap: 8px; }
         .messenger-card {
             background: var(--card-bg); border: 1px solid rgba(0, 240, 255, 0.4);
             border-radius: 16px; padding: 12px; display: flex; flex-direction: column; width: 100%;
         }
-        .chat-top-bar {
+        .peer-id-row {
             display: flex; justify-content: space-between; align-items: center;
-            padding-bottom: 8px; border-bottom: 1px solid var(--border-color); margin-bottom: 8px;
+            background: #0d0824; border: 1px dashed var(--accent-cyan); border-radius: 8px;
+            padding: 6px 10px; font-size: 11px; margin-bottom: 8px;
         }
-        .chat-room-badge { font-size: 11px; color: var(--accent-cyan); font-weight: 800; }
-        .chat-call-btns { display: flex; gap: 6px; }
-        .btn-m-call {
-            background: #16103c; border: 1px solid var(--accent-cyan); color: #fff;
-            padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer;
+        .peer-id-val { color: var(--accent-cyan); font-weight: 900; }
+        .connect-box {
+            display: flex; gap: 6px; margin-bottom: 8px;
         }
-        .btn-m-call.danger { border-color: var(--accent-pink); background: rgba(255, 0, 127, 0.2); }
-        .m-messages {
-            height: 250px; overflow-y: auto; display: flex; flex-direction: column;
-            gap: 8px; padding: 8px; background: #050314; border-radius: 10px;
-            margin-bottom: 8px; font-size: 12px; user-select: text;
+        .connect-input {
+            flex: 1; padding: 8px 10px; background: #0c0824; border: 1px solid #3c2f82;
+            border-radius: 8px; color: #fff; font-size: 11px;
         }
-        .m-bubble {
-            max-width: 80%; padding: 8px 12px; border-radius: 10px; line-height: 1.4; word-break: break-word;
+        .btn-m-action {
+            padding: 8px 12px; background: var(--accent-cyan); color: #000;
+            border: none; border-radius: 8px; font-size: 11px; font-weight: 900; cursor: pointer;
         }
-        .m-bubble.in { align-self: flex-start; background: #131d33; border: 1px solid #233457; }
-        .m-bubble.out { align-self: flex-end; background: #183329; border: 1px solid #1f5e49; color: #00ffaa; }
-        .m-bubble-meta { font-size: 9px; color: #888; margin-bottom: 3px; display: flex; justify-content: space-between; }
-        .chat-bottom-bar { display: flex; gap: 6px; align-items: center; }
-        .m-input {
-            flex: 1; padding: 10px; background: #0c0824; border: 1px solid #3c2f82;
-            border-radius: 10px; color: #fff; font-size: 12px;
+        .call-bar {
+            display: flex; gap: 6px; margin-bottom: 8px;
         }
-        .m-send-btn {
-            padding: 10px 14px; background: var(--accent-cyan); border: none;
-            border-radius: 10px; font-weight: 900; color: #000; cursor: pointer;
+        .btn-call-act {
+            flex: 1; padding: 8px; background: #1a1347; border: 1px solid var(--accent-green);
+            color: var(--accent-green); border-radius: 8px; font-size: 11px; font-weight: 900;
+            cursor: pointer; text-align: center;
         }
+        .btn-call-act.danger { border-color: var(--accent-pink); color: var(--accent-pink); }
 
-        /* ВИДЕО ЗВОНОК ROMAN */
-        #romanVideoModal {
+        #romanVideoArea {
             display: none; position: relative; width: 100%; height: 210px;
-            background: #000; border-radius: 12px; border: 1px solid var(--accent-cyan);
+            background: #000; border-radius: 10px; border: 1px solid var(--accent-cyan);
             margin-bottom: 8px; overflow: hidden;
         }
         #remoteVid { width: 100%; height: 100%; object-fit: cover; }
         #localVid {
-            position: absolute; bottom: 8px; right: 8px; width: 80px; height: 60px;
+            position: absolute; bottom: 6px; right: 6px; width: 75px; height: 55px;
             border-radius: 6px; border: 1px solid var(--accent-cyan); object-fit: cover; transform: scaleX(-1);
+        }
+
+        .m-messages {
+            height: 240px; overflow-y: auto; display: flex; flex-direction: column;
+            gap: 6px; padding: 8px; background: #050314; border-radius: 10px;
+            margin-bottom: 8px; font-size: 12px; user-select: text;
+        }
+        .m-bubble {
+            max-width: 82%; padding: 8px 10px; border-radius: 10px; line-height: 1.35; word-break: break-word;
+        }
+        .m-bubble.in { align-self: flex-start; background: #131d33; border: 1px solid #233457; }
+        .m-bubble.out { align-self: flex-end; background: #183329; border: 1px solid #1f5e49; color: #00ffaa; }
+        .m-bubble-meta { font-size: 9px; color: #888; margin-bottom: 2px; display: flex; justify-content: space-between; }
+        
+        .chat-bottom-bar { display: flex; gap: 6px; align-items: center; }
+        .m-input {
+            flex: 1; padding: 10px; background: #0c0824; border: 1px solid #3c2f82;
+            border-radius: 10px; color: #fff; font-size: 12px;
         }
 
         /* GEMINI AI */
@@ -368,7 +380,6 @@
             <div class="balance-badge">💰 <span id="balance">1 000</span> ₽</div>
         </div>
 
-        <!-- 4 ГЛАВНЫЕ ВКЛАДКИ -->
         <div class="main-nav">
             <button class="nav-switch-btn active" id="btnTabGames" onclick="showMainSection('games')">🕹️ ИГРЫ</button>
             <button class="nav-switch-btn" id="btnTabGifts" onclick="showMainSection('gifts')">🎁 ПОДАРКИ ⭐</button>
@@ -543,20 +554,27 @@
             </div>
         </div>
 
-        <!-- 3. АНОНИМНЫЙ МЕССЕНДЖЕР ROMAN (E2EE + ЗВОНКИ) -->
+        <!-- 3. НАСТОЯЩИЙ P2P МЕССЕНДЖЕР ROMAN (БЕЗ ЭХО И ЗАГЛУШЕК) -->
         <div id="romanChatView">
             <div class="messenger-card">
-                <div class="chat-top-bar">
-                    <span class="chat-room-badge">🔒 ROMAN E2EE (AES-256)</span>
-                    <div class="chat-call-btns">
-                        <button class="btn-m-call" onclick="startRomanCall(false)">📞 Голос</button>
-                        <button class="btn-m-call" onclick="startRomanCall(true)">📹 Видео</button>
-                        <button class="btn-m-call danger" id="endRomanCallBtn" style="display:none;" onclick="endRomanCall()">🛑</button>
-                    </div>
+                <div class="peer-id-row">
+                    <span>Ваш личный P2P ID:</span>
+                    <span class="peer-id-val" id="myPeerIdDisplay">Подключение...</span>
+                </div>
+
+                <div class="connect-box">
+                    <input type="text" class="connect-input" id="targetPeerInput" placeholder="Вставьте P2P ID собеседника">
+                    <button class="btn-m-action" onclick="connectToPeer()">Связаться</button>
+                </div>
+
+                <div class="call-bar">
+                    <button class="btn-call-act" onclick="makeP2PCall(false)">📞 Голосовой вызов</button>
+                    <button class="btn-call-act" onclick="makeP2PCall(true)">📹 Видеозвонок</button>
+                    <button class="btn-call-act danger" id="endP2PCallBtn" style="display:none;" onclick="endP2PCall()">🛑 Сброс</button>
                 </div>
 
                 <!-- Видео окно звонка -->
-                <div id="romanVideoModal">
+                <div id="romanVideoArea">
                     <video id="remoteVid" autoplay playsinline></video>
                     <video id="localVid" autoplay playsinline muted></video>
                 </div>
@@ -564,16 +582,16 @@
                 <!-- Сообщения -->
                 <div class="m-messages" id="romanMsgList">
                     <div class="m-bubble in">
-                        <div class="m-bubble-meta"><span>Система ROMAN</span><span>Сейчас</span></div>
-                        Канал защищён сквозным шифрованием WebCrypto (AES-GCM-256). Сообщения и файлы не сохраняются на дисках.
+                        <div class="m-bubble-meta"><span>Система ROMAN</span><span>Инфо</span></div>
+                        Скопируйте ваш P2P ID и отправьте другу. Когда друг вставит его и нажмёт «Связаться», откроется защищённый прямой канал связи!
                     </div>
                 </div>
 
                 <div class="chat-bottom-bar">
-                    <input type="file" id="romanFileInput" style="display:none;" onchange="handleRomanFileUpload(event)">
-                    <button class="btn-m-call" title="Отправить зашифрованный файл" onclick="document.getElementById('romanFileInput').click()">📎</button>
-                    <input type="text" class="m-input" id="romanChatInput" placeholder="Зашифрованное сообщение..." onkeypress="if(event.key==='Enter') sendRomanMessage()">
-                    <button class="m-send-btn" onclick="sendRomanMessage()">➤</button>
+                    <input type="file" id="romanFileInput" style="display:none;" onchange="sendP2PFile(event)">
+                    <button class="btn-m-action" style="padding:10px 12px;" title="Отправить файл напрямую" onclick="document.getElementById('romanFileInput').click()">📎</button>
+                    <input type="text" class="m-input" id="romanChatInput" placeholder="Напишите сообщение..." onkeypress="if(event.key==='Enter') sendP2PMessage()">
+                    <button class="btn-m-action" onclick="sendP2PMessage()">➤</button>
                 </div>
             </div>
         </div>
@@ -1465,96 +1483,185 @@
             alert(`Инвентарь продан за +${formatMoney(total)} ₽!`);
         }
 
-        /* 9. АНОНИМНЫЙ ЧАТ ROMAN (WebCrypto AES-GCM-256 + WebRTC) */
-        let romanKey = null;
-        let romanPeerConn = null;
-        let romanStream = null;
+        /* 9. НАСТОЯЩИЙ P2P МЕССЕНДЖЕР ROMAN (PEERJS) */
+        let myPeer = null;
+        let activeDataConn = null;
+        let activeMediaCall = null;
+        let myLocalStream = null;
 
-        async function getRomanAesKey() {
-            if (romanKey) return romanKey;
-            const enc = new TextEncoder();
-            const keyMat = await window.crypto.subtle.importKey(
-                "raw", enc.encode("ROMAN_SECRET_MASTER_PASSPHRASE_2026"), { name: "PBKDF2" }, false, ["deriveKey"]
-            );
-            romanKey = await window.crypto.subtle.deriveKey(
-                { name: "PBKDF2", salt: enc.encode("ROMAN_SALT_P2P"), iterations: 100000, hash: "SHA-256" },
-                keyMat, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]
-            );
-            return romanKey;
+        function initRomanP2P() {
+            // Создаем уникальный Peer ID на основе Telegram ID пользователя
+            const defaultId = currentUserId ? `roman_${currentUserId}` : `roman_${Math.floor(Math.random()*899999+100000)}`;
+            myPeer = new Peer(defaultId, {
+                debug: 1,
+                config: {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' }
+                    ]
+                }
+            });
+
+            myPeer.on('open', (id) => {
+                document.getElementById('myPeerIdDisplay').innerText = id;
+            });
+
+            // Входящее текстовое P2P соединение
+            myPeer.on('connection', (conn) => {
+                activeDataConn = conn;
+                setupDataEvents();
+                appendRomanChatMsg("Успешное прямое P2P соединение с собеседником!", "in", "ROMAN");
+            });
+
+            // Входящий видео/аудио звонок
+            myPeer.on('call', async (call) => {
+                const isVideo = call.metadata && call.metadata.video;
+                const accept = confirm(`Входящий ${isVideo ? 'видеозвонок' : 'аудиозвонок'} от ${call.peer}. Ответить?`);
+                if (!accept) {
+                    call.close();
+                    return;
+                }
+
+                try {
+                    myLocalStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: isVideo });
+                    document.getElementById("localVid").srcObject = myLocalStream;
+                    document.getElementById("romanVideoArea").style.display = "block";
+                    document.getElementById("endP2PCallBtn").style.display = "inline-flex";
+
+                    call.answer(myLocalStream);
+                    activeMediaCall = call;
+
+                    call.on('stream', (remoteStream) => {
+                        document.getElementById("remoteVid").srcObject = remoteStream;
+                    });
+
+                    call.on('close', () => endP2PCall(false));
+                } catch(e) {
+                    alert("Ошибка доступа к камере/микрофону: " + e.message);
+                }
+            });
         }
 
-        async function encryptRoman(text) {
-            const key = await getRomanAesKey();
-            const iv = window.crypto.getRandomValues(new Uint8Array(12));
-            const buf = await window.crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, new TextEncoder().encode(text));
-            return { iv: Array.from(iv), data: Array.from(new Uint8Array(buf)) };
+        function connectToPeer() {
+            const targetId = document.getElementById('targetPeerInput').value.trim();
+            if (!targetId) return alert("Введите P2P ID собеседника!");
+            if (targetId === myPeer.id) return alert("Нельзя подключиться к самому себе!");
+
+            activeDataConn = myPeer.connect(targetId, { reliable: true });
+            setupDataEvents();
+            appendRomanChatMsg(`Отправлен запрос на соединение к: ${targetId}`, "out", "ВЫ");
         }
 
-        async function decryptRoman(pkg) {
-            try {
-                const key = await getRomanAesKey();
-                const buf = await window.crypto.subtle.decrypt(
-                    { name: "AES-GCM", iv: new Uint8Array(pkg.iv) }, key, new Uint8Array(pkg.data)
-                );
-                return new TextDecoder().decode(buf);
-            } catch(e) { return "[Ошибка расшифровки]"; }
+        function setupDataEvents() {
+            if (!activeDataConn) return;
+            activeDataConn.on('open', () => {
+                appendRomanChatMsg("Канал связи открыт! Теперь вы можете общаться.", "in", "ROMAN");
+            });
+            activeDataConn.on('data', (data) => {
+                if (data.type === 'text') {
+                    appendRomanChatMsg(data.text, "in", activeDataConn.peer);
+                } else if (data.type === 'file') {
+                    appendRomanFileMsg(data.name, data.size, data.url, "in", activeDataConn.peer);
+                }
+            });
+            activeDataConn.on('close', () => {
+                appendRomanChatMsg("Собеседник отключился.", "in", "ROMAN");
+                activeDataConn = null;
+            });
         }
 
-        async function sendRomanMessage() {
-            const inp = document.getElementById("romanChatInput");
-            const txt = inp.value.trim();
-            if (!txt) return;
+        function sendP2PMessage() {
+            const inp = document.getElementById('romanChatInput');
+            const text = inp.value.trim();
+            if (!text) return;
 
-            const encrypted = await encryptRoman(txt);
-            // Симуляция отправки по защищённому E2EE узлу
-            appendRomanMsg(txt, 'out', 'ВЫ');
+            if (!activeDataConn || !activeDataConn.open) {
+                return alert("Сначала подключитесь к собеседнику через поле «P2P ID собеседника»!");
+            }
+
+            activeDataConn.send({ type: 'text', text: text });
+            appendRomanChatMsg(text, "out", "ВЫ");
             inp.value = "";
-
-            setTimeout(async () => {
-                const echo = await decryptRoman(encrypted);
-                appendRomanMsg(echo, 'in', 'Анонимный Узел');
-            }, 600);
         }
 
-        function appendRomanMsg(text, type, sender) {
-            const list = document.getElementById("romanMsgList");
-            const bubble = document.createElement("div");
-            bubble.className = `m-bubble ${type}`;
-            const time = new Date().toLocaleTimeString().substring(0, 5);
-            bubble.innerHTML = `<div class="m-bubble-meta"><span>${sender}</span><span>${time}</span></div><div>${text}</div>`;
-            list.appendChild(bubble); list.scrollTop = list.scrollHeight;
-        }
-
-        async function handleRomanFileUpload(e) {
-            const file = e.target.files[0];
+        function sendP2PFile(event) {
+            const file = event.target.files[0];
             if (!file) return;
-            if (file.size > 25 * 1024 * 1024) return alert("Максимум 25 МБ!");
+
+            if (!activeDataConn || !activeDataConn.open) {
+                return alert("Сначала подключитесь к собеседнику через поле «P2P ID собеседника»!");
+            }
+
             const reader = new FileReader();
-            reader.onload = async (ev) => {
-                appendRomanMsg(`📁 Зашифрованный файл: <b>${file.name}</b> (${(file.size/1024).toFixed(1)} KB)`, 'out', 'ВЫ');
+            reader.onload = (e) => {
+                const fileUrl = e.target.result;
+                activeDataConn.send({ type: 'file', name: file.name, size: file.size, url: fileUrl });
+                appendRomanFileMsg(file.name, file.size, fileUrl, "out", "ВЫ");
             };
             reader.readAsDataURL(file);
         }
 
-        async function startRomanCall(video) {
+        async function makeP2PCall(video) {
+            const targetId = document.getElementById('targetPeerInput').value.trim();
+            if (!targetId) return alert("Введите P2P ID собеседника для звонка!");
+
             try {
-                romanStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: video });
-                document.getElementById("localVid").srcObject = romanStream;
-                document.getElementById("remoteVid").srcObject = romanStream; // Прямой P2P loopback
-                document.getElementById("romanVideoModal").style.display = "block";
-                document.getElementById("endRomanCallBtn").style.display = "inline-flex";
+                myLocalStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: video });
+                document.getElementById("localVid").srcObject = myLocalStream;
+                document.getElementById("romanVideoArea").style.display = "block";
+                document.getElementById("endP2PCallBtn").style.display = "inline-flex";
+
+                const call = myPeer.call(targetId, myLocalStream, { metadata: { video: video } });
+                activeMediaCall = call;
+
+                call.on('stream', (remoteStream) => {
+                    document.getElementById("remoteVid").srcObject = remoteStream;
+                });
+
+                call.on('close', () => endP2PCall(false));
             } catch(e) {
-                alert("Разрешите доступ к микрофону/камере: " + e.message);
+                alert("Ошибка доступа к камере/микрофону: " + e.message);
             }
         }
 
-        function endRomanCall() {
-            if (romanStream) {
-                romanStream.getTracks().forEach(t => t.stop());
-                romanStream = null;
+        function endP2PCall(closeCall = true) {
+            if (closeCall && activeMediaCall) {
+                activeMediaCall.close();
+                activeMediaCall = null;
             }
-            document.getElementById("romanVideoModal").style.display = "none";
-            document.getElementById("endRomanCallBtn").style.display = "none";
+            if (myLocalStream) {
+                myLocalStream.getTracks().forEach(t => t.stop());
+                myLocalStream = null;
+            }
+            document.getElementById("romanVideoArea").style.display = "none";
+            document.getElementById("endP2PCallBtn").style.display = "none";
+            document.getElementById("localVid").srcObject = null;
+            document.getElementById("remoteVid").srcObject = null;
+        }
+
+        function appendRomanChatMsg(text, type, sender) {
+            const box = document.getElementById('romanMsgList');
+            const bubble = document.createElement('div');
+            bubble.className = `m-bubble ${type}`;
+            const time = new Date().toLocaleTimeString().substring(0, 5);
+            bubble.innerHTML = `<div class="m-bubble-meta"><span>${sender}</span><span>${time}</span></div><div>${text}</div>`;
+            box.appendChild(bubble);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function appendRomanFileMsg(name, size, url, type, sender) {
+            const box = document.getElementById('romanMsgList');
+            const bubble = document.createElement('div');
+            bubble.className = `m-bubble ${type}`;
+            const time = new Date().toLocaleTimeString().substring(0, 5);
+            const sizeStr = (size / 1024).toFixed(1) + " KB";
+            bubble.innerHTML = `
+                <div class="m-bubble-meta"><span>${sender}</span><span>${time}</span></div>
+                <div style="margin-top:4px;">📁 <b>${name}</b> (${sizeStr})</div>
+                <a href="${url}" download="${name}" style="display:inline-block; margin-top:5px; background:var(--accent-cyan); color:#000; padding:4px 8px; border-radius:6px; text-decoration:none; font-weight:bold; font-size:10px;">Скачать файл</a>
+            `;
+            box.appendChild(bubble);
+            box.scrollTop = box.scrollHeight;
         }
 
         /* 10. GEMINI AI */
@@ -1586,7 +1693,9 @@
             box.scrollTop = box.scrollHeight;
         }
 
-        initMines(); initGiftsShop();
+        initMines();
+        initGiftsShop();
+        initRomanP2P();
         setBet(50, document.querySelector(".b-btn.active"));
         updateBal();
     </script>

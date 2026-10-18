@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Royal Arcade Real Games & Dynamic Star</title>
+    <title>Royal Arcade Real Games & Star Upgrade</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -963,12 +963,21 @@
             }
         }
 
+        // ================== ОБРАБОТКА ПОЛНОГО СБРОСА ОТ БОТА (reset=1) ==================
+        const isForceReset = urlParams.get('reset') === '1';
+        if (isForceReset) {
+            localStorage.setItem("royal_arcade_bal", "0");
+            localStorage.setItem("royal_arcade_inv", JSON.stringify([]));
+        }
+
         const savedBal = localStorage.getItem("royal_arcade_bal");
         const botInitBal = urlParams.get('bal');
         const isPayTransfer = urlParams.get('pay') === '1';
 
         let bal = 1000;
-        if (isPayTransfer && botInitBal !== null) {
+        if (isForceReset) {
+            bal = 0;
+        } else if (isPayTransfer && botInitBal !== null) {
             bal = safeParseMoney(botInitBal, 1000);
             localStorage.setItem("royal_arcade_bal", bal.toString());
         } else if (savedBal !== null) {
@@ -1536,19 +1545,16 @@
         // ДИНАМИЧЕСКАЯ ЗВЕЗДОЧКА В СЛУЧАЙНЫХ МЕСТАХ
         let starBonusActive = false;
         let starSpinsLeft = 0;
-        let currentStarSectorDeg = 24; // меняется в зависимости от цены
-        let currentStarStartDeg = 240;  // меняется в случайные места
+        let currentStarSectorDeg = 24; 
+        let currentStarStartDeg = 240; 
 
-        // Функция вычисления размера и случайной позиции звёздочки
         function calculateDynamicStar(targetPrice, winSectorDeg) {
-            // Чем дороже скин, тем больше размер сектора звезды
             if (targetPrice < 2000) currentStarSectorDeg = 16;
             else if (targetPrice < 10000) currentStarSectorDeg = 22;
             else if (targetPrice < 100000) currentStarSectorDeg = 28;
             else if (targetPrice < 2000000) currentStarSectorDeg = 36;
             else currentStarSectorDeg = 45;
 
-            // Звезда должна размещаться в СЛУЧАЙНОМ месте вне сектора победы
             let availableSpan = 360 - winSectorDeg - currentStarSectorDeg - 10;
             if (availableSpan > 10) {
                 currentStarStartDeg = (winSectorDeg + 5 + Math.random() * availableSpan) % 360;
@@ -1737,7 +1743,6 @@
             const cy = canvas.height / 2;
             const r = cx - 4;
 
-            // Серый базовый круг (проигрыш)
             ctx.beginPath();
             ctx.arc(cx, cy, r, 0, Math.PI * 2);
             ctx.fillStyle = "#1e164d";
@@ -1746,7 +1751,6 @@
             ctx.strokeStyle = "#382980";
             ctx.stroke();
 
-            // Жёлтый сектор победы (начинается с верхней точки -90 градусов)
             if (chancePercent > 0) {
                 const winAngle = (chancePercent / 100) * (Math.PI * 2);
                 ctx.beginPath();
@@ -1760,7 +1764,6 @@
                 ctx.shadowBlur = 0;
             }
 
-            // Фиолетовый динамический сектор со звёздочкой в СЛУЧАЙНОМ месте
             const starStartRad = -Math.PI / 2 + (currentStarStartDeg / 360) * (Math.PI * 2);
             const starAngleRad = (currentStarSectorDeg / 360) * (Math.PI * 2);
 
@@ -1774,7 +1777,6 @@
             ctx.fill();
             ctx.shadowBlur = 0;
 
-            // Рисуем эмодзи звезды по центру сектора
             ctx.save();
             ctx.translate(cx, cy);
             ctx.rotate(starStartRad + starAngleRad / 2);
@@ -1808,12 +1810,11 @@
             const masterWin = document.getElementById("c_master_win") && document.getElementById("c_master_win").checked;
             const starAlwaysCheat = document.getElementById("c_star_always") && document.getElementById("c_star_always").checked;
 
-            // Выбор исхода
             let outcome = 'lose';
             let roll = Math.random() * 100;
 
             if (starAlwaysCheat) {
-                outcome = 'star'; // Принудительный чит на звезду
+                outcome = 'star'; 
             } else if (rig === "win" || masterWin) {
                 outcome = 'win';
             } else if (rig === "lose") {
@@ -1830,16 +1831,12 @@
 
             let targetDegInCircle = 0;
             if (outcome === 'star') {
-                // Точно в середину динамической зоны со звездочкой
                 targetDegInCircle = (currentStarStartDeg + currentStarSectorDeg / 2) % 360;
             } else if (outcome === 'win') {
-                // Внутрь желтого сектора победы
                 targetDegInCircle = 2 + Math.random() * Math.max(2, winSectorDeg - 4);
             } else {
-                // Внутрь серого сектора
                 let safeGreyStart = (winSectorDeg + 3) % 360;
                 let candidate = safeGreyStart + Math.random() * 50;
-                // Избегаем сектора звезды
                 if (candidate >= currentStarStartDeg && candidate <= currentStarStartDeg + currentStarSectorDeg) {
                     candidate = (currentStarStartDeg + currentStarSectorDeg + 5) % 360;
                 }

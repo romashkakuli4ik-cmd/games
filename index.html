@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ROMAN | Real Instant P2P & Games v45</title>
+    <title>ROMAN | Real Instant P2P & Games v46</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
@@ -36,7 +36,7 @@
             margin-bottom: 6px; padding-right: 75px;
         }
         .title {
-            font-size: 13.5px; font-weight: 900; color: #fff;
+            font-size: 13px; font-weight: 900; color: #fff;
             text-transform: uppercase; text-shadow: 0 0 12px var(--accent-pink);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
@@ -65,11 +65,18 @@
             color: #fff; border-color: transparent; box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
         }
 
-        /* КАЗИНО И ИГРЫ */
+        /* ГЛАВНЫЙ ИГРОВОЙ БЛОК - СТРОГО ВЕРТИКАЛЬНАЯ КОЛОНКА */
+        #gamesView {
+            display: flex;
+            flex-direction: column !important;
+            width: 100%;
+            gap: 8px;
+        }
+
         .control-deck {
             width: 100%; background: var(--card-bg);
             border: 1px solid rgba(112, 70, 244, 0.4); border-radius: 14px;
-            padding: 8px; margin-bottom: 8px;
+            padding: 8px;
         }
         .deck-header {
             font-size: 11px; color: #9d9db8; font-weight: 800; margin-bottom: 6px;
@@ -82,9 +89,10 @@
             font-weight: 800; cursor: pointer; text-align: center;
         }
         .b-btn.active { background: var(--accent-pink); border-color: var(--accent-pink); }
+        
         .tabs-scroller {
             display: flex; gap: 5px; overflow-x: auto; width: 100%;
-            padding-bottom: 6px; scrollbar-width: none; overscroll-behavior-x: contain;
+            padding-bottom: 4px; scrollbar-width: none; overscroll-behavior-x: contain;
         }
         .tabs-scroller::-webkit-scrollbar { display: none; }
         .tab-btn {
@@ -95,6 +103,7 @@
         .tab-btn.active {
             background: linear-gradient(90deg, #7046f4, #ff007f); color: #fff; border-color: transparent;
         }
+
         .arena-card {
             background: var(--card-bg); border: 1px solid rgba(112, 70, 244, 0.45);
             border-radius: 16px; width: 100%; padding: 12px; display: flex;
@@ -114,7 +123,7 @@
             min-height: 36px; display: flex; align-items: center; justify-content: center;
         }
 
-        /* ПЕНАЛЬТИ */
+        /* ПОЛНОМАСШТАБНЫЙ СТАДИОН ПЕНАЛЬТИ */
         .stadium-box {
             position: relative; width: 100%; height: 230px;
             background: radial-gradient(circle at 50% 100%, #1e824c 0%, #0d4223 80%, #061c0e 100%);
@@ -122,8 +131,8 @@
             display: flex; flex-direction: column; align-items: center;
         }
         .goal-frame {
-            position: absolute; top: 20px; width: 86%; max-width: 250px; height: 110px;
-            border-top: 5px solid #f1f2f6; border-left: 5px solid #f1f2f6; border-right: 5px solid #f1f2f6;
+            position: absolute; top: 16px; width: 90%; max-width: 270px; height: 115px;
+            border-top: 6px solid #f1f2f6; border-left: 6px solid #f1f2f6; border-right: 6px solid #f1f2f6;
             background: linear-gradient(135deg, rgba(255,255,255,0.08) 25%, transparent 25%),
                         linear-gradient(225deg, rgba(255,255,255,0.08) 25%, transparent 25%),
                         linear-gradient(45deg, rgba(255,255,255,0.08) 25%, transparent 25%),
@@ -131,23 +140,25 @@
             background-size: 12px 12px;
         }
         .goalkeeper {
-            position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+            position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
             font-size: 40px; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 5;
         }
         .soccer-ball {
-            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+            position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
             font-size: 28px; transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); z-index: 10;
         }
         .target-zones-grid {
-            position: absolute; top: 20px; width: 86%; max-width: 250px; height: 110px;
+            position: absolute; top: 16px; width: 90%; max-width: 270px; height: 115px;
             display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr);
             gap: 2px; z-index: 20;
         }
         .target-cell {
             background: rgba(255, 255, 255, 0.05); border: 1px dashed rgba(255, 255, 255, 0.3);
             border-radius: 4px; display: flex; align-items: center; justify-content: center;
-            color: rgba(255,255,255,0.7); font-size: 10px; font-weight: 800; cursor: pointer;
+            color: rgba(255,255,255,0.85); font-size: 10px; font-weight: 800; cursor: pointer; text-align: center;
+            padding: 2px;
         }
+        .target-cell:active { background: rgba(0, 240, 255, 0.35); border-color: var(--accent-cyan); }
 
         /* МИНЫ, БАШНЯ, КРАШ, ОРЕЛ, КОСТИ, РУЛЕТКА */
         .mines-options { display: flex; width: 100%; gap: 4px; margin-bottom: 6px; }
@@ -260,7 +271,7 @@
             cursor: pointer; font-size: 9.5px;
         }
 
-        /* ПОЛНОЦЕННЫЙ P2P МЕССЕНДЖЕР ROMAN C ПРЯМЫМ СОЕДИНЕНИЕМ И ЗВОНКАМИ */
+        /* P2P МЕССЕНДЖЕР ROMAN */
         #romanChatView { display: none; width: 100%; flex-direction: column; gap: 8px; }
         .messenger-card {
             background: var(--card-bg); border: 1px solid rgba(0, 240, 255, 0.4);
@@ -272,9 +283,7 @@
             padding: 7px 10px; font-size: 11px; margin-bottom: 8px;
         }
         .peer-id-val { color: var(--accent-cyan); font-weight: 900; letter-spacing: 0.5px; }
-        .connect-box {
-            display: flex; gap: 6px; margin-bottom: 8px;
-        }
+        .connect-box { display: flex; gap: 6px; margin-bottom: 8px; }
         .connect-input {
             flex: 1; padding: 9px 10px; background: #0c0824; border: 1px solid #3c2f82;
             border-radius: 8px; color: #fff; font-size: 11.5px;
@@ -283,9 +292,7 @@
             padding: 8px 12px; background: var(--accent-cyan); color: #000;
             border: none; border-radius: 8px; font-size: 11px; font-weight: 900; cursor: pointer;
         }
-        .call-bar {
-            display: flex; gap: 6px; margin-bottom: 8px;
-        }
+        .call-bar { display: flex; gap: 6px; margin-bottom: 8px; }
         .btn-call-act {
             flex: 1; padding: 8px; background: #1a1347; border: 1px solid var(--accent-green);
             color: var(--accent-green); border-radius: 8px; font-size: 11px; font-weight: 900;
@@ -388,7 +395,7 @@
         </div>
 
         <!-- 1. ИГРЫ КАЗИНО / АРКАДЫ -->
-        <div id="gamesView" style="width: 100%;">
+        <div id="gamesView">
             <div class="control-deck">
                 <div class="deck-header">
                     <span>СТАВКА:</span>
@@ -554,7 +561,7 @@
             </div>
         </div>
 
-        <!-- 3. НАДЕЖНЫЙ P2P МЕССЕНДЖЕР ROMAN БЕЗ ОШИБОК ПОДКЛЮЧЕНИЯ -->
+        <!-- 3. НАДЕЖНЫЙ P2P МЕССЕНДЖЕР ROMAN -->
         <div id="romanChatView">
             <div class="messenger-card">
                 <div class="peer-id-row">
@@ -1483,7 +1490,7 @@
             alert(`Инвентарь продан за +${formatMoney(total)} ₽!`);
         }
 
-        /* 9. НАСТОЯЩИЙ P2P МЕССЕНДЖЕР ROMAN C АВТО-НОРМАЛИЗАЦИЕЙ ID И ПРЯМЫМИ ЗВОНКАМИ */
+        /* 9. P2P МЕССЕНДЖЕР ROMAN (АВТО-НОРМАЛИЗАЦИЯ ID + ВИДЕО С MUTED) */
         let myPeer = null;
         let activeDataConn = null;
         let activeMediaCall = null;
@@ -1519,7 +1526,7 @@
             myPeer.on('connection', (conn) => {
                 activeDataConn = conn;
                 setupDataEvents();
-                appendRomanChatMsg(`Входящее прямое подключение от ${conn.peer}!`, "in", "ROMAN");
+                appendRomanChatMsg(`Собеседник подключился! Канал открыт.`, "in", "ROMAN");
             });
 
             myPeer.on('call', async (call) => {
@@ -1548,7 +1555,7 @@
                     });
 
                     call.on('close', () => endP2PCall(false));
-                    appendRomanChatMsg(isVideo ? "📹 Видеозвонок начат!" : "📞 Аудиозвонок начат!", "in", call.peer);
+                    appendRomanChatMsg(isVideo ? "📹 Видеозвонок активирован!" : "📞 Аудиозвонок активирован!", "in", call.peer);
                 } catch(e) {
                     appendRomanChatMsg("Ошибка доступа к камере/микрофону: " + e.message, "in", "ROMAN");
                 }
@@ -1557,7 +1564,7 @@
             myPeer.on('error', (err) => {
                 console.error("PeerJS Error:", err);
                 if (err.type === 'peer-unavailable') {
-                    appendRomanChatMsg("Собеседник сейчас не в сети или не открыл вкладку ROMAN ЧАТ.", "in", "ROMAN");
+                    appendRomanChatMsg("Собеседник сейчас не открыл вкладку ROMAN ЧАТ или ID указан неверно.", "in", "ROMAN");
                 }
             });
         }
@@ -1577,7 +1584,7 @@
 
             activeDataConn = myPeer.connect(targetId, { reliable: true });
             setupDataEvents();
-            appendRomanChatMsg(`Подключение к ${targetId}...`, "out", "ВЫ");
+            appendRomanChatMsg(`Устанавливаю соединение с ${targetId}...`, "out", "ВЫ");
         }
 
         function setupDataEvents() {
@@ -1607,13 +1614,12 @@
             const targetId = normalizePeerId(raw);
 
             if (!targetId) {
-                return alert("Укажите Telegram ID или P2P ID собеседника в поле выше!");
+                return alert("Укажите Telegram ID собеседника в поле ввода выше!");
             }
 
             if (!activeDataConn || !activeDataConn.open) {
-                // Автоматическая отправка после подключения
                 connectToPeer();
-                appendRomanChatMsg("Канал связи открывается... Повторите отправку через 2 секунды.", "in", "ROMAN");
+                appendRomanChatMsg("Соединяю с собеседником... Нажмите отправку ещё раз через 1 секунду.", "in", "ROMAN");
                 return;
             }
 
@@ -1630,12 +1636,12 @@
             const targetId = normalizePeerId(raw);
 
             if (!targetId) {
-                return alert("Укажите Telegram ID или P2P ID собеседника в поле выше!");
+                return alert("Укажите Telegram ID собеседника в поле ввода выше!");
             }
 
             if (!activeDataConn || !activeDataConn.open) {
                 connectToPeer();
-                return alert("Канал связи ещё подключается, подождите 2 секунды.");
+                return alert("Канал связи ещё подключается. Подождите 1 секунду и отправьте файл снова.");
             }
 
             const reader = new FileReader();
@@ -1651,7 +1657,7 @@
             const raw = document.getElementById('targetPeerInput').value.trim();
             const targetId = normalizePeerId(raw);
 
-            if (!targetId) return alert("Введите Telegram ID или P2P ID собеседника для вызова!");
+            if (!targetId) return alert("Введите Telegram ID собеседника для вызова!");
 
             try {
                 myLocalStream = await navigator.mediaDevices.getUserMedia({ 
@@ -1759,4 +1765,4 @@
         updateBal();
     </script>
 </body>
-</html>
+                </html>

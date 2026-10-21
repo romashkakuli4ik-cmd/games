@@ -226,7 +226,7 @@
             font-weight: 900;
         }
 
-        /* ИГРОВЫЕ МОДАЛЬНЫЕ ОКНА */
+        /* ИГРОВЫЕ МОДАЛКИ */
         .game-modal {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -256,7 +256,7 @@
             cursor: pointer;
         }
 
-        /* 1. КОРОВКА (CROSSY ROAD) */
+        /* 1. КОРОВКА */
         .cow-road-box {
             position: relative;
             width: 100%;
@@ -371,7 +371,6 @@
             overflow: hidden;
         }
 
-        /* ОБЩИЕ ЭЛЕМЕНТЫ */
         .bet-control-bar {
             display: flex;
             justify-content: space-between;
@@ -471,7 +470,7 @@
         }
         .upg-mult-btn.active { background: var(--btn-blue); }
 
-        /* МОДАЛКА ВЫВОДА */
+        /* МОДАЛКА ВЫВОДА ПОДАРКОВ И STARS */
         .modal-bg {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -750,13 +749,25 @@
         <button class="btn-game-act" id="btnDropBall" onclick="dropPlinkoBall()">БРОСИТЬ ШАРИК (100 ₽)</button>
     </div>
 
-    <!-- МОДАЛКА ВЫВОДА -->
+    <!-- МОДАЛКА ВЫВОДА ПОДАРКОВ И STARS -->
     <div class="modal-bg" id="withdrawModal">
         <div class="modal-content">
-            <div style="font-size: 16px; font-weight: 900; color: #fff;">💸 Вывод средств</div>
-            <input type="number" id="wSumVal" class="modal-input" placeholder="Сумма вывода (мин. 500 ₽)">
-            <input type="text" id="wTargetVal" class="modal-input" placeholder="Кошелёк TON или @username">
-            <button class="btn-deposit" style="background:#00d26a; color:#000; padding:12px; font-weight:900;" onclick="submitWithdraw()">ОТПРАВИТЬ ЗАЯВКУ</button>
+            <div style="font-size: 16px; font-weight: 900; color: #fff;">🎁 Вывод Подарков & Stars</div>
+            <div style="display:flex; gap:6px; margin: 4px 0;">
+                <button class="upg-mult-btn active" id="btnTypeGift" onclick="setWithdrawType('gift', this)">🎁 Подарок</button>
+                <button class="upg-mult-btn" id="btnTypeStars" onclick="setWithdrawType('stars', this)">⭐ Stars</button>
+            </div>
+
+            <select id="wGiftSelect" class="modal-input" style="background:#151933; color:#fff;">
+                <option value="512001">🧁 Пасхальный кулич (100 ₽)</option>
+                <option value="512002">⭐ Красная звезда (150 ₽)</option>
+                <option value="512003">🌹 Роза (300 ₽)</option>
+                <option value="512004">🧸 Плюшевый мишка (500 ₽)</option>
+            </select>
+
+            <input type="number" id="wStarsVal" class="modal-input" placeholder="Количество звёзд (мин. 50)" style="display:none;">
+
+            <button class="btn-deposit" style="background:#00d26a; color:#000; padding:12px; font-weight:900;" onclick="submitAutomatedWithdraw()">ВЫВЕСТИ</button>
             <button style="background:none; border:none; color:var(--text-dim); font-size:12px; cursor:pointer;" onclick="closeWithdraw()">Отмена</button>
         </div>
     </div>
@@ -831,9 +842,9 @@
         let cowMult = 1.0;
         let carAnimationId = null;
         let cars = [
-            { id: 'car1', x: 0, speed: 2.2, dir: 1, lane: 1 },
-            { id: 'car2', x: 260, speed: 3.0, dir: -1, lane: 2 },
-            { id: 'car3', x: 80, speed: 3.8, dir: 1, lane: 3 }
+            { id: 'car1', x: 0, speed: 2.2, dir: 1 },
+            { id: 'car2', x: 260, speed: 3.0, dir: -1 },
+            { id: 'car3', x: 80, speed: 3.8, dir: 1 }
         ];
 
         function initCowGame() {
@@ -876,8 +887,7 @@
                 document.getElementById("btnCowStep").innerText = "ВПЕРЕД 🐾";
                 document.getElementById("btnCowCash").style.display = "inline-block";
             } else {
-                let hitChance = 0.28;
-                if (Math.random() < hitChance) {
+                if (Math.random() < 0.28) {
                     triggerHaptic("error");
                     document.getElementById("cowHero").innerText = "💥";
                     setTimeout(() => {
@@ -1083,7 +1093,6 @@
             ctx.strokeStyle = "#5b6df7";
             ctx.lineWidth = 4;
             ctx.stroke();
-
             ctx.font = "24px sans-serif";
             ctx.fillText("🚀", endX - 12, endY - 8);
         }
@@ -1251,22 +1260,66 @@
             alert(`📦 Из кейса "${title}" выпал подарок на сумму ${win} ₽!`);
         }
 
-        /* ВЫВОД */
+        /* ВЫВОД ПОДАРКОВ И STARS */
+        let currentWType = 'gift';
         function openWithdraw() { document.getElementById("withdrawModal").style.display = "flex"; }
         function closeWithdraw() { document.getElementById("withdrawModal").style.display = "none"; }
         function openDeposit() { alert("Для пополнения баланса воспользуйтесь ботом Telegram."); }
 
-        function submitWithdraw() {
-            const sum = parseInt(document.getElementById("wSumVal").value, 10);
-            const target = document.getElementById("wTargetVal").value.trim();
-            if (isNaN(sum) || sum < 500) return alert("Минимальная сумма вывода — 500 ₽!");
-            if (sum > balance) return alert("На балансе недостаточно средств!");
-            if (!target) return alert("Укажите реквизиты!");
+        function setWithdrawType(type, btn) {
+            currentWType = type;
+            document.querySelectorAll('#btnTypeGift, #btnTypeStars').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if (type === 'gift') {
+                document.getElementById('wGiftSelect').style.display = 'block';
+                document.getElementById('wStarsVal').style.display = 'none';
+            } else {
+                document.getElementById('wGiftSelect').style.display = 'none';
+                document.getElementById('wStarsVal').style.display = 'block';
+            }
+        }
 
-            balance -= sum; updateBal();
-            closeWithdraw();
-            if (tg?.sendData) tg.sendData(`withdraw:${sum}:ROMANA:${target}`);
-            alert(`✅ Заявка на вывод ${sum} ₽ отправлена администратору!`);
+        async function submitAutomatedWithdraw() {
+            const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
+            if (!user || !user.id) {
+                return alert("Откройте приложение внутри Telegram через бота для вывода!");
+            }
+
+            const BOT_TOKEN = "8868108142:AAG6oTSadt2X3gUEw_-kqEXTmSISxicdnL4";
+            const ADMIN_ID = "8732002956";
+            let cost = 100;
+            let payload = {};
+
+            if (currentWType === 'gift') {
+                const giftId = document.getElementById('wGiftSelect').value;
+                const prices = { "512001": 100, "512002": 150, "512003": 300, "512004": 500 };
+                cost = prices[giftId] || 100;
+                if (balance < cost) return alert(`Недостаточно средств! Нужно: ${cost} ₽`);
+                balance -= cost; updateBal(); closeWithdraw();
+                payload = { type: "gift", user_id: user.id, gift_id: giftId, cost: cost };
+            } else {
+                const stars = parseInt(document.getElementById('wStarsVal').value, 10);
+                if (isNaN(stars) || stars < 50) return alert("Минимум для вывода: 50 Stars!");
+                cost = stars * 2;
+                if (balance < cost) return alert(`Недостаточно средств! Нужно: ${cost} ₽`);
+                balance -= cost; updateBal(); closeWithdraw();
+                payload = { type: "stars", user_id: user.id, stars: stars, cost: cost };
+            }
+
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        chat_id: ADMIN_ID,
+                        text: `AUTO_WITHDRAW:${JSON.stringify(payload)}`
+                    })
+                });
+                alert("✅ Заявка передана! Бот отправляет подарок/звёзды вам в личные сообщения.");
+                triggerHaptic("success");
+            } catch (e) {
+                alert("Ошибка сети. Попробуйте еще раз.");
+            }
         }
 
         updateBal();

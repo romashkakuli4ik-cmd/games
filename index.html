@@ -1,1768 +1,672 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ROMAN | Real Instant P2P & Games v46</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <style>
-        :root {
-            --bg-main: #08051a;
-            --card-bg: rgba(19, 13, 44, 0.92);
-            --accent-pink: #ff007f;
-            --accent-cyan: #00f0ff;
-            --accent-gold: #ffd200;
-            --accent-green: #00ff88;
-            --border-color: #271c5b;
-        }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        html, body {
-            width: 100%; max-width: 100vw; margin: 0; padding: 0;
-            overflow-x: hidden !important; touch-action: pan-y;
-            background: radial-gradient(circle at 50% 0%, #201153 0%, var(--bg-main) 100%);
-            color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-        body {
-            display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh; padding: 8px 10px 40px 10px;
-        }
-        #appContent {
-            display: flex; width: 100%; max-width: 390px;
-            flex-direction: column; align-items: center; overflow-x: hidden;
-        }
-        .header {
-            position: relative; text-align: center; width: 100%;
-            margin-bottom: 6px; padding-right: 75px;
-        }
-        .title {
-            font-size: 13px; font-weight: 900; color: #fff;
-            text-transform: uppercase; text-shadow: 0 0 12px var(--accent-pink);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .admin-secret-btn {
-            display: none; position: absolute; right: 0; top: 2px;
-            background: linear-gradient(135deg, #00ff88, #00b894);
-            color: #041208; border: none; border-radius: 8px;
-            font-size: 10px; font-weight: 900; padding: 5px 8px; cursor: pointer;
-            box-shadow: 0 0 12px rgba(0, 255, 136, 0.7);
-        }
-        .balance-badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            margin: 4px 0 8px 0; padding: 5px 16px; background: rgba(30, 21, 74, 0.9);
-            border: 1px solid rgba(112, 70, 244, 0.7); border-radius: 20px;
-            font-size: 14px; font-weight: 900; color: var(--accent-gold);
-            box-shadow: 0 0 15px rgba(112, 70, 244, 0.4);
-        }
-        .main-nav { display: flex; width: 100%; gap: 4px; margin-bottom: 8px; }
-        .nav-switch-btn {
-            flex: 1; padding: 10px 1px; background: rgba(20, 13, 54, 0.85);
-            border: 1px solid rgba(60, 44, 128, 0.6); border-radius: 10px;
-            color: #a49fc4; font-weight: 800; font-size: 10px; cursor: pointer; text-align: center;
-        }
-        .nav-switch-btn.active {
-            background: linear-gradient(90deg, #7046f4, #ff007f);
-            color: #fff; border-color: transparent; box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>RubUP Mini App</title>
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-        /* ГЛАВНЫЙ ИГРОВОЙ БЛОК - СТРОГО ВЕРТИКАЛЬНАЯ КОЛОНКА */
-        #gamesView {
-            display: flex;
-            flex-direction: column !important;
-            width: 100%;
-            gap: 8px;
-        }
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;900&family=Inter:wght@400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #070A0F;
+      color: #F8FAFC;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
+    }
 
-        .control-deck {
-            width: 100%; background: var(--card-bg);
-            border: 1px solid rgba(112, 70, 244, 0.4); border-radius: 14px;
-            padding: 8px;
-        }
-        .deck-header {
-            font-size: 11px; color: #9d9db8; font-weight: 800; margin-bottom: 6px;
-            display: flex; justify-content: space-between;
-        }
-        .bet-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; width: 100%; }
-        .b-btn {
-            background: rgba(32, 23, 78, 0.8); border: 1px solid rgba(60, 44, 128, 0.8);
-            color: #fff; padding: 6px 0; border-radius: 6px; font-size: 9.5px;
-            font-weight: 800; cursor: pointer; text-align: center;
-        }
-        .b-btn.active { background: var(--accent-pink); border-color: var(--accent-pink); }
-        
-        .tabs-scroller {
-            display: flex; gap: 5px; overflow-x: auto; width: 100%;
-            padding-bottom: 4px; scrollbar-width: none; overscroll-behavior-x: contain;
-        }
-        .tabs-scroller::-webkit-scrollbar { display: none; }
-        .tab-btn {
-            background: rgba(25, 18, 62, 0.85); border: 1px solid rgba(55, 40, 119, 0.8);
-            color: #a8a8c7; padding: 8px 12px; border-radius: 10px; font-size: 11px;
-            font-weight: 800; white-space: nowrap; cursor: pointer; flex-shrink: 0;
-        }
-        .tab-btn.active {
-            background: linear-gradient(90deg, #7046f4, #ff007f); color: #fff; border-color: transparent;
-        }
+    .font-unbounded {
+      font-family: 'Unbounded', sans-serif;
+    }
 
-        .arena-card {
-            background: var(--card-bg); border: 1px solid rgba(112, 70, 244, 0.45);
-            border-radius: 16px; width: 100%; padding: 12px; display: flex;
-            flex-direction: column; align-items: center;
-        }
-        .game-panel { display: none; width: 100%; flex-direction: column; align-items: center; }
-        .game-panel.active { display: flex; }
-        .btn-action {
-            width: 100%; padding: 12px; background: linear-gradient(90deg, #7046f4, #ff007f);
-            border: none; border-radius: 12px; color: #fff; font-size: 14px;
-            font-weight: 900; cursor: pointer; margin-top: 10px;
-        }
-        .status-box {
-            background: rgba(23, 18, 58, 0.9); border: 1px solid rgba(52, 40, 115, 0.8);
-            border-radius: 10px; padding: 8px; width: 100%; text-align: center;
-            font-size: 12px; font-weight: 800; color: var(--accent-gold); margin-top: 8px;
-            min-height: 36px; display: flex; align-items: center; justify-content: center;
-        }
+    .glass-panel {
+      background: rgba(16, 22, 34, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
 
-        /* ПОЛНОМАСШТАБНЫЙ СТАДИОН ПЕНАЛЬТИ */
-        .stadium-box {
-            position: relative; width: 100%; height: 230px;
-            background: radial-gradient(circle at 50% 100%, #1e824c 0%, #0d4223 80%, #061c0e 100%);
-            border: 2px solid #27ae60; border-radius: 14px; overflow: hidden;
-            display: flex; flex-direction: column; align-items: center;
-        }
-        .goal-frame {
-            position: absolute; top: 16px; width: 90%; max-width: 270px; height: 115px;
-            border-top: 6px solid #f1f2f6; border-left: 6px solid #f1f2f6; border-right: 6px solid #f1f2f6;
-            background: linear-gradient(135deg, rgba(255,255,255,0.08) 25%, transparent 25%),
-                        linear-gradient(225deg, rgba(255,255,255,0.08) 25%, transparent 25%),
-                        linear-gradient(45deg, rgba(255,255,255,0.08) 25%, transparent 25%),
-                        linear-gradient(315deg, rgba(255,255,255,0.08) 25%, #052210 25%);
-            background-size: 12px 12px;
-        }
-        .goalkeeper {
-            position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
-            font-size: 40px; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 5;
-        }
-        .soccer-ball {
-            position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
-            font-size: 28px; transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); z-index: 10;
-        }
-        .target-zones-grid {
-            position: absolute; top: 16px; width: 90%; max-width: 270px; height: 115px;
-            display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr);
-            gap: 2px; z-index: 20;
-        }
-        .target-cell {
-            background: rgba(255, 255, 255, 0.05); border: 1px dashed rgba(255, 255, 255, 0.3);
-            border-radius: 4px; display: flex; align-items: center; justify-content: center;
-            color: rgba(255,255,255,0.85); font-size: 10px; font-weight: 800; cursor: pointer; text-align: center;
-            padding: 2px;
-        }
-        .target-cell:active { background: rgba(0, 240, 255, 0.35); border-color: var(--accent-cyan); }
+    .neon-border-green {
+      box-shadow: 0 0 15px rgba(0, 230, 118, 0.25);
+    }
 
-        /* МИНЫ, БАШНЯ, КРАШ, ОРЕЛ, КОСТИ, РУЛЕТКА */
-        .mines-options { display: flex; width: 100%; gap: 4px; margin-bottom: 6px; }
-        .m-opt-btn {
-            flex: 1; padding: 6px 0; background: #191244; border: 1px solid #3c2c80;
-            color: #aaa; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer;
-        }
-        .m-opt-btn.active { background: var(--accent-cyan); color: #000; border-color: var(--accent-cyan); }
-        .mine-grid { display: grid; gap: 4px; width: 100%; }
-        .mine-cell {
-            aspect-ratio: 1; background: #1e164f; border-radius: 6px; display: flex;
-            align-items: center; justify-content: center; font-size: 17px; cursor: pointer;
-            border: 1px solid rgba(60, 44, 128, 0.5);
-        }
-        .mine-cell.gem { background: #00b894; }
-        .mine-cell.bomb { background: #d63031; }
-        .tower-view {
-            display: flex; flex-direction: column-reverse; gap: 5px; width: 100%;
-            max-height: 200px; overflow-y: auto; padding: 4px; background: #060417;
-            border-radius: 10px; border: 1px solid rgba(112, 70, 244, 0.4);
-        }
-        .tower-row { display: flex; gap: 5px; width: 100%; }
-        .tower-step {
-            flex: 1; padding: 9px 0; background: #1b1347; border: 1px solid #36297a;
-            border-radius: 6px; text-align: center; font-weight: 800; font-size: 11px; cursor: pointer;
-        }
-        .tower-step.current { border-color: var(--accent-cyan); background: #261966; }
-        .crash-screen {
-            height: 120px; width: 100%; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; background: #04020e;
-            border-radius: 12px; border: 1px solid #1a1347;
-        }
-        .coin-3d {
-            width: 70px; height: 70px; border-radius: 50%;
-            background: radial-gradient(circle, #ffd200 40%, #e67e22 100%);
-            border: 3px solid #f39c12; display: flex; align-items: center;
-            justify-content: center; font-size: 34px; margin: 10px 0;
-            transition: transform 0.6s ease;
-        }
-        .dice-box { display: flex; gap: 12px; margin: 10px 0; }
-        .dice-cube {
-            width: 50px; height: 50px; background: #fff; color: #111;
-            border-radius: 10px; display: flex; align-items: center;
-            justify-content: center; font-size: 28px; font-weight: 900;
-        }
+    .neon-border-purple {
+      box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+    }
 
-        /* TG АПГРЕЙДЕР */
-        #giftsView { display: none; width: 100%; flex-direction: column; gap: 8px; }
-        .mult-panel {
-            display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px;
-            width: 100%; background: var(--card-bg); border: 1px solid rgba(112, 70, 244, 0.4);
-            border-radius: 12px; padding: 5px 3px;
-        }
-        .mult-btn {
-            background: #1a1343; border: 1px solid #3b2c80; color: var(--accent-gold);
-            border-radius: 6px; padding: 6px 0; font-size: 9.5px; font-weight: 900;
-            cursor: pointer; text-align: center;
-        }
-        .mult-btn.active { background: var(--accent-pink); color: #fff; }
-        .split-arena { display: flex; gap: 6px; width: 100%; }
-        .split-box {
-            flex: 1; background: var(--card-bg); border: 1px solid rgba(112, 70, 244, 0.4);
-            border-radius: 12px; padding: 6px; display: flex; flex-direction: column; height: 175px;
-        }
-        .split-box-title {
-            font-size: 10px; font-weight: 900; text-align: center; margin-bottom: 4px;
-            padding-bottom: 4px; border-bottom: 1px solid rgba(112, 70, 244, 0.3);
-        }
-        .split-items-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
-        .split-row {
-            background: #17113d; border: 1px solid #342675; border-radius: 6px;
-            padding: 5px 6px; display: flex; align-items: center; justify-content: space-between;
-            cursor: pointer; font-size: 9.5px;
-        }
-        .split-row.selected { border-color: var(--accent-gold); background: #2e1d6e; }
-        .star-badge-banner {
-            display: none; width: 100%; background: linear-gradient(90deg, #9b51e0, #ff007f);
-            border-radius: 10px; padding: 6px 10px; font-size: 11px; font-weight: 900;
-            text-align: center; color: #fff; margin-bottom: 6px; align-items: center; justify-content: space-between;
-        }
-        .wheel-card {
-            background: var(--card-bg); border: 1px solid rgba(112, 70, 244, 0.45);
-            border-radius: 16px; padding: 10px; display: flex; flex-direction: column; align-items: center; width: 100%;
-        }
-        .wheel-container {
-            position: relative; width: 170px; height: 170px; border-radius: 50%;
-            margin: 6px 0; display: flex; align-items: center; justify-content: center;
-        }
-        .wheel-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; }
-        .wheel-arrow {
-            position: absolute; width: 4px; height: 78px; background: var(--accent-green);
-            bottom: 50%; transform-origin: bottom center; box-shadow: 0 0 10px var(--accent-green);
-            border-radius: 4px; z-index: 10;
-        }
-        .wheel-center-pin { position: absolute; width: 14px; height: 14px; background: #fff; border-radius: 50%; z-index: 12; }
-        .extra-upg-controls { display: flex; gap: 6px; width: 100%; margin-top: 6px; }
-        .btn-star-fifty {
-            flex: 1; padding: 8px 4px; background: #2e1d6e; border: 1px solid var(--accent-gold);
-            color: var(--accent-gold); border-radius: 10px; font-size: 10px; font-weight: 900;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;
-        }
-        .shop-box {
-            background: var(--card-bg); border: 1px solid rgba(112, 70, 244, 0.4);
-            border-radius: 14px; padding: 8px; width: 100%;
-        }
-        .shop-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; max-height: 150px; overflow-y: auto; margin-top: 6px; }
-        .shop-cell {
-            background: #181142; border: 1px solid #382980; border-radius: 8px;
-            padding: 5px 2px; display: flex; flex-direction: column; align-items: center;
-            cursor: pointer; font-size: 9.5px;
-        }
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.35; transform: scale(1); }
+      50% { opacity: 0.75; transform: scale(1.08); }
+    }
 
-        /* P2P МЕССЕНДЖЕР ROMAN */
-        #romanChatView { display: none; width: 100%; flex-direction: column; gap: 8px; }
-        .messenger-card {
-            background: var(--card-bg); border: 1px solid rgba(0, 240, 255, 0.4);
-            border-radius: 16px; padding: 12px; display: flex; flex-direction: column; width: 100%;
-        }
-        .peer-id-row {
-            display: flex; justify-content: space-between; align-items: center;
-            background: #0d0824; border: 1px dashed var(--accent-cyan); border-radius: 8px;
-            padding: 7px 10px; font-size: 11px; margin-bottom: 8px;
-        }
-        .peer-id-val { color: var(--accent-cyan); font-weight: 900; letter-spacing: 0.5px; }
-        .connect-box { display: flex; gap: 6px; margin-bottom: 8px; }
-        .connect-input {
-            flex: 1; padding: 9px 10px; background: #0c0824; border: 1px solid #3c2f82;
-            border-radius: 8px; color: #fff; font-size: 11.5px;
-        }
-        .btn-m-action {
-            padding: 8px 12px; background: var(--accent-cyan); color: #000;
-            border: none; border-radius: 8px; font-size: 11px; font-weight: 900; cursor: pointer;
-        }
-        .call-bar { display: flex; gap: 6px; margin-bottom: 8px; }
-        .btn-call-act {
-            flex: 1; padding: 8px; background: #1a1347; border: 1px solid var(--accent-green);
-            color: var(--accent-green); border-radius: 8px; font-size: 11px; font-weight: 900;
-            cursor: pointer; text-align: center;
-        }
-        .btn-call-act.danger { border-color: var(--accent-pink); color: var(--accent-pink); }
-
-        #romanVideoArea {
-            display: none; position: relative; width: 100%; height: 210px;
-            background: #000; border-radius: 10px; border: 1px solid var(--accent-cyan);
-            margin-bottom: 8px; overflow: hidden;
-        }
-        #remoteVid { width: 100%; height: 100%; object-fit: cover; }
-        #localVid {
-            position: absolute; bottom: 6px; right: 6px; width: 75px; height: 55px;
-            border-radius: 6px; border: 1px solid var(--accent-cyan); object-fit: cover; transform: scaleX(-1);
-        }
-
-        .m-messages {
-            height: 240px; overflow-y: auto; display: flex; flex-direction: column;
-            gap: 6px; padding: 8px; background: #050314; border-radius: 10px;
-            margin-bottom: 8px; font-size: 12px; user-select: text;
-        }
-        .m-bubble {
-            max-width: 82%; padding: 8px 10px; border-radius: 10px; line-height: 1.35; word-break: break-word;
-        }
-        .m-bubble.in { align-self: flex-start; background: #131d33; border: 1px solid #233457; }
-        .m-bubble.out { align-self: flex-end; background: #183329; border: 1px solid #1f5e49; color: #00ffaa; }
-        .m-bubble-meta { font-size: 9px; color: #888; margin-bottom: 2px; display: flex; justify-content: space-between; }
-        
-        .chat-bottom-bar { display: flex; gap: 6px; align-items: center; }
-        .m-input {
-            flex: 1; padding: 10px; background: #0c0824; border: 1px solid #3c2f82;
-            border-radius: 10px; color: #fff; font-size: 12px;
-        }
-
-        /* GEMINI AI */
-        #aiView { display: none; width: 100%; flex-direction: column; gap: 8px; }
-        .ai-card {
-            background: var(--card-bg); border: 1px solid rgba(112, 70, 244, 0.4);
-            border-radius: 16px; padding: 10px; display: flex; flex-direction: column;
-        }
-        .chat-messages {
-            height: 250px; overflow-y: auto; display: flex; flex-direction: column;
-            gap: 8px; padding: 8px; background: #060415; border-radius: 10px;
-            margin-bottom: 8px; font-size: 13px;
-        }
-        .msg { padding: 8px 12px; border-radius: 12px; max-width: 85%; line-height: 1.4; word-wrap: break-word; }
-        .msg.user { align-self: flex-end; background: #7046f4; color: #fff; }
-        .msg.ai { align-self: flex-start; background: #1a1347; color: #ffd200; border: 1px solid #3b2c85; }
-        .chat-input-row { display: flex; gap: 6px; }
-        .chat-input {
-            flex: 1; padding: 10px; background: #140d3a; border: 1px solid #3c2f82;
-            border-radius: 10px; color: #fff; font-size: 13px;
-        }
-        .chat-send-btn {
-            padding: 10px 14px; background: var(--accent-cyan); border: none;
-            border-radius: 10px; font-weight: 900; color: #041208; cursor: pointer;
-        }
-
-        /* ЧИТЫ */
-        .cheat-modal {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.96); display: none; justify-content: center;
-            align-items: center; z-index: 99999;
-        }
-        .cheat-box {
-            background: #120b33; border: 2px solid var(--accent-green); border-radius: 16px;
-            padding: 14px; width: 90%; max-width: 340px; max-height: 85vh; overflow-y: auto;
-        }
-        .custom-money-box {
-            background: #09061c; border: 1px solid #3c2c80; border-radius: 10px;
-            padding: 8px; margin: 8px 0; display: flex; flex-direction: column; gap: 6px;
-        }
-        .custom-money-input {
-            width: 100%; padding: 8px; background: #1b1248; border: 1px solid var(--accent-green);
-            border-radius: 8px; color: #fff; font-size: 13px; font-weight: bold;
-        }
-        .cheat-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
-        .btn-c-act {
-            padding: 8px; background: var(--accent-green); border: none; color: #041208;
-            font-weight: 900; border-radius: 8px; cursor: pointer; font-size: 11px;
-        }
-    </style>
+    .animate-pulse-glow {
+      animation: pulse-glow 5s infinite ease-in-out;
+    }
+  </style>
 </head>
-<body oncontextmenu="return false;">
+<body class="min-h-screen flex flex-col justify-between pb-24 relative selection:bg-emerald-500 selection:text-black">
 
-    <div id="appContent">
-        <div class="header">
-            <button class="admin-secret-btn" id="admBtn" onclick="openCheat()">👑 DEV ЧИТЫ</button>
-            <div class="title">👑 ROMAN SECURE MESH & ARCADE</div>
-            <div class="balance-badge">💰 <span id="balance">1 000</span> ₽</div>
+  <!-- Неоновые фоновые сферы -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="absolute -top-28 -left-28 w-96 h-96 bg-emerald-500/15 rounded-full blur-[100px] animate-pulse-glow"></div>
+    <div class="absolute top-1/3 -right-28 w-96 h-96 bg-purple-600/15 rounded-full blur-[110px] animate-pulse-glow" style="animation-delay: 2s;"></div>
+    <div class="absolute -bottom-20 left-10 w-80 h-80 bg-blue-600/10 rounded-full blur-[90px]"></div>
+  </div>
+
+  <!-- Главный контейнер -->
+  <div class="relative z-10 w-full max-w-md mx-auto flex flex-col px-4 pt-3 space-y-4">
+
+    <!-- Хедер: Профиль и Баланс -->
+    <header class="flex items-center justify-between glass-panel rounded-2xl p-3 border-white/10 shadow-lg">
+      <div class="flex items-center space-x-3">
+        <div class="relative">
+          <div id="user-avatar" class="w-11 h-11 rounded-xl bg-gradient-to-tr from-emerald-500 to-indigo-600 flex items-center justify-center font-unbounded font-bold text-white shadow-md">
+            R
+          </div>
+          <span class="absolute -bottom-0.5 -right-0.5 bg-emerald-500 w-3.5 h-3.5 rounded-full border-2 border-[#070A0F]"></span>
         </div>
-
-        <div class="main-nav">
-            <button class="nav-switch-btn active" id="btnTabGames" onclick="showMainSection('games')">🕹️ ИГРЫ</button>
-            <button class="nav-switch-btn" id="btnTabGifts" onclick="showMainSection('gifts')">🎁 ПОДАРКИ ⭐</button>
-            <button class="nav-switch-btn" id="btnTabChat" onclick="showMainSection('chat')">💬 ROMAN ЧАТ</button>
-            <button class="nav-switch-btn" id="btnTabAI" onclick="showMainSection('ai')">🧠 GEMINI AI</button>
+        <div>
+          <div class="flex items-center space-x-1.5">
+            <span id="user-name" class="font-semibold text-sm leading-tight text-white">Игрок</span>
+            <span class="text-[10px] bg-yellow-500/20 text-yellow-400 font-bold px-1.5 py-0.5 rounded border border-yellow-500/30">VIP</span>
+          </div>
+          <p class="text-[11px] text-slate-400">ID: <span id="user-id">849204</span></p>
         </div>
+      </div>
 
-        <!-- 1. ИГРЫ КАЗИНО / АРКАДЫ -->
-        <div id="gamesView">
-            <div class="control-deck">
-                <div class="deck-header">
-                    <span>СТАВКА:</span>
-                    <span id="curBetLabel" style="color: var(--accent-pink);">50 ₽</span>
-                </div>
-                <div class="bet-grid">
-                    <button class="b-btn active" onclick="setBet(50, this)">50</button>
-                    <button class="b-btn" onclick="setBet(1000, this)">1k</button>
-                    <button class="b-btn" onclick="setBet(100000, this)">100k</button>
-                    <button class="b-btn" onclick="setBet(1000000, this)">1M</button>
-                    <button class="b-btn" onclick="setBet(10000000, this)">10M</button>
-                    <button class="b-btn" onclick="setBet(100000000, this)">100M</button>
-                    <button class="b-btn" onclick="setBet('all', this)">MAX</button>
-                </div>
-            </div>
-
-            <div class="tabs-scroller">
-                <button class="tab-btn active" onclick="switchGameTab('penalty', this)">⚽ Пенальти</button>
-                <button class="tab-btn" onclick="switchGameTab('mines', this)">💣 Мины</button>
-                <button class="tab-btn" onclick="switchGameTab('tower', this)">🗼 Башня</button>
-                <button class="tab-btn" onclick="switchGameTab('crash', this)">🚀 Краш</button>
-                <button class="tab-btn" onclick="switchGameTab('flip', this)">🪙 Орёл / Решка</button>
-                <button class="tab-btn" onclick="switchGameTab('dice', this)">🎲 Кости</button>
-                <button class="tab-btn" onclick="switchGameTab('roulette', this)">🔴 Рулетка</button>
-            </div>
-
-            <div class="arena-card">
-                <div class="game-panel active" id="p-penalty">
-                    <div class="stadium-box">
-                        <div class="goal-frame"></div>
-                        <div class="goalkeeper" id="gkElem">🧤</div>
-                        <div class="soccer-ball" id="ballElem">⚽</div>
-                        <div class="target-zones-grid">
-                            <div class="target-cell" onclick="takePenaltyShot('tl')">Левый Верх 🥅</div>
-                            <div class="target-cell" onclick="takePenaltyShot('tc')">Центр Верх 🥅</div>
-                            <div class="target-cell" onclick="takePenaltyShot('tr')">Правый Верх 🥅</div>
-                            <div class="target-cell" onclick="takePenaltyShot('bl')">Левый Низ 🥅</div>
-                            <div class="target-cell" onclick="takePenaltyShot('bc')">Центр Низ 🥅</div>
-                            <div class="target-cell" onclick="takePenaltyShot('br')">Правый Низ 🥅</div>
-                        </div>
-                    </div>
-                    <div class="status-box" id="penaltyStatus">Выберите зону ворот для удара!</div>
-                </div>
-
-                <div class="game-panel" id="p-mines">
-                    <div class="mines-options">
-                        <button class="m-opt-btn active" onclick="setMineCount(3, this)">3 мины</button>
-                        <button class="m-opt-btn" onclick="setMineCount(5, this)">5 мин</button>
-                        <button class="m-opt-btn" onclick="setMineCount(10, this)">10 мин</button>
-                        <button class="m-opt-btn" onclick="setMineCount(24, this)">24 мины</button>
-                    </div>
-                    <div class="mine-grid" id="mineGrid"></div>
-                    <div class="status-box" id="minesStatus">Множитель: x1.00</div>
-                    <button class="btn-action" id="minesBtn" onclick="minesAction()">Старт (50 ₽)</button>
-                </div>
-
-                <div class="game-panel" id="p-tower">
-                    <div class="tower-view" id="towerView"></div>
-                    <div class="status-box" id="towerStatus">Этаж: 1/100</div>
-                    <button class="btn-action" id="towerCashBtn" style="display:none;" onclick="cashTower()">Забрать</button>
-                    <button class="btn-action" id="towerStartBtn" onclick="startTower()">Штурмовать Башню</button>
-                </div>
-
-                <div class="game-panel" id="p-crash">
-                    <div class="crash-screen">
-                        <div style="font-size:32px;" id="crashRocketIcon">🚀</div>
-                        <div style="font-size:34px; font-weight:900; color:var(--accent-cyan);" id="crashText">x1.00</div>
-                    </div>
-                    <div class="status-box" id="crashStatus">Ожидание запуска ракеты</div>
-                    <button class="btn-action" id="crashBtn" onclick="crashAction()">Взлететь</button>
-                </div>
-
-                <div class="game-panel" id="p-flip">
-                    <div class="coin-3d" id="coinElem">🪙</div>
-                    <div style="display:flex; gap:6px; width:100%;">
-                        <button class="btn-action" style="margin:0; flex:1;" onclick="playFlip(1)">🦅 Орёл</button>
-                        <button class="btn-action" style="margin:0; flex:1;" onclick="playFlip(2)">🪙 Решка</button>
-                    </div>
-                    <div class="status-box" id="flipStatus">Сделайте выбор!</div>
-                </div>
-
-                <div class="game-panel" id="p-dice">
-                    <div class="dice-box">
-                        <div class="dice-cube" id="dCube1">🎲</div>
-                        <div class="dice-cube" id="dCube2">🎲</div>
-                    </div>
-                    <div style="display:flex; gap:6px; width:100%;">
-                        <button class="btn-action" style="margin:0; flex:1;" onclick="playDice('under')">&lt; 7 (x2.0)</button>
-                        <button class="btn-action" style="margin:0; flex:1; background:var(--accent-cyan); color:#000;" onclick="playDice('exact')">= 7 (x5.8)</button>
-                        <button class="btn-action" style="margin:0; flex:1;" onclick="playDice('over')">&gt; 7 (x2.0)</button>
-                    </div>
-                    <div class="status-box" id="diceStatus">Ставка на сумму костей</div>
-                </div>
-
-                <div class="game-panel" id="p-roulette">
-                    <div style="font-size:36px; margin:4px 0;" id="roulDisplay">⚫ 🔴 🟢</div>
-                    <div style="display:flex; gap:6px; width:100%;">
-                        <button class="btn-action" style="margin:0; flex:1; background:#d63031;" onclick="playRoulette('red')">Красное</button>
-                        <button class="btn-action" style="margin:0; flex:1; background:#00b894;" onclick="playRoulette('zero')">Зеро 0</button>
-                        <button class="btn-action" style="margin:0; flex:1; background:#2d3436;" onclick="playRoulette('black')">Черное</button>
-                    </div>
-                    <div class="status-box" id="roulStatus">Сделайте ставку на рулетку!</div>
-                </div>
-            </div>
+      <!-- Баланс -->
+      <div class="flex items-center space-x-2">
+        <div class="bg-black/40 border border-white/10 rounded-xl px-3 py-1.5 flex items-center space-x-1">
+          <span class="text-emerald-400 font-unbounded text-sm font-bold tracking-tight" id="balance-display">1 000.00</span>
+          <span class="text-xs text-emerald-400 font-bold">₽</span>
         </div>
+        <button onclick="openDepositModal()" class="w-9 h-9 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-black flex items-center justify-center font-bold shadow-lg shadow-emerald-500/20 transition-all">
+          <i data-lucide="plus" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </header>
 
-        <!-- 2. TG АПГРЕЙДЕР -->
-        <div id="giftsView">
-            <div class="star-badge-banner" id="starBonusBanner">
-                <span>🌟 БОНУС ЗВЕЗДЫ: <span id="starSpinsCount">5</span> бесплатных попыток</span>
-                <span style="font-size:10px; color:#ffd200;">ПРЕДМЕТ НЕ СГОРАЕТ!</span>
-            </div>
-
-            <div class="mult-panel">
-                <button class="mult-btn" onclick="applyMultiplier(1.5, this)">1.5x</button>
-                <button class="mult-btn active" onclick="applyMultiplier(2.0, this)">2x</button>
-                <button class="mult-btn" onclick="applyMultiplier(3.0, this)">3x</button>
-                <button class="mult-btn" onclick="applyMultiplier(5.0, this)">5x</button>
-                <button class="mult-btn" onclick="applyMultiplier(10.0, this)">10x</button>
-                <button class="mult-btn" onclick="applyMultiplier(25.0, this)">25x</button>
-                <button class="mult-btn" onclick="applyMultiplier(50.0, this)">50x</button>
-                <button class="mult-btn" onclick="applyMultiplier(100.0, this)">100x</button>
-            </div>
-
-            <div class="split-arena">
-                <div class="split-box">
-                    <div class="split-box-title" style="color:var(--accent-cyan);">📦 ЧТО АПГРЕЙДИМ</div>
-                    <div class="split-items-list" id="colInvList"></div>
-                </div>
-                <div class="split-box">
-                    <div class="split-box-title" style="color:var(--accent-pink);">🎯 НА ЧТО АПГРЕЙДИМ</div>
-                    <div class="split-items-list" id="colTargetList"></div>
-                </div>
-            </div>
-
-            <div class="wheel-card">
-                <div style="font-size:11px; font-weight:900; color:var(--accent-gold); text-align:center;">
-                    <span id="dispSrcName">Выберите предмет</span> ➔ <span id="dispDstName">Выберите цель</span>
-                </div>
-
-                <div class="wheel-container">
-                    <canvas class="wheel-canvas" id="wheelCanvas" width="170" height="170"></canvas>
-                    <div class="wheel-arrow" id="wheelArrow"></div>
-                    <div class="wheel-center-pin"></div>
-                </div>
-
-                <div style="font-size:13px; font-weight:900;" id="upgChanceTxt">Шанс: 50.00% | ⭐ Звезда: 5 бонусных прокрутов</div>
-                <div style="font-size:11px; color:var(--accent-gold); margin-top:2px;" id="upgStatus">Жёлтый: победа | ⭐ Звезда: 5 бесплатных спинов без сгорания!</div>
-                
-                <div class="extra-upg-controls">
-                    <button class="btn-star-fifty" onclick="forceFiftyChance()">🎯 Установить шанс 50%</button>
-                </div>
-
-                <button class="btn-action" id="btnRunUpgrade" style="background:linear-gradient(90deg, #ffd200, #ff007f); color:#000;" onclick="runUpgrade()">КРУТИТЬ АПГРЕЙД</button>
-            </div>
-
-            <div class="shop-box">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="font-size:11px; font-weight:bold; color:var(--accent-green);">🛍️ Коллекция Подарков Telegram (130+ шт.)</div>
-                    <button style="background:none; border:none; color:var(--accent-gold); font-size:10px; cursor:pointer;" onclick="sellAllInventory()">Продать инвентарь</button>
-                </div>
-                <div class="shop-grid" id="giftsShopList"></div>
-            </div>
+    <!-- Бегущая строка выигрышей -->
+    <div class="glass-panel rounded-xl py-2 px-3 flex items-center space-x-2 overflow-hidden border-white/5 text-xs">
+      <span class="flex items-center text-emerald-400 font-bold uppercase tracking-wider text-[10px] shrink-0">
+        <i data-lucide="zap" class="w-3.5 h-3.5 mr-1 text-emerald-400"></i> Live
+      </span>
+      <div class="overflow-hidden relative w-full whitespace-nowrap">
+        <div id="live-wins-ticker" class="inline-flex space-x-6 text-slate-300">
+          <span>@alex*** забрал <b>450 ₽</b> в Мины</span>
+          <span>@kuli4ik вывел <b>2 400 ₽</b></span>
+          <span>@dark*** поймал x3.8 в Crash (<b>760 ₽</b>)</span>
         </div>
-
-        <!-- 3. НАДЕЖНЫЙ P2P МЕССЕНДЖЕР ROMAN -->
-        <div id="romanChatView">
-            <div class="messenger-card">
-                <div class="peer-id-row">
-                    <span>Ваш P2P ID:</span>
-                    <span class="peer-id-val" id="myPeerIdDisplay">Подключение...</span>
-                </div>
-
-                <div class="connect-box">
-                    <input type="text" class="connect-input" id="targetPeerInput" placeholder="Введите ID собеседника (или Telegram ID)">
-                    <button class="btn-m-action" onclick="connectToPeer()">Связать</button>
-                </div>
-
-                <div class="call-bar">
-                    <button class="btn-call-act" onclick="makeP2PCall(false)">📞 Голос</button>
-                    <button class="btn-call-act" onclick="makeP2PCall(true)">📹 Видео</button>
-                    <button class="btn-call-act danger" id="endP2PCallBtn" style="display:none;" onclick="endP2PCall()">🛑 Сброс</button>
-                </div>
-
-                <!-- Видео окно звонка -->
-                <div id="romanVideoArea">
-                    <video id="remoteVid" autoplay playsinline></video>
-                    <video id="localVid" autoplay playsinline muted></video>
-                </div>
-
-                <!-- Сообщения -->
-                <div class="m-messages" id="romanMsgList">
-                    <div class="m-bubble in">
-                        <div class="m-bubble-meta"><span>ROMAN P2P</span><span>Статус</span></div>
-                        Автоматическое распознавание ID включено. Можно вводить цифры Telegram ID напрямую!
-                    </div>
-                </div>
-
-                <div class="chat-bottom-bar">
-                    <input type="file" id="romanFileInput" style="display:none;" onchange="sendP2PFile(event)">
-                    <button class="btn-m-action" style="padding:10px 12px;" title="Отправить файл" onclick="document.getElementById('romanFileInput').click()">📎</button>
-                    <input type="text" class="m-input" id="romanChatInput" placeholder="Напишите сообщение..." onkeypress="if(event.key==='Enter') sendP2PMessage()">
-                    <button class="btn-m-action" onclick="sendP2PMessage()">➤</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 4. GEMINI AI -->
-        <div id="aiView">
-            <div class="ai-card">
-                <div class="chat-messages" id="chatMsgs">
-                    <div class="msg ai">Привет! Я Gemini AI. Чем могу помочь по пенальти, подаркам или связи?</div>
-                </div>
-                <div class="chat-input-row">
-                    <input type="text" class="chat-input" id="chatInput" placeholder="Задайте вопрос нейросети..." onkeypress="handleChatKey(event)">
-                    <button class="chat-send-btn" onclick="sendAiMessage()">➤</button>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <!-- ЧИТ-ПАНЕЛЬ ВЛАДЕЛЬЦА -->
-    <div class="cheat-modal" id="cheatModal">
-        <div class="cheat-box">
-            <h3 style="color:var(--accent-green); margin:0 0 10px 0; text-align:center;">⚡ СИСТЕМА ЧИТОВ (OWNER) ⚡</h3>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #281d59; font-size:12px;">
-                <span>100% Победа во всех играх</span>
-                <input type="checkbox" id="c_master_win">
-            </div>
-
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #281d59; font-size:12px;">
-                <span>⭐ Всегда попадать на Звёздочку</span>
-                <input type="checkbox" id="c_star_always">
-            </div>
-
-            <div class="custom-money-box">
-                <span style="font-size:11px; color:var(--accent-gold); font-weight:bold;">💵 Прибавить или установить любую сумму:</span>
-                <input type="number" class="custom-money-input" id="customMoneyVal" placeholder="Например: 100000000000" min="1">
-                <div style="display:flex; gap:6px;">
-                    <button class="btn-c-act" style="flex:1;" onclick="applyCustomAdd()">➕ Прибавить</button>
-                    <button class="btn-c-act" style="flex:1; background:var(--accent-cyan); color:#000;" onclick="applyCustomSet()">🎯 Установить</button>
-                </div>
-            </div>
-
-            <div class="cheat-btns">
-                <button class="btn-c-act" onclick="addMoney(1000000)">+1M ₽</button>
-                <button class="btn-c-act" onclick="addMoney(100000000)">+100M ₽</button>
-                <button class="btn-c-act" onclick="addMoney(1000000000)">+1 Млрд ₽</button>
-                <button class="btn-c-act" onclick="addMoney(100000000000)">+100 Млрд ₽</button>
-                <button class="btn-c-act" style="background:var(--accent-pink); color:#fff; grid-column: span 2;" onclick="closeCheat()">Закрыть</button>
-            </div>
+    <!-- Вкладки экранов -->
+    <main id="app-content">
+      
+      <!-- Экран 1: Выбор Игр -->
+      <section id="tab-games" class="space-y-4">
+        <!-- Баннер события -->
+        <div class="relative overflow-hidden rounded-2xl p-4 bg-gradient-to-r from-purple-900/60 via-indigo-900/40 to-black/60 border border-purple-500/30 neon-border-purple">
+          <div class="relative z-10">
+            <span class="text-[10px] uppercase font-bold tracking-widest text-purple-300 bg-purple-500/20 px-2 py-0.5 rounded-full border border-purple-400/30">Бонус +50%</span>
+            <h2 class="font-unbounded font-black text-lg text-white mt-1">RubUP Original</h2>
+            <p class="text-xs text-slate-300 mt-0.5">Умножай баланс и поднимайся в рейтинге!</p>
+          </div>
+          <i data-lucide="sparkles" class="absolute -right-4 -bottom-4 w-28 h-28 text-purple-500/10 rotate-12"></i>
         </div>
+
+        <!-- Сетка игр -->
+        <div class="grid grid-cols-2 gap-3">
+          <!-- Игра Мины -->
+          <div onclick="openGame('mines')" class="glass-panel p-3.5 rounded-2xl border-white/10 hover:border-emerald-500/40 transition-all cursor-pointer active:scale-95 group relative overflow-hidden">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-3 group-hover:scale-110 transition-transform">
+              <i data-lucide="bomb" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-unbounded font-bold text-sm text-white">Mines</h3>
+            <p class="text-[11px] text-slate-400">Найди алмазы</p>
+            <span class="absolute bottom-3 right-3 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">x1000</span>
+          </div>
+
+          <!-- Игра Ракета Crash -->
+          <div onclick="openGame('crash')" class="glass-panel p-3.5 rounded-2xl border-white/10 hover:border-purple-500/40 transition-all cursor-pointer active:scale-95 group relative overflow-hidden">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 mb-3 group-hover:scale-110 transition-transform">
+              <i data-lucide="rocket" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-unbounded font-bold text-sm text-white">Crash</h3>
+            <p class="text-[11px] text-slate-400">Успей забрать</p>
+            <span class="absolute bottom-3 right-3 text-[10px] font-bold text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded">x100</span>
+          </div>
+
+          <!-- Игра Колесо фортуны -->
+          <div onclick="openGame('wheel')" class="glass-panel p-3.5 rounded-2xl border-white/10 hover:border-yellow-500/40 transition-all cursor-pointer active:scale-95 group relative overflow-hidden">
+            <div class="w-10 h-10 rounded-xl bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-yellow-400 mb-3 group-hover:scale-110 transition-transform">
+              <i data-lucide="disc" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-unbounded font-bold text-sm text-white">Колесо</h3>
+            <p class="text-[11px] text-slate-400">Крути и выигрывай</p>
+            <span class="absolute bottom-3 right-3 text-[10px] font-bold text-yellow-400 bg-yellow-500/10 px-1.5 py-0.5 rounded">x10</span>
+          </div>
+
+          <!-- Игра Кейсы -->
+          <div onclick="openGame('cases')" class="glass-panel p-3.5 rounded-2xl border-white/10 hover:border-blue-500/40 transition-all cursor-pointer active:scale-95 group relative overflow-hidden">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 mb-3 group-hover:scale-110 transition-transform">
+              <i data-lucide="package" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-unbounded font-bold text-sm text-white">Кейсы</h3>
+            <p class="text-[11px] text-slate-400">Дроп предметов</p>
+            <span class="absolute bottom-3 right-3 text-[10px] font-bold text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded">Дроп</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Экран 2: MINES (Мины) -->
+      <section id="arena-mines" class="space-y-4 hidden">
+        <div class="flex items-center justify-between">
+          <button onclick="backToLobby()" class="flex items-center space-x-1.5 text-xs text-slate-400 hover:text-white">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            <span>В лобби</span>
+          </button>
+          <span class="font-unbounded font-bold text-sm text-emerald-400">MINES 💣</span>
+        </div>
+
+        <!-- Сетка мин 5x5 -->
+        <div class="glass-panel p-3.5 rounded-2xl border-white/10">
+          <div id="mines-grid" class="grid grid-cols-5 gap-2"></div>
+        </div>
+
+        <!-- Панель управления -->
+        <div class="glass-panel p-4 rounded-2xl border-white/10 space-y-3">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex-1">
+              <label class="text-[11px] text-slate-400 block mb-1">Ставка (₽)</label>
+              <div class="flex items-center bg-black/40 border border-white/10 rounded-xl px-2.5 py-1.5">
+                <input id="mines-bet-input" type="number" value="50" class="bg-transparent w-full text-white text-sm font-bold outline-none">
+              </div>
+            </div>
+            <div class="w-28">
+              <label class="text-[11px] text-slate-400 block mb-1">Мин: <span id="mines-count-label" class="text-white font-bold">3</span></label>
+              <input id="mines-count-slider" type="range" min="2" max="24" value="3" class="w-full accent-emerald-500 cursor-pointer">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-4 gap-1.5 text-xs font-semibold">
+            <button onclick="adjustBet('mines', 10)" class="bg-white/5 hover:bg-white/10 py-1.5 rounded-lg border border-white/5">+10</button>
+            <button onclick="adjustBet('mines', 50)" class="bg-white/5 hover:bg-white/10 py-1.5 rounded-lg border border-white/5">+50</button>
+            <button onclick="multiplyBet('mines', 2)" class="bg-white/5 hover:bg-white/10 py-1.5 rounded-lg border border-white/5">2X</button>
+            <button onclick="multiplyBet('mines', 0.5)" class="bg-white/5 hover:bg-white/10 py-1.5 rounded-lg border border-white/5">1/2</button>
+          </div>
+
+          <button id="mines-action-btn" onclick="handleMinesAction()" class="w-full py-3.5 rounded-xl font-unbounded font-black text-sm bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition-all">
+            ИГРАТЬ (50 ₽)
+          </button>
+        </div>
+      </section>
+
+      <!-- Экран 3: CRASH (Ракета) -->
+      <section id="arena-crash" class="space-y-4 hidden">
+        <div class="flex items-center justify-between">
+          <button onclick="backToLobby()" class="flex items-center space-x-1.5 text-xs text-slate-400 hover:text-white">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            <span>В лобби</span>
+          </button>
+          <span class="font-unbounded font-bold text-sm text-purple-400">CRASH 🚀</span>
+        </div>
+
+        <!-- Canvas краша -->
+        <div class="glass-panel p-2 rounded-2xl border-white/10 relative overflow-hidden h-56 flex flex-col justify-center items-center">
+          <canvas id="crash-canvas" class="w-full h-full absolute inset-0"></canvas>
+          <div class="relative z-10 text-center">
+            <span id="crash-multiplier" class="font-unbounded font-black text-4xl text-white tracking-tight drop-shadow-md">1.00x</span>
+            <p id="crash-status" class="text-xs text-slate-400 mt-1">Ожидание раунда...</p>
+          </div>
+        </div>
+
+        <!-- Управление Crash -->
+        <div class="glass-panel p-4 rounded-2xl border-white/10 space-y-3">
+          <div>
+            <label class="text-[11px] text-slate-400 block mb-1">Ставка (₽)</label>
+            <input id="crash-bet-input" type="number" value="100" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-white font-bold outline-none">
+          </div>
+          <button id="crash-action-btn" onclick="handleCrashAction()" class="w-full py-3.5 rounded-xl font-unbounded font-black text-sm bg-purple-500 hover:bg-purple-400 text-white shadow-lg shadow-purple-500/25 active:scale-[0.98] transition-all">
+            ПОСТАВИТЬ (100 ₽)
+          </button>
+        </div>
+      </section>
+
+      <!-- Экран 4: Задания и Бонусы -->
+      <section id="tab-tasks" class="space-y-3 hidden">
+        <h2 class="font-unbounded font-bold text-sm text-white">Бонусы и задания</h2>
+        <div class="space-y-2">
+          <div class="glass-panel p-3.5 rounded-xl flex items-center justify-between border-white/10">
+            <div class="flex items-center space-x-3">
+              <div class="w-9 h-9 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
+                <i data-lucide="send" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-white">Подписка на канал</p>
+                <p class="text-[11px] text-emerald-400 font-semibold">+100.00 ₽ на баланс</p>
+              </div>
+            </div>
+            <button onclick="claimBonus(this, 100)" class="bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold px-3 py-1.5 rounded-lg active:scale-95 transition-all">
+              Забрать
+            </button>
+          </div>
+
+          <div class="glass-panel p-3.5 rounded-xl flex items-center justify-between border-white/10">
+            <div class="flex items-center space-x-3">
+              <div class="w-9 h-9 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center">
+                <i data-lucide="gift" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-white">Ежедневный бонус</p>
+                <p class="text-[11px] text-emerald-400 font-semibold">+25.00 ₽</p>
+              </div>
+            </div>
+            <button onclick="claimBonus(this, 25)" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-lg active:scale-95 transition-all">
+              Забрать
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Экран 5: Профиль -->
+      <section id="tab-profile" class="space-y-4 hidden">
+        <div class="glass-panel p-4 rounded-2xl border-white/10 text-center space-y-2">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-indigo-600 mx-auto flex items-center justify-center font-unbounded text-2xl font-black text-white shadow-lg">
+            R
+          </div>
+          <h2 class="font-unbounded font-bold text-base text-white">Telegram Player</h2>
+          <p class="text-xs text-slate-400">RubUP VIP Member</p>
+          <div class="grid grid-cols-2 gap-2 pt-2">
+            <div class="bg-black/30 p-2.5 rounded-xl border border-white/5">
+              <p class="text-[10px] text-slate-400">Сыграно раундов</p>
+              <p class="font-unbounded font-bold text-sm text-white" id="stats-games">0</p>
+            </div>
+            <div class="bg-black/30 p-2.5 rounded-xl border border-white/5">
+              <p class="text-[10px] text-slate-400">Общий профит</p>
+              <p class="font-unbounded font-bold text-sm text-emerald-400" id="stats-profit">+0 ₽</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Нижняя навигация -->
+    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-3 z-50">
+      <div class="glass-panel rounded-2xl p-1.5 flex justify-around items-center border-white/15 shadow-2xl backdrop-blur-2xl">
+        <button onclick="switchTab('games')" id="nav-btn-games" class="flex flex-col items-center justify-center flex-1 py-1.5 text-emerald-400 transition-all">
+          <i data-lucide="gamepad-2" class="w-5 h-5"></i>
+          <span class="text-[10px] font-bold mt-1">Игры</span>
+        </button>
+        <button onclick="switchTab('tasks')" id="nav-btn-tasks" class="flex flex-col items-center justify-center flex-1 py-1.5 text-slate-400 hover:text-white transition-all">
+          <i data-lucide="check-circle" class="w-5 h-5"></i>
+          <span class="text-[10px] font-bold mt-1">Задания</span>
+        </button>
+        <button onclick="switchTab('profile')" id="nav-btn-profile" class="flex flex-col items-center justify-center flex-1 py-1.5 text-slate-400 hover:text-white transition-all">
+          <i data-lucide="user" class="w-5 h-5"></i>
+          <span class="text-[10px] font-bold mt-1">Профиль</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Модальное окно пополнения -->
+  <div id="modal-deposit" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center hidden p-4">
+    <div class="glass-panel w-full max-w-sm rounded-3xl p-5 border-white/10 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="font-unbounded font-bold text-sm text-white">Демо-пополнение</h3>
+        <button onclick="closeDepositModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-400">Укажите сумму, чтобы моментально пополнить виртуальный демо-баланс:</p>
+      <input id="deposit-amount" type="number" value="500" class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-white font-bold text-sm outline-none">
+      <button onclick="confirmDeposit()" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-unbounded font-bold text-xs shadow-lg shadow-emerald-500/20 active:scale-95 transition-all">
+        Зачислить
+      </button>
     </div>
+  </div>
 
-    <script>
-        const tg = window.Telegram?.WebApp;
-        try { if (tg) { tg.ready(); tg.expand(); } } catch(e) {}
+  <script>
+    // Подключение к Telegram
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.expand();
+      tg.ready();
+      if (tg.initDataUnsafe?.user) {
+        document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
+        document.getElementById('user-id').innerText = tg.initDataUnsafe.user.id;
+        document.getElementById('user-avatar').innerText = tg.initDataUnsafe.user.first_name.charAt(0).toUpperCase();
+      }
+    }
 
-        const OWNER_ID = 8732002956;
-        const currentUserId = tg?.initDataUnsafe?.user?.id;
-        const isOwner = (currentUserId === OWNER_ID);
+    // Звуки Web Audio API
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playBeep(freq = 440, type = 'sine', duration = 0.1) {
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
 
-        if (isOwner) {
-            const admBtn = document.getElementById("admBtn");
-            if (admBtn) admBtn.style.display = "block";
+    // Баланс и статистика
+    let userBalance = 1000.00;
+    let totalGames = 0;
+    let totalProfit = 0;
+
+    function updateBalanceUI() {
+      document.getElementById('balance-display').innerText = userBalance.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('stats-games').innerText = totalGames;
+      document.getElementById('stats-profit').innerText = (totalProfit >= 0 ? '+' : '') + totalProfit.toFixed(0) + ' ₽';
+    }
+
+    // Переключение экранов
+    function switchTab(tabId) {
+      ['games', 'tasks', 'profile'].forEach(t => {
+        document.getElementById('tab-' + t).classList.add('hidden');
+        document.getElementById('nav-btn-' + t).classList.remove('text-emerald-400');
+        document.getElementById('nav-btn-' + t).classList.add('text-slate-400');
+      });
+      document.getElementById('arena-mines').classList.add('hidden');
+      document.getElementById('arena-crash').classList.add('hidden');
+
+      document.getElementById('tab-' + tabId).classList.remove('hidden');
+      document.getElementById('nav-btn-' + tabId).classList.add('text-emerald-400');
+      document.getElementById('nav-btn-' + tabId).classList.remove('text-slate-400');
+    }
+
+    function openGame(game) {
+      ['tab-games', 'tab-tasks', 'tab-profile'].forEach(t => document.getElementById(t).classList.add('hidden'));
+      if (game === 'mines') {
+        document.getElementById('arena-mines').classList.remove('hidden');
+        initMinesGame();
+      } else if (game === 'crash') {
+        document.getElementById('arena-crash').classList.remove('hidden');
+        initCrashGame();
+      }
+    }
+
+    function backToLobby() {
+      switchTab('games');
+    }
+
+    function openDepositModal() { document.getElementById('modal-deposit').classList.remove('hidden'); }
+    function closeDepositModal() { document.getElementById('modal-deposit').classList.add('hidden'); }
+    function confirmDeposit() {
+      const val = parseFloat(document.getElementById('deposit-amount').value) || 0;
+      if (val > 0) {
+        userBalance += val;
+        updateBalanceUI();
+        closeDepositModal();
+        playBeep(880, 'triangle', 0.2);
+        confetti({ particleCount: 50, spread: 60 });
+      }
+    }
+
+    function claimBonus(btn, amount) {
+      userBalance += amount;
+      updateBalanceUI();
+      btn.disabled = true;
+      btn.innerText = "Получено ✓";
+      btn.classList.replace('bg-emerald-500', 'bg-white/10');
+      btn.classList.replace('text-black', 'text-slate-400');
+      playBeep(659, 'triangle', 0.2);
+      confetti({ particleCount: 40, spread: 50 });
+    }
+
+    // ИГРА MINES
+    const MINES_GRID_SIZE = 25;
+    let minesState = {
+      active: false,
+      bet: 50,
+      bombCount: 3,
+      bombs: [],
+      revealed: [],
+      multiplier: 1.0
+    };
+
+    const slider = document.getElementById('mines-count-slider');
+    const label = document.getElementById('mines-count-label');
+    slider.addEventListener('input', (e) => {
+      label.innerText = e.target.value;
+      minesState.bombCount = parseInt(e.target.value);
+    });
+
+    function initMinesGame() {
+      const grid = document.getElementById('mines-grid');
+      grid.innerHTML = '';
+      for (let i = 0; i < MINES_GRID_SIZE; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'aspect-square rounded-xl bg-white/5 border border-white/10 flex items-center justify-center font-bold text-xs cursor-pointer hover:bg-white/10 active:scale-95 transition-all';
+        cell.id = `cell-${i}`;
+        cell.onclick = () => clickCell(i);
+        grid.appendChild(cell);
+      }
+      resetMinesUI();
+    }
+
+    function resetMinesUI() {
+      minesState.active = false;
+      minesState.revealed = [];
+      minesState.bombs = [];
+      const btn = document.getElementById('mines-action-btn');
+      btn.innerText = `ИГРАТЬ (${minesState.bet} ₽)`;
+      btn.classList.remove('bg-yellow-400');
+      btn.classList.add('bg-emerald-500');
+    }
+
+    function handleMinesAction() {
+      const betInput = parseFloat(document.getElementById('mines-bet-input').value) || 50;
+      minesState.bet = betInput;
+
+      if (!minesState.active) {
+        if (userBalance < minesState.bet) {
+          alert('Недостаточно средств!');
+          return;
+        }
+        userBalance -= minesState.bet;
+        totalGames++;
+        updateBalanceUI();
+
+        minesState.active = true;
+        minesState.revealed = [];
+        minesState.bombs = [];
+        while (minesState.bombs.length < minesState.bombCount) {
+          const rand = Math.floor(Math.random() * MINES_GRID_SIZE);
+          if (!minesState.bombs.includes(rand)) minesState.bombs.push(rand);
         }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const startMsgId = urlParams.get('mid');
-        const userChatId = tg?.initDataUnsafe?.user?.id;
-        if (startMsgId && userChatId) {
-            const BOT_TOKEN = "8868108142:AAG6oTSadt2X3gUEw_-kqEXTmSISxicdnL4";
-            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/deleteMessage`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ chat_id: userChatId, message_id: parseInt(startMsgId, 10) })
-            }).catch(e => console.log(e));
+        initMinesGame();
+        playBeep(523, 'sine', 0.1);
+
+        const btn = document.getElementById('mines-action-btn');
+        btn.innerText = `ЗАБРАТЬ (x1.00)`;
+        btn.classList.replace('bg-emerald-500', 'bg-yellow-400');
+      } else {
+        const win = minesState.bet * minesState.multiplier;
+        userBalance += win;
+        totalProfit += (win - minesState.bet);
+        updateBalanceUI();
+        confetti({ particleCount: 70, spread: 80 });
+        playBeep(784, 'triangle', 0.3);
+        revealAllBombs();
+        resetMinesUI();
+      }
+    }
+
+    function clickCell(idx) {
+      if (!minesState.active || minesState.revealed.includes(idx)) return;
+      minesState.revealed.push(idx);
+      const cell = document.getElementById(`cell-${idx}`);
+
+      if (minesState.bombs.includes(idx)) {
+        playBeep(120, 'sawtooth', 0.4);
+        cell.classList.replace('bg-white/5', 'bg-red-500/80');
+        cell.innerHTML = '💣';
+        totalProfit -= minesState.bet;
+        updateBalanceUI();
+        revealAllBombs();
+        resetMinesUI();
+      } else {
+        playBeep(659 + minesState.revealed.length * 50, 'sine', 0.15);
+        cell.classList.replace('bg-white/5', 'bg-emerald-500/30');
+        cell.classList.add('border-emerald-400');
+        cell.innerHTML = '💎';
+
+        const opened = minesState.revealed.length;
+        minesState.multiplier = parseFloat((1 + (opened * (minesState.bombCount / 10))).toFixed(2));
+        const btn = document.getElementById('mines-action-btn');
+        btn.innerText = `ЗАБРАТЬ ${(minesState.bet * minesState.multiplier).toFixed(0)} ₽ (x${minesState.multiplier})`;
+      }
+    }
+
+    function revealAllBombs() {
+      minesState.bombs.forEach(b => {
+        const c = document.getElementById(`cell-${b}`);
+        if (c && !minesState.revealed.includes(b)) {
+          c.classList.add('bg-red-500/20');
+          c.innerHTML = '💣';
+        }
+      });
+    }
+
+    function adjustBet(game, add) {
+      const input = document.getElementById(`${game}-bet-input`);
+      let val = Math.max(10, (parseFloat(input.value) || 0) + add);
+      input.value = val;
+      if (!minesState.active) document.getElementById('mines-action-btn').innerText = `ИГРАТЬ (${val} ₽)`;
+    }
+
+    function multiplyBet(game, factor) {
+      const input = document.getElementById(`${game}-bet-input`);
+      let val = Math.max(10, Math.floor((parseFloat(input.value) || 0) * factor));
+      input.value = val;
+      if (!minesState.active) document.getElementById('mines-action-btn').innerText = `ИГРАТЬ (${val} ₽)`;
+    }
+
+    // ИГРА CRASH
+    let crashAnimationId = null;
+    let crashState = {
+      running: false,
+      multiplier: 1.0,
+      crashPoint: 1.0,
+      bet: 100
+    };
+
+    function initCrashGame() {
+      const canvas = document.getElementById('crash-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function handleCrashAction() {
+      const bet = parseFloat(document.getElementById('crash-bet-input').value) || 100;
+      crashState.bet = bet;
+
+      if (!crashState.running) {
+        if (userBalance < crashState.bet) {
+          alert('Недостаточно средств!');
+          return;
+        }
+        userBalance -= crashState.bet;
+        totalGames++;
+        updateBalanceUI();
+
+        crashState.running = true;
+        crashState.multiplier = 1.00;
+        crashState.crashPoint = parseFloat((Math.random() * 3 + 1.1).toFixed(2));
+
+        const btn = document.getElementById('crash-action-btn');
+        btn.innerText = `ЗАБРАТЬ`;
+        btn.classList.replace('bg-purple-500', 'bg-yellow-400');
+        btn.classList.add('text-black');
+
+        document.getElementById('crash-status').innerText = 'Ракета летит...';
+
+        runCrashLoop();
+      } else {
+        crashState.running = false;
+        cancelAnimationFrame(crashAnimationId);
+        const win = crashState.bet * crashState.multiplier;
+        userBalance += win;
+        totalProfit += (win - crashState.bet);
+        updateBalanceUI();
+
+        confetti({ particleCount: 80, spread: 70 });
+        playBeep(880, 'triangle', 0.3);
+        document.getElementById('crash-status').innerText = `Вы забрали ${win.toFixed(0)} ₽!`;
+        resetCrashBtn();
+      }
+    }
+
+    function runCrashLoop() {
+      const canvas = document.getElementById('crash-canvas');
+      const ctx = canvas.getContext('2d');
+
+      function step() {
+        if (!crashState.running) return;
+
+        crashState.multiplier += 0.015;
+        document.getElementById('crash-multiplier').innerText = `${crashState.multiplier.toFixed(2)}x`;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        ctx.moveTo(20, canvas.height - 20);
+        const progress = Math.min(1, (crashState.multiplier - 1) / 3);
+        const currentX = 20 + progress * (canvas.width - 60);
+        const currentY = (canvas.height - 20) - Math.pow(progress, 1.8) * (canvas.height - 60);
+
+        ctx.quadraticCurveTo(currentX / 2, canvas.height - 20, currentX, currentY);
+        ctx.strokeStyle = '#A855F7';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        if (crashState.multiplier >= crashState.crashPoint) {
+          crashState.running = false;
+          playBeep(110, 'sawtooth', 0.5);
+          document.getElementById('crash-status').innerText = `Краш на ${crashState.crashPoint}x!`;
+          document.getElementById('crash-multiplier').classList.add('text-red-500');
+          setTimeout(() => document.getElementById('crash-multiplier').classList.remove('text-red-500'), 1500);
+          resetCrashBtn();
+          return;
         }
 
-        const serverRig = urlParams.get('rig');
-        if (serverRig && serverRig !== "null") localStorage.setItem("royal_server_rig", serverRig);
-        function getEffectiveRig() {
-            const r = new URLSearchParams(window.location.search).get('rig');
-            if (r && r !== "null") return r;
-            return localStorage.getItem("royal_server_rig") || "auto";
-        }
-
-        function safeParseMoney(val, fallback = 1000) {
-            if (val === null || val === undefined) return fallback;
-            try {
-                let s = String(val).trim();
-                if (s.toLowerCase().includes('e+')) {
-                    let parts = s.toLowerCase().split('e+');
-                    let base = parseFloat(parts[0]);
-                    let exp = parseInt(parts[1], 10);
-                    return Math.floor(base * Math.pow(10, exp));
-                }
-                let clean = s.replace(/[^0-9]/g, '');
-                let num = parseInt(clean, 10);
-                if (isNaN(num) || !isFinite(num)) return fallback;
-                return Math.max(0, num);
-            } catch (e) {
-                return fallback;
-            }
-        }
-
-        function formatMoney(num) {
-            try {
-                if (typeof num !== 'number' || isNaN(num)) num = 0;
-                let s = Math.floor(num).toString();
-                return s.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-            } catch(e) {
-                return "0";
-            }
-        }
-
-        const isForceReset = urlParams.get('reset') === '1';
-        if (isForceReset) {
-            localStorage.setItem("royal_arcade_bal", "0");
-            localStorage.setItem("royal_arcade_inv", JSON.stringify([]));
-        }
-
-        const savedBal = localStorage.getItem("royal_arcade_bal");
-        const botInitBal = urlParams.get('bal');
-        const isPayTransfer = urlParams.get('pay') === '1';
-
-        let bal = 1000;
-        if (isForceReset) {
-            bal = 0;
-        } else if (isPayTransfer && botInitBal !== null) {
-            bal = safeParseMoney(botInitBal, 1000);
-            localStorage.setItem("royal_arcade_bal", bal.toString());
-        } else if (savedBal !== null) {
-            bal = safeParseMoney(savedBal, 1000);
-        } else if (botInitBal !== null) {
-            bal = safeParseMoney(botInitBal, 1000);
-            localStorage.setItem("royal_arcade_bal", bal.toString());
-        }
-
-        if (window.history.replaceState) {
-            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            window.history.replaceState({path: cleanUrl}, '', cleanUrl);
-        }
-
-        let currentBet = 50;
-        function updateBalDisplay() {
-            const b = document.getElementById("balance");
-            if (b) b.innerText = formatMoney(bal);
-        }
-        function updateBal() {
-            if (typeof bal !== 'number' || isNaN(bal) || !isFinite(bal)) bal = 0;
-            bal = Math.max(0, Math.floor(bal));
-            localStorage.setItem("royal_arcade_bal", bal.toString());
-            updateBalDisplay();
-        }
-
-        function setBet(amount, btn) {
-            document.querySelectorAll(".b-btn").forEach(b => b.classList.remove("active"));
-            if (btn) btn.classList.add("active");
-            if (amount === 'all') currentBet = Math.max(10, bal);
-            else currentBet = parseInt(amount, 10) || 50;
-            document.getElementById("curBetLabel").innerText = formatMoney(currentBet) + " ₽";
-            const mBtn = document.getElementById("minesBtn");
-            if (mBtn && !mPlaying) mBtn.innerText = `Старт (${formatMoney(currentBet)} ₽)`;
-        }
-
-        function showMainSection(sec) {
-            document.getElementById("gamesView").style.display = (sec === 'games') ? "flex" : "none";
-            document.getElementById("giftsView").style.display = (sec === 'gifts') ? "flex" : "none";
-            document.getElementById("romanChatView").style.display = (sec === 'chat') ? "flex" : "none";
-            document.getElementById("aiView").style.display = (sec === 'ai') ? "flex" : "none";
-
-            document.getElementById("btnTabGames").classList.toggle("active", sec === 'games');
-            document.getElementById("btnTabGifts").classList.toggle("active", sec === 'gifts');
-            document.getElementById("btnTabChat").classList.toggle("active", sec === 'chat');
-            document.getElementById("btnTabAI").classList.toggle("active", sec === 'ai');
-
-            if (sec === 'gifts') {
-                renderLeftInventory();
-                renderRightTargets();
-                updateUpgradePreview();
-            }
-        }
-
-        function switchGameTab(name, btn) {
-            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-            document.querySelectorAll(".game-panel").forEach(p => p.classList.remove("active"));
-            if (btn) btn.classList.add("active");
-            const target = document.getElementById("p-" + name);
-            if (target) target.classList.add("active");
-        }
-
-        function openCheat() { document.getElementById("cheatModal").style.display = "flex"; }
-        function closeCheat() { document.getElementById("cheatModal").style.display = "none"; }
-        function addMoney(v) { bal += v; updateBal(); }
-        function applyCustomAdd() {
-            const val = parseInt(document.getElementById("customMoneyVal").value, 10);
-            if (!val || isNaN(val) || val <= 0) return alert("Введите сумму больше 0!");
-            bal += val; updateBal();
-            alert(`Начислено: +${formatMoney(val)} ₽!`);
-        }
-        function applyCustomSet() {
-            const val = parseInt(document.getElementById("customMoneyVal").value, 10);
-            if (isNaN(val) || val < 0) return alert("Введите корректную сумму!");
-            bal = val; updateBal();
-            alert(`Баланс установлен на: ${formatMoney(val)} ₽!`);
-        }
-
-        /* 1. ПЕНАЛЬТИ С ВРАТАРЕМ */
-        let isPenaltyShooting = false;
-        const penaltyCoords = {
-            'tl': { ballX: -80, ballY: -140, gkX: -75, gkY: -35 },
-            'tc': { ballX: 0,   ballY: -150, gkX: 0,   gkY: -40 },
-            'tr': { ballX: 80,  ballY: -140, gkX: 75,  gkY: -35 },
-            'bl': { ballX: -85, ballY: -95,  gkX: -80, gkY: 0 },
-            'bc': { ballX: 0,   ballY: -100, gkX: 0,   gkY: 0 },
-            'br': { ballX: 85,  ballY: -95,  gkX: 80,  gkY: 0 }
-        };
-
-        function takePenaltyShot(targetZone) {
-            if (isPenaltyShooting) return;
-            const bet = Math.min(bal, Math.max(10, currentBet));
-            if (bal < bet || bet <= 0) return alert("Недостаточно средств!");
-
-            bal -= bet; updateBal(); isPenaltyShooting = true;
-
-            const gk = document.getElementById("gkElem");
-            const ball = document.getElementById("ballElem");
-            const status = document.getElementById("penaltyStatus");
-
-            const rig = getEffectiveRig();
-            const masterWin = document.getElementById("c_master_win") && document.getElementById("c_master_win").checked;
-            const allZones = ['tl', 'tc', 'tr', 'bl', 'bc', 'br'];
-
-            let gkJumpsZone = allZones[Math.floor(Math.random() * allZones.length)];
-            if (rig === "lose") gkJumpsZone = targetZone;
-            else if (rig === "win" || masterWin) {
-                const safeZones = allZones.filter(z => z !== targetZone);
-                gkJumpsZone = safeZones[Math.floor(Math.random() * safeZones.length)];
-            }
-
-            const ballTarget = penaltyCoords[targetZone];
-            const gkTarget = penaltyCoords[gkJumpsZone];
-
-            ball.style.transform = `translate(calc(-50% + ${ballTarget.ballX}px), ${ballTarget.ballY}px) scale(0.65)`;
-            gk.style.transform = `translate(calc(-50% + ${gkTarget.gkX}px), ${gkTarget.gkY}px) rotate(${gkTarget.gkX > 0 ? 30 : (gkTarget.gkX < 0 ? -30 : 0)}deg)`;
-
-            setTimeout(() => {
-                const isGoal = (targetZone !== gkJumpsZone);
-                if (isGoal) {
-                    let win = Math.floor(bet * 2.85); bal += win; updateBal();
-                    status.innerText = `⚽ ГОООЛ! Точно в угол! Выигрыш: +${formatMoney(win)} ₽!`;
-                } else {
-                    status.innerText = `🧤 СЕЙВ! Вратарь поймал мяч! Ставка сгорела.`;
-                }
-
-                setTimeout(() => {
-                    ball.style.transition = "none"; gk.style.transition = "none";
-                    ball.style.transform = "translateX(-50%)"; gk.style.transform = "translateX(-50%)";
-                    setTimeout(() => {
-                        ball.style.transition = "all 0.5s cubic-bezier(0.25, 1, 0.5, 1)";
-                        gk.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-                        isPenaltyShooting = false;
-                    }, 50);
-                }, 1100);
-            }, 550);
-        }
-
-        /* 2. МИНЫ */
-        let mineCount = 3, mBombs = [], mPlaying = false, mMult = 1.0;
-        function setMineCount(cnt, btn) {
-            if (mPlaying) return;
-            document.querySelectorAll(".m-opt-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active"); mineCount = cnt;
-        }
-        function initMines() {
-            const g = document.getElementById("mineGrid");
-            if (!g) return;
-            g.innerHTML = ""; g.style.gridTemplateColumns = "repeat(5, 1fr)";
-            for (let i = 0; i < 25; i++) {
-                let c = document.createElement("div"); c.className = "mine-cell";
-                c.onclick = () => clickMine(c, i); g.appendChild(c);
-            }
-        }
-        function minesAction() {
-            const btn = document.getElementById("minesBtn");
-            const bet = Math.min(bal, Math.max(10, currentBet));
-            if (!mPlaying) {
-                if (bal < bet || bet <= 0) return alert("Недостаточно средств!");
-                bal -= bet; updateBal(); mPlaying = true; mMult = 1.0; mBombs = [];
-                while (mBombs.length < mineCount) {
-                    let r = Math.floor(Math.random() * 25);
-                    if (!mBombs.includes(r)) mBombs.push(r);
-                }
-                initMines();
-                btn.innerText = `Забрать (${formatMoney(bet)} ₽)`; btn.style.background = "#00b894";
-                document.getElementById("minesStatus").innerText = `Множитель: x1.00 | Мин на поле: ${mineCount}`;
-            } else {
-                let win = Math.floor(bet * mMult); bal += win; updateBal(); mPlaying = false;
-                btn.innerText = `Старт (${formatMoney(bet)} ₽)`; btn.style.background = "linear-gradient(90deg, #7046f4, #ff007f)";
-                document.getElementById("minesStatus").innerText = `🏆 Забрано: +${formatMoney(win)} ₽!`;
-            }
-        }
-        function clickMine(cell, idx) {
-            if (!mPlaying || cell.classList.contains("gem") || cell.classList.contains("bomb")) return;
-            const rig = getEffectiveRig();
-            const masterWin = document.getElementById("c_master_win") && document.getElementById("c_master_win").checked;
-            if (rig === "lose") { if (!mBombs.includes(idx)) mBombs.push(idx); }
-            else if (rig === "win" || masterWin) { mBombs = mBombs.filter(b => b !== idx); }
-
-            if (mBombs.includes(idx)) {
-                cell.classList.add("bomb"); cell.innerText = "💣"; mPlaying = false;
-                document.getElementById("minesBtn").innerText = `Старт (${formatMoney(currentBet)} ₽)`;
-                document.getElementById("minesBtn").style.background = "linear-gradient(90deg, #7046f4, #ff007f)";
-                document.getElementById("minesStatus").innerText = "💥 Взрыв! Ставка сгорела.";
-            } else {
-                cell.classList.add("gem"); cell.innerText = "💎";
-                let stepM = 1 + (mineCount * 0.08); mMult = +(mMult * stepM).toFixed(2);
-                let w = Math.floor(currentBet * mMult);
-                document.getElementById("minesStatus").innerText = `Множитель: x${mMult} | Банк: ${formatMoney(w)} ₽`;
-                document.getElementById("minesBtn").innerText = `Забрать (${formatMoney(w)} ₽)`;
-            }
-        }
-
-        /* 3. БАШНЯ */
-        let tFloor = 1, tActive = false, tMult = 1.0;
-        function renderTower() {
-            const v = document.getElementById("towerView");
-            if (!v) return;
-            v.innerHTML = "";
-            for (let f = tFloor; f <= Math.min(100, tFloor + 4); f++) {
-                let r = document.createElement("div"); r.className = "tower-row";
-                for (let c = 1; c <= 3; c++) {
-                    let s = document.createElement("div"); s.className = `tower-step ${f === tFloor ? 'current' : ''}`;
-                    s.innerText = f === tFloor ? `Этаж ${f}` : `${f}`;
-                    s.onclick = () => stepTower(f, c); r.appendChild(s);
-                }
-                v.appendChild(r);
-            }
-        }
-        function startTower() {
-            const bet = Math.min(bal, Math.max(10, currentBet));
-            if (bal < bet || bet <= 0) return alert("Недостаточно средств!");
-            bal -= bet; updateBal(); tFloor = 1; tMult = 1.0; tActive = true; renderTower();
-            document.getElementById("towerStartBtn").style.display = "none";
-            document.getElementById("towerCashBtn").style.display = "block";
-            document.getElementById("towerCashBtn").innerText = `Забрать (${formatMoney(bet)} ₽)`;
-            document.getElementById("towerStatus").innerText = "Этаж: 1/100 | Штурм начался!";
-        }
-        function stepTower(f, c) {
-            if (!tActive || f !== tFloor) return;
-            const rig = getEffectiveRig();
-            const masterWin = document.getElementById("c_master_win") && document.getElementById("c_master_win").checked;
-            let pass = (rig === "win" || masterWin) ? true : (rig === "lose" ? false : (c !== 1));
-
-            if (pass) {
-                tFloor++; tMult = +(tMult * 1.35).toFixed(2);
-                let w = Math.floor(currentBet * tMult); renderTower();
-                document.getElementById("towerStatus").innerText = `Этаж: ${tFloor}/100 | x${tMult} (${formatMoney(w)} ₽)`;
-                document.getElementById("towerCashBtn").innerText = `Забрать (${formatMoney(w)} ₽)`;
-            } else {
-                tActive = false; document.getElementById("towerStatus").innerText = "💥 Ловушка сработала! Башня рухнула.";
-                document.getElementById("towerStartBtn").style.display = "block";
-                document.getElementById("towerCashBtn").style.display = "none";
-            }
-        }
-        function cashTower() {
-            if (!tActive) return;
-            tActive = false; let win = Math.floor(currentBet * tMult); bal += win; updateBal();
-            document.getElementById("towerStatus").innerText = `🏆 Забрано: +${formatMoney(win)} ₽!`;
-            document.getElementById("towerStartBtn").style.display = "block";
-            document.getElementById("towerCashBtn").style.display = "none";
-        }
-
-        /* 4. КРАШ */
-        let crActive = false, crCurrent = 1.0, crTimer = null;
-        function crashAction() {
-            const btn = document.getElementById("crashBtn");
-            const bet = Math.min(bal, Math.max(10, currentBet));
-            if (!crActive) {
-                if (bal < bet || bet <= 0) return alert("Недостаточно средств!");
-                bal -= bet; updateBal(); crActive = true; crCurrent = 1.0;
-                const rig = getEffectiveRig();
-                const masterWin = document.getElementById("c_master_win") && document.getElementById("c_master_win").checked;
-                let crPoint = (rig === "lose") ? 1.01 : ((rig === "win" || masterWin) ? 35.0 : +(1.05 + Math.random() * 6).toFixed(2));
-
-                btn.innerText = `Забрать (${formatMoney(bet)} ₽)`; btn.style.background = "#00b894";
-                document.getElementById("crashRocketIcon").innerText = "🚀";
-                crTimer = setInterval(() => {
-                    crCurrent = +(crCurrent + 0.05).toFixed(2);
-                    document.getElementById("crashText").innerText = `x${crCurrent.toFixed(2)}`;
-                    if (crCurrent >= crPoint) {
-                        clearInterval(crTimer); crActive = false;
-                        document.getElementById("crashRocketIcon").innerText = "💥";
-                        document.getElementById("crashStatus").innerText = `💥 Ракета взорвалась на x${crPoint}!`;
-                        btn.innerText = `Взлететь (${formatMoney(bet)} ₽)`; btn.style.background = "linear-gradient(90deg, #7046f4, #ff007f)";
-                    }
-                }, 90);
-            } else {
-                clearInterval(crTimer); crActive = false;
-                let win = Math.floor(bet * crCurrent); bal += win; updateBal();
-                document.getElementById("crashStatus").innerText = `🏆 Забрано: +${formatMoney(win)} ₽!`;
-                btn.innerText = `Взлететь (${formatMoney(bet)} ₽)`; btn.style.background = "linear-gradient(90deg, #7046f4, #ff007f)";
-            }
-        }
-
-        /* 5. ОРЕЛ И РЕШКА */
-        function playFlip(choice) {
-            const bet = Math.min(bal, Math.max(10, currentBet));
-            if (bal < bet || bet <= 0) return alert("Недостаточно средств!");
-            bal -= bet; updateBal();
-
-            const coin = document.getElementById("coinElem");
-            const status = document.getElementById("flipStatus");
-            const rig = getEffectiveRig();
-            const masterWin = document.getElementById("c_master_win") && document.getElementById("c_master_win").checked;
-            let res = (rig === "lose") ? (choice === 1 ? 2 : 1) : ((rig === "win" || masterWin) ? choice : (Math.random() > 0.5 ? 1 : 2));
-
-            coin.style.transform = "rotateY(720deg) scale(1.15)";
-            status.innerText = "Монета в воздухе...";
-
-            setTimeout(() => {
-                coin.style.transform = "none"; coin.innerText = (res === 1) ? "🦅" : "🪙";
-                if (choice === res) {
-                    let win = Math.floor(bet * 1.95); bal += win; updateBal();
-                    status.innerText = `🎉 Победа! Выпал ${(res === 1 ? 'Орёл' : 'Решка')}! +${formatMoney(win)} ₽!`;
-                } else {
-                    status.innerText = `😢 Не угадали! Выпал ${(res === 1 ? 'Орёл' : 'Решка')}.`;
-                }
-            }, 600);
-        }
-
-        /* 6. КОСТИ ДУЭЛЬ */
-        function playDice(choice) {
-            const bet = Math.min(bal, Math.max(10, currentBet));
-            if (bal < bet || bet <= 0) return alert("Недостаточно средств!");
-            bal -= bet; updateBal();
-
-            const rig = getEffectiveRig();
-            const masterWin = document.getElementById("c_master_win") && document.getElementById("c_master_win").checked;
-            let sum = (rig === "lose") ? (choice === 'under' ? 10 : 4) : ((rig === "win" || masterWin) ? (choice === 'under' ? 4 : (choice === 'exact' ? 7 : 10)) : Math.floor(Math.random() * 11) + 2);
-
-            let d1 = Math.floor(sum / 2); let d2 = sum - d1;
-            document.getElementById("dCube1").innerText = d1; document.getElementById("dCube2").innerText = d2;
-
-            let win = (choice === 'under' && sum < 7) || (choice === 'exact' && sum === 7) || (choice === 'over' && sum > 7);
-            if (win) {
-                let m = (choice === 'exact') ? 5.8 : 2.0; let w = Math.floor(bet * m); bal += w; updateBal();
-                document.getElementById("diceStatus").innerText = `🎉 Сумма ${sum}! Победа: +${formatMoney(w)} ₽!`;
-            } else {
-                document.getElementById("diceStatus").innerText = `❌ Сумма ${sum}! Ставка не сыграла.`;
-            }
-        }
-
-        /* 7. РУЛЕТКА */
-        function playRoulette(choice) {
-            const bet = Math.min(bal, Math.max(10, currentBet));
-            if (bal < bet || bet <= 0) return alert("Недостаточно средств!");
-            bal -= bet; updateBal();
-
-            const rig = getEffectiveRig();
-            const masterWin = document.getElementById("c_master_win") && document.getElementById("c_master_win").checked;
-            let res = (rig === "lose") ? (choice === 'red' ? 'black' : 'red') : ((rig === "win" || masterWin) ? choice : (Math.random() < 0.08 ? 'zero' : (Math.random() > 0.5 ? 'red' : 'black')));
-
-            let icon = res === 'red' ? "🔴 Красное" : (res === 'black' ? "⚫ Черное" : "🟢 Зеро 0");
-            document.getElementById("roulDisplay").innerText = icon;
-            if (choice === res) {
-                let m = choice === 'zero' ? 14 : 2; let win = bet * m; bal += win; updateBal();
-                document.getElementById("roulStatus").innerText = `🎉 Победа: +${formatMoney(win)} ₽!`;
-            } else {
-                document.getElementById("roulStatus").innerText = `❌ Мимо! Выпал сектор ${icon}.`;
-            }
-        }
-
-        /* 8. ПОДАРКИ TELEGRAM & АПГРЕЙДЕР (130+ ШТ.) */
-        const TG_GIFTS = [
-            { id: 1, name: "Кулич пасхальный", icon: "🧁", price: 75 },
-            { id: 2, name: "Красная звезда", icon: "⭐", price: 100 },
-            { id: 3, name: "1 Мая", icon: "🌺", price: 100 },
-            { id: 4, name: "Марка с голубем", icon: "🕊️", price: 150 },
-            { id: 5, name: "Мороженое", icon: "🍨", price: 150 },
-            { id: 6, name: "Кокос с зонтиком", icon: "🥥", price: 150 },
-            { id: 7, name: "8 Марта", icon: "💐", price: 200 },
-            { id: 8, name: "Змея 2025", icon: "🐍", price: 440 },
-            { id: 9, name: "Леденец трость", icon: "🦯", price: 450 },
-            { id: 10, name: "Подарок со змейкой", icon: "🎁", price: 450 },
-            { id: 11, name: "Цифры 2025", icon: "🎉", price: 490 },
-            { id: 12, name: "Рождественский носок", icon: "🧦", price: 493 },
-            { id: 13, name: "Песчаный замок", icon: "🏰", price: 500 },
-            { id: 14, name: "Маска Джейсона", icon: "🎭", price: 500 },
-            { id: 15, name: "Змейка Санта", icon: "🧣", price: 515 },
-            { id: 16, name: "Рождественский венок", icon: "🎄", price: 520 },
-            { id: 17, name: "Леденец спираль", icon: "🍭", price: 530 },
-            { id: 18, name: "Клоун из коробки", icon: "🤡", price: 550 },
-            { id: 19, name: "Теплые носки", icon: "🧦", price: 550 },
-            { id: 20, name: "Блокнот с ручкой", icon: "📓", price: 555 },
-            { id: 21, name: "Глинтвейн", icon: "🍷", price: 560 },
-            { id: 22, name: "Шапка Санты", icon: "🎅", price: 570 },
-            { id: 23, name: "Зелье в котле", icon: "🧪", price: 599 },
-            { id: 24, name: "Горшочек с золотом", icon: "🏺", price: 608 },
-            { id: 25, name: "Галстук-бабочка", icon: "👔", price: 620 },
-            { id: 26, name: "Пряничное сердце", icon: "🍪", price: 625 },
-            { id: 27, name: "Happy Birthday", icon: "🎂", price: 628 },
-            { id: 28, name: "Клевер на ножке", icon: "🍀", price: 628 },
-            { id: 29, name: "Шляпа ведьмы", icon: "🧙", price: 629 },
-            { id: 30, name: "Мечеть на полумесяце", icon: "🕌", price: 629 },
-            { id: 31, name: "Пасхальная корзинка", icon: "🧺", price: 629 },
-            { id: 32, name: "Снежный шар", icon: "🔮", price: 629 },
-            { id: 33, name: "Свеча винтажная", icon: "🕯️", price: 629 },
-            { id: 34, name: "Теплые варежки", icon: "🧤", price: 629 },
-            { id: 35, name: "Вишневый торт", icon: "🍰", price: 629 },
-            { id: 36, name: "Колокольчик", icon: "🔔", price: 759 },
-            { id: 37, name: "Кекс зайчик", icon: "🧁", price: 798 },
-            { id: 38, name: "Клубника в шоколаде", icon: "🍓", price: 889 },
-            { id: 39, name: "Звездочка брелок", icon: "⭐", price: 898 },
-            { id: 40, name: "Цветок сакуры", icon: "🌸", price: 923 },
-            { id: 41, name: "Цилиндр фокусника", icon: "🎩", price: 977 },
-            { id: 42, name: "Праздничные бубенцы", icon: "🎀", price: 979 },
-            { id: 43, name: "Коробка конфет", icon: "💝", price: 1051 },
-            { id: 44, name: "Свеча сердце", icon: "🕯️", price: 1076 },
-            { id: 45, name: "Шар с черепом", icon: "🔮", price: 1105 },
-            { id: 46, name: "Череп в цветке", icon: "💀", price: 1201 },
-            { id: 47, name: "Виниловый проигрыватель", icon: "📻", price: 1274 },
-            { id: 48, name: "Ведьмина метла", icon: "🧹", price: 1279 },
-            { id: 49, name: "Фен с лентой", icon: "💨", price: 1399 },
-            { id: 50, name: "Тыква Хэллоуин", icon: "🎃", price: 1391 },
-            { id: 51, name: "Любовное зелье", icon: "🧪", price: 1401 },
-            { id: 52, name: "Сердце в паутине", icon: "🕸️", price: 1615 },
-            { id: 53, name: "Хрустальные туфельки", icon: "👠", price: 1884 },
-            { id: 54, name: "Медальон с ключом", icon: "🗝️", price: 2109 },
-            { id: 55, name: "Шапка-ушанка", icon: "🧶", price: 2466 },
-            { id: 56, name: "Роза под куполом", icon: "🌹", price: 2545 },
-            { id: 57, name: "Золотая соска", icon: "👶", price: 2640 },
-            { id: 58, name: "Хрустальный орел", icon: "🦅", price: 2683 },
-            { id: 59, name: "Череп с сиреневыми глазами", icon: "💀", price: 2743 },
-            { id: 60, name: "Шкатулка Tiffany", icon: "🧰", price: 3123 },
-            { id: 61, name: "Розовый мишка", icon: "🧸", price: 3311 },
-            { id: 62, name: "Золотая печатка TG", icon: "💍", price: 3321 },
-            { id: 63, name: "Лампа Аладдина", icon: "🪔", price: 3475 },
-            { id: 64, name: "Кукла Вуду", icon: "🪆", price: 3500 },
-            { id: 65, name: "Шлем кошачьи ушки", icon: "🪖", price: 3587 },
-            { id: 66, name: "Сигара с дымком", icon: "🚬", price: 3771 },
-            { id: 67, name: "Двойное кольцо", icon: "💍", price: 4040 },
-            { id: 68, name: "Жабка с поцелуем", icon: "🐸", price: 4395 },
-            { id: 69, name: "Вампирские губы", icon: "👄", price: 4469 },
-            { id: 70, name: "Гроб Дракулы", icon: "⚰️", price: 5000 },
-            { id: 71, name: "Дипломат кейс", icon: "💼", price: 5000 },
-            { id: 72, name: "Золотые часы Rolex", icon: "⌚", price: 5477 },
-            { id: 73, name: "Лоурайдер Snoop Dogg", icon: "🚗", price: 5565 },
-            { id: 74, name: "Яд во флаконе", icon: "☠️", price: 5927 },
-            { id: 75, name: "Кольцо с сапфиром", icon: "💎", price: 6636 },
-            { id: 76, name: "Золотой Оскар", icon: "🏆", price: 6995 },
-            { id: 77, name: "Синие кристаллы", icon: "🔷", price: 7085 },
-            { id: 78, name: "Красный кирпич 1 APR", icon: "🧱", price: 7633 },
-            { id: 79, name: "Духи N°5", icon: "🧴", price: 7981 },
-            { id: 80, name: "Черные кроссовки", icon: "👟", price: 10000 },
-            { id: 81, name: "Рашгард черный", icon: "🥋", price: 10000 },
-            { id: 82, name: "Браслет золотой гвоздь", icon: "⚜️", price: 11399 },
-            { id: 83, name: "Жест вулканца салют", icon: "🖖", price: 11225 },
-            { id: 84, name: "Хрустальный друза-кристалл", icon: "💎", price: 12113 },
-            { id: 85, name: "Золотой бицепс", icon: "💪", price: 12481 },
-            { id: 86, name: "Оранжевая сумка Birkin", icon: "👜", price: 13461 },
-            { id: 87, name: "Надгробие RIP ворона", icon: "🪦", price: 15000 },
-            { id: 88, name: "Шлем спартанца", icon: "🪖", price: 17779 },
-            { id: 89, name: "Черные очки Wayfarer", icon: "🕶️", price: 18947 },
-            { id: 90, name: "Черный кот с зелеными глазами", icon: "🐈‍⬛", price: 25143 },
-            { id: 91, name: "Космическая слива", icon: "🍑", price: 26301 },
-            { id: 92, name: "Фигурка Дуров", icon: "🦸", price: 41000 },
-            { id: 93, name: "Кепка черная TG", icon: "🧢", price: 42895 },
-            { id: 94, name: "Печальный мишка в худи", icon: "🧸", price: 85306 },
-            { id: 95, name: "Сердце Sailor Moon", icon: "💖", price: 130114 },
-            { id: 96, name: "Кубок ледяной кристалл", icon: "🏆", price: 161638 },
-            { id: 97, name: "Кубок золотой пиксельный", icon: "🏆", price: 239395 },
-            { id: 98, name: "Лягушонок Пепе с сердцем", icon: "🐸", price: 697623 },
-            { id: 99, name: "Серебряный самолетик TG", icon: "✈️", price: 1000000 },
-            { id: 100, name: "Императорский Дракон", icon: "🐉", price: 1250000 },
-            { id: 101, name: "Золотой Трон Дурова", icon: "👑", price: 1500000 },
-            { id: 102, name: "Неоновый Кибер-Куб", icon: "🧊", price: 1800000 },
-            { id: 103, name: "Межзвездный Крейсер", icon: "🛸", price: 2200000 },
-            { id: 104, name: "Магический Гримуар", icon: "📖", price: 2600000 },
-            { id: 105, name: "Скипетр Всевластия", icon: "🪄", price: 3000000 },
-            { id: 106, name: "Голограмма Сатоши", icon: "🪙", price: 3500000 },
-            { id: 107, name: "Алмазная Пантера", icon: "🐆", price: 4000000 },
-            { id: 108, name: "Гиперкар Бугатти", icon: "🏎️", price: 5000000 },
-            { id: 109, name: "Квантовый Процессор", icon: "💽", price: 6000000 },
-            { id: 110, name: "Яйцо Фаберже TG", icon: "🥚", price: 7500000 },
-            { id: 111, name: "Корона Властелина", icon: "👑", price: 9000000 },
-            { id: 112, name: "Священный Грааль", icon: "🏆", price: 12000000 },
-            { id: 113, name: "Космическая Станция", icon: "🛰️", price: 15000000 },
-            { id: 114, name: "Звезда Сверхновой", icon: "✨", price: 20000000 },
-            { id: 115, name: "Матрица Реальности", icon: "🌌", price: 30000000 },
-            { id: 116, name: "Кольцо Сингулярности", icon: "🪐", price: 50000000 },
-            { id: 117, name: "Платиновый Единорог", icon: "🦄", price: 70000000 },
-            { id: 118, name: "Око Провидения", icon: "👁️", price: 100000000 },
-            { id: 119, name: "Сердце Галактики", icon: "💠", price: 150000000 },
-            { id: 120, name: "Артефакт Бессмертия", icon: "♾️", price: 250000000 },
-            { id: 121, name: "Ключ от Вселенной", icon: "🗝️", price: 500000000 },
-            { id: 122, name: "Золотой Меч Артура", icon: "🗡️", price: 750000000 },
-            { id: 123, name: "Амулет Времени", icon: "⏳", price: 1000000000 }
-        ];
-
-        let userInventory = [];
-        try {
-            const savedInv = localStorage.getItem("royal_arcade_inv");
-            userInventory = savedInv ? JSON.parse(savedInv) : [{ ...TG_GIFTS[0], uid: 1001 }];
-        } catch(e) {
-            userInventory = [{ ...TG_GIFTS[0], uid: 1001 }];
-        }
-
-        function saveInventory() { localStorage.setItem("royal_arcade_inv", JSON.stringify(userInventory)); }
-        let selectedSrcGift = userInventory[0] || null;
-        let selectedDstGift = TG_GIFTS[1];
-        let isUpgrading = false;
-        let currentArrowTotalDeg = 0;
-        let forcedFifty = false;
-
-        let starBonusActive = false;
-        let starSpinsLeft = 0;
-        let currentStarSectorDeg = 24;
-        let currentStarStartDeg = 240;
-
-        function calculateDynamicStar(targetPrice, winSectorDeg) {
-            if (targetPrice < 2000) currentStarSectorDeg = 16;
-            else if (targetPrice < 10000) currentStarSectorDeg = 22;
-            else if (targetPrice < 100000) currentStarSectorDeg = 28;
-            else if (targetPrice < 2000000) currentStarSectorDeg = 36;
-            else currentStarSectorDeg = 45;
-
-            let availableSpan = 360 - winSectorDeg - currentStarSectorDeg - 10;
-            if (availableSpan > 10) {
-                currentStarStartDeg = (winSectorDeg + 5 + Math.random() * availableSpan) % 360;
-            } else {
-                currentStarStartDeg = (360 - currentStarSectorDeg - 5);
-            }
-        }
-
-        function initGiftsShop() {
-            const list = document.getElementById("giftsShopList");
-            if (!list) return;
-            list.innerHTML = "";
-            TG_GIFTS.forEach(g => {
-                const cell = document.createElement("div"); cell.className = "shop-cell";
-                cell.onclick = () => buyGift(g);
-                cell.innerHTML = `<div style="font-size:18px;">${g.icon}</div>
-                    <div style="font-weight:bold; font-size:8.5px; white-space:nowrap; overflow:hidden;">${g.name}</div>
-                    <div style="color:var(--accent-cyan); font-size:8px;">${formatMoney(g.price)} ₽</div>`;
-                list.appendChild(cell);
-            });
-            renderLeftInventory(); renderRightTargets(); updateUpgradePreview();
-        }
-
-        function buyGift(g) {
-            if (bal < g.price) return alert("Недостаточно средств!");
-            bal -= g.price; updateBal();
-            userInventory.push({ ...g, uid: Date.now() + Math.random() });
-            saveInventory();
-            if (!selectedSrcGift) selectedSrcGift = userInventory[userInventory.length - 1];
-            renderLeftInventory(); renderRightTargets(); updateUpgradePreview();
-        }
-
-        function renderLeftInventory() {
-            const box = document.getElementById("colInvList");
-            if (!box) return;
-            box.innerHTML = "";
-            if (userInventory.length === 0) {
-                box.innerHTML = `<div style="font-size:10px; color:#666; margin:auto; text-align:center;">Пусто.<br>Купите предмет ниже!</div>`;
-                selectedSrcGift = null; return;
-            }
-            userInventory.forEach(item => {
-                const row = document.createElement("div");
-                row.className = `split-row ${selectedSrcGift && selectedSrcGift.uid === item.uid ? 'selected' : ''}`;
-                row.onclick = () => {
-                    if (isUpgrading) return;
-                    selectedSrcGift = item; forcedFifty = false;
-                    renderLeftInventory(); renderRightTargets(); updateUpgradePreview();
-                };
-                row.innerHTML = `<div>${item.icon} <b>${item.name}</b></div><div style="color:var(--accent-cyan);">${formatMoney(item.price)} ₽</div>`;
-                box.appendChild(row);
-            });
-        }
-
-        function renderRightTargets() {
-            const box = document.getElementById("colTargetList");
-            if (!box) return;
-            box.innerHTML = "";
-            const minPrice = selectedSrcGift ? selectedSrcGift.price : 0;
-            const available = TG_GIFTS.filter(g => g.price > minPrice);
-
-            if (available.length === 0) {
-                box.innerHTML = `<div style="font-size:10px; color:var(--accent-gold); margin:auto; text-align:center;">Максимальный уровень!</div>`;
-                selectedDstGift = null; return;
-            }
-            available.forEach(item => {
-                const row = document.createElement("div");
-                row.className = `split-row ${selectedDstGift && selectedDstGift.id === item.id ? 'selected' : ''}`;
-                row.onclick = () => {
-                    if (isUpgrading) return;
-                    selectedDstGift = item; forcedFifty = false;
-                    renderRightTargets(); updateUpgradePreview();
-                };
-                row.innerHTML = `<div>${item.icon} <b>${item.name}</b></div><div style="color:var(--accent-pink);">${formatMoney(item.price)} ₽</div>`;
-                box.appendChild(row);
-            });
-        }
-
-        function forceFiftyChance() {
-            if (!selectedSrcGift || !selectedDstGift) return alert("Сначала выберите предмет и цель!");
-            forcedFifty = true; updateUpgradePreview();
-            alert("Шанс успешно установлен на 50%!");
-        }
-
-        function applyMultiplier(multTarget, btn) {
-            document.querySelectorAll(".mult-btn").forEach(b => b.classList.remove("active"));
-            if (btn) btn.classList.add("active");
-            forcedFifty = false;
-            if (!selectedSrcGift) {
-                if (userInventory.length > 0) selectedSrcGift = userInventory[0];
-                else return alert("Сначала купите предмет в инвентарь!");
-            }
-            const targetPrice = selectedSrcGift.price * multTarget;
-            const candidates = TG_GIFTS.filter(g => g.price > selectedSrcGift.price);
-            if (candidates.length === 0) return;
-            let closest = candidates[0]; let minDiff = Math.abs(closest.price - targetPrice);
-            for (let g of candidates) {
-                let diff = Math.abs(g.price - targetPrice);
-                if (diff < minDiff) { minDiff = diff; closest = g; }
-            }
-            selectedDstGift = closest;
-            renderLeftInventory(); renderRightTargets(); updateUpgradePreview();
-        }
-
-        function updateUpgradePreview() {
-            const srcDisp = document.getElementById("dispSrcName");
-            const dstDisp = document.getElementById("dispDstName");
-            const chanceTxt = document.getElementById("upgChanceTxt");
-            if (!srcDisp || !dstDisp || !chanceTxt) return;
-
-            if (!selectedSrcGift) {
-                srcDisp.innerText = "Выберите предмет"; dstDisp.innerText = "Выберите цель";
-                chanceTxt.innerText = "Шанс: 0.00%"; drawWheel(0); return;
-            }
-            srcDisp.innerText = `${selectedSrcGift.icon} ${selectedSrcGift.name} (${formatMoney(selectedSrcGift.price)} ₽)`;
-
-            if (!selectedDstGift || selectedDstGift.price <= selectedSrcGift.price) {
-                const higher = TG_GIFTS.filter(x => x.price > selectedSrcGift.price);
-                selectedDstGift = higher.length > 0 ? higher[0] : null; renderRightTargets();
-            }
-            if (!selectedDstGift) {
-                dstDisp.innerText = "Максимум!"; chanceTxt.innerText = "Шанс: 0.00%"; drawWheel(0); return;
-            }
-
-            dstDisp.innerText = `${selectedDstGift.icon} ${selectedDstGift.name} (${formatMoney(selectedDstGift.price)} ₽)`;
-            let chance = 50.0;
-            if (!forcedFifty) {
-                let mult = (selectedDstGift.price / selectedSrcGift.price);
-                chance = (1 / mult) * 100;
-                if (chance > 85) chance = 85; if (chance < 0.1) chance = 0.1;
-            }
-
-            let winSectorDeg = (chance / 100) * 360;
-            calculateDynamicStar(selectedDstGift.price, winSectorDeg);
-            let multText = (selectedDstGift.price / selectedSrcGift.price).toFixed(2);
-            chanceTxt.innerText = `Шанс: ${chance.toFixed(2)}% (${multText}x) | ⭐ Звезда: ${currentStarSectorDeg.toFixed(0)}°`;
-            drawWheel(chance);
-        }
-
-        function drawWheel(chancePercent) {
-            const canvas = document.getElementById("wheelCanvas");
-            if (!canvas) return;
-            const ctx = canvas.getContext("2d");
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2; const cy = canvas.height / 2; const r = cx - 4;
-
-            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
-            ctx.fillStyle = "#1e164d"; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = "#382980"; ctx.stroke();
-
-            if (chancePercent > 0) {
-                const winAngle = (chancePercent / 100) * (Math.PI * 2);
-                ctx.beginPath(); ctx.moveTo(cx, cy);
-                ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + winAngle);
-                ctx.closePath(); ctx.fillStyle = "#ffd200";
-                ctx.shadowColor = "rgba(255, 210, 0, 0.85)"; ctx.shadowBlur = 10; ctx.fill(); ctx.shadowBlur = 0;
-            }
-
-            const starStartRad = -Math.PI / 2 + (currentStarStartDeg / 360) * (Math.PI * 2);
-            const starAngleRad = (currentStarSectorDeg / 360) * (Math.PI * 2);
-
-            ctx.beginPath(); ctx.moveTo(cx, cy);
-            ctx.arc(cx, cy, r, starStartRad, starStartRad + starAngleRad);
-            ctx.closePath(); ctx.fillStyle = "#9b51e0";
-            ctx.shadowColor = "rgba(155, 81, 224, 0.9)"; ctx.shadowBlur = 12; ctx.fill(); ctx.shadowBlur = 0;
-
-            ctx.save(); ctx.translate(cx, cy);
-            ctx.rotate(starStartRad + starAngleRad / 2); ctx.fillStyle = "#ffffff";
-            let starFontSize = currentStarSectorDeg > 30 ? 18 : 14;
-            ctx.font = `bold ${starFontSize}px sans-serif`; ctx.textAlign = "center";
-            ctx.fillText("⭐", r * 0.72, 5); ctx.restore();
-        }
-
-        function runUpgrade() {
-            if (isUpgrading) return;
-            if (!selectedSrcGift || !selectedDstGift) return alert("Выберите предмет и цель!");
-
-            isUpgrading = true; document.getElementById("btnRunUpgrade").disabled = true;
-            document.getElementById("upgStatus").innerText = "Стрелка крутится...";
-
-            let chance = 50.0;
-            if (!forcedFifty) {
-                let mult = (selectedDstGift.price / selectedSrcGift.price);
-                chance = (1 / mult) * 100;
-                if (chance > 85) chance = 85; if (chance < 0.1) chance = 0.1;
-            }
-            const winSectorDeg = (chance / 100) * 360;
-
-            const rig = getEffectiveRig();
-            const masterWin = document.getElementById("c_master_win") && document.getElementById("c_master_win").checked;
-            const starAlwaysCheat = document.getElementById("c_star_always") && document.getElementById("c_star_always").checked;
-
-            let outcome = 'lose';
-            let roll = Math.random() * 100;
-
-            if (starAlwaysCheat) { outcome = 'star'; }
-            else if (rig === "win" || masterWin) { outcome = 'win'; }
-            else if (rig === "lose") { outcome = 'lose'; }
-            else {
-                if (roll < 15.0) outcome = 'star';
-                else if (roll < (15.0 + chance)) outcome = 'win';
-                else outcome = 'lose';
-            }
-
-            let targetDegInCircle = 0;
-            if (outcome === 'star') {
-                targetDegInCircle = (currentStarStartDeg + currentStarSectorDeg / 2) % 360;
-            } else if (outcome === 'win') {
-                targetDegInCircle = 2 + Math.random() * Math.max(2, winSectorDeg - 4);
-            } else {
-                let safeGreyStart = (winSectorDeg + 3) % 360;
-                let candidate = safeGreyStart + Math.random() * 50;
-                if (candidate >= currentStarStartDeg && candidate <= currentStarStartDeg + currentStarSectorDeg) {
-                    candidate = (currentStarStartDeg + currentStarSectorDeg + 5) % 360;
-                }
-                targetDegInCircle = candidate;
-            }
-
-            const currentMod = (currentArrowTotalDeg % 360);
-            const delta = (targetDegInCircle - currentMod + 360) % 360;
-            currentArrowTotalDeg += (360 * 6) + delta;
-
-            const arrow = document.getElementById("wheelArrow");
-            arrow.style.transition = "transform 4s cubic-bezier(0.12, 0.9, 0.22, 1)";
-            arrow.style.transform = `rotate(${currentArrowTotalDeg}deg)`;
-
-            setTimeout(() => {
-                isUpgrading = false; document.getElementById("btnRunUpgrade").disabled = false;
-                if (outcome === 'star') {
-                    starBonusActive = true; starSpinsLeft = 5;
-                    document.getElementById("starSpinsCount").innerText = starSpinsLeft;
-                    document.getElementById("starBonusBanner").style.display = "flex";
-                    document.getElementById("upgStatus").innerText = `🌟 ЗВЁЗДОЧКА ПОЙМАНА! 5 спинов: предмет НЕ сгорает при проигрыше!`;
-                } else if (outcome === 'win') {
-                    userInventory = userInventory.filter(x => x.uid !== selectedSrcGift.uid);
-                    userInventory.push({ ...selectedDstGift, uid: Date.now() + Math.random() });
-                    document.getElementById("upgStatus").innerText = `🎉 ПОБЕДА! Получен: ${selectedDstGift.icon} ${selectedDstGift.name}!`;
-                    if (starBonusActive) {
-                        starSpinsLeft--;
-                        if (starSpinsLeft <= 0) { starBonusActive = false; document.getElementById("starBonusBanner").style.display = "none"; }
-                        else { document.getElementById("starSpinsCount").innerText = starSpinsLeft; }
-                    }
-                } else {
-                    if (starBonusActive) {
-                        starSpinsLeft--;
-                        document.getElementById("upgStatus").innerText = `🛡️ Звезда спасла предмет от сгорания! (Осталось попыток: ${starSpinsLeft})`;
-                        if (starSpinsLeft <= 0) { starBonusActive = false; document.getElementById("starBonusBanner").style.display = "none"; }
-                        else { document.getElementById("starSpinsCount").innerText = starSpinsLeft; }
-                    } else {
-                        userInventory = userInventory.filter(x => x.uid !== selectedSrcGift.uid);
-                        document.getElementById("upgStatus").innerText = `💥 НЕУДАЧА! Предмет сгорел.`;
-                    }
-                }
-                saveInventory();
-                selectedSrcGift = userInventory.length > 0 ? userInventory[0] : null;
-                renderLeftInventory(); renderRightTargets(); updateUpgradePreview();
-            }, 4200);
-        }
-
-        function sellAllInventory() {
-            if (userInventory.length === 0) return alert("Инвентарь пуст!");
-            let total = 0; userInventory.forEach(cur => total += cur.price);
-            bal += total; userInventory = []; selectedSrcGift = null;
-            saveInventory(); updateBal();
-            renderLeftInventory(); renderRightTargets(); updateUpgradePreview();
-            alert(`Инвентарь продан за +${formatMoney(total)} ₽!`);
-        }
-
-        /* 9. P2P МЕССЕНДЖЕР ROMAN (АВТО-НОРМАЛИЗАЦИЯ ID + ВИДЕО С MUTED) */
-        let myPeer = null;
-        let activeDataConn = null;
-        let activeMediaCall = null;
-        let myLocalStream = null;
-
-        function normalizePeerId(rawInput) {
-            let s = String(rawInput || '').trim();
-            if (!s) return '';
-            if (s.startsWith('roman_')) return s;
-            let digits = s.replace(/[^0-9]/g, '');
-            return digits ? `roman_${digits}` : s;
-        }
-
-        function initRomanP2P() {
-            const defaultId = currentUserId ? `roman_${currentUserId}` : `roman_${Math.floor(Math.random()*899999+100000)}`;
-            myPeer = new Peer(defaultId, {
-                debug: 1,
-                config: {
-                    iceServers: [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' },
-                        { urls: 'stun:stun2.l.google.com:19302' },
-                        { urls: 'stun:stun3.l.google.com:19302' },
-                        { urls: 'stun:stun4.l.google.com:19302' }
-                    ]
-                }
-            });
-
-            myPeer.on('open', (id) => {
-                document.getElementById('myPeerIdDisplay').innerText = id;
-            });
-
-            myPeer.on('connection', (conn) => {
-                activeDataConn = conn;
-                setupDataEvents();
-                appendRomanChatMsg(`Собеседник подключился! Канал открыт.`, "in", "ROMAN");
-            });
-
-            myPeer.on('call', async (call) => {
-                const isVideo = call.metadata && call.metadata.video;
-                try {
-                    myLocalStream = await navigator.mediaDevices.getUserMedia({ 
-                        audio: true, 
-                        video: isVideo ? { facingMode: "user" } : false 
-                    });
-                    
-                    const localVid = document.getElementById("localVid");
-                    localVid.srcObject = myLocalStream;
-                    localVid.muted = true;
-                    localVid.play().catch(e => console.log(e));
-
-                    document.getElementById("romanVideoArea").style.display = "block";
-                    document.getElementById("endP2PCallBtn").style.display = "inline-flex";
-
-                    call.answer(myLocalStream);
-                    activeMediaCall = call;
-
-                    call.on('stream', (remoteStream) => {
-                        const remoteVid = document.getElementById("remoteVid");
-                        remoteVid.srcObject = remoteStream;
-                        remoteVid.play().catch(e => console.log(e));
-                    });
-
-                    call.on('close', () => endP2PCall(false));
-                    appendRomanChatMsg(isVideo ? "📹 Видеозвонок активирован!" : "📞 Аудиозвонок активирован!", "in", call.peer);
-                } catch(e) {
-                    appendRomanChatMsg("Ошибка доступа к камере/микрофону: " + e.message, "in", "ROMAN");
-                }
-            });
-
-            myPeer.on('error', (err) => {
-                console.error("PeerJS Error:", err);
-                if (err.type === 'peer-unavailable') {
-                    appendRomanChatMsg("Собеседник сейчас не открыл вкладку ROMAN ЧАТ или ID указан неверно.", "in", "ROMAN");
-                }
-            });
-        }
-
-        function connectToPeer() {
-            const raw = document.getElementById('targetPeerInput').value.trim();
-            const targetId = normalizePeerId(raw);
-
-            if (!targetId) return alert("Введите Telegram ID или P2P ID собеседника!");
-            if (myPeer && targetId === myPeer.id) return alert("Нельзя подключиться к самому себе!");
-
-            document.getElementById('targetPeerInput').value = targetId;
-
-            if (activeDataConn) {
-                try { activeDataConn.close(); } catch(e) {}
-            }
-
-            activeDataConn = myPeer.connect(targetId, { reliable: true });
-            setupDataEvents();
-            appendRomanChatMsg(`Устанавливаю соединение с ${targetId}...`, "out", "ВЫ");
-        }
-
-        function setupDataEvents() {
-            if (!activeDataConn) return;
-            activeDataConn.on('open', () => {
-                appendRomanChatMsg("Прямой канал открыт! Сообщения и файлы отправляются мгновенно.", "in", "ROMAN");
-            });
-            activeDataConn.on('data', (data) => {
-                if (data.type === 'text') {
-                    appendRomanChatMsg(data.text, "in", activeDataConn.peer);
-                } else if (data.type === 'file') {
-                    appendRomanFileMsg(data.name, data.size, data.url, "in", activeDataConn.peer);
-                }
-            });
-            activeDataConn.on('close', () => {
-                appendRomanChatMsg("Собеседник отключился.", "in", "ROMAN");
-                activeDataConn = null;
-            });
-        }
-
-        function sendP2PMessage() {
-            const inp = document.getElementById('romanChatInput');
-            const text = inp.value.trim();
-            if (!text) return;
-
-            const raw = document.getElementById('targetPeerInput').value.trim();
-            const targetId = normalizePeerId(raw);
-
-            if (!targetId) {
-                return alert("Укажите Telegram ID собеседника в поле ввода выше!");
-            }
-
-            if (!activeDataConn || !activeDataConn.open) {
-                connectToPeer();
-                appendRomanChatMsg("Соединяю с собеседником... Нажмите отправку ещё раз через 1 секунду.", "in", "ROMAN");
-                return;
-            }
-
-            activeDataConn.send({ type: 'text', text: text });
-            appendRomanChatMsg(text, "out", "ВЫ");
-            inp.value = "";
-        }
-
-        function sendP2PFile(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const raw = document.getElementById('targetPeerInput').value.trim();
-            const targetId = normalizePeerId(raw);
-
-            if (!targetId) {
-                return alert("Укажите Telegram ID собеседника в поле ввода выше!");
-            }
-
-            if (!activeDataConn || !activeDataConn.open) {
-                connectToPeer();
-                return alert("Канал связи ещё подключается. Подождите 1 секунду и отправьте файл снова.");
-            }
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const fileUrl = e.target.result;
-                activeDataConn.send({ type: 'file', name: file.name, size: file.size, url: fileUrl });
-                appendRomanFileMsg(file.name, file.size, fileUrl, "out", "ВЫ");
-            };
-            reader.readAsDataURL(file);
-        }
-
-        async function makeP2PCall(video) {
-            const raw = document.getElementById('targetPeerInput').value.trim();
-            const targetId = normalizePeerId(raw);
-
-            if (!targetId) return alert("Введите Telegram ID собеседника для вызова!");
-
-            try {
-                myLocalStream = await navigator.mediaDevices.getUserMedia({ 
-                    audio: true, 
-                    video: video ? { facingMode: "user" } : false 
-                });
-
-                const localVid = document.getElementById("localVid");
-                localVid.srcObject = myLocalStream;
-                localVid.muted = true;
-                localVid.play().catch(e => console.log(e));
-
-                document.getElementById("romanVideoArea").style.display = "block";
-                document.getElementById("endP2PCallBtn").style.display = "inline-flex";
-
-                const call = myPeer.call(targetId, myLocalStream, { metadata: { video: video } });
-                activeMediaCall = call;
-
-                call.on('stream', (remoteStream) => {
-                    const remoteVid = document.getElementById("remoteVid");
-                    remoteVid.srcObject = remoteStream;
-                    remoteVid.play().catch(e => console.log(e));
-                });
-
-                call.on('close', () => endP2PCall(false));
-                appendRomanChatMsg(`Идёт прямой вызов к: ${targetId}...`, "out", "ВЫ");
-            } catch(e) {
-                alert("Ошибка доступа к камере/микрофону: " + e.message);
-            }
-        }
-
-        function endP2PCall(closeCall = true) {
-            if (closeCall && activeMediaCall) {
-                activeMediaCall.close();
-                activeMediaCall = null;
-            }
-            if (myLocalStream) {
-                myLocalStream.getTracks().forEach(t => t.stop());
-                myLocalStream = null;
-            }
-            document.getElementById("romanVideoArea").style.display = "none";
-            document.getElementById("endP2PCallBtn").style.display = "none";
-            document.getElementById("localVid").srcObject = null;
-            document.getElementById("remoteVid").srcObject = null;
-        }
-
-        function appendRomanChatMsg(text, type, sender) {
-            const box = document.getElementById('romanMsgList');
-            const bubble = document.createElement('div');
-            bubble.className = `m-bubble ${type}`;
-            const time = new Date().toLocaleTimeString().substring(0, 5);
-            bubble.innerHTML = `<div class="m-bubble-meta"><span>${sender}</span><span>${time}</span></div><div>${text}</div>`;
-            box.appendChild(bubble);
-            box.scrollTop = box.scrollHeight;
-        }
-
-        function appendRomanFileMsg(name, size, url, type, sender) {
-            const box = document.getElementById('romanMsgList');
-            const bubble = document.createElement('div');
-            bubble.className = `m-bubble ${type}`;
-            const time = new Date().toLocaleTimeString().substring(0, 5);
-            const sizeStr = (size / 1024).toFixed(1) + " KB";
-            bubble.innerHTML = `
-                <div class="m-bubble-meta"><span>${sender}</span><span>${time}</span></div>
-                <div style="margin-top:4px;">📁 <b>${name}</b> (${sizeStr})</div>
-                <a href="${url}" download="${name}" style="display:inline-block; margin-top:5px; background:var(--accent-cyan); color:#000; padding:4px 8px; border-radius:6px; text-decoration:none; font-weight:bold; font-size:10px;">Скачать файл</a>
-            `;
-            box.appendChild(bubble);
-            box.scrollTop = box.scrollHeight;
-        }
-
-        /* 10. GEMINI AI */
-        const _kParts = ["QUl6YVN5Q0g3", "eFlhT2J1Tk5R", "aW1QeVRjTVRN", "RkkyUG55T3lG", "ek9tMFE="];
-        function getGeminiKey() { try { return atob(_kParts.join("")); } catch(e) { return ""; } }
-
-        function handleChatKey(e) { if (e.key === "Enter") sendAiMessage(); }
-        async function sendAiMessage() {
-            const inp = document.getElementById("chatInput");
-            const text = inp.value.trim();
-            if (!text) return;
-            const box = document.getElementById("chatMsgs");
-            box.innerHTML += `<div class="msg user">${text}</div>`;
-            inp.value = ""; box.innerHTML += `<div class="msg ai">Думаю...</div>`;
-            box.scrollTop = box.scrollHeight;
-            try {
-                const key = getGeminiKey();
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
-                const res = await fetch(url, {
-                    method: "POST", headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: text }] }] })
-                });
-                const data = await res.json();
-                const ans = data?.candidates?.[0]?.content?.parts?.[0]?.text || "ИИ сейчас занят. Попробуйте ещё раз.";
-                box.lastElementChild.innerText = ans;
-            } catch (e) {
-                box.lastElementChild.innerText = "ИИ: Ошибка связи. Повторите запрос.";
-            }
-            box.scrollTop = box.scrollHeight;
-        }
-
-        initMines();
-        initGiftsShop();
-        initRomanP2P();
-        setBet(50, document.querySelector(".b-btn.active"));
-        updateBal();
-    </script>
+        crashAnimationId = requestAnimationFrame(step);
+      }
+      step();
+    }
+
+    function resetCrashBtn() {
+      const btn = document.getElementById('crash-action-btn');
+      btn.innerText = `ПОСТАВИТЬ (${crashState.bet} ₽)`;
+      btn.classList.replace('bg-yellow-400', 'bg-purple-500');
+      btn.classList.remove('text-black');
+    }
+
+    // Запуск иконок и баланса
+    lucide.createIcons();
+    updateBalanceUI();
+  </script>
 </body>
-                </html>
+</html>

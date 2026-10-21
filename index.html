@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Romana — WebApp v47</title>
+    <title>Romana — WebApp v48</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -33,25 +33,26 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 16px;
+            padding: 12px 14px;
             background: #151933;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             position: sticky;
             top: 0;
             z-index: 100;
         }
-        .logo { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; display: flex; align-items: center; }
-        .logo span { color: var(--accent-yellow); font-size: 26px; line-height: 12px; margin-left: 1px; }
-        .header-right { display: flex; align-items: center; gap: 8px; }
+        .logo { font-size: 20px; font-weight: 900; letter-spacing: -0.5px; display: flex; align-items: center; }
+        .logo span { color: var(--accent-yellow); font-size: 24px; line-height: 12px; margin-left: 1px; }
+        .header-right { display: flex; align-items: center; gap: 6px; }
+        
         .balance-pill {
             background: #252b4d;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 20px;
             font-size: 13px;
             font-weight: 800;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             cursor: pointer;
         }
         .balance-sym {
@@ -65,48 +66,37 @@
             font-size: 10px;
             color: var(--accent-yellow);
         }
+        .btn-admin-top {
+            display: none;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: #000;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 16px;
+            font-size: 11px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(243, 156, 18, 0.4);
+        }
         .btn-deposit {
             background: var(--btn-blue-gradient);
             border: none;
             color: #fff;
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.35);
-        }
-        .btn-withdraw {
-            background: #23294c;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--accent-green);
-            padding: 8px 10px;
+            padding: 7px 11px;
             border-radius: 20px;
             font-size: 11px;
             font-weight: 800;
             cursor: pointer;
         }
-        .profile-avatar {
-            position: relative;
-            width: 32px;
-            height: 32px;
-            background: #4a90e2;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 13px;
-        }
-        .profile-online {
-            position: absolute;
-            bottom: -1px;
-            right: -1px;
-            width: 9px;
-            height: 9px;
-            background: #00d26a;
-            border: 2px solid #151933;
-            border-radius: 50%;
+        .btn-withdraw {
+            background: #23294c;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--accent-green);
+            padding: 7px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
         }
 
         /* LIVE ЛЕНТА */
@@ -393,7 +383,6 @@
             margin-top: 10px;
             box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
         }
-        .btn-game-act:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* АПГРЕЙД */
         .upg-wheel-area {
@@ -535,17 +524,17 @@
     <header class="header">
         <div class="logo">Romana<span>)</span></div>
         <div class="header-right">
-            <div class="balance-pill" onclick="openDeposit()">
-                <div class="balance-sym">₽</div>
+            <!-- КНОПКА АДМИНКИ (видна только вам) -->
+            <button class="btn-admin-top" id="btnAdminPanel" onclick="openAdminModal()">👑 Админка</button>
+
+            <!-- Переключатель баланса: Рубли <-> Stars (Батар) -->
+            <div class="balance-pill" onclick="toggleCurrency()" title="Кликните для смены валюты">
+                <div class="balance-sym" id="curSymDisplay">₽</div>
                 <span id="balDisplay">1 000</span>
-                <span style="font-size: 10px; color: var(--text-dim);">⌵</span>
+                <span style="font-size: 10px; color: var(--text-dim);">⇄</span>
             </div>
-            <button class="btn-deposit" onclick="openDeposit()">Пополнить</button>
+            <button class="btn-deposit" onclick="openDeposit()">+ Пополнить</button>
             <button class="btn-withdraw" onclick="openWithdraw()">Вывод</button>
-            <div class="profile-avatar">
-                R
-                <div class="profile-online"></div>
-            </div>
         </div>
     </header>
 
@@ -606,12 +595,6 @@
             <div class="item-card" onclick="openCaseDrop('Сдача', 49)"><div class="item-icon">💎</div><div class="item-name">Сдача</div><div class="item-btn">49 ₽</div></div>
             <div class="item-card" onclick="openCaseDrop('Копилка', 59)"><div class="item-icon">⌚</div><div class="item-name">Копилка</div><div class="item-btn">59 ₽</div></div>
             <div class="item-card" onclick="openCaseDrop('Заначка', 79)"><div class="item-icon">🔮</div><div class="item-name">Заначка</div><div class="item-btn">79 ₽</div></div>
-        </div>
-
-        <div class="sec-title"><span>50/50</span><a href="#" class="sec-more">Все 14 ›</a></div>
-        <div class="grid-cards">
-            <div class="item-card" onclick="openCaseDrop('Мишка или торт', 50)"><div class="item-icon">🧸</div><div class="item-name">Мишка / торт</div><div class="item-btn">50 ₽</div></div>
-            <div class="item-card" onclick="openCaseDrop('Роза или алмаз', 100)"><div class="item-icon">🌹</div><div class="item-name">Роза / алмаз</div><div class="item-btn">100 ₽</div></div>
         </div>
     </main>
 
@@ -772,6 +755,30 @@
         </div>
     </div>
 
+    <!-- ==================== СЕКРЕТНАЯ АДМИН-ПАНЕЛЬ ==================== -->
+    <div class="modal-bg" id="adminModal">
+        <div class="modal-content" style="border: 2px solid #f39c12;">
+            <div style="font-size: 16px; font-weight: 900; color: #f39c12;">👑 Панель Администратора</div>
+            <div style="font-size: 11px; color: var(--text-dim);">Управление балансом аккаунта:</div>
+
+            <div style="font-size: 12px; font-weight: 800;">Установить количество Stars (⭐):</div>
+            <input type="number" id="adminStarsInput" class="modal-input" placeholder="Введите количество звёзд">
+            <button class="btn-deposit" style="background:#e67e22;" onclick="adminSetStars()">💾 Сохранить Stars</button>
+
+            <div style="display:flex; gap:6px;">
+                <button class="upg-mult-btn" onclick="adminAddStars(100)">+100 ⭐</button>
+                <button class="upg-mult-btn" onclick="adminAddStars(500)">+500 ⭐</button>
+                <button class="upg-mult-btn" onclick="adminAddStars(5000)">+5000 ⭐</button>
+            </div>
+
+            <div style="font-size: 12px; font-weight: 800; margin-top: 6px;">Установить Рубли (₽):</div>
+            <input type="number" id="adminRubInput" class="modal-input" placeholder="Введите сумму в рублях">
+            <button class="btn-deposit" onclick="adminSetRub()">💾 Сохранить Рубли</button>
+
+            <button style="background:none; border:none; color:var(--text-dim); font-size:12px; cursor:pointer; margin-top:4px;" onclick="closeAdminModal()">Закрыть</button>
+        </div>
+    </div>
+
     <!-- ТАББАР -->
     <nav class="bottom-nav">
         <div class="nav-link active" onclick="switchNav('games', this)">
@@ -793,13 +800,99 @@
     </nav>
 
     <script>
+        const ADMIN_ID = 8732002956;
         const tg = window.Telegram?.WebApp;
         try { if (tg) { tg.ready(); tg.expand(); } } catch(e) {}
 
-        let balance = parseInt(localStorage.getItem("royal_arcade_bal") || "1000", 10);
+        // Проверка: показать кнопку Админки только вам
+        const curUser = tg?.initDataUnsafe?.user;
+        if (curUser && curUser.id === ADMIN_ID) {
+            const adminBtn = document.getElementById("btnAdminPanel");
+            if (adminBtn) adminBtn.style.display = "block";
+        }
+
+        // Хранилище балансов
+        let balanceRUB = parseInt(localStorage.getItem("romana_bal_rub") || "1000", 10);
+        let balanceStars = parseInt(localStorage.getItem("romana_bal_stars") || "100", 10);
+        let activeCurrency = localStorage.getItem("romana_cur") || "RUB";
+
+        // Проверка начисления из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("add_stars") === "1" && urlParams.get("stars")) {
+            const addS = parseInt(urlParams.get("stars"), 10);
+            if (!isNaN(addS) && addS > 0) {
+                balanceStars += addS;
+                activeCurrency = "STARS";
+                alert(`⭐ На баланс зачислено +${addS} Stars (Батар)!`);
+            }
+        }
+        if (urlParams.get("pay") === "1" && urlParams.get("bal")) {
+            const addR = parseInt(urlParams.get("bal"), 10);
+            if (!isNaN(addR) && addR > 0) {
+                balanceRUB += addR;
+                activeCurrency = "RUB";
+                alert(`💰 На баланс начислено +${addR} ₽!`);
+            }
+        }
+
         function updateBal() {
-            localStorage.setItem("royal_arcade_bal", balance.toString());
-            document.getElementById("balDisplay").innerText = balance.toLocaleString('ru-RU');
+            localStorage.setItem("romana_bal_rub", balanceRUB.toString());
+            localStorage.setItem("romana_bal_stars", balanceStars.toString());
+            localStorage.setItem("romana_cur", activeCurrency);
+
+            const symEl = document.getElementById("curSymDisplay");
+            const valEl = document.getElementById("balDisplay");
+
+            if (activeCurrency === "STARS") {
+                symEl.innerText = "⭐";
+                symEl.style.background = "#e67e22";
+                valEl.innerText = balanceStars.toLocaleString('ru-RU');
+            } else {
+                symEl.innerText = "₽";
+                symEl.style.background = "#394273";
+                valEl.innerText = balanceRUB.toLocaleString('ru-RU');
+            }
+        }
+
+        function toggleCurrency() {
+            activeCurrency = (activeCurrency === "RUB") ? "STARS" : "RUB";
+            updateBal();
+            triggerHaptic("light");
+        }
+
+        /* УПРАВЛЕНИЕ АДМИН-ПАНЕЛЬЮ */
+        function openAdminModal() {
+            document.getElementById("adminStarsInput").value = balanceStars;
+            document.getElementById("adminRubInput").value = balanceRUB;
+            document.getElementById("adminModal").style.display = "flex";
+        }
+        function closeAdminModal() {
+            document.getElementById("adminModal").style.display = "none";
+        }
+        function adminSetStars() {
+            const val = parseInt(document.getElementById("adminStarsInput").value, 10);
+            if (isNaN(val) || val < 0) return alert("Введите корректное число звёзд!");
+            balanceStars = val;
+            updateBal();
+            triggerHaptic("success");
+            alert(`✅ Баланс Stars успешно установлен на: ${val} ⭐`);
+            closeAdminModal();
+        }
+        function adminAddStars(count) {
+            balanceStars += count;
+            document.getElementById("adminStarsInput").value = balanceStars;
+            updateBal();
+            triggerHaptic("success");
+            alert(`✅ Добавлено +${count} ⭐! Новый баланс: ${balanceStars} ⭐`);
+        }
+        function adminSetRub() {
+            const val = parseInt(document.getElementById("adminRubInput").value, 10);
+            if (isNaN(val) || val < 0) return alert("Введите корректную сумму!");
+            balanceRUB = val;
+            updateBal();
+            triggerHaptic("success");
+            alert(`✅ Баланс рублей успешно установлен на: ${val} ₽`);
+            closeAdminModal();
         }
 
         function triggerHaptic(type = "light") {
@@ -837,33 +930,21 @@
         }
 
         /* 1. КОРОВКА */
-        let cowStep = 0;
-        let cowActive = false;
-        let cowMult = 1.0;
-        let carAnimationId = null;
-        let cars = [
-            { id: 'car1', x: 0, speed: 2.2, dir: 1 },
-            { id: 'car2', x: 260, speed: 3.0, dir: -1 },
-            { id: 'car3', x: 80, speed: 3.8, dir: 1 }
-        ];
+        let cowStep = 0, cowActive = false, cowMult = 1.0, carAnimationId = null;
+        let cars = [{ id: 'car1', x: 0, speed: 2.2, dir: 1 }, { id: 'car2', x: 260, speed: 3.0, dir: -1 }, { id: 'car3', x: 80, speed: 3.8, dir: 1 }];
 
         function initCowGame() {
-            cowStep = 0;
-            cowActive = false;
-            cowMult = 1.0;
-            updateCowPos();
+            cowStep = 0; cowActive = false; cowMult = 1.0; updateCowPos();
             document.getElementById("cowMultTxt").innerText = "x1.00";
-            document.getElementById("cowBankTxt").innerText = "100 ₽";
-            document.getElementById("btnCowStep").innerText = "СТАРТ (100 ₽)";
+            document.getElementById("cowBankTxt").innerText = "100";
+            document.getElementById("btnCowStep").innerText = "СТАРТ (100)";
             document.getElementById("btnCowCash").style.display = "none";
             startTrafficLoop();
         }
-
         function startTrafficLoop() {
             if (carAnimationId) cancelAnimationFrame(carAnimationId);
             const box = document.getElementById("cowRoadBox");
             const w = box.clientWidth || 340;
-
             function loop() {
                 cars.forEach(c => {
                     c.x += c.speed * c.dir;
@@ -876,45 +957,38 @@
             }
             carAnimationId = requestAnimationFrame(loop);
         }
-
         function stepCow() {
+            let curBal = (activeCurrency === "STARS") ? balanceStars : balanceRUB;
             if (!cowActive) {
-                if (balance < 100) return alert("Недостаточно средств (ставка 100 ₽)!");
-                balance -= 100; updateBal();
-                cowActive = true;
-                cowStep = 1;
-                cowMult = 1.35;
+                if (curBal < 100) return alert("Недостаточно средств (ставка 100)!");
+                if (activeCurrency === "STARS") balanceStars -= 100; else balanceRUB -= 100;
+                updateBal();
+                cowActive = true; cowStep = 1; cowMult = 1.35;
                 document.getElementById("btnCowStep").innerText = "ВПЕРЕД 🐾";
                 document.getElementById("btnCowCash").style.display = "inline-block";
             } else {
                 if (Math.random() < 0.28) {
                     triggerHaptic("error");
                     document.getElementById("cowHero").innerText = "💥";
-                    setTimeout(() => {
-                        alert("💥 Машина сбила коровку! Ставка сгорела.");
-                        endCowGame(false);
-                    }, 100);
+                    setTimeout(() => { alert("💥 Машина сбила коровку! Ставка сгорела."); endCowGame(false); }, 100);
                     return;
                 }
-                cowStep++;
-                cowMult = +(cowMult * 1.45).toFixed(2);
+                cowStep++; cowMult = +(cowMult * 1.45).toFixed(2);
             }
-
             updateCowPos();
             const curBank = Math.floor(100 * cowMult);
             document.getElementById("cowMultTxt").innerText = `x${cowMult}`;
-            document.getElementById("cowBankTxt").innerText = `${curBank} ₽`;
+            document.getElementById("cowBankTxt").innerText = `${curBank}`;
             triggerHaptic("light");
-
             if (cowStep >= 4) {
                 triggerHaptic("success");
                 const win = Math.floor(100 * 5.0);
-                balance += win; updateBal();
-                alert(`🏆 Коровка перешла шоссе! Выигрыш: +${win} ₽!`);
+                if (activeCurrency === "STARS") balanceStars += win; else balanceRUB += win;
+                updateBal();
+                alert(`🏆 Коровка перешла шоссе! Выигрыш: +${win}!`);
                 endCowGame(true);
             }
         }
-
         function updateCowPos() {
             const hero = document.getElementById("cowHero");
             if (!hero) return;
@@ -922,42 +996,31 @@
             const laneHeights = [255, 195, 140, 85, 20];
             hero.style.bottom = (laneHeights[cowStep] || 255) + "px";
         }
-
         function cashCow() {
             if (!cowActive) return;
             const win = Math.floor(100 * cowMult);
-            balance += win; updateBal();
+            if (activeCurrency === "STARS") balanceStars += win; else balanceRUB += win;
+            updateBal();
             triggerHaptic("success");
-            alert(`💰 Вы забрали банк: +${win} ₽!`);
+            alert(`💰 Вы забрали банк: +${win}!`);
             endCowGame(true);
         }
-
         function endCowGame(resetHero = true) {
-            cowActive = false;
-            cowStep = 0;
-            cowMult = 1.0;
+            cowActive = false; cowStep = 0; cowMult = 1.0;
             if (resetHero) updateCowPos();
             document.getElementById("cowMultTxt").innerText = "x1.00";
-            document.getElementById("cowBankTxt").innerText = "100 ₽";
-            document.getElementById("btnCowStep").innerText = "СТАРТ (100 ₽)";
+            document.getElementById("cowBankTxt").innerText = "100";
+            document.getElementById("btnCowStep").innerText = "СТАРТ (100)";
             document.getElementById("btnCowCash").style.display = "none";
         }
 
         /* 2. ОСОБНЯК */
-        let mansionDiff = 1;
-        let mansionStage = 1;
-        let mansionMult = 1.45;
-        let mansionActive = false;
-
+        let mansionDiff = 1, mansionStage = 1, mansionMult = 1.45, mansionActive = false;
         function initMansionGame() {
-            mansionStage = 1;
-            mansionMult = 1.45;
-            mansionActive = false;
-            resetDoorVisuals();
+            mansionStage = 1; mansionMult = 1.45; mansionActive = false; resetDoorVisuals();
             document.getElementById("mansionStageTxt").innerText = `Этаж 1 • Множитель: x${mansionMult}`;
             document.getElementById("btnMansionCash").style.display = "none";
         }
-
         function setMansionDiff(d, btn) {
             if (mansionActive) return;
             mansionDiff = d;
@@ -966,7 +1029,6 @@
             mansionMult = (d === 1) ? 1.45 : 2.80;
             document.getElementById("mansionStageTxt").innerText = `Этаж 1 • Множитель: x${mansionMult}`;
         }
-
         function resetDoorVisuals() {
             for (let i = 0; i < 3; i++) {
                 document.getElementById(`dFront${i}`).style.display = "block";
@@ -974,85 +1036,66 @@
                 document.getElementById(`dRes${i}`).innerText = "";
             }
         }
-
         function pickDoor(doorIdx) {
+            let curBal = (activeCurrency === "STARS") ? balanceStars : balanceRUB;
             if (!mansionActive) {
-                if (balance < 100) return alert("Недостаточно средств (ставка 100 ₽)!");
-                balance -= 100; updateBal();
+                if (curBal < 100) return alert("Недостаточно средств (ставка 100)!");
+                if (activeCurrency === "STARS") balanceStars -= 100; else balanceRUB -= 100;
+                updateBal();
                 mansionActive = true;
                 document.getElementById("btnMansionCash").style.display = "block";
             }
-
-            let trapDoorIndex = Math.floor(Math.random() * 3);
-            let isTrap = (doorIdx === trapDoorIndex);
-
+            let isTrap = (doorIdx === Math.floor(Math.random() * 3));
             document.getElementById(`dFront${doorIdx}`).style.display = "none";
             const resEl = document.getElementById(`dRes${doorIdx}`);
             resEl.style.display = "block";
-
             if (isTrap) {
-                resEl.innerText = "👻";
-                triggerHaptic("error");
-                setTimeout(() => {
-                    alert("💥 В комнате призрак! Вы проиграли.");
-                    initMansionGame();
-                }, 150);
+                resEl.innerText = "👻"; triggerHaptic("error");
+                setTimeout(() => { alert("💥 В комнате призрак! Вы проиграли."); initMansionGame(); }, 150);
             } else {
-                resEl.innerText = "💎";
-                triggerHaptic("success");
+                resEl.innerText = "💎"; triggerHaptic("success");
                 mansionStage++;
-                let stepM = (mansionDiff === 1) ? 1.45 : 2.80;
-                mansionMult = +(mansionMult * stepM).toFixed(2);
+                mansionMult = +(mansionMult * (mansionDiff === 1 ? 1.45 : 2.80)).toFixed(2);
                 const curWin = Math.floor(100 * mansionMult);
-                document.getElementById("mansionStageTxt").innerText = `Этаж ${mansionStage} • Банк: ${curWin} ₽ (x${mansionMult})`;
-                document.getElementById("btnMansionCash").innerText = `ЗАБРАТЬ ${curWin} ₽`;
+                document.getElementById("mansionStageTxt").innerText = `Этаж ${mansionStage} • Банк: ${curWin} (x${mansionMult})`;
+                document.getElementById("btnMansionCash").innerText = `ЗАБРАТЬ ${curWin}`;
                 setTimeout(resetDoorVisuals, 600);
             }
         }
-
         function cashMansion() {
             if (!mansionActive) return;
             const win = Math.floor(100 * mansionMult);
-            balance += win; updateBal();
+            if (activeCurrency === "STARS") balanceStars += win; else balanceRUB += win;
+            updateBal();
             triggerHaptic("success");
-            alert(`🏆 Вы вынесли из особняка: +${win} ₽!`);
+            alert(`🏆 Вы забрали сокровища: +${win}!`);
             initMansionGame();
         }
 
         /* 3. РАКЕТКА (CRASH) */
-        let crashActive = false;
-        let crashMultiplier = 1.0;
-        let crashLoopId = null;
-        let crashCrashPoint = 2.0;
-
+        let crashActive = false, crashMultiplier = 1.0, crashLoopId = null, crashCrashPoint = 2.0;
         function initCrashGame() {
-            crashActive = false;
-            crashMultiplier = 1.0;
+            crashActive = false; crashMultiplier = 1.0;
             document.getElementById("crashBigTxt").innerText = "x1.00";
-            document.getElementById("btnCrashAct").innerText = "ВЗЛЕТЕТЬ (100 ₽)";
+            document.getElementById("btnCrashAct").innerText = "ВЗЛЕТЕТЬ (100)";
             document.getElementById("btnCrashAct").style.background = "";
             renderCrashCanvas(1.0);
         }
-
         function handleCrashBtn() {
+            let curBal = (activeCurrency === "STARS") ? balanceStars : balanceRUB;
             if (!crashActive) {
-                if (balance < 100) return alert("Недостаточно средств (ставка 100 ₽)!");
-                balance -= 100; updateBal();
-                crashActive = true;
-                crashMultiplier = 1.0;
+                if (curBal < 100) return alert("Недостаточно средств (ставка 100)!");
+                if (activeCurrency === "STARS") balanceStars -= 100; else balanceRUB -= 100;
+                updateBal();
+                crashActive = true; crashMultiplier = 1.0;
                 crashCrashPoint = +(1.1 + Math.random() * 4.5).toFixed(2);
-
                 const btn = document.getElementById("btnCrashAct");
-                btn.innerText = "ЗАБРАТЬ";
-                btn.style.background = "#00d26a";
-                btn.style.color = "#000";
+                btn.innerText = "ЗАБРАТЬ"; btn.style.background = "#00d26a"; btn.style.color = "#000";
                 triggerHaptic("medium");
-
                 crashLoopId = setInterval(() => {
                     crashMultiplier = +(crashMultiplier + 0.05).toFixed(2);
                     document.getElementById("crashBigTxt").innerText = `x${crashMultiplier.toFixed(2)}`;
                     renderCrashCanvas(crashMultiplier);
-
                     if (crashMultiplier >= crashCrashPoint) {
                         clearInterval(crashLoopId);
                         stopCrashFly(false);
@@ -1061,40 +1104,30 @@
             } else {
                 clearInterval(crashLoopId);
                 const win = Math.floor(100 * crashMultiplier);
-                balance += win; updateBal();
+                if (activeCurrency === "STARS") balanceStars += win; else balanceRUB += win;
+                updateBal();
                 triggerHaptic("success");
-                alert(`🚀 Вы успели спрыгнуть! Выигрыш: +${win} ₽!`);
+                alert(`🚀 Выпрыгнули вовремя! Выигрыш: +${win}!`);
                 stopCrashFly(true);
             }
         }
-
         function stopCrashFly(isWin) {
             crashActive = false;
-            if (!isWin) {
-                triggerHaptic("error");
-                document.getElementById("crashBigTxt").innerText = "💥 КРАШ!";
-                alert(`💥 Ракета взорвалась на x${crashCrashPoint}!`);
-            }
-            document.getElementById("btnCrashAct").innerText = "ВЗЛЕТЕТЬ (100 ₽)";
+            if (!isWin) { triggerHaptic("error"); document.getElementById("crashBigTxt").innerText = "💥 КРАШ!"; alert(`💥 Ракета взорвалась на x${crashCrashPoint}!`); }
+            document.getElementById("btnCrashAct").innerText = "ВЗЛЕТЕТЬ (100)";
             document.getElementById("btnCrashAct").style.background = "";
             document.getElementById("btnCrashAct").style.color = "#fff";
         }
-
         function renderCrashCanvas(mult) {
             const cvs = document.getElementById("crashCvs");
             const ctx = cvs.getContext("2d");
             ctx.clearRect(0, 0, cvs.width, cvs.height);
-            ctx.beginPath();
-            ctx.moveTo(20, 220);
+            ctx.beginPath(); ctx.moveTo(20, 220);
             let progress = Math.min(1, (mult - 1) / 4);
-            let endX = 20 + progress * 280;
-            let endY = 220 - progress * 170;
+            let endX = 20 + progress * 280, endY = 220 - progress * 170;
             ctx.quadraticCurveTo(endX / 2, 220, endX, endY);
-            ctx.strokeStyle = "#5b6df7";
-            ctx.lineWidth = 4;
-            ctx.stroke();
-            ctx.font = "24px sans-serif";
-            ctx.fillText("🚀", endX - 12, endY - 8);
+            ctx.strokeStyle = "#5b6df7"; ctx.lineWidth = 4; ctx.stroke();
+            ctx.font = "24px sans-serif"; ctx.fillText("🚀", endX - 12, endY - 8);
         }
 
         /* 4. PLINKO */
@@ -1108,59 +1141,44 @@
                 let count = row + 3;
                 let startX = (cvs.width - (count - 1) * 36) / 2;
                 for (let col = 0; col < count; col++) {
-                    ctx.beginPath();
-                    ctx.arc(startX + col * 36, 40 + row * 34, 4, 0, Math.PI * 2);
-                    ctx.fill();
+                    ctx.beginPath(); ctx.arc(startX + col * 36, 40 + row * 34, 4, 0, Math.PI * 2); ctx.fill();
                 }
             }
             const mults = ["x5.0", "x2.0", "x0.5", "x0.2", "x0.5", "x2.0", "x5.0"];
             const colors = ["#ff7675", "#fdcb6e", "#ffeaa7", "#74b9ff", "#ffeaa7", "#fdcb6e", "#ff7675"];
             for (let i = 0; i < mults.length; i++) {
-                ctx.fillStyle = colors[i];
-                ctx.fillRect(20 + i * 44, 280, 40, 22);
-                ctx.fillStyle = "#000";
-                ctx.font = "bold 10px sans-serif";
-                ctx.fillText(mults[i], 28 + i * 44, 295);
+                ctx.fillStyle = colors[i]; ctx.fillRect(20 + i * 44, 280, 40, 22);
+                ctx.fillStyle = "#000"; ctx.font = "bold 10px sans-serif"; ctx.fillText(mults[i], 28 + i * 44, 295);
             }
         }
         function dropPlinkoBall() {
-            if (balance < 100) return alert("Недостаточно средств (ставка 100 ₽)!");
-            balance -= 100; updateBal();
+            let curBal = (activeCurrency === "STARS") ? balanceStars : balanceRUB;
+            if (curBal < 100) return alert("Недостаточно средств (ставка 100)!");
+            if (activeCurrency === "STARS") balanceStars -= 100; else balanceRUB -= 100;
+            updateBal();
             triggerHaptic("medium");
-
             const cvs = document.getElementById("plinkoCvs");
             const ctx = cvs.getContext("2d");
-            let x = cvs.width / 2;
-            let y = 15;
-
+            let x = cvs.width / 2, y = 15;
             let anim = setInterval(() => {
-                renderPlinkoBase();
-                y += 10;
-                x += (Math.random() - 0.5) * 16;
-                ctx.beginPath();
-                ctx.arc(x, y, 7, 0, Math.PI * 2);
-                ctx.fillStyle = "#ffb800";
-                ctx.fill();
-
+                renderPlinkoBase(); y += 10; x += (Math.random() - 0.5) * 16;
+                ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.fillStyle = "#ffb800"; ctx.fill();
                 if (y >= 275) {
                     clearInterval(anim);
                     let multArray = [5.0, 2.0, 0.5, 0.2, 0.5, 2.0, 5.0];
                     let bucket = Math.min(6, Math.max(0, Math.floor((x - 20) / 44)));
                     let m = multArray[bucket] || 0.5;
                     let win = Math.floor(100 * m);
-                    balance += win; updateBal();
+                    if (activeCurrency === "STARS") balanceStars += win; else balanceRUB += win;
+                    updateBal();
                     triggerHaptic(m >= 1 ? "success" : "error");
-                    alert(`🎯 Шарик упал в корзину ${m}x! Выигрыш: ${win} ₽!`);
+                    alert(`🎯 Шарик упал в ячейку ${m}x! Выигрыш: +${win}!`);
                 }
             }, 30);
         }
 
         /* 5. АПГРЕЙД */
-        let upgMult = 2;
-        let upgChance = 50;
-        let isUpgSpin = false;
-        let currentAngle = 0;
-
+        let upgMult = 2, upgChance = 50, isUpgSpin = false, currentAngle = 0;
         function setUpgMult(m, btn) {
             if (isUpgSpin) return;
             upgMult = m;
@@ -1168,82 +1186,55 @@
             btn.classList.add("active");
             upgChance = Math.floor(100 / m);
             document.getElementById("upgPercent").innerText = `${upgChance} %`;
-            document.getElementById("targetNameLabel").innerText = `NFT ×${m} (${100 * m} ₽)`;
+            document.getElementById("targetNameLabel").innerText = `NFT ×${m} (${100 * m})`;
             drawUpgWheel(upgChance, currentAngle);
-            triggerHaptic("light");
         }
-
         function drawUpgWheel(chance, angle) {
             const canvas = document.getElementById("upgCanvas");
             if (!canvas) return;
             const ctx = canvas.getContext("2d");
             const w = canvas.width, h = canvas.height;
             ctx.clearRect(0, 0, w, h);
-            const cx = w / 2, cy = h / 2, r = cx - 8;
-
-            ctx.save();
-            ctx.translate(cx, cy);
-            ctx.rotate(angle);
-
-            ctx.beginPath();
-            ctx.arc(0, 0, r, 0, Math.PI * 2);
-            ctx.fillStyle = "#181d38";
-            ctx.fill();
-            ctx.lineWidth = 4;
-            ctx.strokeStyle = "#272e59";
-            ctx.stroke();
-
+            ctx.save(); ctx.translate(w / 2, h / 2); ctx.rotate(angle);
+            ctx.beginPath(); ctx.arc(0, 0, (w / 2) - 8, 0, Math.PI * 2);
+            ctx.fillStyle = "#181d38"; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = "#272e59"; ctx.stroke();
             const winRad = (chance / 100) * (Math.PI * 2);
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.arc(0, 0, r - 3, Math.PI / 2, Math.PI / 2 + winRad);
-            ctx.closePath();
-            ctx.fillStyle = "#5b6df7";
-            ctx.fill();
-
+            ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, (w / 2) - 11, Math.PI / 2, Math.PI / 2 + winRad);
+            ctx.closePath(); ctx.fillStyle = "#5b6df7"; ctx.fill();
             ctx.restore();
         }
-
         function spinUpgrade() {
             if (isUpgSpin) return;
-            if (balance < 100) return alert("Недостаточно средств (ставка 100 ₽)!");
-            balance -= 100; updateBal();
+            let curBal = (activeCurrency === "STARS") ? balanceStars : balanceRUB;
+            if (curBal < 100) return alert("Недостаточно средств (ставка 100)!");
+            if (activeCurrency === "STARS") balanceStars -= 100; else balanceRUB -= 100;
+            updateBal();
             isUpgSpin = true;
             document.getElementById("btnRunUpg").disabled = true;
             triggerHaptic("medium");
-
             const isWin = (Math.random() * 100 < upgChance);
             const winDeg = (upgChance / 100) * 360;
             const stopDeg = isWin ? (Math.random() * Math.max(2, winDeg - 4)) : (winDeg + 20 + Math.random() * 60);
-
             const targetMod = (360 - stopDeg) % 360;
             const curMod = ((currentAngle * 180 / Math.PI) % 360 + 360) % 360;
             const delta = (targetMod - curMod + 360) % 360;
             const finalAngle = currentAngle + (360 * 6 + delta) * (Math.PI / 180);
-
-            const startA = currentAngle;
-            const startTime = performance.now();
-            const duration = 3800;
-
+            const startA = currentAngle, startTime = performance.now();
             function anim(now) {
-                const p = Math.min(1, (now - startTime) / duration);
+                const p = Math.min(1, (now - startTime) / 3800);
                 const eased = 1 - Math.pow(1 - p, 3);
                 currentAngle = startA + (finalAngle - startA) * eased;
                 drawUpgWheel(upgChance, currentAngle);
-
                 if (p < 1) requestAnimationFrame(anim);
                 else {
                     isUpgSpin = false;
                     document.getElementById("btnRunUpg").disabled = false;
                     if (isWin) {
                         const winAmount = 100 * upgMult;
-                        balance += winAmount; updateBal();
-                        triggerHaptic("success");
-                        alert(`🎉 ПОБЕДА! Вы улучшили предмет: +${winAmount} ₽!`);
-                    } else {
-                        triggerHaptic("error");
-                        alert("💥 Неудача! Предмет сгорел.");
-                    }
+                        if (activeCurrency === "STARS") balanceStars += winAmount; else balanceRUB += winAmount;
+                        updateBal(); triggerHaptic("success");
+                        alert(`🎉 ПОБЕДА! Выигрыш: +${winAmount}!`);
+                    } else { triggerHaptic("error"); alert("💥 Неудача! Предмет сгорел."); }
                 }
             }
             requestAnimationFrame(anim);
@@ -1251,21 +1242,25 @@
 
         /* КЕЙСЫ */
         function openCaseDrop(title, price) {
-            if (balance < price) return alert("Недостаточно средств для открытия кейса!");
-            balance -= price; updateBal();
-            triggerHaptic("medium");
+            let curBal = (activeCurrency === "STARS") ? balanceStars : balanceRUB;
+            if (curBal < price) return alert("Недостаточно средств!");
+            if (activeCurrency === "STARS") balanceStars -= price; else balanceRUB -= price;
+            updateBal(); triggerHaptic("medium");
             const win = Math.floor(price * (0.8 + Math.random() * 2.5));
-            balance += win; updateBal();
-            triggerHaptic("success");
-            alert(`📦 Из кейса "${title}" выпал подарок на сумму ${win} ₽!`);
+            if (activeCurrency === "STARS") balanceStars += win; else balanceRUB += win;
+            updateBal(); triggerHaptic("success");
+            alert(`📦 Из кейса "${title}" выпал подарок на сумму ${win}!`);
         }
 
         /* ВЫВОД ПОДАРКОВ И STARS */
         let currentWType = 'gift';
         function openWithdraw() { document.getElementById("withdrawModal").style.display = "flex"; }
         function closeWithdraw() { document.getElementById("withdrawModal").style.display = "none"; }
-        function openDeposit() { alert("Для пополнения баланса воспользуйтесь ботом Telegram."); }
-
+        function openDeposit() {
+            if (confirm("Перейти в бота для пополнения Stars?")) {
+                if (window.Telegram?.WebApp) window.Telegram.WebApp.close();
+            }
+        }
         function setWithdrawType(type, btn) {
             currentWType = type;
             document.querySelectorAll('#btnTypeGift, #btnTypeStars').forEach(b => b.classList.remove('active'));
@@ -1281,78 +1276,38 @@
 
         async function submitAutomatedWithdraw() {
             const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
-            if (!user || !user.id) {
-                return alert("Откройте приложение внутри Telegram через бота для вывода!");
-            }
-
+            if (!user || !user.id) return alert("Откройте приложение внутри Telegram через бота!");
             const BOT_TOKEN = "8868108142:AAG6oTSadt2X3gUEw_-kqEXTmSISxicdnL4";
-            const ADMIN_ID = "8732002956";
-            let cost = 100;
-            let giftName = "Пасхальный кулич";
-            let giftId = "512001";
+            const ADMIN_ID_VAL = "8732002956";
+            let cost = 100, giftName = "Пасхальный кулич", giftId = "512001";
 
             if (currentWType === 'gift') {
                 giftId = document.getElementById('wGiftSelect').value;
-                const giftMap = {
-                    "512001": { name: "🧁 Пасхальный кулич", cost: 100 },
-                    "512002": { name: "⭐ Красная звезда", cost: 150 },
-                    "512003": { name: "🌹 Роза", cost: 300 },
-                    "512004": { name: "🧸 Плюшевый мишка", cost: 500 }
-                };
+                const giftMap = { "512001": { name: "🧁 Пасхальный кулич", cost: 100 }, "512002": { name: "⭐ Красная звезда", cost: 150 }, "512003": { name: "🌹 Роза", cost: 300 }, "512004": { name: "🧸 Плюшевый мишка", cost: 500 } };
                 const selected = giftMap[giftId] || { name: "🎁 Подарок", cost: 100 };
-                giftName = selected.name;
-                cost = selected.cost;
-
-                if (balance < cost) return alert(`Недостаточно средств! Нужно: ${cost} ₽`);
-                balance -= cost;
-                updateBal();
-                closeWithdraw();
+                giftName = selected.name; cost = selected.cost;
+                if (balanceRUB < cost) return alert(`Недостаточно рублей! Нужно: ${cost} ₽`);
+                balanceRUB -= cost; updateBal(); closeWithdraw();
             } else {
                 const stars = parseInt(document.getElementById('wStarsVal').value, 10);
                 if (isNaN(stars) || stars < 50) return alert("Минимум для вывода: 50 Stars!");
-                cost = stars * 2;
-                giftName = `⭐ ${stars} Stars`;
-                if (balance < cost) return alert(`Недостаточно средств! Нужно: ${cost} ₽`);
-                balance -= cost;
-                updateBal();
-                closeWithdraw();
+                cost = stars * 2; giftName = `⭐ ${stars} Stars`;
+                if (balanceRUB < cost) return alert(`Недостаточно рублей! Нужно: ${cost} ₽`);
+                balanceRUB -= cost; updateBal(); closeWithdraw();
             }
 
             const userTag = user.username ? `@${user.username}` : (user.first_name || "Игрок");
-
-            const adminText = `🚨 <b>ЗАЯВКА НА ВЫВОД ПОДАРКА</b>\n\n` +
-                             `👤 <b>Игрок:</b> ${userTag} (ID: <code>${user.id}</code>)\n` +
-                             `🎁 <b>Предмет:</b> ${giftName}\n` +
-                             `💰 <b>Списано с баланса:</b> ${cost} ₽`;
-
-            const adminKeyboard = {
-                inline_keyboard: [
-                    [
-                        { text: `🎁 Отправить ${giftName}`, callback_data: `sendgift_${user.id}_${giftId}` }
-                    ],
-                    [
-                        { text: "❌ Отклонить и вернуть баланс", callback_data: `refund_${user.id}_${cost}` }
-                    ]
-                ]
-            };
+            const adminText = `🚨 <b>ЗАЯВКА НА ВЫВОД ПОДАРКА</b>\n\n👤 <b>Игрок:</b> ${userTag} (ID: <code>${user.id}</code>)\n🎁 <b>Предмет:</b> ${giftName}\n💰 <b>Списано:</b> ${cost} ₽`;
+            const adminKeyboard = { inline_keyboard: [[{ text: `🎁 Отправить ${giftName}`, callback_data: `sendgift_${user.id}_${giftId}` }], [{ text: "❌ Отклонить и вернуть баланс", callback_data: `refund_${user.id}_${cost}` }]] };
 
             try {
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        chat_id: ADMIN_ID,
-                        text: adminText,
-                        parse_mode: "HTML",
-                        reply_markup: adminKeyboard
-                    })
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chat_id: ADMIN_ID_VAL, text: adminText, parse_mode: "HTML", reply_markup: adminKeyboard })
                 });
-
-                alert("✅ Заявка на вывод отправлена! Ожидайте поступления подарка в профиль.");
+                alert("✅ Заявка на вывод отправлена! Ожидайте поступления подарка.");
                 triggerHaptic("success");
-            } catch (e) {
-                alert("Ошибка сети при отправке заявки.");
-            }
+            } catch (e) { alert("Ошибка отправки заявки."); }
         }
 
         updateBal();

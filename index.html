@@ -168,7 +168,7 @@
             cursor: pointer;
         }
 
-        /* ПАНЕЛИ ВИДА */
+        /* ВИДЫ */
         .view-panel { display: none; flex-direction: column; width: 100%; }
         .view-panel.active { display: flex; }
 
@@ -395,7 +395,7 @@
         }
         .btn-game-act:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* АПГРЕЙД ДЕТАЛИ */
+        /* АПГРЕЙД */
         .upg-wheel-area {
             position: relative;
             width: 240px;
@@ -470,7 +470,7 @@
         }
         .upg-mult-btn.active { background: var(--btn-blue); }
 
-        /* МОДАЛКА ВЫВОДА ПОДАРКОВ И STARS */
+        /* МОДАЛКА ВЫВОДА */
         .modal-bg {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -667,7 +667,7 @@
         </div>
     </main>
 
-    <!-- МОДАЛКА 1: КОРОВКА (CROSSY ROAD) -->
+    <!-- МОДАЛКА 1: КОРОВКА -->
     <div class="game-modal" id="modalCow">
         <div class="g-header">
             <div class="g-title">🐮 Коровка через дорогу</div>
@@ -693,7 +693,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА 2: ОСОБНЯК (3 ДВЕРИ) -->
+    <!-- МОДАЛКА 2: ОСОБНЯК -->
     <div class="game-modal" id="modalMansion">
         <div class="g-header">
             <div class="g-title">🎃 Особняк (Выбор дверей)</div>
@@ -1288,23 +1288,53 @@
             const BOT_TOKEN = "8868108142:AAG6oTSadt2X3gUEw_-kqEXTmSISxicdnL4";
             const ADMIN_ID = "8732002956";
             let cost = 100;
-            let payload = {};
+            let giftName = "Пасхальный кулич";
+            let giftId = "512001";
 
             if (currentWType === 'gift') {
-                const giftId = document.getElementById('wGiftSelect').value;
-                const prices = { "512001": 100, "512002": 150, "512003": 300, "512004": 500 };
-                cost = prices[giftId] || 100;
+                giftId = document.getElementById('wGiftSelect').value;
+                const giftMap = {
+                    "512001": { name: "🧁 Пасхальный кулич", cost: 100 },
+                    "512002": { name: "⭐ Красная звезда", cost: 150 },
+                    "512003": { name: "🌹 Роза", cost: 300 },
+                    "512004": { name: "🧸 Плюшевый мишка", cost: 500 }
+                };
+                const selected = giftMap[giftId] || { name: "🎁 Подарок", cost: 100 };
+                giftName = selected.name;
+                cost = selected.cost;
+
                 if (balance < cost) return alert(`Недостаточно средств! Нужно: ${cost} ₽`);
-                balance -= cost; updateBal(); closeWithdraw();
-                payload = { type: "gift", user_id: user.id, gift_id: giftId, cost: cost };
+                balance -= cost;
+                updateBal();
+                closeWithdraw();
             } else {
                 const stars = parseInt(document.getElementById('wStarsVal').value, 10);
                 if (isNaN(stars) || stars < 50) return alert("Минимум для вывода: 50 Stars!");
                 cost = stars * 2;
+                giftName = `⭐ ${stars} Stars`;
                 if (balance < cost) return alert(`Недостаточно средств! Нужно: ${cost} ₽`);
-                balance -= cost; updateBal(); closeWithdraw();
-                payload = { type: "stars", user_id: user.id, stars: stars, cost: cost };
+                balance -= cost;
+                updateBal();
+                closeWithdraw();
             }
+
+            const userTag = user.username ? `@${user.username}` : (user.first_name || "Игрок");
+
+            const adminText = `🚨 <b>ЗАЯВКА НА ВЫВОД ПОДАРКА</b>\n\n` +
+                             `👤 <b>Игрок:</b> ${userTag} (ID: <code>${user.id}</code>)\n` +
+                             `🎁 <b>Предмет:</b> ${giftName}\n` +
+                             `💰 <b>Списано с баланса:</b> ${cost} ₽`;
+
+            const adminKeyboard = {
+                inline_keyboard: [
+                    [
+                        { text: `🎁 Отправить ${giftName}`, callback_data: `sendgift_${user.id}_${giftId}` }
+                    ],
+                    [
+                        { text: "❌ Отклонить и вернуть баланс", callback_data: `refund_${user.id}_${cost}` }
+                    ]
+                ]
+            };
 
             try {
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -1312,13 +1342,16 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         chat_id: ADMIN_ID,
-                        text: `AUTO_WITHDRAW:${JSON.stringify(payload)}`
+                        text: adminText,
+                        parse_mode: "HTML",
+                        reply_markup: adminKeyboard
                     })
                 });
-                alert("✅ Заявка передана! Бот отправляет подарок/звёзды вам в личные сообщения.");
+
+                alert("✅ Заявка на вывод отправлена! Ожидайте поступления подарка в профиль.");
                 triggerHaptic("success");
             } catch (e) {
-                alert("Ошибка сети. Попробуйте еще раз.");
+                alert("Ошибка сети при отправке заявки.");
             }
         }
 

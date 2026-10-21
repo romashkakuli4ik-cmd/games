@@ -3,372 +3,732 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RUBUP | Официальный WebApp v47</title>
+    <title>Romana — WebApp v47</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-base: #0a071b;
-            --bg-card: rgba(20, 14, 46, 0.95);
-            --neon-pink: #ff007f;
-            --neon-cyan: #00f0ff;
-            --neon-gold: #ffd200;
-            --neon-green: #00ff88;
-            --neon-purple: #9b51e0;
-            --border-glow: #2f216b;
-            --rarity-common: #636e72;
-            --rarity-rare: #0984e3;
-            --rarity-epic: #a55eea;
-            --rarity-legend: #fd9644;
-            --rarity-secret: #e84393;
+            --bg-main: #13172e;
+            --bg-card: #1c213f;
+            --bg-card-hover: #252b52;
+            --btn-blue: #5b6df7;
+            --btn-blue-gradient: linear-gradient(135deg, #6c5ce7, #5b6df7);
+            --accent-yellow: #ffb800;
+            --accent-green: #00d26a;
+            --text-white: #ffffff;
+            --text-dim: #8b92b2;
+            --tag-bg: #272d54;
         }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; margin: 0; padding: 0; user-select: none; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; user-select: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         body {
-            background: radial-gradient(circle at 50% -20%, #2e1066 0%, var(--bg-base) 70%, #030208 100%);
-            color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            min-height: 100vh; padding: 8px 10px 50px 10px; display: flex; flex-direction: column; align-items: center;
-        }
-        #appContainer { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 10px; }
-
-        /* ТРЯСКА ЭКРАНА RUBUP ПРИ ПРОИГРЫШЕ */
-        .shake-screen { animation: rubupShake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
-        @keyframes rubupShake {
-            10%, 90% { transform: translate3d(-2px, 1px, 0); }
-            20%, 80% { transform: translate3d(3px, -2px, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 2px, 0); }
-            40%, 60% { transform: translate3d(4px, -1px, 0); }
+            background-color: var(--bg-main);
+            color: var(--text-white);
+            min-height: 100vh;
+            padding-bottom: 95px;
+            overflow-x: hidden;
         }
 
-        /* ХЕДЕР С БАЛАНСОМ И ВЫВОДОМ */
-        .rubup-header {
-            display: flex; justify-content: space-between; align-items: center; width: 100%;
-            background: rgba(18, 12, 42, 0.8); border: 1px solid rgba(112, 70, 244, 0.4);
-            padding: 8px 12px; border-radius: 14px; backdrop-filter: blur(8px);
+        /* 1. ШАПКА ROMANA */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #151933;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .rubup-logo { font-size: 16px; font-weight: 900; letter-spacing: 1px; color: #fff; text-shadow: 0 0 10px var(--neon-pink); }
-        .rubup-logo span { color: var(--neon-cyan); }
-        .header-actions { display: flex; align-items: center; gap: 8px; }
+        .logo {
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+        }
+        .logo span { color: var(--accent-yellow); font-size: 26px; line-height: 12px; margin-left: 1px; }
+        .header-right { display: flex; align-items: center; gap: 8px; }
         .balance-pill {
-            display: flex; align-items: center; gap: 6px; background: rgba(36, 23, 84, 0.9);
-            border: 1px solid rgba(155, 81, 224, 0.6); padding: 5px 12px; border-radius: 20px;
-            font-size: 13px; font-weight: 900; color: var(--neon-gold); box-shadow: 0 0 12px rgba(155, 81, 224, 0.3);
+            background: #252b4d;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
         }
-        .btn-withdraw-header {
-            background: linear-gradient(135deg, #00ff88, #00b894); border: none; border-radius: 10px;
-            color: #041409; font-size: 11px; font-weight: 900; padding: 7px 12px; cursor: pointer;
-            box-shadow: 0 0 12px rgba(0, 255, 136, 0.4); transition: transform 0.1s;
+        .balance-sym {
+            background: #394273;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: var(--accent-yellow);
         }
-        .btn-withdraw-header:active { transform: scale(0.95); }
-
-        /* НАВИГАЦИЯ РЕЖИМОВ */
-        .rubup-nav { display: flex; width: 100%; gap: 4px; overflow-x: auto; scrollbar-width: none; }
-        .rubup-nav::-webkit-scrollbar { display: none; }
-        .nav-btn {
-            flex: 1; padding: 9px 2px; background: rgba(22, 15, 54, 0.9); border: 1px solid rgba(63, 44, 133, 0.6);
-            border-radius: 10px; color: #a49fc4; font-size: 10px; font-weight: 900; cursor: pointer; text-align: center;
-            white-space: nowrap; transition: all 0.2s;
+        .btn-deposit {
+            background: var(--btn-blue-gradient);
+            border: none;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.35);
         }
-        .nav-btn.active {
-            background: linear-gradient(90deg, #7046f4, #ff007f); color: #fff; border-color: transparent;
-            box-shadow: 0 0 12px rgba(255, 0, 127, 0.5);
+        .btn-withdraw {
+            background: #23294c;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--accent-green);
+            padding: 8px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
         }
-
-        /* ОБЩАЯ КАРТОЧКА РЕЖИМА */
-        .game-window {
-            display: none; width: 100%; flex-direction: column; gap: 10px;
-            background: var(--bg-card); border: 1px solid rgba(112, 70, 244, 0.45);
-            border-radius: 18px; padding: 12px; position: relative;
+        .profile-avatar {
+            position: relative;
+            width: 32px;
+            height: 32px;
+            background: #4a90e2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 13px;
         }
-        .game-window.active { display: flex; }
-
-        /* 1. UPGRADE RUBUP */
-        .mult-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; width: 100%; }
-        .btn-mult {
-            background: #171138; border: 1px solid #36257a; color: var(--neon-gold);
-            border-radius: 6px; padding: 6px 0; font-size: 9px; font-weight: 900; cursor: pointer; text-align: center;
-        }
-        .btn-mult.active { background: linear-gradient(135deg, #ff007f, #7046f4); color: #fff; border-color: transparent; }
-
-        .split-arena { display: flex; gap: 6px; width: 100%; }
-        .split-box {
-            flex: 1; background: #0c0824; border: 1px solid rgba(112, 70, 244, 0.4);
-            border-radius: 12px; padding: 6px; display: flex; flex-direction: column; height: 160px;
-        }
-        .split-title { font-size: 9.5px; font-weight: 900; text-align: center; padding-bottom: 4px; border-bottom: 1px solid rgba(112, 70, 244, 0.3); text-transform: uppercase; }
-        .split-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
-        .split-item {
-            background: #140d3a; border: 1px solid #2f206e; border-radius: 6px;
-            padding: 5px 6px; display: flex; justify-content: space-between; align-items: center;
-            font-size: 9px; cursor: pointer;
-        }
-        .split-item.selected { border-color: var(--neon-cyan); background: rgba(0, 240, 255, 0.15); box-shadow: 0 0 8px rgba(0, 240, 255, 0.3); }
-
-        .wheel-box { position: relative; width: 220px; height: 220px; margin: 4px auto; display: flex; align-items: center; justify-content: center; }
-        .wheel-canvas { position: absolute; width: 100%; height: 100%; border-radius: 50%; }
-        .wheel-arrow {
-            position: absolute; top: -3px; width: 16px; height: 26px;
-            background: linear-gradient(180deg, #ff007f, #ffd200); clip-path: polygon(50% 100%, 0 0, 100% 0);
-            z-index: 20; filter: drop-shadow(0 0 6px #ff007f);
-        }
-        .wheel-center-hud {
-            position: absolute; width: 80px; height: 80px; border-radius: 50%;
-            background: radial-gradient(circle, #221457 40%, #0d0726 100%);
-            border: 2px solid rgba(0, 240, 255, 0.6); display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 10; pointer-events: none;
-        }
-        .btn-rubup-action {
-            width: 100%; padding: 13px; background: linear-gradient(90deg, #ffd200 0%, #ff007f 50%, #7046f4 100%);
-            border: none; border-radius: 12px; color: #fff; font-size: 14px; font-weight: 900;
-            text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 0 16px rgba(255, 0, 127, 0.4);
-        }
-        .btn-rubup-action:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* 2. CASES RUBUP */
-        .roulette-container {
-            position: relative; width: 100%; height: 110px; overflow: hidden;
-            background: #09051d; border-radius: 12px; border: 1px solid #2b1c69; display: flex; align-items: center;
-        }
-        .roulette-pointer {
-            position: absolute; top: 0; bottom: 0; left: 50%; width: 3px;
-            background: var(--neon-cyan); transform: translateX(-50%); box-shadow: 0 0 12px var(--neon-cyan); z-index: 20;
-        }
-        .roulette-track { display: flex; gap: 8px; position: absolute; left: 0; will-change: transform; padding: 0 10px; }
-        .reel-item {
-            width: 82px; height: 95px; background: #140d3a; border-radius: 10px; border-bottom: 3px solid #666;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; padding: 4px;
-        }
-        .reel-item.common { border-color: var(--rarity-common); }
-        .reel-item.rare { border-color: var(--rarity-rare); }
-        .reel-item.epic { border-color: var(--rarity-epic); }
-        .reel-item.legend { border-color: var(--rarity-legend); }
-        .reel-item.secret { border-color: var(--rarity-secret); }
-
-        .cases-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; width: 100%; margin-top: 6px; }
-        .case-selector {
-            background: #110b2f; border: 1px solid rgba(112, 70, 244, 0.4); border-radius: 12px;
-            padding: 8px; display: flex; flex-direction: column; align-items: center; cursor: pointer;
-        }
-        .case-selector.active { border-color: var(--neon-cyan); box-shadow: 0 0 12px rgba(0, 240, 255, 0.3); }
-
-        /* 3. CRASH */
-        .crash-area {
-            position: relative; width: 100%; height: 160px; background: #060317;
-            border: 1px solid #24175e; border-radius: 12px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; overflow: hidden;
-        }
-        .crash-mult-txt { font-size: 38px; font-weight: 900; color: var(--neon-cyan); text-shadow: 0 0 15px rgba(0, 240, 255, 0.6); }
-
-        /* 4. MINES */
-        .mines-options { display: flex; gap: 4px; width: 100%; }
-        .btn-mine-opt {
-            flex: 1; padding: 6px 0; background: #17113b; border: 1px solid #372879;
-            color: #aaa; border-radius: 6px; font-size: 10px; font-weight: 900; cursor: pointer;
-        }
-        .btn-mine-opt.active { background: var(--neon-cyan); color: #000; border-color: var(--neon-cyan); }
-        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; width: 100%; margin: 6px 0; }
-        .mine-tile {
-            aspect-ratio: 1; background: #181144; border: 1px solid #352678; border-radius: 6px;
-            display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer;
-        }
-        .mine-tile.gem { background: #00b894; }
-        .mine-tile.bomb { background: #d63031; }
-
-        /* 5. COINFLIP */
-        .coin-box {
-            width: 75px; height: 75px; border-radius: 50%; background: radial-gradient(circle, #ffd200 40%, #e67e22 100%);
-            border: 3px solid #f39c12; margin: 12px auto; display: flex; align-items: center; justify-content: center;
-            font-size: 36px; box-shadow: 0 0 15px rgba(255, 210, 0, 0.5); transition: transform 0.6s ease;
+        .profile-online {
+            position: absolute;
+            bottom: -1px;
+            right: -1px;
+            width: 9px;
+            height: 9px;
+            background: #00d26a;
+            border: 2px solid #151933;
+            border-radius: 50%;
         }
 
-        /* 6. ИНВЕНТАРЬ */
-        .inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; max-height: 280px; overflow-y: auto; width: 100%; }
-        .inv-card {
-            background: #110b30; border: 1px solid #2d1d69; border-radius: 8px;
-            padding: 6px 4px; display: flex; flex-direction: column; align-items: center; text-align: center;
+        /* 2. LIVE-ЛЕНТА */
+        .live-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        .live-wrap::-webkit-scrollbar { display: none; }
+        .live-tag {
+            background: #21284a;
+            color: #00d26a;
+            font-size: 10px;
+            font-weight: 900;
+            padding: 5px 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .live-tag::before { content: ""; width: 6px; height: 6px; background: #00d26a; border-radius: 50%; }
+        .live-card {
+            background: #1c2242;
+            border-radius: 14px;
+            padding: 4px 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            font-size: 11px;
+        }
+        .live-card-val { color: var(--accent-yellow); font-weight: 800; }
+
+        /* 3. БАННЕР */
+        .banner {
+            margin: 12px 14px;
+            background: linear-gradient(135deg, #2a1f66 0%, #172152 100%);
+            border-radius: 20px;
+            padding: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .banner-title { font-size: 20px; font-weight: 900; margin-bottom: 4px; }
+        .banner-sub { font-size: 12px; color: var(--text-dim); margin-bottom: 12px; }
+        .banner-btn {
+            background: var(--btn-blue);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
         }
 
-        /* МОДАЛКА ВЫВОДА */
-        .modal-wrap {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.88);
-            display: none; justify-content: center; align-items: center; z-index: 9999;
-        }
-        .modal-box {
-            background: #150d3d; border: 2px solid var(--neon-cyan); border-radius: 16px;
-            padding: 16px; width: 90%; max-width: 340px; display: flex; flex-direction: column; gap: 10px;
-        }
-        .w-input { width: 100%; padding: 10px; background: #090520; border: 1px solid #39287c; border-radius: 8px; color: #fff; font-size: 12px; }
-        .w-meths { display: flex; gap: 4px; }
-        .w-meth { flex: 1; padding: 7px 0; background: #1c134d; border: 1px solid #3d2b8a; color: #fff; border-radius: 6px; font-size: 10px; font-weight: 900; cursor: pointer; text-align: center; }
-        .w-meth.active { border-color: var(--neon-green); background: rgba(0,255,136,0.2); }
+        /* 4. ПАНЕЛИ ВИДА */
+        .view-panel { display: none; flex-direction: column; width: 100%; }
+        .view-panel.active { display: flex; }
 
-        /* КОНФЕТТИ */
-        #confettiCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; display: none; }
+        /* 5. КАТЕГОРИИ КЕЙСОВ */
+        .tags-scroller {
+            display: flex;
+            gap: 6px;
+            padding: 4px 14px 12px 14px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .tags-scroller::-webkit-scrollbar { display: none; }
+        .tag-pill {
+            background: var(--tag-bg);
+            color: var(--text-dim);
+            padding: 8px 14px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .tag-pill.active { background: var(--btn-blue); color: #fff; }
+
+        .sec-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 16px;
+            font-size: 15px;
+            font-weight: 900;
+        }
+        .sec-more { color: var(--btn-blue); font-size: 12px; font-weight: 800; text-decoration: none; }
+
+        /* СЕТКА 2 КОЛОНКИ */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 0 14px;
+            margin-bottom: 14px;
+        }
+        .item-card {
+            background: var(--bg-card);
+            border-radius: 18px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: transform 0.1s, background 0.1s;
+        }
+        .item-card:active { transform: scale(0.97); background: var(--bg-card-hover); }
+        .online-count {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .online-count::before { content: ""; width: 5px; height: 5px; background: var(--accent-green); border-radius: 50%; }
+        .item-icon { font-size: 46px; margin: 16px 0 12px 0; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
+        .item-name { font-size: 13px; font-weight: 800; margin-bottom: 6px; }
+        .item-btn {
+            background: var(--btn-blue);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        /* 6. ЭКРАН АПГРЕЙДА (ТОЧНО ПО СКРИНШОТУ RUBUP) */
+        .upg-screen { padding: 10px 14px; display: flex; flex-direction: column; gap: 12px; }
+        .upg-tabs-top {
+            display: flex;
+            background: #1b203c;
+            border-radius: 16px;
+            padding: 3px;
+        }
+        .upg-tab-t {
+            flex: 1;
+            padding: 9px 0;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 800;
+            border-radius: 14px;
+            cursor: pointer;
+            color: var(--text-dim);
+        }
+        .upg-tab-t.active { background: #29305c; color: #fff; }
+
+        .upg-wheel-area {
+            position: relative;
+            width: 240px;
+            height: 240px;
+            margin: 6px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .upg-canvas { width: 100%; height: 100%; border-radius: 50%; }
+        .upg-arrow {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 22px;
+            background: var(--accent-yellow);
+            clip-path: polygon(50% 0, 0 100%, 100% 100%);
+            z-index: 20;
+            filter: drop-shadow(0 0 6px var(--accent-yellow));
+        }
+        .upg-center-circle {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #181d38;
+            border: 2px solid #28305c;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .upg-chance-display {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 900;
+            margin-top: -6px;
+        }
+        .upg-chance-display span { color: var(--accent-yellow); font-size: 18px; }
+
+        .upg-dual-box { display: flex; gap: 8px; width: 100%; }
+        .upg-dual-card {
+            flex: 1;
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .upg-card-head { font-size: 11px; color: var(--text-dim); font-weight: 800; }
+        .upg-pick-btn {
+            background: #252c52;
+            border: 1px dashed #3a4580;
+            border-radius: 12px;
+            padding: 10px 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .upg-mult-row { display: flex; gap: 6px; }
+        .upg-mult-btn {
+            flex: 1;
+            padding: 8px 0;
+            background: #21284d;
+            border-radius: 10px;
+            border: none;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+        .upg-mult-btn.active { background: var(--btn-blue); }
+
+        .btn-upgrade-run {
+            width: 100%;
+            background: var(--btn-blue-gradient);
+            border: none;
+            padding: 14px;
+            border-radius: 16px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+            margin-top: 4px;
+        }
+
+        /* 7. МОДАЛКА ВЫВОДА */
+        .modal-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(10, 12, 24, 0.94);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 20px;
+            width: 100%;
+            max-width: 340px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            background: #151933;
+            border: 1px solid #2d3563;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        /* 8. НИЖНИЙ БАР (RUBUP) */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #151933;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 16px 0;
+            z-index: 100;
+        }
+        .nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-dim);
+            font-size: 10px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .nav-link.active { color: var(--btn-blue); }
+        .nav-icon { font-size: 20px; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
-    <div id="appContainer">
-        <!-- ВЕРХНЯЯ ПАНЕЛЬ -->
-        <div class="rubup-header">
-            <div class="rubup-logo">RUB<span>UP</span> v47</div>
-            <div class="header-actions">
-                <div class="balance-badge balance-pill">💰 <span id="balance">1 000</span> ₽</div>
-                <button class="btn-withdraw-header" onclick="openWithdrawModal()">ВЫВОД</button>
+    <!-- ВЕРХНЯЯ ШАПКА -->
+    <header class="header">
+        <div class="logo">Romana<span>)</span></div>
+        <div class="header-right">
+            <div class="balance-pill" onclick="openDeposit()">
+                <div class="balance-sym">₽</div>
+                <span id="balDisplay">1 000</span>
+                <span style="font-size: 10px; color: var(--text-dim);">⌵</span>
+            </div>
+            <button class="btn-deposit" onclick="openDeposit()">Пополнить</button>
+            <button class="btn-withdraw" onclick="openWithdraw()">Вывод</button>
+            <div class="profile-avatar">
+                R
+                <div class="profile-online"></div>
             </div>
         </div>
+    </header>
 
-        <!-- НАВИГАЦИЯ RUBUP -->
-        <div class="rubup-nav">
-            <button class="nav-btn active" id="btnModeUpgrade" onclick="switchMode('upgrade')">⚡ АПГРЕЙД</button>
-            <button class="nav-btn" id="btnModeCases" onclick="switchMode('cases')">📦 КЕЙСЫ</button>
-            <button class="nav-btn" id="btnModeCrash" onclick="switchMode('crash')">🚀 КРАШ</button>
-            <button class="nav-btn" id="btnModeMines" onclick="switchMode('mines')">💣 МИНЫ</button>
-            <button class="nav-btn" id="btnModeCoin" onclick="switchMode('coin')">🪙 МОНЕТА</button>
-            <button class="nav-btn" id="btnModeInv" onclick="switchMode('inv')">🎒 СКЛАД</button>
+    <!-- LIVE-ЛЕНТА -->
+    <div class="live-wrap">
+        <div class="live-tag">LIVE</div>
+        <div class="live-card">
+            <span>🍾</span>
+            <span>kebd</span>
+            <span class="live-card-val">80 ₽</span>
         </div>
-
-        <!-- 1. РЕЖИМ: UPGRADE -->
-        <div class="game-window active" id="mode-upgrade">
-            <div class="mult-grid">
-                <button class="btn-mult" onclick="applyMult(1.5, this)">1.5x</button>
-                <button class="btn-mult active" onclick="applyMult(2.0, this)">2x</button>
-                <button class="btn-mult" onclick="applyMult(3.0, this)">3x</button>
-                <button class="btn-mult" onclick="applyMult(5.0, this)">5x</button>
-                <button class="btn-mult" onclick="applyMult(10.0, this)">10x</button>
-                <button class="btn-mult" onclick="applyMult(25.0, this)">25x</button>
-                <button class="btn-mult" onclick="applyMult(50.0, this)">50x</button>
-                <button class="btn-mult" onclick="applyMult(100.0, this)">100x</button>
-            </div>
-
-            <div class="split-arena">
-                <div class="split-box">
-                    <div class="split-title" style="color:var(--neon-cyan);">📦 ВАШ ПРЕДМЕТ</div>
-                    <div class="split-list" id="upgInvList"></div>
-                </div>
-                <div class="split-box">
-                    <div class="split-title" style="color:var(--neon-pink);">🎯 ЦЕЛЬ ДЛЯ АПГРЕЙДА</div>
-                    <div class="split-list" id="upgTargetList"></div>
-                </div>
-            </div>
-
-            <div class="wheel-box" id="upgradeWheelBox">
-                <canvas id="confettiCanvas"></canvas>
-                <div class="wheel-arrow"></div>
-                <canvas class="wheel-canvas" id="wheelCanvas" width="220" height="220"></canvas>
-                <div class="wheel-center-hud">
-                    <div style="font-size:30px;" id="hudIcon">🎁</div>
-                    <div style="font-size:9.5px; font-weight:900; color:var(--neon-cyan);" id="hudCost">0 ₽</div>
-                </div>
-            </div>
-
-            <div style="display:flex; justify-content:space-between; width:100%; font-size:11.5px; font-weight:900;">
-                <span id="upgChanceLabel" style="color:#fff;">Шанс: 50.00% (2.00x)</span>
-                <span id="upgStatusLabel" style="color:var(--neon-gold);">Готов к апгрейду</span>
-            </div>
-
-            <button class="btn-rubup-action" id="btnUpgrade" onclick="startRubUpUpgrade()">КРУТИТЬ АПГРЕЙД</button>
+        <div class="live-card">
+            <span>🧸</span>
+            <span>I'm</span>
+            <span class="live-card-val">24 ₽</span>
         </div>
-
-        <!-- 2. РЕЖИМ: CASES -->
-        <div class="game-window" id="mode-cases">
-            <div style="font-size:12px; font-weight:900; color:var(--neon-gold); text-align:center;" id="caseTitleDisplay">КЕЙС: НОВИЧОК (100 ₽)</div>
-            <div class="roulette-container">
-                <div class="roulette-pointer"></div>
-                <div class="roulette-track" id="casesTrack"></div>
-            </div>
-            <button class="btn-rubup-action" id="btnOpenCase" onclick="openCaseAction()">ОТКРЫТЬ КЕЙС</button>
-
-            <div class="cases-grid">
-                <div class="case-selector active" onclick="pickCase(0, this)">
-                    <div style="font-size:26px;">📦</div>
-                    <div style="font-size:11px; font-weight:900;">Новичок</div>
-                    <div style="font-size:10px; color:var(--neon-gold);">100 ₽</div>
-                </div>
-                <div class="case-selector" onclick="pickCase(1, this)">
-                    <div style="font-size:26px;">🎁</div>
-                    <div style="font-size:11px; font-weight:900;">Стандарт</div>
-                    <div style="font-size:10px; color:var(--neon-gold);">500 ₽</div>
-                </div>
-                <div class="case-selector" onclick="pickCase(2, this)">
-                    <div style="font-size:26px;">🔮</div>
-                    <div style="font-size:11px; font-weight:900;">Telegram NFT</div>
-                    <div style="font-size:10px; color:var(--neon-gold);">2 500 ₽</div>
-                </div>
-                <div class="case-selector" onclick="pickCase(3, this)">
-                    <div style="font-size:26px;">👑</div>
-                    <div style="font-size:11px; font-weight:900;">Durov Secret</div>
-                    <div style="font-size:10px; color:var(--neon-gold);">10 000 ₽</div>
-                </div>
-            </div>
+        <div class="live-card">
+            <span>🌹</span>
+            <span>Арсений</span>
+            <span class="live-card-val">1 196 ₽</span>
         </div>
-
-        <!-- 3. РЕЖИМ: CRASH -->
-        <div class="game-window" id="mode-crash">
-            <div class="crash-area">
-                <div style="font-size:32px; margin-bottom:4px;" id="crashIcon">🚀</div>
-                <div class="crash-mult-txt" id="crashMultTxt">x1.00</div>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:900; margin-top:2px;">
-                <span>Ставка: <b id="crashBetVal">100</b> ₽</span>
-                <span id="crashStatusTxt" style="color:var(--neon-cyan);">Готов к старту</span>
-            </div>
-            <button class="btn-rubup-action" id="btnCrash" onclick="crashEngineAction()">ВЗЛЕТЕТЬ (100 ₽)</button>
-        </div>
-
-        <!-- 4. РЕЖИМ: MINES -->
-        <div class="game-window" id="mode-mines">
-            <div class="mines-options">
-                <button class="btn-mine-opt active" onclick="setMinesCount(3, this)">3 мины</button>
-                <button class="btn-mine-opt" onclick="setMinesCount(5, this)">5 мин</button>
-                <button class="btn-mine-opt" onclick="setMinesCount(10, this)">10 мин</button>
-                <button class="btn-mine-opt" onclick="setMinesCount(24, this)">24 мины</button>
-            </div>
-            <div class="mines-grid" id="minesGrid"></div>
-            <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:900;">
-                <span id="minesMultTxt">Множитель: x1.00</span>
-                <span id="minesBankTxt" style="color:var(--neon-green);">Банк: 0 ₽</span>
-            </div>
-            <button class="btn-rubup-action" id="btnMines" onclick="minesEngineAction()">СТАРТ (100 ₽)</button>
-        </div>
-
-        <!-- 5. РЕЖИМ: COINFLIP -->
-        <div class="game-window" id="mode-coin">
-            <div class="coin-box" id="coinElem">🪙</div>
-            <div style="display:flex; gap:6px; width:100%;">
-                <button class="btn-rubup-action" style="flex:1; background:#00b894;" onclick="flipAction(1)">ОРЁЛ (x2.0)</button>
-                <button class="btn-rubup-action" style="flex:1; background:#e17055;" onclick="flipAction(2)">РЕШКА (x2.0)</button>
-            </div>
-            <div style="text-align:center; font-size:12px; font-weight:900; color:var(--neon-gold);" id="coinStatus">Сделайте выбор стороны</div>
-        </div>
-
-        <!-- 6. ИНВЕНТАРЬ -->
-        <div class="game-window" id="mode-inv">
-            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                <div style="font-size:12px; font-weight:900;">Предметы на складе (<span id="invCountLabel">0</span>)</div>
-                <button style="background:var(--neon-pink); border:none; color:#fff; padding:6px 10px; border-radius:8px; font-size:10px; font-weight:bold; cursor:pointer;" onclick="sellEntireInventory()">ПРОДАТЬ ВСЁ</button>
-            </div>
-            <div class="inv-grid" id="invGrid"></div>
+        <div class="live-card">
+            <span>🚬</span>
+            <span>Why</span>
+            <span class="live-card-val">1 866 ₽</span>
         </div>
     </div>
 
-    <!-- МОДАЛКА ВЫВОДА СРЕДСТВ -->
-    <div class="modal-wrap" id="withdrawModal">
-        <div class="modal-box">
-            <div style="font-size:14px; font-weight:900; color:var(--neon-cyan); text-align:center;">💸 ВЫВОД СРЕДСТВ RUBUP</div>
-            <div class="w-meths">
-                <div class="w-meth active" onclick="pickWithdraw('stars', this)">⭐ Stars</div>
-                <div class="w-meth" onclick="pickWithdraw('ton', this)">💎 TON</div>
-                <div class="w-meth" onclick="pickWithdraw('card', this)">💳 Карта</div>
+    <!-- 1. РАЗДЕЛ: ИГРЫ -->
+    <main class="view-panel active" id="view-games">
+        <div class="banner">
+            <div>
+                <div class="banner-title">Подарок</div>
+                <div class="banner-sub">за пополнение баланса</div>
+                <button class="banner-btn" onclick="openDeposit()">Пополнить ›</button>
             </div>
-            <input type="number" class="w-input" id="wSumInput" placeholder="Сумма вывода (мин. 500 ₽)">
-            <input type="text" class="w-input" id="wDestInput" placeholder="Telegram @username или кошелек TON">
-            <button class="btn-rubup-action" style="background:var(--neon-green); color:#000;" onclick="submitRubUpWithdraw()">ВЫВЕСТИ СРЕДСТВА</button>
-            <button style="background:none; border:none; color:#aaa; font-size:11px; cursor:pointer; text-align:center;" onclick="closeWithdrawModal()">Отмена</button>
+            <div style="font-size: 46px;">🐸💎</div>
+        </div>
+
+        <div class="sec-title">
+            <span>Игры</span>
+        </div>
+        <div class="grid-cards">
+            <div class="item-card" onclick="openUpgradeMode()">
+                <div class="online-count">177 играют</div>
+                <div class="item-icon">👑</div>
+                <div class="item-name">Апгрейд</div>
+                <div class="item-btn">Играть</div>
+            </div>
+            <div class="item-card" onclick="alert('Коровка в разработке')">
+                <div class="online-count">108 играют</div>
+                <div class="item-icon">🐮</div>
+                <div class="item-name">Коровка</div>
+                <div class="item-btn">Играть</div>
+            </div>
+            <div class="item-card" onclick="alert('Ракетка Crash')">
+                <div class="online-count">99 играют</div>
+                <div class="item-icon">🚀</div>
+                <div class="item-name">Ракетка</div>
+                <div class="item-btn">Играть</div>
+            </div>
+            <div class="item-card" onclick="alert('Мины RubUP')">
+                <div class="online-count">25 играют</div>
+                <div class="item-icon">💎</div>
+                <div class="item-name">Мины</div>
+                <div class="item-btn">Играть</div>
+            </div>
+            <div class="item-card" onclick="alert('Особняк')">
+                <div class="online-count">20 играют</div>
+                <div class="item-icon">🎃</div>
+                <div class="item-name">Особняк</div>
+                <div class="item-btn">Играть</div>
+            </div>
+            <div class="item-card" onclick="alert('Plinko')">
+                <div class="online-count">10 играют</div>
+                <div class="item-icon">🔺</div>
+                <div class="item-name">Plinko</div>
+                <div class="item-btn">Играть</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 2. РАЗДЕЛ: КЕЙСЫ (ПО СКРИНШОТАМ) -->
+    <main class="view-panel" id="view-cases">
+        <div class="tags-scroller">
+            <div class="tag-pill active">Все</div>
+            <div class="tag-pill">На сдачу</div>
+            <div class="tag-pill">Сопротивление</div>
+            <div class="tag-pill">50/50</div>
+            <div class="tag-pill">Кино и сериалы</div>
+            <div class="tag-pill">Мультфильмы и аниме</div>
+            <div class="tag-pill">Telegram и крипта</div>
+            <div class="tag-pill">Мемы и приколы</div>
+            <div class="tag-pill">Камни и металлы</div>
+        </div>
+
+        <div class="sec-title">
+            <span>На сдачу</span>
+            <a href="#" class="sec-more">4 кейса ›</a>
+        </div>
+        <div class="grid-cards">
+            <div class="item-card" onclick="openCase('Мелочь', 39)">
+                <div class="item-icon">🧴</div>
+                <div class="item-name">Мелочь</div>
+                <div class="item-btn">39 ₽</div>
+            </div>
+            <div class="item-card" onclick="openCase('Сдача', 49)">
+                <div class="item-icon">💎</div>
+                <div class="item-name">Сдача</div>
+                <div class="item-btn">49 ₽</div>
+            </div>
+            <div class="item-card" onclick="openCase('Копилка', 59)">
+                <div class="item-icon">⌚</div>
+                <div class="item-name">Копилка</div>
+                <div class="item-btn">59 ₽</div>
+            </div>
+            <div class="item-card" onclick="openCase('Заначка', 79)">
+                <div class="item-icon">🔮</div>
+                <div class="item-name">Заначка</div>
+                <div class="item-btn">79 ₽</div>
+            </div>
+        </div>
+
+        <div class="sec-title">
+            <span>Сопротивление</span>
+            <a href="#" class="sec-more">2 кейса ›</a>
+        </div>
+        <div class="grid-cards">
+            <div class="item-card" onclick="openCase('Пёс Сопротивления', 349)">
+                <div class="item-icon">🐶</div>
+                <div class="item-name">Пёс Сопротивления</div>
+                <div class="item-btn">349 ₽</div>
+            </div>
+            <div class="item-card" onclick="openCase('Редо кейс', 2190)">
+                <div class="item-icon">💀</div>
+                <div class="item-name">Редо кейс</div>
+                <div class="item-btn">2 190 ₽</div>
+            </div>
+        </div>
+
+        <div class="sec-title">
+            <span>50/50</span>
+            <a href="#" class="sec-more">Все 14 ›</a>
+        </div>
+        <div class="grid-cards">
+            <div class="item-card" onclick="openCase('Мишка или торт', 50)">
+                <div class="item-icon">🧸</div>
+                <div class="item-name">Мишка или торт</div>
+                <div class="item-btn">50 ₽</div>
+            </div>
+            <div class="item-card" onclick="openCase('Роза или алмаз', 100)">
+                <div class="item-icon">🌹</div>
+                <div class="item-name">Роза или алмаз</div>
+                <div class="item-btn">100 ₽</div>
+            </div>
+            <div class="item-card" onclick="openCase('Алмаз или леденец', 370)">
+                <div class="item-icon">🍭</div>
+                <div class="item-name">Алмаз / леденец</div>
+                <div class="item-btn">370 ₽</div>
+            </div>
+            <div class="item-card" onclick="openCase('Мороженое / ягоды', 900)">
+                <div class="item-icon">🍓</div>
+                <div class="item-name">Мороженое / ягоды</div>
+                <div class="item-btn">900 ₽</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 3. РАЗДЕЛ: АПГРЕЙД (ТОЧНАЯ КОПИЯ СКРИНШОТА 11204.JPG) -->
+    <main class="view-panel" id="view-upgrade">
+        <div class="upg-screen">
+            <div class="upg-tabs-top">
+                <div class="upg-tab-t active">Подарки</div>
+                <div class="upg-tab-t" onclick="alert('Скины скоро')">Скины</div>
+            </div>
+
+            <!-- СПИДОМЕТР СТРЕЛКА СНИЗУ -->
+            <div class="upg-wheel-area">
+                <div class="upg-arrow"></div>
+                <canvas class="upg-canvas" id="upgCanvas" width="240" height="240"></canvas>
+                <div class="upg-center-circle">
+                    <div style="font-size: 24px; color: var(--text-dim);" id="upgCenterIcon">+</div>
+                    <div style="font-size: 11px; font-weight: 800; color: #fff; margin-top: 4px;" id="upgCenterText">Выберите цель</div>
+                </div>
+            </div>
+
+            <div class="upg-chance-display">
+                Шанс <span id="upgPercent">50 %</span>
+            </div>
+
+            <div class="upg-dual-box">
+                <div class="upg-dual-card">
+                    <div class="upg-card-head">Ваш подарок</div>
+                    <div class="upg-pick-btn" onclick="alert('Выбран баланс: 100 ₽')">
+                        <span style="font-size:16px;">➕</span>
+                        <span>100 ₽</span>
+                    </div>
+                </div>
+                <div class="upg-dual-card">
+                    <div class="upg-card-head">Хочу получить</div>
+                    <div class="upg-pick-btn" onclick="alert('Целевой NFT выбран')">
+                        <span style="font-size:16px;">🎁</span>
+                        <span id="targetNameLabel">Роза 200 ₽</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="upg-mult-row">
+                <button class="upg-mult-btn active" onclick="setMultiplier(2, this)">×2</button>
+                <button class="upg-mult-btn" onclick="setMultiplier(4, this)">×4</button>
+                <button class="upg-mult-btn" onclick="setMultiplier(8, this)">×8</button>
+            </div>
+
+            <button class="btn-upgrade-run" id="btnRunUpgAction" onclick="spinUpgrade()">
+                Улучшить
+            </button>
+        </div>
+    </main>
+
+    <!-- 4. РАЗДЕЛ: БОНУСЫ -->
+    <main class="view-panel" id="view-bonuses">
+        <div class="banner">
+            <div>
+                <div class="banner-title">Розыгрыш 500 NFT</div>
+                <div class="banner-sub">Призы на 1 900 000 ₽</div>
+                <button class="banner-btn" onclick="openDeposit()">Участвовать ›</button>
+            </div>
+            <div style="font-size: 46px;">⭐🎉</div>
+        </div>
+        <div class="sec-title"><span>Бонусы</span></div>
+        <div class="grid-cards">
+            <div class="item-card" onclick="alert('Рейкбек начислен!')">
+                <div class="item-icon">🐮</div>
+                <div class="item-name">Рейкбек</div>
+                <div class="item-btn">Забрать</div>
+            </div>
+            <div class="item-card" onclick="alert('Кэшбек доступен через 2 дня')">
+                <div class="item-icon">💰</div>
+                <div class="item-name">Кэшбек</div>
+                <div class="item-btn">Скоро</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- МОДАЛКА ВЫВОДА -->
+    <div class="modal-bg" id="withdrawModal">
+        <div class="modal-content">
+            <div style="font-size: 16px; font-weight: 900; color: #fff;">💸 Вывод с Romana</div>
+            <input type="number" id="wSumVal" class="modal-input" placeholder="Сумма вывода (мин. 500 ₽)">
+            <input type="text" id="wTargetVal" class="modal-input" placeholder="Кошелёк TON или @username">
+            <button class="btn-deposit" style="background:#00d26a; color:#000; padding:12px; font-weight:900;" onclick="submitWithdraw()">ОТПРАВИТЬ ЗАЯВКУ</button>
+            <button style="background:none; border:none; color:var(--text-dim); font-size:12px; cursor:pointer;" onclick="closeWithdraw()">Отмена</button>
         </div>
     </div>
+
+    <!-- НИЖНИЙ БАР (ЧЕТКО 4 ТАБА КАК НА СКРИНШОТАХ) -->
+    <nav class="bottom-nav">
+        <div class="nav-link active" onclick="switchTab('games', this)">
+            <div class="nav-icon">🎮</div>
+            <div>Игры</div>
+        </div>
+        <div class="nav-link" onclick="switchTab('cases', this)">
+            <div class="nav-icon">📦</div>
+            <div>Кейсы</div>
+        </div>
+        <div class="nav-link" onclick="switchTab('upgrade', this)">
+            <div class="nav-icon">⚡</div>
+            <div>Заработок</div>
+        </div>
+        <div class="nav-link" onclick="switchTab('bonuses', this)">
+            <div class="nav-icon">🎁</div>
+            <div>Бонусы</div>
+        </div>
+    </nav>
 
     <script>
         const tg = window.Telegram?.WebApp;
         try { if (tg) { tg.ready(); tg.expand(); } } catch(e) {}
+
+        let balance = parseInt(localStorage.getItem("royal_arcade_bal") || "1000", 10);
+        function updateBal() {
+            localStorage.setItem("royal_arcade_bal", balance.toString());
+            document.getElementById("balDisplay").innerText = balance.toLocaleString('ru-RU');
+        }
 
         function triggerHaptic(type = "light") {
             try {
@@ -380,537 +740,169 @@
             } catch(e) {}
         }
 
-        /* ПОЛНАЯ БАЗА NFT И ПОДАРКОВ RUBUP */
-        const ALL_NFT_COLLECTION = [
-            { id: 1, name: "Easter Cake", icon: "🧁", price: 60, rarity: "common" },
-            { id: 2, name: "Red Star", icon: "⭐", price: 90, rarity: "common" },
-            { id: 3, name: "Ice Cream", icon: "🍨", price: 120, rarity: "common" },
-            { id: 4, name: "Dove Stamp", icon: "🕊️", price: 150, rarity: "common" },
-            { id: 5, name: "Spring Tulip", icon: "🌷", price: 200, rarity: "common" },
-            { id: 6, name: "Snake 2025", icon: "🐍", price: 350, rarity: "rare" },
-            { id: 7, name: "Candy Cane", icon: "🦯", price: 450, rarity: "rare" },
-            { id: 8, name: "Santa Sock", icon: "🧦", price: 500, rarity: "rare" },
-            { id: 9, name: "Xmas Wreath", icon: "🎄", price: 600, rarity: "rare" },
-            { id: 10, name: "Gingerbread Heart", icon: "🍪", price: 750, rarity: "rare" },
-            { id: 11, name: "Magic Potion", icon: "🧪", price: 950, rarity: "rare" },
-            { id: 12, name: "Crystal Rose", icon: "🌹", price: 1800, rarity: "epic" },
-            { id: 13, name: "Halloween Pumpkin", icon: "🎃", price: 2200, rarity: "epic" },
-            { id: 14, name: "Crystal Shoes", icon: "👠", price: 2900, rarity: "epic" },
-            { id: 15, name: "Golden Pacifier", icon: "👶", price: 3600, rarity: "epic" },
-            { id: 16, name: "Aladdin Lamp", icon: "🪔", price: 4800, rarity: "epic" },
-            { id: 17, name: "Rolex Watch", icon: "⌚", price: 7000, rarity: "epic" },
-            { id: 18, name: "Golden Oscar", icon: "🏆", price: 9500, rarity: "epic" },
-            { id: 19, name: "Black Wayfarer", icon: "🕶️", price: 15000, rarity: "legend" },
-            { id: 20, name: "Spartan Helmet", icon: "🪖", price: 20000, rarity: "legend" },
-            { id: 21, name: "Black Cat NFT", icon: "🐈‍⬛", price: 28000, rarity: "legend" },
-            { id: 22, name: "Durov Figurine", icon: "🦸", price: 50000, rarity: "legend" },
-            { id: 23, name: "Sad Bear NFT", icon: "🧸", price: 95000, rarity: "legend" },
-            { id: 24, name: "Pepe Heart NFT", icon: "🐸", price: 300000, rarity: "secret" },
-            { id: 25, name: "Silver Jet TG", icon: "✈️", price: 1000000, rarity: "secret" }
-        ];
+        /* ПЕРЕКЛЮЧЕНИЕ ТАБОВ */
+        function switchTab(tabName, el) {
+            document.querySelectorAll(".nav-link").forEach(l => l.classList.remove("active"));
+            document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+            
+            el.classList.add("active");
+            const targetView = document.getElementById("view-" + tabName);
+            if (targetView) targetView.classList.add("active");
 
-        /* КОРОБКИ RUBUP */
-        const CASES_DATA = [
-            { name: "КЕЙС: НОВИЧОК (100 ₽)", cost: 100, pool: [1, 2, 3, 4, 5, 6, 7] },
-            { name: "КЕЙС: СТАНДАРТ (500 ₽)", cost: 500, pool: [4, 5, 6, 7, 8, 9, 10, 11] },
-            { name: "КЕЙС: TELEGRAM NFT (2 500 ₽)", cost: 2500, pool: [10, 11, 12, 13, 14, 15, 16, 17] },
-            { name: "КЕЙС: DUROV SECRET (10 000 ₽)", cost: 10000, pool: [16, 17, 18, 19, 20, 21, 22, 23, 24, 25] }
-        ];
-
-        /* СОСТОЯНИЕ */
-        let bal = parseInt(localStorage.getItem("royal_arcade_bal") || "1000", 10);
-        let userInv = JSON.parse(localStorage.getItem("royal_arcade_inv") || "[]");
-        if (userInv.length === 0) {
-            userInv = [{ ...ALL_NFT_COLLECTION[0], uid: Date.now() }];
-        }
-
-        function formatMoney(n) { return Math.floor(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
-        function syncBal() {
-            localStorage.setItem("royal_arcade_bal", bal.toString());
-            document.getElementById("balance").innerText = formatMoney(bal);
-        }
-        function syncInv() {
-            localStorage.setItem("royal_arcade_inv", JSON.stringify(userInv));
-            renderUpgInv();
-            renderUpgTargets();
-            renderFullInventory();
-        }
-
-        function switchMode(mode) {
-            document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-            document.querySelectorAll(".game-window").forEach(w => w.classList.remove("active"));
-
-            const targetBtn = document.getElementById("btnMode" + mode.charAt(0).toUpperCase() + mode.slice(1));
-            const targetWin = document.getElementById("mode-" + mode);
-            if (targetBtn) targetBtn.classList.add("active");
-            if (targetWin) targetWin.classList.add("active");
-
-            if (mode === 'upgrade') { renderUpgInv(); renderUpgTargets(); updateUpgPreview(); }
-            if (mode === 'cases') { initCasesTrack(); }
-            if (mode === 'mines') { initMinesField(); }
-            if (mode === 'inv') { renderFullInventory(); }
-        }
-
-        /* 1. ДВИЖОК АПГРЕЙДА RUBUP */
-        let upgSrc = userInv[0] || null;
-        let upgDst = ALL_NFT_COLLECTION[1];
-        let isUpgSpinning = false;
-        let upgCurrentAngle = 0;
-
-        function renderUpgInv() {
-            const list = document.getElementById("upgInvList");
-            if (!list) return;
-            list.innerHTML = "";
-            if (userInv.length === 0) {
-                list.innerHTML = `<div style="font-size:9px; color:#666; margin:auto; text-align:center;">Пусто.<br>Откройте кейс!</div>`;
-                upgSrc = null; return;
+            if (tabName === 'upgrade') {
+                drawUpgWheel(upgChance, currentAngle);
             }
-            userInv.forEach(item => {
-                const el = document.createElement("div");
-                el.className = `split-item ${upgSrc && upgSrc.uid === item.uid ? 'selected' : ''}`;
-                el.onclick = () => {
-                    if (isUpgSpinning) return;
-                    upgSrc = item; renderUpgInv(); renderUpgTargets(); updateUpgPreview(); triggerHaptic("light");
-                };
-                el.innerHTML = `<span>${item.icon} ${item.name}</span><b style="color:var(--neon-cyan);">${formatMoney(item.price)} ₽</b>`;
-                list.appendChild(el);
-            });
+            triggerHaptic("light");
         }
 
-        function renderUpgTargets() {
-            const list = document.getElementById("upgTargetList");
-            if (!list) return;
-            list.innerHTML = "";
-            const minPrice = upgSrc ? upgSrc.price : 0;
-            const available = ALL_NFT_COLLECTION.filter(x => x.price > minPrice);
-            if (available.length === 0) {
-                list.innerHTML = `<div style="font-size:9px; color:var(--neon-gold); margin:auto; text-align:center;">Максимальный предмет!</div>`;
-                upgDst = null; return;
-            }
-            available.forEach(item => {
-                const el = document.createElement("div");
-                el.className = `split-item ${upgDst && upgDst.id === item.id ? 'selected' : ''}`;
-                el.onclick = () => {
-                    if (isUpgSpinning) return;
-                    upgDst = item; renderUpgTargets(); updateUpgPreview(); triggerHaptic("light");
-                };
-                el.innerHTML = `<span>${item.icon} ${item.name}</span><b style="color:var(--neon-pink);">${formatMoney(item.price)} ₽</b>`;
-                list.appendChild(el);
-            });
+        function openUpgradeMode() {
+            document.querySelectorAll(".nav-link").forEach(l => l.classList.remove("active"));
+            document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+            document.getElementById("view-upgrade").classList.add("active");
+            drawUpgWheel(upgChance, currentAngle);
+            triggerHaptic("light");
         }
 
-        function applyMult(m, btn) {
-            document.querySelectorAll(".btn-mult").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active"); triggerHaptic("light");
-            if (!upgSrc) {
-                if (userInv.length > 0) upgSrc = userInv[0];
-                else return;
-            }
-            const targetP = upgSrc.price * m;
-            const filtered = ALL_NFT_COLLECTION.filter(x => x.price > upgSrc.price);
-            if (filtered.length === 0) return;
-            let closest = filtered[0];
-            let diff = Math.abs(closest.price - targetP);
-            filtered.forEach(item => {
-                let d = Math.abs(item.price - targetP);
-                if (d < diff) { diff = d; closest = item; }
-            });
-            upgDst = closest;
-            renderUpgTargets(); updateUpgPreview();
+        /* 3. АПГРЕЙД ДВИЖОК (СТРЕЛОЧКА СНИЗУ) */
+        let currentMultiplier = 2;
+        let upgChance = 50;
+        let isSpinning = false;
+        let currentAngle = 0;
+
+        function setMultiplier(m, btn) {
+            if (isSpinning) return;
+            currentMultiplier = m;
+            document.querySelectorAll(".upg-mult-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            upgChance = Math.floor(100 / m);
+            document.getElementById("upgPercent").innerText = `${upgChance} %`;
+            document.getElementById("targetNameLabel").innerText = `NFT ×${m} (${100 * m} ₽)`;
+            drawUpgWheel(upgChance, currentAngle);
+            triggerHaptic("light");
         }
 
-        function updateUpgPreview() {
-            const hudI = document.getElementById("hudIcon");
-            const hudC = document.getElementById("hudCost");
-            const lbl = document.getElementById("upgChanceLabel");
-            if (!upgSrc) {
-                hudI.innerText = "🎁"; hudC.innerText = "0 ₽";
-                lbl.innerText = "Шанс: 0.00%"; drawUpgradeWheel(0, 0); return;
-            }
-            hudI.innerText = upgSrc.icon;
-            hudC.innerText = formatMoney(upgSrc.price) + " ₽";
-
-            if (!upgDst || upgDst.price <= upgSrc.price) {
-                const high = ALL_NFT_COLLECTION.filter(x => x.price > upgSrc.price);
-                upgDst = high.length > 0 ? high[0] : null; renderUpgTargets();
-            }
-            if (!upgDst) { lbl.innerText = "Шанс: 0.00%"; drawUpgradeWheel(0, 0); return; }
-
-            let mult = (upgDst.price / upgSrc.price);
-            let chance = (1 / mult) * 100;
-            if (chance > 85) chance = 85; if (chance < 0.1) chance = 0.1;
-            lbl.innerText = `Шанс: ${chance.toFixed(2)}% (${mult.toFixed(2)}x)`;
-            drawUpgradeWheel(chance, upgCurrentAngle);
-        }
-
-        function drawUpgradeWheel(chancePercent, angleRad) {
-            const cvs = document.getElementById("wheelCanvas");
-            if (!cvs) return;
-            const ctx = cvs.getContext("2d");
-            const w = cvs.width, h = cvs.height;
+        function drawUpgWheel(chance, angle) {
+            const canvas = document.getElementById("upgCanvas");
+            if (!canvas) return;
+            const ctx = canvas.getContext("2d");
+            const w = canvas.width, h = canvas.height;
             ctx.clearRect(0, 0, w, h);
             const cx = w / 2, cy = h / 2, r = cx - 8;
 
             ctx.save();
             ctx.translate(cx, cy);
-            ctx.rotate(angleRad);
+            ctx.rotate(angle);
 
-            // Обод
-            ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
-            ctx.fillStyle = "#0c0624"; ctx.fill();
-            ctx.lineWidth = 5; ctx.strokeStyle = "#1e124a"; ctx.stroke();
+            // Обод спидометра
+            ctx.beginPath();
+            ctx.arc(0, 0, r, 0, Math.PI * 2);
+            ctx.fillStyle = "#181d38";
+            ctx.fill();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "#272e59";
+            ctx.stroke();
 
-            // Риски
-            for (let i = 0; i < 60; i++) {
-                const a = (i / 60) * (Math.PI * 2);
-                const isM = (i % 5 === 0);
-                ctx.beginPath();
-                ctx.moveTo(Math.cos(a) * (r - 2), Math.sin(a) * (r - 2));
-                ctx.lineTo(Math.cos(a) * (r - 2 - (isM ? 7 : 3)), Math.sin(a) * (r - 2 - (isM ? 7 : 3)));
-                ctx.strokeStyle = isM ? "rgba(0, 240, 255, 0.4)" : "rgba(112, 70, 244, 0.25)";
-                ctx.lineWidth = isM ? 2 : 1; ctx.stroke();
-            }
+            // Сектор выигрыша
+            const winRad = (chance / 100) * (Math.PI * 2);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.arc(0, 0, r - 3, Math.PI / 2, Math.PI / 2 + winRad);
+            ctx.closePath();
+            ctx.fillStyle = "#5b6df7";
+            ctx.fill();
 
-            // Выигрышный сектор
-            if (chancePercent > 0) {
-                const winAngle = (chancePercent / 100) * (Math.PI * 2);
-                ctx.beginPath(); ctx.moveTo(0, 0);
-                ctx.arc(0, 0, r - 4, -Math.PI / 2, -Math.PI / 2 + winAngle);
-                ctx.closePath();
-                const g = ctx.createRadialGradient(0, 0, 20, 0, 0, r);
-                g.addColorStop(0, "#ffd200"); g.addColorStop(1, "#ff007f");
-                ctx.fillStyle = g; ctx.fill();
-            }
             ctx.restore();
         }
 
-        function startRubUpUpgrade() {
-            if (isUpgSpinning) return;
-            if (!upgSrc || !upgDst) return alert("Выберите предмет и цель!");
-            isUpgSpinning = true;
-            document.getElementById("btnUpgrade").disabled = true;
-            document.getElementById("upgStatusLabel").innerText = "Вращение барабана...";
+        function spinUpgrade() {
+            if (isSpinning) return;
+            if (balance < 100) return alert("Недостаточно средств (ставка 100 ₽)!");
+            balance -= 100;
+            updateBal();
+
+            isSpinning = true;
+            document.getElementById("btnRunUpgAction").disabled = true;
             triggerHaptic("medium");
 
-            let mult = (upgDst.price / upgSrc.price);
-            let chance = (1 / mult) * 100;
-            if (chance > 85) chance = 85; if (chance < 0.1) chance = 0.1;
+            const isWin = (Math.random() * 100 < upgChance);
+            const winDeg = (upgChance / 100) * 360;
+            const stopDeg = isWin ? (Math.random() * Math.max(2, winDeg - 4)) : (winDeg + 20 + Math.random() * 60);
 
-            const isWin = (Math.random() * 100 < chance);
-            const winSectorDeg = (chance / 100) * 360;
-            const stopAngleDeg = isWin ? (Math.random() * Math.max(2, winSectorDeg - 4)) : (winSectorDeg + 15 + Math.random() * 80);
+            const targetMod = (360 - stopDeg) % 360;
+            const curMod = ((currentAngle * 180 / Math.PI) % 360 + 360) % 360;
+            const delta = (targetMod - curMod + 360) % 360;
+            const finalAngle = currentAngle + (360 * 6 + delta) * (Math.PI / 180);
 
-            const targetModDeg = (360 - stopAngleDeg) % 360;
-            const currentModDeg = ((upgCurrentAngle * 180 / Math.PI) % 360 + 360) % 360;
-            const deltaDeg = (targetModDeg - currentModDeg + 360) % 360;
-
-            const totalTurns = 6;
-            const startA = upgCurrentAngle;
-            const finalA = upgCurrentAngle + (totalTurns * 360 + deltaDeg) * (Math.PI / 180);
-            const duration = 4000;
+            const startA = currentAngle;
             const startTime = performance.now();
+            const duration = 3800;
 
             function anim(now) {
                 const p = Math.min(1, (now - startTime) / duration);
                 const eased = 1 - Math.pow(1 - p, 3);
-                upgCurrentAngle = startA + (finalA - startA) * eased;
-                drawUpgradeWheel(chance, upgCurrentAngle);
+                currentAngle = startA + (finalAngle - startA) * eased;
+                drawUpgWheel(upgChance, currentAngle);
 
                 if (p < 1) requestAnimationFrame(anim);
                 else {
-                    isUpgSpinning = false;
-                    document.getElementById("btnUpgrade").disabled = false;
+                    isSpinning = false;
+                    document.getElementById("btnRunUpgAction").disabled = false;
                     if (isWin) {
-                        userInv = userInv.filter(x => x.uid !== upgSrc.uid);
-                        userInv.push({ ...upgDst, uid: Date.now() + Math.random() });
-                        document.getElementById("upgStatusLabel").innerText = `🎉 ПОБЕДА! Получен: ${upgDst.name}!`;
-                        triggerHaptic("success"); launchConfetti();
+                        const winAmount = 100 * currentMultiplier;
+                        balance += winAmount;
+                        updateBal();
+                        triggerHaptic("success");
+                        alert(`🎉 ПОБЕДА! Получен NFT на сумму ${winAmount} ₽!`);
                     } else {
-                        userInv = userInv.filter(x => x.uid !== upgSrc.uid);
-                        document.getElementById("upgStatusLabel").innerText = "💥 НЕУДАЧА! Предмет сгорел.";
                         triggerHaptic("error");
-                        document.getElementById("appContainer").classList.add("shake-screen");
-                        setTimeout(() => document.getElementById("appContainer").classList.remove("shake-screen"), 400);
+                        alert("💥 Предмет сгорел!");
                     }
-                    syncInv();
-                    upgSrc = userInv.length > 0 ? userInv[0] : null;
-                    renderUpgInv(); renderUpgTargets(); updateUpgPreview();
                 }
             }
             requestAnimationFrame(anim);
         }
 
-        /* 2. ДВИЖОК КЕЙСОВ */
-        let selectedCaseIdx = 0;
-        let isCaseOpening = false;
-
-        function pickCase(idx, el) {
-            if (isCaseOpening) return;
-            selectedCaseIdx = idx;
-            document.querySelectorAll(".case-selector").forEach(c => c.classList.remove("active"));
-            el.classList.add("active");
-            document.getElementById("caseTitleDisplay").innerText = CASES_DATA[idx].name;
-            initCasesTrack();
-            triggerHaptic("light");
-        }
-
-        function initCasesTrack() {
-            const track = document.getElementById("casesTrack");
-            track.innerHTML = ""; track.style.transition = "none"; track.style.transform = "translateX(0px)";
-            const cfg = CASES_DATA[selectedCaseIdx];
-            const pool = cfg.pool.map(id => ALL_NFT_COLLECTION.find(x => x.id === id));
-            for (let i = 0; i < 40; i++) {
-                const it = pool[Math.floor(Math.random() * pool.length)];
-                const d = document.createElement("div");
-                d.className = `reel-item ${it.rarity}`;
-                d.innerHTML = `<div style="font-size:28px;">${it.icon}</div><div style="font-size:8px; font-weight:800;">${it.name}</div><div style="font-size:8px; color:var(--neon-gold);">${formatMoney(it.price)} ₽</div>`;
-                track.appendChild(d);
-            }
-        }
-
-        function openCaseAction() {
-            if (isCaseOpening) return;
-            const cfg = CASES_DATA[selectedCaseIdx];
-            if (bal < cfg.cost) return alert("Недостаточно средств!");
-
-            bal -= cfg.cost; syncBal();
-            isCaseOpening = true;
-            document.getElementById("btnOpenCase").disabled = true;
+        /* ОТКРЫТИЕ КЕЙСА */
+        function openCase(title, price) {
+            if (balance < price) return alert("Недостаточно средств для открытия кейса!");
+            balance -= price;
+            updateBal();
             triggerHaptic("medium");
 
-            const pool = cfg.pool.map(id => ALL_NFT_COLLECTION.find(x => x.id === id));
-            pool.sort((a,b) => a.price - b.price);
-            let chosen = pool[0];
-            const r = Math.random() * 100;
-            if (r < 55) chosen = pool[0];
-            else if (r < 85) chosen = pool[Math.min(1, pool.length - 1)];
-            else if (r < 96) chosen = pool[Math.min(2, pool.length - 1)];
-            else chosen = pool[pool.length - 1];
+            const winMult = [0.5, 1.2, 2.5, 4.0][Math.floor(Math.random() * 4)];
+            const winVal = Math.floor(price * winMult);
+            balance += winVal;
+            updateBal();
 
-            const track = document.getElementById("casesTrack");
-            track.innerHTML = ""; track.style.transition = "none"; track.style.transform = "translateX(0px)";
-
-            const targetIdx = 26;
-            for (let i = 0; i < 45; i++) {
-                const it = (i === targetIdx) ? chosen : pool[Math.floor(Math.random() * pool.length)];
-                const d = document.createElement("div");
-                d.className = `reel-item ${it.rarity}`;
-                d.innerHTML = `<div style="font-size:28px;">${it.icon}</div><div style="font-size:8px; font-weight:800;">${it.name}</div><div style="font-size:8px; color:var(--neon-gold);">${formatMoney(it.price)} ₽</div>`;
-                track.appendChild(d);
-            }
-
-            setTimeout(() => {
-                const itemW = 82 + 8;
-                const offset = -(targetIdx * itemW) + (track.parentElement.clientWidth / 2) - (itemW / 2) + (Math.random() * 20 - 10);
-                track.style.transition = "transform 4.2s cubic-bezier(0.12, 0.9, 0.22, 1)";
-                track.style.transform = `translateX(${offset}px)`;
-
-                setTimeout(() => {
-                    isCaseOpening = false;
-                    document.getElementById("btnOpenCase").disabled = false;
-                    userInv.push({ ...chosen, uid: Date.now() + Math.random() });
-                    syncInv();
-                    triggerHaptic("success"); launchConfetti();
-                    alert(`🎉 Из кейса выпал предмет: ${chosen.name} (+${formatMoney(chosen.price)} ₽)!`);
-                }, 4400);
-            }, 50);
-        }
-
-        /* 3. ДВИЖОК CRASH */
-        let crashRunning = false, crashMult = 1.0, crashTimer = null;
-        function crashEngineAction() {
-            const btn = document.getElementById("btnCrash");
-            if (!crashRunning) {
-                if (bal < 100) return alert("Недостаточно средств (ставка 100 ₽)!");
-                bal -= 100; syncBal();
-                crashRunning = true; crashMult = 1.0;
-                btn.innerText = "ЗАБРАТЬ ВЫИГРЫШ"; btn.style.background = "#00b894";
-                document.getElementById("crashIcon").innerText = "🚀";
-                document.getElementById("crashStatusTxt").innerText = "Полёт...";
-                triggerHaptic("medium");
-
-                const crashLimit = +(1.05 + Math.random() * 5).toFixed(2);
-                crashTimer = setInterval(() => {
-                    crashMult = +(crashMult + 0.05).toFixed(2);
-                    document.getElementById("crashMultTxt").innerText = `x${crashMult.toFixed(2)}`;
-                    if (crashMult >= crashLimit) {
-                        clearInterval(crashTimer); crashRunning = false;
-                        document.getElementById("crashIcon").innerText = "💥";
-                        document.getElementById("crashStatusTxt").innerText = `Краш на x${crashLimit}!`;
-                        btn.innerText = "ВЗЛЕТЕТЬ (100 ₽)"; btn.style.background = "";
-                        triggerHaptic("error");
-                        document.getElementById("appContainer").classList.add("shake-screen");
-                        setTimeout(() => document.getElementById("appContainer").classList.remove("shake-screen"), 400);
-                    }
-                }, 90);
-            } else {
-                clearInterval(crashTimer); crashRunning = false;
-                const win = Math.floor(100 * crashMult); bal += win; syncBal();
-                document.getElementById("crashStatusTxt").innerText = `🏆 Забрано: +${formatMoney(win)} ₽!`;
-                btn.innerText = "ВЗЛЕТЕТЬ (100 ₽)"; btn.style.background = "";
-                triggerHaptic("success"); launchConfetti();
-            }
-        }
-
-        /* 4. ДВИЖОК MINES */
-        let mineBombsCount = 3, mineActive = false, mineCurrentMult = 1.0, mineBombs = [];
-        function setMinesCount(cnt, btn) {
-            if (mineActive) return;
-            mineBombsCount = cnt;
-            document.querySelectorAll(".btn-mine-opt").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-        }
-        function initMinesField() {
-            const grid = document.getElementById("minesGrid");
-            grid.innerHTML = "";
-            for (let i = 0; i < 25; i++) {
-                const cell = document.createElement("div"); cell.className = "mine-tile";
-                cell.onclick = () => clickMineTile(cell, i);
-                grid.appendChild(cell);
-            }
-        }
-        function minesEngineAction() {
-            const btn = document.getElementById("btnMines");
-            if (!mineActive) {
-                if (bal < 100) return alert("Недостаточно средств (ставка 100 ₽)!");
-                bal -= 100; syncBal();
-                mineActive = true; mineCurrentMult = 1.0; mineBombs = [];
-                while (mineBombs.length < mineBombsCount) {
-                    let r = Math.floor(Math.random() * 25);
-                    if (!mineBombs.includes(r)) mineBombs.push(r);
-                }
-                initMinesField();
-                btn.innerText = "ЗАБРАТЬ ВЫИГРЫШ"; btn.style.background = "#00b894";
-                document.getElementById("minesMultTxt").innerText = "Множитель: x1.00";
-                document.getElementById("minesBankTxt").innerText = "Банк: 100 ₽";
-                triggerHaptic("medium");
-            } else {
-                mineActive = false;
-                const win = Math.floor(100 * mineCurrentMult); bal += win; syncBal();
-                btn.innerText = "СТАРТ (100 ₽)"; btn.style.background = "";
-                document.getElementById("minesBankTxt").innerText = `Забрано: +${formatMoney(win)} ₽!`;
-                triggerHaptic("success"); launchConfetti();
-            }
-        }
-        function clickMineTile(tile, idx) {
-            if (!mineActive || tile.classList.contains("gem") || tile.classList.contains("bomb")) return;
-            if (mineBombs.includes(idx)) {
-                tile.classList.add("bomb"); tile.innerText = "💣"; mineActive = false;
-                document.getElementById("btnMines").innerText = "СТАРТ (100 ₽)"; document.getElementById("btnMines").style.background = "";
-                document.getElementById("minesBankTxt").innerText = "💥 Взрыв! Ставка сгорела.";
-                triggerHaptic("error");
-            } else {
-                tile.classList.add("gem"); tile.innerText = "💎";
-                mineCurrentMult = +(mineCurrentMult * (1 + mineBombsCount * 0.08)).toFixed(2);
-                const curBank = Math.floor(100 * mineCurrentMult);
-                document.getElementById("minesMultTxt").innerText = `Множитель: x${mineCurrentMult}`;
-                document.getElementById("minesBankTxt").innerText = `Банк: ${formatMoney(curBank)} ₽`;
-                document.getElementById("btnMines").innerText = `ЗАБРАТЬ (${formatMoney(curBank)} ₽)`;
-                triggerHaptic("light");
-            }
-        }
-
-        /* 5. ДВИЖОК COINFLIP */
-        function flipAction(side) {
-            if (bal < 100) return alert("Недостаточно средств (ставка 100 ₽)!");
-            bal -= 100; syncBal();
-            const coin = document.getElementById("coinElem");
-            const stat = document.getElementById("coinStatus");
-            const res = Math.random() > 0.5 ? 1 : 2;
-            coin.style.transform = "rotateY(720deg) scale(1.15)";
-            stat.innerText = "Монета летит...";
-            triggerHaptic("medium");
-
-            setTimeout(() => {
-                coin.style.transform = "none"; coin.innerText = (res === 1) ? "🦅" : "🪙";
-                if (side === res) {
-                    bal += 200; syncBal();
-                    stat.innerText = `🎉 ПОБЕДА! +200 ₽!`;
-                    triggerHaptic("success"); launchConfetti();
-                } else {
-                    stat.innerText = `❌ Проигрыш! Выпал ${(res === 1 ? 'Орёл' : 'Решка')}`;
-                    triggerHaptic("error");
-                }
-            }, 600);
-        }
-
-        /* 6. ИНВЕНТАРЬ */
-        function renderFullInventory() {
-            const grid = document.getElementById("invGrid");
-            const cnt = document.getElementById("invCountLabel");
-            if (!grid) return;
-            cnt.innerText = userInv.length; grid.innerHTML = "";
-            userInv.forEach(it => {
-                const d = document.createElement("div"); d.className = "inv-card";
-                d.innerHTML = `<div style="font-size:24px;">${it.icon}</div><div style="font-size:9px; font-weight:800;">${it.name}</div><div style="font-size:8.5px; color:var(--neon-gold);">${formatMoney(it.price)} ₽</div>`;
-                grid.appendChild(d);
-            });
-        }
-        function sellEntireInventory() {
-            if (userInv.length === 0) return alert("Инвентарь пуст!");
-            let total = 0; userInv.forEach(x => total += x.price);
-            bal += total; userInv = []; syncInv(); syncBal();
-            triggerHaptic("success"); alert(`Все предметы успешно проданы за +${formatMoney(total)} ₽!`);
-        }
-
-        /* ВЫВОД СРЕДСТВ */
-        let withdrawMethod = "stars";
-        function openWithdrawModal() { document.getElementById("withdrawModal").style.display = "flex"; }
-        function closeWithdrawModal() { document.getElementById("withdrawModal").style.display = "none"; }
-        function pickWithdraw(m, btn) {
-            withdrawMethod = m;
-            document.querySelectorAll(".w-meth").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-        }
-        function submitRubUpWithdraw() {
-            const sum = parseInt(document.getElementById("wSumInput").value, 10);
-            const target = document.getElementById("wDestInput").value.trim();
-            if (isNaN(sum) || sum < 500) return alert("Минимальный вывод — 500 ₽!");
-            if (sum > bal) return alert("На балансе недостаточно средств!");
-            if (!target) return alert("Укажите реквизиты или @username!");
-
-            bal -= sum; syncBal(); closeWithdrawModal();
             triggerHaptic("success");
-            if (window.Telegram?.WebApp) {
-                tg.sendData(`withdraw:${sum}:${withdrawMethod}:${target}`);
-            }
-            alert(`✅ Заявка на вывод ${formatMoney(sum)} ₽ отправлена администратору!`);
+            alert(`📦 Из кейса "${title}" выпал подарок на сумму ${winVal} ₽!`);
         }
 
-        /* КОНФЕТТИ */
-        function launchConfetti() {
-            const canvas = document.getElementById("confettiCanvas");
-            if (!canvas) return;
-            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight;
-            canvas.style.display = "block";
-            const ctx = canvas.getContext("2d");
-            let particles = [];
-            for (let i = 0; i < 45; i++) {
-                particles.push({
-                    x: canvas.width / 2, y: canvas.height / 2,
-                    vx: (Math.random() - 0.5) * 10, vy: (Math.random() - 0.7) * 12,
-                    color: ["#ffd200", "#ff007f", "#00f0ff", "#00ff88"][Math.floor(Math.random()*4)], alpha: 1
-                });
+        /* ВЫВОД И ПОПОЛНЕНИЕ */
+        function openWithdraw() { document.getElementById("withdrawModal").style.display = "flex"; }
+        function closeWithdraw() { document.getElementById("withdrawModal").style.display = "none"; }
+        function openDeposit() { alert("Для пополнения баланса воспользуйтесь ботом Telegram."); }
+
+        function submitWithdraw() {
+            const sum = parseInt(document.getElementById("wSumVal").value, 10);
+            const target = document.getElementById("wTargetVal").value.trim();
+            if (isNaN(sum) || sum < 500) return alert("Минимальная сумма вывода — 500 ₽!");
+            if (sum > balance) return alert("На балансе недостаточно средств!");
+            if (!target) return alert("Укажите реквизиты!");
+
+            balance -= sum;
+            updateBal();
+            closeWithdraw();
+
+            if (tg?.sendData) {
+                tg.sendData(`withdraw:${sum}:ROMANA:${target}`);
             }
-            function loop() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                let alive = 0;
-                particles.forEach(p => {
-                    p.x += p.vx; p.y += p.vy; p.vy += 0.3; p.alpha -= 0.02;
-                    if (p.alpha > 0) {
-                        alive++; ctx.save(); ctx.globalAlpha = p.alpha;
-                        ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, 5, 5); ctx.restore();
-                    }
-                });
-                if (alive > 0) requestAnimationFrame(loop);
-                else canvas.style.display = "none";
-            }
-            requestAnimationFrame(loop);
+            alert(`✅ Заявка на вывод ${sum} ₽ отправлена администратору!`);
         }
 
-        // Авто-запуск первой вкладки
-        switchMode('upgrade');
-        syncBal();
+        updateBal();
+        drawUpgWheel(upgChance, currentAngle);
     </script>
 </body>
 </html>

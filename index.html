@@ -226,7 +226,7 @@
             font-weight: 900;
         }
 
-        /* ПОЛНОЭКРАННЫЕ ИГРОВЫЕ ОКНА */
+        /* ИГРОВЫЕ МОДАЛЬНЫЕ ОКНА */
         .game-modal {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -256,7 +256,7 @@
             cursor: pointer;
         }
 
-        /* 1. ИГРА: КОРОВКА (CROSSY ROAD) */
+        /* 1. КОРОВКА (CROSSY ROAD) */
         .cow-road-box {
             position: relative;
             width: 100%;
@@ -279,13 +279,8 @@
             align-items: center;
             overflow: hidden;
         }
-        .lane.grass {
-            background: #19442b;
-            border-bottom: 1px solid #23633e;
-        }
-        .lane.road {
-            background: #1b1e2e;
-        }
+        .lane.grass { background: #19442b; border-bottom: 1px solid #23633e; }
+        .lane.road { background: #1b1e2e; }
         .cow-character {
             position: absolute;
             left: 20px;
@@ -300,12 +295,8 @@
             will-change: transform;
         }
 
-        /* 2. ИГРА: ОСОБНЯК (3 ДВЕРИ) */
-        .mansion-diff-row {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 12px;
-        }
+        /* 2. ОСОБНЯК */
+        .mansion-diff-row { display: flex; gap: 6px; margin-bottom: 12px; }
         .m-diff-btn {
             flex: 1;
             padding: 8px 0;
@@ -347,7 +338,7 @@
         .door-result { font-size: 42px; display: none; }
         .door-num { font-size: 12px; font-weight: 900; color: var(--accent-yellow); margin-top: 6px; }
 
-        /* 3. ИГРА: РАКЕТКА (CRASH) */
+        /* 3. РАКЕТКА (CRASH) */
         .crash-canvas-box {
             position: relative;
             width: 100%;
@@ -369,7 +360,7 @@
             z-index: 10;
         }
 
-        /* 4. ИГРА: PLINKO */
+        /* 4. PLINKO */
         .plinko-box {
             position: relative;
             width: 100%;
@@ -380,7 +371,7 @@
             overflow: hidden;
         }
 
-        /* ОБЩИЕ ЭЛЕМЕНТЫ УПРАВЛЕНИЯ В ИГРАХ */
+        /* ОБЩИЕ ЭЛЕМЕНТЫ */
         .bet-control-bar {
             display: flex;
             justify-content: space-between;
@@ -405,7 +396,7 @@
         }
         .btn-game-act:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* ЭКРАН АПГРЕЙДА (ПО СКРИНШОТУ 11204) */
+        /* АПГРЕЙД ДЕТАЛИ */
         .upg-wheel-area {
             position: relative;
             width: 240px;
@@ -443,7 +434,6 @@
         }
         .upg-chance-display { text-align: center; font-size: 16px; font-weight: 900; margin-top: -6px; }
         .upg-chance-display span { color: var(--accent-yellow); font-size: 18px; }
-
         .upg-dual-box { display: flex; gap: 8px; width: 100%; }
         .upg-dual-card {
             flex: 1;
@@ -678,8 +668,6 @@
         </div>
     </main>
 
-    <!-- ================= ПОЛНОЦЕННЫЕ ИГРОВЫЕ МОДАЛКИ ================= -->
-
     <!-- МОДАЛКА 1: КОРОВКА (CROSSY ROAD) -->
     <div class="game-modal" id="modalCow">
         <div class="g-header">
@@ -837,9 +825,7 @@
             if (id === 'modalCrash' && crashActive) stopCrashFly(false);
         }
 
-        /* ----------------------------------------------------
-           1. ДВИЖОК: КОРОВКА (CROSSY ROAD)
-           ---------------------------------------------------- */
+        /* 1. КОРОВКА */
         let cowStep = 0;
         let cowActive = false;
         let cowMult = 1.0;
@@ -890,10 +876,8 @@
                 document.getElementById("btnCowStep").innerText = "ВПЕРЕД 🐾";
                 document.getElementById("btnCowCash").style.display = "inline-block";
             } else {
-                // Шанс попасть под машину возрастает
                 let hitChance = 0.28;
                 if (Math.random() < hitChance) {
-                    // Авария
                     triggerHaptic("error");
                     document.getElementById("cowHero").innerText = "💥";
                     setTimeout(() => {
@@ -913,7 +897,6 @@
             triggerHaptic("light");
 
             if (cowStep >= 4) {
-                // Дошла до финиша
                 triggerHaptic("success");
                 const win = Math.floor(100 * 5.0);
                 balance += win; updateBal();
@@ -926,10 +909,8 @@
             const hero = document.getElementById("cowHero");
             if (!hero) return;
             hero.innerText = "🐮";
-            // Позиция по полосам сверху вниз
             const laneHeights = [255, 195, 140, 85, 20];
-            const bottomPos = laneHeights[cowStep] || 255;
-            hero.style.bottom = bottomPos + "px";
+            hero.style.bottom = (laneHeights[cowStep] || 255) + "px";
         }
 
         function cashCow() {
@@ -952,14 +933,11 @@
             document.getElementById("btnCowCash").style.display = "none";
         }
 
-        /* ----------------------------------------------------
-           2. ДВИЖОК: ОСОБНЯК (ДВЕРИ)
-           ---------------------------------------------------- */
-        let mansionDiff = 1; // 1 ловушка
+        /* 2. ОСОБНЯК */
+        let mansionDiff = 1;
         let mansionStage = 1;
         let mansionMult = 1.45;
         let mansionActive = false;
-        let trapDoorIndex = 0;
 
         function initMansionGame() {
             mansionStage = 1;
@@ -995,8 +973,7 @@
                 document.getElementById("btnMansionCash").style.display = "block";
             }
 
-            // Генерируем ловушку
-            trapDoorIndex = Math.floor(Math.random() * 3);
+            let trapDoorIndex = Math.floor(Math.random() * 3);
             let isTrap = (doorIdx === trapDoorIndex);
 
             document.getElementById(`dFront${doorIdx}`).style.display = "none";
@@ -1032,9 +1009,7 @@
             initMansionGame();
         }
 
-        /* ----------------------------------------------------
-           3. ДВИЖОК: РАКЕТКА (CRASH)
-           ---------------------------------------------------- */
+        /* 3. РАКЕТКА (CRASH) */
         let crashActive = false;
         let crashMultiplier = 1.0;
         let crashLoopId = null;
@@ -1109,22 +1084,16 @@
             ctx.lineWidth = 4;
             ctx.stroke();
 
-            // Ракета
             ctx.font = "24px sans-serif";
             ctx.fillText("🚀", endX - 12, endY - 8);
         }
 
-        /* ----------------------------------------------------
-           4. ДВИЖОК: PLINKO
-           ---------------------------------------------------- */
-        function initPlinkoGame() {
-            renderPlinkoBase();
-        }
+        /* 4. PLINKO */
+        function initPlinkoGame() { renderPlinkoBase(); }
         function renderPlinkoBase() {
             const cvs = document.getElementById("plinkoCvs");
             const ctx = cvs.getContext("2d");
             ctx.clearRect(0, 0, cvs.width, cvs.height);
-            // Пирамида колышков
             ctx.fillStyle = "#fff";
             for (let row = 0; row < 7; row++) {
                 let count = row + 3;
@@ -1135,7 +1104,6 @@
                     ctx.fill();
                 }
             }
-            // Корзины множителей снизу
             const mults = ["x5.0", "x2.0", "x0.5", "x0.2", "x0.5", "x2.0", "x5.0"];
             const colors = ["#ff7675", "#fdcb6e", "#ffeaa7", "#74b9ff", "#ffeaa7", "#fdcb6e", "#ff7675"];
             for (let i = 0; i < mults.length; i++) {
@@ -1155,7 +1123,6 @@
             const ctx = cvs.getContext("2d");
             let x = cvs.width / 2;
             let y = 15;
-            let step = 0;
 
             let anim = setInterval(() => {
                 renderPlinkoBase();
@@ -1179,9 +1146,7 @@
             }, 30);
         }
 
-        /* ----------------------------------------------------
-           5. АПГРЕЙДЕР (РУКА/СПИДОМЕТР)
-           ---------------------------------------------------- */
+        /* 5. АПГРЕЙД */
         let upgMult = 2;
         let upgChance = 50;
         let isUpgSpin = false;

@@ -14,6 +14,7 @@
             --btn-blue-gradient: linear-gradient(135deg, #6c5ce7, #5b6df7);
             --accent-yellow: #ffb800;
             --accent-green: #00d26a;
+            --accent-red: #f83b58;
             --text-white: #ffffff;
             --text-dim: #8b92b2;
             --tag-bg: #272d54;
@@ -27,7 +28,7 @@
             overflow-x: hidden;
         }
 
-        /* 1. ШАПКА ROMANA */
+        /* ШАПКА */
         .header {
             display: flex;
             align-items: center;
@@ -39,13 +40,7 @@
             top: 0;
             z-index: 100;
         }
-        .logo {
-            font-size: 22px;
-            font-weight: 900;
-            letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-        }
+        .logo { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; display: flex; align-items: center; }
         .logo span { color: var(--accent-yellow); font-size: 26px; line-height: 12px; margin-left: 1px; }
         .header-right { display: flex; align-items: center; gap: 8px; }
         .balance-pill {
@@ -114,7 +109,7 @@
             border-radius: 50%;
         }
 
-        /* 2. LIVE-ЛЕНТА */
+        /* LIVE ЛЕНТА */
         .live-wrap {
             display: flex;
             align-items: center;
@@ -149,7 +144,7 @@
         }
         .live-card-val { color: var(--accent-yellow); font-weight: 800; }
 
-        /* 3. БАННЕР */
+        /* БАННЕР */
         .banner {
             margin: 12px 14px;
             background: linear-gradient(135deg, #2a1f66 0%, #172152 100%);
@@ -173,30 +168,9 @@
             cursor: pointer;
         }
 
-        /* 4. ПАНЕЛИ ВИДА */
+        /* ПАНЕЛИ ВИДА */
         .view-panel { display: none; flex-direction: column; width: 100%; }
         .view-panel.active { display: flex; }
-
-        /* 5. КАТЕГОРИИ КЕЙСОВ */
-        .tags-scroller {
-            display: flex;
-            gap: 6px;
-            padding: 4px 14px 12px 14px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        .tags-scroller::-webkit-scrollbar { display: none; }
-        .tag-pill {
-            background: var(--tag-bg);
-            color: var(--text-dim);
-            padding: 8px 14px;
-            border-radius: 16px;
-            font-size: 12px;
-            font-weight: 800;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .tag-pill.active { background: var(--btn-blue); color: #fff; }
 
         .sec-title {
             display: flex;
@@ -208,7 +182,7 @@
         }
         .sec-more { color: var(--btn-blue); font-size: 12px; font-weight: 800; text-decoration: none; }
 
-        /* СЕТКА 2 КОЛОНКИ */
+        /* КАРТОЧКИ ВИТРИНЫ */
         .grid-cards {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -252,26 +226,186 @@
             font-weight: 900;
         }
 
-        /* 6. ЭКРАН АПГРЕЙДА (ТОЧНО ПО СКРИНШОТУ RUBUP) */
-        .upg-screen { padding: 10px 14px; display: flex; flex-direction: column; gap: 12px; }
-        .upg-tabs-top {
+        /* ПОЛНОЭКРАННЫЕ ИГРОВЫЕ ОКНА */
+        .game-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(13, 16, 36, 0.98);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            padding: 16px;
+            overflow-y: auto;
+        }
+        .g-header {
             display: flex;
-            background: #1b203c;
-            border-radius: 16px;
-            padding: 3px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
         }
-        .upg-tab-t {
-            flex: 1;
-            padding: 9px 0;
-            text-align: center;
-            font-size: 12px;
-            font-weight: 800;
-            border-radius: 14px;
+        .g-title { font-size: 17px; font-weight: 900; }
+        .g-close {
+            background: #252b4d;
+            border: none;
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 16px;
             cursor: pointer;
-            color: var(--text-dim);
         }
-        .upg-tab-t.active { background: #29305c; color: #fff; }
 
+        /* 1. ИГРА: КОРОВКА (CROSSY ROAD) */
+        .cow-road-box {
+            position: relative;
+            width: 100%;
+            height: 310px;
+            background: #0f1326;
+            border: 2px solid #28305c;
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 6px 0;
+        }
+        .lane {
+            position: relative;
+            width: 100%;
+            height: 52px;
+            border-bottom: 1px dashed rgba(255,255,255,0.15);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+        .lane.grass {
+            background: #19442b;
+            border-bottom: 1px solid #23633e;
+        }
+        .lane.road {
+            background: #1b1e2e;
+        }
+        .cow-character {
+            position: absolute;
+            left: 20px;
+            font-size: 34px;
+            z-index: 10;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .traffic-car {
+            position: absolute;
+            font-size: 30px;
+            z-index: 5;
+            will-change: transform;
+        }
+
+        /* 2. ИГРА: ОСОБНЯК (3 ДВЕРИ) */
+        .mansion-diff-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .m-diff-btn {
+            flex: 1;
+            padding: 8px 0;
+            background: #20264a;
+            border: 1px solid #333d73;
+            border-radius: 10px;
+            color: var(--text-dim);
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .m-diff-btn.active {
+            background: var(--btn-blue);
+            color: #fff;
+            border-color: var(--btn-blue);
+        }
+        .doors-container {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            height: 190px;
+            margin: 12px 0;
+        }
+        .door-card {
+            flex: 1;
+            background: radial-gradient(circle, #2d1b54 0%, #150f29 100%);
+            border: 2px solid #5a3f9e;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+            position: relative;
+        }
+        .door-card:active { transform: scale(0.95); }
+        .door-front { font-size: 48px; }
+        .door-result { font-size: 42px; display: none; }
+        .door-num { font-size: 12px; font-weight: 900; color: var(--accent-yellow); margin-top: 6px; }
+
+        /* 3. ИГРА: РАКЕТКА (CRASH) */
+        .crash-canvas-box {
+            position: relative;
+            width: 100%;
+            height: 240px;
+            background: #0d1024;
+            border: 2px solid #272f5c;
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .crash-mult-huge {
+            position: absolute;
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--text-white);
+            text-shadow: 0 0 20px rgba(91, 109, 247, 0.6);
+            z-index: 10;
+        }
+
+        /* 4. ИГРА: PLINKO */
+        .plinko-box {
+            position: relative;
+            width: 100%;
+            height: 310px;
+            background: #0f132b;
+            border: 2px solid #293263;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        /* ОБЩИЕ ЭЛЕМЕНТЫ УПРАВЛЕНИЯ В ИГРАХ */
+        .bet-control-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #171c38;
+            padding: 8px 12px;
+            border-radius: 14px;
+            margin-top: 10px;
+        }
+        .btn-game-act {
+            width: 100%;
+            background: var(--btn-blue-gradient);
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 900;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+        }
+        .btn-game-act:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ЭКРАН АПГРЕЙДА (ПО СКРИНШОТУ 11204) */
         .upg-wheel-area {
             position: relative;
             width: 240px;
@@ -307,13 +441,7 @@
             justify-content: center;
             z-index: 10;
         }
-
-        .upg-chance-display {
-            text-align: center;
-            font-size: 16px;
-            font-weight: 900;
-            margin-top: -6px;
-        }
+        .upg-chance-display { text-align: center; font-size: 16px; font-weight: 900; margin-top: -6px; }
         .upg-chance-display span { color: var(--accent-yellow); font-size: 18px; }
 
         .upg-dual-box { display: flex; gap: 8px; width: 100%; }
@@ -339,7 +467,6 @@
             font-size: 11px;
             font-weight: 800;
         }
-
         .upg-mult-row { display: flex; gap: 6px; }
         .upg-mult-btn {
             flex: 1;
@@ -354,21 +481,7 @@
         }
         .upg-mult-btn.active { background: var(--btn-blue); }
 
-        .btn-upgrade-run {
-            width: 100%;
-            background: var(--btn-blue-gradient);
-            border: none;
-            padding: 14px;
-            border-radius: 16px;
-            color: #fff;
-            font-size: 15px;
-            font-weight: 900;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
-            margin-top: 4px;
-        }
-
-        /* 7. МОДАЛКА ВЫВОДА */
+        /* МОДАЛКА ВЫВОДА */
         .modal-bg {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -389,7 +502,6 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .modal-input {
             width: 100%;
@@ -401,7 +513,7 @@
             font-size: 13px;
         }
 
-        /* 8. НИЖНИЙ БАР (RUBUP) */
+        /* ТАББАР */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -430,7 +542,7 @@
 </head>
 <body>
 
-    <!-- ВЕРХНЯЯ ШАПКА -->
+    <!-- ШАПКА -->
     <header class="header">
         <div class="logo">Romana<span>)</span></div>
         <div class="header-right">
@@ -451,29 +563,13 @@
     <!-- LIVE-ЛЕНТА -->
     <div class="live-wrap">
         <div class="live-tag">LIVE</div>
-        <div class="live-card">
-            <span>🍾</span>
-            <span>kebd</span>
-            <span class="live-card-val">80 ₽</span>
-        </div>
-        <div class="live-card">
-            <span>🧸</span>
-            <span>I'm</span>
-            <span class="live-card-val">24 ₽</span>
-        </div>
-        <div class="live-card">
-            <span>🌹</span>
-            <span>Арсений</span>
-            <span class="live-card-val">1 196 ₽</span>
-        </div>
-        <div class="live-card">
-            <span>🚬</span>
-            <span>Why</span>
-            <span class="live-card-val">1 866 ₽</span>
-        </div>
+        <div class="live-card"><span>🍾</span><span>kebd</span><span class="live-card-val">80 ₽</span></div>
+        <div class="live-card"><span>🧸</span><span>I'm</span><span class="live-card-val">24 ₽</span></div>
+        <div class="live-card"><span>🌹</span><span>Арсений</span><span class="live-card-val">1 196 ₽</span></div>
+        <div class="live-card"><span>🚬</span><span>Why</span><span class="live-card-val">1 866 ₽</span></div>
     </div>
 
-    <!-- 1. РАЗДЕЛ: ИГРЫ -->
+    <!-- 1. ВИТРИНА: ИГРЫ -->
     <main class="view-panel active" id="view-games">
         <div class="banner">
             <div>
@@ -484,41 +580,27 @@
             <div style="font-size: 46px;">🐸💎</div>
         </div>
 
-        <div class="sec-title">
-            <span>Игры</span>
-        </div>
+        <div class="sec-title"><span>Игры</span></div>
         <div class="grid-cards">
-            <div class="item-card" onclick="openUpgradeMode()">
-                <div class="online-count">177 играют</div>
-                <div class="item-icon">👑</div>
-                <div class="item-name">Апгрейд</div>
-                <div class="item-btn">Играть</div>
-            </div>
-            <div class="item-card" onclick="alert('Коровка в разработке')">
+            <div class="item-card" onclick="openGameModal('modalCow')">
                 <div class="online-count">108 играют</div>
                 <div class="item-icon">🐮</div>
                 <div class="item-name">Коровка</div>
                 <div class="item-btn">Играть</div>
             </div>
-            <div class="item-card" onclick="alert('Ракетка Crash')">
-                <div class="online-count">99 играют</div>
-                <div class="item-icon">🚀</div>
-                <div class="item-name">Ракетка</div>
-                <div class="item-btn">Играть</div>
-            </div>
-            <div class="item-card" onclick="alert('Мины RubUP')">
-                <div class="online-count">25 играют</div>
-                <div class="item-icon">💎</div>
-                <div class="item-name">Мины</div>
-                <div class="item-btn">Играть</div>
-            </div>
-            <div class="item-card" onclick="alert('Особняк')">
+            <div class="item-card" onclick="openGameModal('modalMansion')">
                 <div class="online-count">20 играют</div>
                 <div class="item-icon">🎃</div>
                 <div class="item-name">Особняк</div>
                 <div class="item-btn">Играть</div>
             </div>
-            <div class="item-card" onclick="alert('Plinko')">
+            <div class="item-card" onclick="openGameModal('modalCrash')">
+                <div class="online-count">99 играют</div>
+                <div class="item-icon">🚀</div>
+                <div class="item-name">Ракетка</div>
+                <div class="item-btn">Играть</div>
+            </div>
+            <div class="item-card" onclick="openGameModal('modalPlinko')">
                 <div class="online-count">10 играют</div>
                 <div class="item-icon">🔺</div>
                 <div class="item-name">Plinko</div>
@@ -527,101 +609,26 @@
         </div>
     </main>
 
-    <!-- 2. РАЗДЕЛ: КЕЙСЫ (ПО СКРИНШОТАМ) -->
+    <!-- 2. ВИТРИНА: КЕЙСЫ -->
     <main class="view-panel" id="view-cases">
-        <div class="tags-scroller">
-            <div class="tag-pill active">Все</div>
-            <div class="tag-pill">На сдачу</div>
-            <div class="tag-pill">Сопротивление</div>
-            <div class="tag-pill">50/50</div>
-            <div class="tag-pill">Кино и сериалы</div>
-            <div class="tag-pill">Мультфильмы и аниме</div>
-            <div class="tag-pill">Telegram и крипта</div>
-            <div class="tag-pill">Мемы и приколы</div>
-            <div class="tag-pill">Камни и металлы</div>
+        <div class="sec-title"><span>На сдачу</span><a href="#" class="sec-more">4 кейса ›</a></div>
+        <div class="grid-cards">
+            <div class="item-card" onclick="openCaseDrop('Мелочь', 39)"><div class="item-icon">🧴</div><div class="item-name">Мелочь</div><div class="item-btn">39 ₽</div></div>
+            <div class="item-card" onclick="openCaseDrop('Сдача', 49)"><div class="item-icon">💎</div><div class="item-name">Сдача</div><div class="item-btn">49 ₽</div></div>
+            <div class="item-card" onclick="openCaseDrop('Копилка', 59)"><div class="item-icon">⌚</div><div class="item-name">Копилка</div><div class="item-btn">59 ₽</div></div>
+            <div class="item-card" onclick="openCaseDrop('Заначка', 79)"><div class="item-icon">🔮</div><div class="item-name">Заначка</div><div class="item-btn">79 ₽</div></div>
         </div>
 
-        <div class="sec-title">
-            <span>На сдачу</span>
-            <a href="#" class="sec-more">4 кейса ›</a>
-        </div>
+        <div class="sec-title"><span>50/50</span><a href="#" class="sec-more">Все 14 ›</a></div>
         <div class="grid-cards">
-            <div class="item-card" onclick="openCase('Мелочь', 39)">
-                <div class="item-icon">🧴</div>
-                <div class="item-name">Мелочь</div>
-                <div class="item-btn">39 ₽</div>
-            </div>
-            <div class="item-card" onclick="openCase('Сдача', 49)">
-                <div class="item-icon">💎</div>
-                <div class="item-name">Сдача</div>
-                <div class="item-btn">49 ₽</div>
-            </div>
-            <div class="item-card" onclick="openCase('Копилка', 59)">
-                <div class="item-icon">⌚</div>
-                <div class="item-name">Копилка</div>
-                <div class="item-btn">59 ₽</div>
-            </div>
-            <div class="item-card" onclick="openCase('Заначка', 79)">
-                <div class="item-icon">🔮</div>
-                <div class="item-name">Заначка</div>
-                <div class="item-btn">79 ₽</div>
-            </div>
-        </div>
-
-        <div class="sec-title">
-            <span>Сопротивление</span>
-            <a href="#" class="sec-more">2 кейса ›</a>
-        </div>
-        <div class="grid-cards">
-            <div class="item-card" onclick="openCase('Пёс Сопротивления', 349)">
-                <div class="item-icon">🐶</div>
-                <div class="item-name">Пёс Сопротивления</div>
-                <div class="item-btn">349 ₽</div>
-            </div>
-            <div class="item-card" onclick="openCase('Редо кейс', 2190)">
-                <div class="item-icon">💀</div>
-                <div class="item-name">Редо кейс</div>
-                <div class="item-btn">2 190 ₽</div>
-            </div>
-        </div>
-
-        <div class="sec-title">
-            <span>50/50</span>
-            <a href="#" class="sec-more">Все 14 ›</a>
-        </div>
-        <div class="grid-cards">
-            <div class="item-card" onclick="openCase('Мишка или торт', 50)">
-                <div class="item-icon">🧸</div>
-                <div class="item-name">Мишка или торт</div>
-                <div class="item-btn">50 ₽</div>
-            </div>
-            <div class="item-card" onclick="openCase('Роза или алмаз', 100)">
-                <div class="item-icon">🌹</div>
-                <div class="item-name">Роза или алмаз</div>
-                <div class="item-btn">100 ₽</div>
-            </div>
-            <div class="item-card" onclick="openCase('Алмаз или леденец', 370)">
-                <div class="item-icon">🍭</div>
-                <div class="item-name">Алмаз / леденец</div>
-                <div class="item-btn">370 ₽</div>
-            </div>
-            <div class="item-card" onclick="openCase('Мороженое / ягоды', 900)">
-                <div class="item-icon">🍓</div>
-                <div class="item-name">Мороженое / ягоды</div>
-                <div class="item-btn">900 ₽</div>
-            </div>
+            <div class="item-card" onclick="openCaseDrop('Мишка или торт', 50)"><div class="item-icon">🧸</div><div class="item-name">Мишка / торт</div><div class="item-btn">50 ₽</div></div>
+            <div class="item-card" onclick="openCaseDrop('Роза или алмаз', 100)"><div class="item-icon">🌹</div><div class="item-name">Роза / алмаз</div><div class="item-btn">100 ₽</div></div>
         </div>
     </main>
 
-    <!-- 3. РАЗДЕЛ: АПГРЕЙД (ТОЧНАЯ КОПИЯ СКРИНШОТА 11204.JPG) -->
+    <!-- 3. ВИТРИНА: АПГРЕЙД -->
     <main class="view-panel" id="view-upgrade">
-        <div class="upg-screen">
-            <div class="upg-tabs-top">
-                <div class="upg-tab-t active">Подарки</div>
-                <div class="upg-tab-t" onclick="alert('Скины скоро')">Скины</div>
-            </div>
-
-            <!-- СПИДОМЕТР СТРЕЛКА СНИЗУ -->
+        <div class="upg-screen" style="padding: 10px 14px;">
             <div class="upg-wheel-area">
                 <div class="upg-arrow"></div>
                 <canvas class="upg-canvas" id="upgCanvas" width="240" height="240"></canvas>
@@ -631,40 +638,30 @@
                 </div>
             </div>
 
-            <div class="upg-chance-display">
-                Шанс <span id="upgPercent">50 %</span>
-            </div>
+            <div class="upg-chance-display">Шанс <span id="upgPercent">50 %</span></div>
 
             <div class="upg-dual-box">
                 <div class="upg-dual-card">
                     <div class="upg-card-head">Ваш подарок</div>
-                    <div class="upg-pick-btn" onclick="alert('Выбран баланс: 100 ₽')">
-                        <span style="font-size:16px;">➕</span>
-                        <span>100 ₽</span>
-                    </div>
+                    <div class="upg-pick-btn"><span>➕</span><span>100 ₽</span></div>
                 </div>
                 <div class="upg-dual-card">
                     <div class="upg-card-head">Хочу получить</div>
-                    <div class="upg-pick-btn" onclick="alert('Целевой NFT выбран')">
-                        <span style="font-size:16px;">🎁</span>
-                        <span id="targetNameLabel">Роза 200 ₽</span>
-                    </div>
+                    <div class="upg-pick-btn"><span id="targetNameLabel">Роза 200 ₽</span></div>
                 </div>
             </div>
 
             <div class="upg-mult-row">
-                <button class="upg-mult-btn active" onclick="setMultiplier(2, this)">×2</button>
-                <button class="upg-mult-btn" onclick="setMultiplier(4, this)">×4</button>
-                <button class="upg-mult-btn" onclick="setMultiplier(8, this)">×8</button>
+                <button class="upg-mult-btn active" onclick="setUpgMult(2, this)">×2</button>
+                <button class="upg-mult-btn" onclick="setUpgMult(4, this)">×4</button>
+                <button class="upg-mult-btn" onclick="setUpgMult(8, this)">×8</button>
             </div>
 
-            <button class="btn-upgrade-run" id="btnRunUpgAction" onclick="spinUpgrade()">
-                Улучшить
-            </button>
+            <button class="btn-game-act" id="btnRunUpg" onclick="spinUpgrade()">Улучшить</button>
         </div>
     </main>
 
-    <!-- 4. РАЗДЕЛ: БОНУСЫ -->
+    <!-- 4. ВИТРИНА: БОНУСЫ -->
     <main class="view-panel" id="view-bonuses">
         <div class="banner">
             <div>
@@ -676,23 +673,99 @@
         </div>
         <div class="sec-title"><span>Бонусы</span></div>
         <div class="grid-cards">
-            <div class="item-card" onclick="alert('Рейкбек начислен!')">
-                <div class="item-icon">🐮</div>
-                <div class="item-name">Рейкбек</div>
-                <div class="item-btn">Забрать</div>
-            </div>
-            <div class="item-card" onclick="alert('Кэшбек доступен через 2 дня')">
-                <div class="item-icon">💰</div>
-                <div class="item-name">Кэшбек</div>
-                <div class="item-btn">Скоро</div>
-            </div>
+            <div class="item-card" onclick="alert('Рейкбек начислен!')"><div class="item-icon">🐮</div><div class="item-name">Рейкбек</div><div class="item-btn">Забрать</div></div>
+            <div class="item-card" onclick="alert('Кэшбек скоро')"><div class="item-icon">💰</div><div class="item-name">Кэшбек</div><div class="item-btn">Скоро</div></div>
         </div>
     </main>
+
+    <!-- ================= ПОЛНОЦЕННЫЕ ИГРОВЫЕ МОДАЛКИ ================= -->
+
+    <!-- МОДАЛКА 1: КОРОВКА (CROSSY ROAD) -->
+    <div class="game-modal" id="modalCow">
+        <div class="g-header">
+            <div class="g-title">🐮 Коровка через дорогу</div>
+            <button class="g-close" onclick="closeGameModal('modalCow')">✕</button>
+        </div>
+        <div class="cow-road-box" id="cowRoadBox">
+            <div class="lane grass" id="laneFinish"><span style="font-size:12px; font-weight:900; margin-left:14px; color:#55efc4;">🏁 ФИНИШ (x5.00)</span></div>
+            <div class="lane road" id="lane3"><div class="traffic-car" id="car3">🏎️</div></div>
+            <div class="lane road" id="lane2"><div class="traffic-car" id="car2">🚗</div></div>
+            <div class="lane road" id="lane1"><div class="traffic-car" id="car1">🚛</div></div>
+            <div class="lane grass" id="laneStart">
+                <div class="cow-character" id="cowHero">🐮</div>
+                <span style="font-size:11px; font-weight:800; margin-left:70px; color:#aaa;">СТАРТ</span>
+            </div>
+        </div>
+        <div class="bet-control-bar">
+            <span>Множитель: <b id="cowMultTxt" style="color:var(--accent-yellow);">x1.00</b></span>
+            <span>Банк: <b id="cowBankTxt" style="color:var(--accent-green);">100 ₽</b></span>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <button class="btn-game-act" id="btnCowStep" onclick="stepCow()">ИДТИ ВПЕРЕД 🐾</button>
+            <button class="btn-game-act" id="btnCowCash" style="background:#00d26a; color:#000; display:none;" onclick="cashCow()">ЗАБРАТЬ</button>
+        </div>
+    </div>
+
+    <!-- МОДАЛКА 2: ОСОБНЯК (3 ДВЕРИ) -->
+    <div class="game-modal" id="modalMansion">
+        <div class="g-header">
+            <div class="g-title">🎃 Особняк (Выбор дверей)</div>
+            <button class="g-close" onclick="closeGameModal('modalMansion')">✕</button>
+        </div>
+        <div class="mansion-diff-row">
+            <button class="m-diff-btn active" onclick="setMansionDiff(1, this)">Легко (1/3)</button>
+            <button class="m-diff-btn" onclick="setMansionDiff(2, this)">Средне (2/3)</button>
+        </div>
+        <div style="text-align:center; font-size:13px; font-weight:800;" id="mansionStageTxt">Этаж 1 • Множитель: x1.45</div>
+        <div class="doors-container">
+            <div class="door-card" onclick="pickDoor(0)">
+                <div class="door-front" id="dFront0">🚪</div>
+                <div class="door-result" id="dRes0"></div>
+                <div class="door-num">Дверь 1</div>
+            </div>
+            <div class="door-card" onclick="pickDoor(1)">
+                <div class="door-front" id="dFront1">🚪</div>
+                <div class="door-result" id="dRes1"></div>
+                <div class="door-num">Дверь 2</div>
+            </div>
+            <div class="door-card" onclick="pickDoor(2)">
+                <div class="door-front" id="dFront2">🚪</div>
+                <div class="door-result" id="dRes2"></div>
+                <div class="door-num">Дверь 3</div>
+            </div>
+        </div>
+        <button class="btn-game-act" id="btnMansionCash" style="background:#00d26a; color:#000; display:none;" onclick="cashMansion()">ЗАБРАТЬ БАНК</button>
+    </div>
+
+    <!-- МОДАЛКА 3: РАКЕТКА (CRASH) -->
+    <div class="game-modal" id="modalCrash">
+        <div class="g-header">
+            <div class="g-title">🚀 Ракетка (Crash)</div>
+            <button class="g-close" onclick="closeGameModal('modalCrash')">✕</button>
+        </div>
+        <div class="crash-canvas-box">
+            <canvas id="crashCvs" width="340" height="240" style="width:100%; height:100%;"></canvas>
+            <div class="crash-mult-huge" id="crashBigTxt">x1.00</div>
+        </div>
+        <button class="btn-game-act" id="btnCrashAct" onclick="handleCrashBtn()">ВЗЛЕТЕТЬ (100 ₽)</button>
+    </div>
+
+    <!-- МОДАЛКА 4: PLINKO -->
+    <div class="game-modal" id="modalPlinko">
+        <div class="g-header">
+            <div class="g-title">🔺 Plinko</div>
+            <button class="g-close" onclick="closeGameModal('modalPlinko')">✕</button>
+        </div>
+        <div class="plinko-box">
+            <canvas id="plinkoCvs" width="340" height="310" style="width:100%; height:100%;"></canvas>
+        </div>
+        <button class="btn-game-act" id="btnDropBall" onclick="dropPlinkoBall()">БРОСИТЬ ШАРИК (100 ₽)</button>
+    </div>
 
     <!-- МОДАЛКА ВЫВОДА -->
     <div class="modal-bg" id="withdrawModal">
         <div class="modal-content">
-            <div style="font-size: 16px; font-weight: 900; color: #fff;">💸 Вывод с Romana</div>
+            <div style="font-size: 16px; font-weight: 900; color: #fff;">💸 Вывод средств</div>
             <input type="number" id="wSumVal" class="modal-input" placeholder="Сумма вывода (мин. 500 ₽)">
             <input type="text" id="wTargetVal" class="modal-input" placeholder="Кошелёк TON или @username">
             <button class="btn-deposit" style="background:#00d26a; color:#000; padding:12px; font-weight:900;" onclick="submitWithdraw()">ОТПРАВИТЬ ЗАЯВКУ</button>
@@ -700,21 +773,21 @@
         </div>
     </div>
 
-    <!-- НИЖНИЙ БАР (ЧЕТКО 4 ТАБА КАК НА СКРИНШОТАХ) -->
+    <!-- ТАББАР -->
     <nav class="bottom-nav">
-        <div class="nav-link active" onclick="switchTab('games', this)">
+        <div class="nav-link active" onclick="switchNav('games', this)">
             <div class="nav-icon">🎮</div>
             <div>Игры</div>
         </div>
-        <div class="nav-link" onclick="switchTab('cases', this)">
+        <div class="nav-link" onclick="switchNav('cases', this)">
             <div class="nav-icon">📦</div>
             <div>Кейсы</div>
         </div>
-        <div class="nav-link" onclick="switchTab('upgrade', this)">
+        <div class="nav-link" onclick="switchNav('upgrade', this)">
             <div class="nav-icon">⚡</div>
             <div>Заработок</div>
         </div>
-        <div class="nav-link" onclick="switchTab('bonuses', this)">
+        <div class="nav-link" onclick="switchNav('bonuses', this)">
             <div class="nav-icon">🎁</div>
             <div>Бонусы</div>
         </div>
@@ -740,41 +813,385 @@
             } catch(e) {}
         }
 
-        /* ПЕРЕКЛЮЧЕНИЕ ТАБОВ */
-        function switchTab(tabName, el) {
+        function switchNav(tab, el) {
             document.querySelectorAll(".nav-link").forEach(l => l.classList.remove("active"));
             document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
-            
             el.classList.add("active");
-            const targetView = document.getElementById("view-" + tabName);
-            if (targetView) targetView.classList.add("active");
+            const target = document.getElementById("view-" + tab);
+            if (target) target.classList.add("active");
+            if (tab === 'upgrade') drawUpgWheel(upgChance, currentAngle);
+            triggerHaptic("light");
+        }
 
-            if (tabName === 'upgrade') {
-                drawUpgWheel(upgChance, currentAngle);
+        function openGameModal(id) {
+            document.getElementById(id).style.display = "flex";
+            if (id === 'modalCow') initCowGame();
+            if (id === 'modalMansion') initMansionGame();
+            if (id === 'modalCrash') initCrashGame();
+            if (id === 'modalPlinko') initPlinkoGame();
+            triggerHaptic("light");
+        }
+        function closeGameModal(id) {
+            document.getElementById(id).style.display = "none";
+            if (id === 'modalCow' && cowActive) endCowGame(false);
+            if (id === 'modalCrash' && crashActive) stopCrashFly(false);
+        }
+
+        /* ----------------------------------------------------
+           1. ДВИЖОК: КОРОВКА (CROSSY ROAD)
+           ---------------------------------------------------- */
+        let cowStep = 0;
+        let cowActive = false;
+        let cowMult = 1.0;
+        let carAnimationId = null;
+        let cars = [
+            { id: 'car1', x: 0, speed: 2.2, dir: 1, lane: 1 },
+            { id: 'car2', x: 260, speed: 3.0, dir: -1, lane: 2 },
+            { id: 'car3', x: 80, speed: 3.8, dir: 1, lane: 3 }
+        ];
+
+        function initCowGame() {
+            cowStep = 0;
+            cowActive = false;
+            cowMult = 1.0;
+            updateCowPos();
+            document.getElementById("cowMultTxt").innerText = "x1.00";
+            document.getElementById("cowBankTxt").innerText = "100 ₽";
+            document.getElementById("btnCowStep").innerText = "СТАРТ (100 ₽)";
+            document.getElementById("btnCowCash").style.display = "none";
+            startTrafficLoop();
+        }
+
+        function startTrafficLoop() {
+            if (carAnimationId) cancelAnimationFrame(carAnimationId);
+            const box = document.getElementById("cowRoadBox");
+            const w = box.clientWidth || 340;
+
+            function loop() {
+                cars.forEach(c => {
+                    c.x += c.speed * c.dir;
+                    if (c.dir === 1 && c.x > w) c.x = -50;
+                    if (c.dir === -1 && c.x < -50) c.x = w;
+                    const el = document.getElementById(c.id);
+                    if (el) el.style.transform = `translateX(${c.x}px) scaleX(${c.dir === -1 ? -1 : 1})`;
+                });
+                carAnimationId = requestAnimationFrame(loop);
             }
-            triggerHaptic("light");
+            carAnimationId = requestAnimationFrame(loop);
         }
 
-        function openUpgradeMode() {
-            document.querySelectorAll(".nav-link").forEach(l => l.classList.remove("active"));
-            document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
-            document.getElementById("view-upgrade").classList.add("active");
-            drawUpgWheel(upgChance, currentAngle);
+        function stepCow() {
+            if (!cowActive) {
+                if (balance < 100) return alert("Недостаточно средств (ставка 100 ₽)!");
+                balance -= 100; updateBal();
+                cowActive = true;
+                cowStep = 1;
+                cowMult = 1.35;
+                document.getElementById("btnCowStep").innerText = "ВПЕРЕД 🐾";
+                document.getElementById("btnCowCash").style.display = "inline-block";
+            } else {
+                // Шанс попасть под машину возрастает
+                let hitChance = 0.28;
+                if (Math.random() < hitChance) {
+                    // Авария
+                    triggerHaptic("error");
+                    document.getElementById("cowHero").innerText = "💥";
+                    setTimeout(() => {
+                        alert("💥 Машина сбила коровку! Ставка сгорела.");
+                        endCowGame(false);
+                    }, 100);
+                    return;
+                }
+                cowStep++;
+                cowMult = +(cowMult * 1.45).toFixed(2);
+            }
+
+            updateCowPos();
+            const curBank = Math.floor(100 * cowMult);
+            document.getElementById("cowMultTxt").innerText = `x${cowMult}`;
+            document.getElementById("cowBankTxt").innerText = `${curBank} ₽`;
             triggerHaptic("light");
+
+            if (cowStep >= 4) {
+                // Дошла до финиша
+                triggerHaptic("success");
+                const win = Math.floor(100 * 5.0);
+                balance += win; updateBal();
+                alert(`🏆 Коровка перешла шоссе! Выигрыш: +${win} ₽!`);
+                endCowGame(true);
+            }
         }
 
-        /* 3. АПГРЕЙД ДВИЖОК (СТРЕЛОЧКА СНИЗУ) */
-        let currentMultiplier = 2;
+        function updateCowPos() {
+            const hero = document.getElementById("cowHero");
+            if (!hero) return;
+            hero.innerText = "🐮";
+            // Позиция по полосам сверху вниз
+            const laneHeights = [255, 195, 140, 85, 20];
+            const bottomPos = laneHeights[cowStep] || 255;
+            hero.style.bottom = bottomPos + "px";
+        }
+
+        function cashCow() {
+            if (!cowActive) return;
+            const win = Math.floor(100 * cowMult);
+            balance += win; updateBal();
+            triggerHaptic("success");
+            alert(`💰 Вы забрали банк: +${win} ₽!`);
+            endCowGame(true);
+        }
+
+        function endCowGame(resetHero = true) {
+            cowActive = false;
+            cowStep = 0;
+            cowMult = 1.0;
+            if (resetHero) updateCowPos();
+            document.getElementById("cowMultTxt").innerText = "x1.00";
+            document.getElementById("cowBankTxt").innerText = "100 ₽";
+            document.getElementById("btnCowStep").innerText = "СТАРТ (100 ₽)";
+            document.getElementById("btnCowCash").style.display = "none";
+        }
+
+        /* ----------------------------------------------------
+           2. ДВИЖОК: ОСОБНЯК (ДВЕРИ)
+           ---------------------------------------------------- */
+        let mansionDiff = 1; // 1 ловушка
+        let mansionStage = 1;
+        let mansionMult = 1.45;
+        let mansionActive = false;
+        let trapDoorIndex = 0;
+
+        function initMansionGame() {
+            mansionStage = 1;
+            mansionMult = 1.45;
+            mansionActive = false;
+            resetDoorVisuals();
+            document.getElementById("mansionStageTxt").innerText = `Этаж 1 • Множитель: x${mansionMult}`;
+            document.getElementById("btnMansionCash").style.display = "none";
+        }
+
+        function setMansionDiff(d, btn) {
+            if (mansionActive) return;
+            mansionDiff = d;
+            document.querySelectorAll(".m-diff-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            mansionMult = (d === 1) ? 1.45 : 2.80;
+            document.getElementById("mansionStageTxt").innerText = `Этаж 1 • Множитель: x${mansionMult}`;
+        }
+
+        function resetDoorVisuals() {
+            for (let i = 0; i < 3; i++) {
+                document.getElementById(`dFront${i}`).style.display = "block";
+                document.getElementById(`dRes${i}`).style.display = "none";
+                document.getElementById(`dRes${i}`).innerText = "";
+            }
+        }
+
+        function pickDoor(doorIdx) {
+            if (!mansionActive) {
+                if (balance < 100) return alert("Недостаточно средств (ставка 100 ₽)!");
+                balance -= 100; updateBal();
+                mansionActive = true;
+                document.getElementById("btnMansionCash").style.display = "block";
+            }
+
+            // Генерируем ловушку
+            trapDoorIndex = Math.floor(Math.random() * 3);
+            let isTrap = (doorIdx === trapDoorIndex);
+
+            document.getElementById(`dFront${doorIdx}`).style.display = "none";
+            const resEl = document.getElementById(`dRes${doorIdx}`);
+            resEl.style.display = "block";
+
+            if (isTrap) {
+                resEl.innerText = "👻";
+                triggerHaptic("error");
+                setTimeout(() => {
+                    alert("💥 В комнате призрак! Вы проиграли.");
+                    initMansionGame();
+                }, 150);
+            } else {
+                resEl.innerText = "💎";
+                triggerHaptic("success");
+                mansionStage++;
+                let stepM = (mansionDiff === 1) ? 1.45 : 2.80;
+                mansionMult = +(mansionMult * stepM).toFixed(2);
+                const curWin = Math.floor(100 * mansionMult);
+                document.getElementById("mansionStageTxt").innerText = `Этаж ${mansionStage} • Банк: ${curWin} ₽ (x${mansionMult})`;
+                document.getElementById("btnMansionCash").innerText = `ЗАБРАТЬ ${curWin} ₽`;
+                setTimeout(resetDoorVisuals, 600);
+            }
+        }
+
+        function cashMansion() {
+            if (!mansionActive) return;
+            const win = Math.floor(100 * mansionMult);
+            balance += win; updateBal();
+            triggerHaptic("success");
+            alert(`🏆 Вы вынесли из особняка: +${win} ₽!`);
+            initMansionGame();
+        }
+
+        /* ----------------------------------------------------
+           3. ДВИЖОК: РАКЕТКА (CRASH)
+           ---------------------------------------------------- */
+        let crashActive = false;
+        let crashMultiplier = 1.0;
+        let crashLoopId = null;
+        let crashCrashPoint = 2.0;
+
+        function initCrashGame() {
+            crashActive = false;
+            crashMultiplier = 1.0;
+            document.getElementById("crashBigTxt").innerText = "x1.00";
+            document.getElementById("btnCrashAct").innerText = "ВЗЛЕТЕТЬ (100 ₽)";
+            document.getElementById("btnCrashAct").style.background = "";
+            renderCrashCanvas(1.0);
+        }
+
+        function handleCrashBtn() {
+            if (!crashActive) {
+                if (balance < 100) return alert("Недостаточно средств (ставка 100 ₽)!");
+                balance -= 100; updateBal();
+                crashActive = true;
+                crashMultiplier = 1.0;
+                crashCrashPoint = +(1.1 + Math.random() * 4.5).toFixed(2);
+
+                const btn = document.getElementById("btnCrashAct");
+                btn.innerText = "ЗАБРАТЬ";
+                btn.style.background = "#00d26a";
+                btn.style.color = "#000";
+                triggerHaptic("medium");
+
+                crashLoopId = setInterval(() => {
+                    crashMultiplier = +(crashMultiplier + 0.05).toFixed(2);
+                    document.getElementById("crashBigTxt").innerText = `x${crashMultiplier.toFixed(2)}`;
+                    renderCrashCanvas(crashMultiplier);
+
+                    if (crashMultiplier >= crashCrashPoint) {
+                        clearInterval(crashLoopId);
+                        stopCrashFly(false);
+                    }
+                }, 90);
+            } else {
+                clearInterval(crashLoopId);
+                const win = Math.floor(100 * crashMultiplier);
+                balance += win; updateBal();
+                triggerHaptic("success");
+                alert(`🚀 Вы успели спрыгнуть! Выигрыш: +${win} ₽!`);
+                stopCrashFly(true);
+            }
+        }
+
+        function stopCrashFly(isWin) {
+            crashActive = false;
+            if (!isWin) {
+                triggerHaptic("error");
+                document.getElementById("crashBigTxt").innerText = "💥 КРАШ!";
+                alert(`💥 Ракета взорвалась на x${crashCrashPoint}!`);
+            }
+            document.getElementById("btnCrashAct").innerText = "ВЗЛЕТЕТЬ (100 ₽)";
+            document.getElementById("btnCrashAct").style.background = "";
+            document.getElementById("btnCrashAct").style.color = "#fff";
+        }
+
+        function renderCrashCanvas(mult) {
+            const cvs = document.getElementById("crashCvs");
+            const ctx = cvs.getContext("2d");
+            ctx.clearRect(0, 0, cvs.width, cvs.height);
+            ctx.beginPath();
+            ctx.moveTo(20, 220);
+            let progress = Math.min(1, (mult - 1) / 4);
+            let endX = 20 + progress * 280;
+            let endY = 220 - progress * 170;
+            ctx.quadraticCurveTo(endX / 2, 220, endX, endY);
+            ctx.strokeStyle = "#5b6df7";
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Ракета
+            ctx.font = "24px sans-serif";
+            ctx.fillText("🚀", endX - 12, endY - 8);
+        }
+
+        /* ----------------------------------------------------
+           4. ДВИЖОК: PLINKO
+           ---------------------------------------------------- */
+        function initPlinkoGame() {
+            renderPlinkoBase();
+        }
+        function renderPlinkoBase() {
+            const cvs = document.getElementById("plinkoCvs");
+            const ctx = cvs.getContext("2d");
+            ctx.clearRect(0, 0, cvs.width, cvs.height);
+            // Пирамида колышков
+            ctx.fillStyle = "#fff";
+            for (let row = 0; row < 7; row++) {
+                let count = row + 3;
+                let startX = (cvs.width - (count - 1) * 36) / 2;
+                for (let col = 0; col < count; col++) {
+                    ctx.beginPath();
+                    ctx.arc(startX + col * 36, 40 + row * 34, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            // Корзины множителей снизу
+            const mults = ["x5.0", "x2.0", "x0.5", "x0.2", "x0.5", "x2.0", "x5.0"];
+            const colors = ["#ff7675", "#fdcb6e", "#ffeaa7", "#74b9ff", "#ffeaa7", "#fdcb6e", "#ff7675"];
+            for (let i = 0; i < mults.length; i++) {
+                ctx.fillStyle = colors[i];
+                ctx.fillRect(20 + i * 44, 280, 40, 22);
+                ctx.fillStyle = "#000";
+                ctx.font = "bold 10px sans-serif";
+                ctx.fillText(mults[i], 28 + i * 44, 295);
+            }
+        }
+        function dropPlinkoBall() {
+            if (balance < 100) return alert("Недостаточно средств (ставка 100 ₽)!");
+            balance -= 100; updateBal();
+            triggerHaptic("medium");
+
+            const cvs = document.getElementById("plinkoCvs");
+            const ctx = cvs.getContext("2d");
+            let x = cvs.width / 2;
+            let y = 15;
+            let step = 0;
+
+            let anim = setInterval(() => {
+                renderPlinkoBase();
+                y += 10;
+                x += (Math.random() - 0.5) * 16;
+                ctx.beginPath();
+                ctx.arc(x, y, 7, 0, Math.PI * 2);
+                ctx.fillStyle = "#ffb800";
+                ctx.fill();
+
+                if (y >= 275) {
+                    clearInterval(anim);
+                    let multArray = [5.0, 2.0, 0.5, 0.2, 0.5, 2.0, 5.0];
+                    let bucket = Math.min(6, Math.max(0, Math.floor((x - 20) / 44)));
+                    let m = multArray[bucket] || 0.5;
+                    let win = Math.floor(100 * m);
+                    balance += win; updateBal();
+                    triggerHaptic(m >= 1 ? "success" : "error");
+                    alert(`🎯 Шарик упал в корзину ${m}x! Выигрыш: ${win} ₽!`);
+                }
+            }, 30);
+        }
+
+        /* ----------------------------------------------------
+           5. АПГРЕЙДЕР (РУКА/СПИДОМЕТР)
+           ---------------------------------------------------- */
+        let upgMult = 2;
         let upgChance = 50;
-        let isSpinning = false;
+        let isUpgSpin = false;
         let currentAngle = 0;
 
-        function setMultiplier(m, btn) {
-            if (isSpinning) return;
-            currentMultiplier = m;
+        function setUpgMult(m, btn) {
+            if (isUpgSpin) return;
+            upgMult = m;
             document.querySelectorAll(".upg-mult-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
-
             upgChance = Math.floor(100 / m);
             document.getElementById("upgPercent").innerText = `${upgChance} %`;
             document.getElementById("targetNameLabel").innerText = `NFT ×${m} (${100 * m} ₽)`;
@@ -794,7 +1211,6 @@
             ctx.translate(cx, cy);
             ctx.rotate(angle);
 
-            // Обод спидометра
             ctx.beginPath();
             ctx.arc(0, 0, r, 0, Math.PI * 2);
             ctx.fillStyle = "#181d38";
@@ -803,7 +1219,6 @@
             ctx.strokeStyle = "#272e59";
             ctx.stroke();
 
-            // Сектор выигрыша
             const winRad = (chance / 100) * (Math.PI * 2);
             ctx.beginPath();
             ctx.moveTo(0, 0);
@@ -816,13 +1231,11 @@
         }
 
         function spinUpgrade() {
-            if (isSpinning) return;
+            if (isUpgSpin) return;
             if (balance < 100) return alert("Недостаточно средств (ставка 100 ₽)!");
-            balance -= 100;
-            updateBal();
-
-            isSpinning = true;
-            document.getElementById("btnRunUpgAction").disabled = true;
+            balance -= 100; updateBal();
+            isUpgSpin = true;
+            document.getElementById("btnRunUpg").disabled = true;
             triggerHaptic("medium");
 
             const isWin = (Math.random() * 100 < upgChance);
@@ -846,40 +1259,34 @@
 
                 if (p < 1) requestAnimationFrame(anim);
                 else {
-                    isSpinning = false;
-                    document.getElementById("btnRunUpgAction").disabled = false;
+                    isUpgSpin = false;
+                    document.getElementById("btnRunUpg").disabled = false;
                     if (isWin) {
-                        const winAmount = 100 * currentMultiplier;
-                        balance += winAmount;
-                        updateBal();
+                        const winAmount = 100 * upgMult;
+                        balance += winAmount; updateBal();
                         triggerHaptic("success");
-                        alert(`🎉 ПОБЕДА! Получен NFT на сумму ${winAmount} ₽!`);
+                        alert(`🎉 ПОБЕДА! Вы улучшили предмет: +${winAmount} ₽!`);
                     } else {
                         triggerHaptic("error");
-                        alert("💥 Предмет сгорел!");
+                        alert("💥 Неудача! Предмет сгорел.");
                     }
                 }
             }
             requestAnimationFrame(anim);
         }
 
-        /* ОТКРЫТИЕ КЕЙСА */
-        function openCase(title, price) {
+        /* КЕЙСЫ */
+        function openCaseDrop(title, price) {
             if (balance < price) return alert("Недостаточно средств для открытия кейса!");
-            balance -= price;
-            updateBal();
+            balance -= price; updateBal();
             triggerHaptic("medium");
-
-            const winMult = [0.5, 1.2, 2.5, 4.0][Math.floor(Math.random() * 4)];
-            const winVal = Math.floor(price * winMult);
-            balance += winVal;
-            updateBal();
-
+            const win = Math.floor(price * (0.8 + Math.random() * 2.5));
+            balance += win; updateBal();
             triggerHaptic("success");
-            alert(`📦 Из кейса "${title}" выпал подарок на сумму ${winVal} ₽!`);
+            alert(`📦 Из кейса "${title}" выпал подарок на сумму ${win} ₽!`);
         }
 
-        /* ВЫВОД И ПОПОЛНЕНИЕ */
+        /* ВЫВОД */
         function openWithdraw() { document.getElementById("withdrawModal").style.display = "flex"; }
         function closeWithdraw() { document.getElementById("withdrawModal").style.display = "none"; }
         function openDeposit() { alert("Для пополнения баланса воспользуйтесь ботом Telegram."); }
@@ -891,13 +1298,9 @@
             if (sum > balance) return alert("На балансе недостаточно средств!");
             if (!target) return alert("Укажите реквизиты!");
 
-            balance -= sum;
-            updateBal();
+            balance -= sum; updateBal();
             closeWithdraw();
-
-            if (tg?.sendData) {
-                tg.sendData(`withdraw:${sum}:ROMANA:${target}`);
-            }
+            if (tg?.sendData) tg.sendData(`withdraw:${sum}:ROMANA:${target}`);
             alert(`✅ Заявка на вывод ${sum} ₽ отправлена администратору!`);
         }
 

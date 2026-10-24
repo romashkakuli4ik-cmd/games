@@ -2,387 +2,1047 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Phone Cases Mini App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Phone Cases Game</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: #f4f6fb;
-      --card-bg: #ffffff;
-      --text: #111827;
-      --text-sub: #6b7280;
-      --primary: #3b82f6;
-      --border: #e5e7eb;
-      --success: #10b981;
-      --gold: #f59e0b;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --border: #e2e8f0;
+      --gold: #eab308;
+      --legendary-border: #facc15;
+      --rare-border: #38bdf8;
+      --epic-border: #818cf8;
+      --common-border: #cbd5e1;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding-bottom: 75px; overflow-x: hidden; }
-    
-    /* Top Bar */
-    .topbar { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--card-bg); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
-    .balance-badge { background: #eff6ff; color: var(--primary); font-weight: 700; padding: 6px 14px; border-radius: 20px; font-size: 15px; border: 1px solid #bfdbfe; }
-    
-    /* Views */
-    .view { display: none; padding: 16px; }
-    .view.active { display: block; }
-    
-    /* Case Cards */
-    .cases-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    .case-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-    .case-info h3 { font-size: 16px; margin-bottom: 4px; }
-    .case-info p { font-size: 13px; color: var(--text-sub); }
-    .btn-open { background: var(--primary); color: #fff; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 600; cursor: pointer; }
-    
-    /* Roulette / Dropped */
-    .roulette-box { background: var(--card-bg); border: 2px dashed var(--primary); border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 16px; }
-    .drop-name { font-size: 20px; font-weight: 800; margin: 8px 0; color: var(--text); }
-    .drop-price { font-size: 15px; color: var(--success); font-weight: 700; }
-    
-    /* Inventory Grid */
-    .inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-    .inv-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; }
-    .inv-card h4 { font-size: 13px; margin: 6px 0; }
-    .btn-sell { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; width: 100%; cursor: pointer; }
-    
-    /* Bottom Navigation Bar */
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 64px; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 20; }
-    .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: var(--text-sub); border: none; background: none; cursor: pointer; flex: 1; }
-    .nav-item.active { color: var(--primary); font-weight: 700; }
-    .nav-icon { font-size: 20px; margin-bottom: 2px; }
-    
-    /* Games */
-    .game-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
-    .mines-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; }
-    .mine-cell { height: 60px; font-size: 24px; border: 1px solid var(--border); border-radius: 10px; background: #f9fafb; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-    
-    /* Buttons General */
-    .btn-action { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 8px; }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-deposit { background: var(--gold); color: #fff; }
-    .btn-withdraw { background: #e5e7eb; color: var(--text-sub); }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding-bottom: 74px;
+      overflow-x: hidden;
+    }
+
+    /* Верхняя панель */
+    .header {
+      background: var(--card);
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+    .header-title {
+      font-size: 17px;
+      font-weight: 700;
+    }
+    .balance-box {
+      background: #f1f5f9;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* Экраны / Табы */
+    .tab-view {
+      display: none;
+      padding: 16px;
+    }
+    .tab-view.active {
+      display: block;
+    }
+
+    /* --- КЕЙСЫ (КАК НА ВИДЕО) --- */
+    .case-card-nav {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 12px;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .case-card-nav img, .case-card-nav .case-icon {
+      font-size: 44px;
+      margin-bottom: 6px;
+    }
+    .case-card-nav h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .case-card-nav p {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Детальная страница кейса */
+    .case-detail-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .btn-back {
+      border: none;
+      background: none;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Рулетка-карусель */
+    .roulette-container {
+      position: relative;
+      width: 100%;
+      height: 150px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .roulette-track {
+      display: flex;
+      gap: 12px;
+      position: absolute;
+      left: 0;
+      transition: transform 5s cubic-bezier(0.12, 0.8, 0.15, 1);
+      padding-left: calc(50% - 55px);
+    }
+    .roulette-item {
+      min-width: 110px;
+      height: 130px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+    }
+    .phone-mockup {
+      width: 44px;
+      height: 75px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 6px;
+      position: relative;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .phone-mockup::before {
+      content: "";
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      width: 12px;
+      height: 18px;
+      background: #000;
+      border-radius: 4px;
+      opacity: 0.35;
+    }
+    .phone-blue { background: #3b82f6; }
+    .phone-yellow { background: #fbbf24; }
+    .phone-black { background: #1e293b; }
+    .phone-green { background: #10b981; }
+    .phone-purple { background: #8b5cf6; }
+
+    .roulette-item-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    /* Рамка фиксации по центру */
+    .roulette-pointer {
+      position: absolute;
+      left: calc(50% - 60px);
+      width: 120px;
+      height: 140px;
+      border: 3px solid #0f172a;
+      border-radius: 16px;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* Карточка выпавшего лота */
+    .won-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+      animation: popIn 0.3s ease;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .won-info h4 {
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .won-info p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Большая кнопка открытия */
+    .btn-main-open {
+      width: 100%;
+      height: 48px;
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 6px rgba(37,99,235,0.25);
+    }
+    .btn-main-open:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    /* Таблица дропа «Что внутри» */
+    .content-list-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .content-row {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+    .content-row-info {
+      flex: 1;
+      margin-left: 12px;
+    }
+    .content-row-name {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .content-row-rarity {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .content-row-percent {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    /* --- ИНВЕНТАРЬ (КАК НА ВИДЕО) --- */
+    .inv-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .inv-item-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      border: 2px solid var(--common-border);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .inv-item-card.legendary { border-color: var(--legendary-border); }
+    .inv-item-card.rare { border-color: var(--rare-border); }
+    .inv-item-card.epic { border-color: var(--epic-border); }
+
+    .inv-item-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin: 6px 0 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
+    }
+    .inv-item-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .btn-inv-sell {
+      width: 100%;
+      height: 36px;
+      background: #0f172a;
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* --- КРУГЛЫЙ АПГРЕЙДЕР --- */
+    .upgrader-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+    }
+    .wheel-wrapper {
+      position: relative;
+      width: 240px;
+      height: 240px;
+      margin: 16px auto;
+    }
+    .wheel-svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+    .wheel-bg-circle {
+      fill: none;
+      stroke: #f1f5f9;
+      stroke-width: 22;
+    }
+    .wheel-chance-circle {
+      fill: none;
+      stroke: #2563eb;
+      stroke-width: 22;
+      stroke-linecap: round;
+      transition: stroke-dasharray 0.3s ease;
+    }
+    .wheel-center-info {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .wheel-center-info span {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .wheel-arrow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 4px;
+      height: 105px;
+      background: #ef4444;
+      border-radius: 2px;
+      transform-origin: bottom center;
+      margin-left: -2px;
+      margin-top: -105px;
+      transform: rotate(0deg);
+      transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1);
+      z-index: 10;
+    }
+    .wheel-arrow::before {
+      content: "";
+      position: absolute;
+      top: -6px;
+      left: -5px;
+      width: 0;
+      height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-bottom: 12px solid #ef4444;
+    }
+
+    .upgrade-selectors {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .upgrade-slot {
+      flex: 1;
+      background: #f8fafc;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      font-size: 12px;
+      min-height: 70px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* --- АККАУНТ И МАГАЗИН --- */
+    .profile-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    .profile-avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #2563eb;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 auto 10px;
+    }
+    .stats-row {
+      display: flex;
+      justify-content: space-around;
+      border-top: 1px solid var(--border);
+      margin-top: 14px;
+      padding-top: 12px;
+    }
+    .stat-item h5 {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .stat-item b {
+      font-size: 15px;
+    }
+
+    .btn-deposit {
+      width: 100%;
+      height: 44px;
+      background: #eab308;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 15px;
+      margin-top: 8px;
+      cursor: pointer;
+    }
+    .btn-withdraw {
+      width: 100%;
+      height: 44px;
+      background: #f1f5f9;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      margin-top: 8px;
+      cursor: pointer;
+    }
+
+    /* --- НИЖНЯЯ ПАНЕЛЬ (ТОЧНО КАК НА ВИДЕО) --- */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: #ffffff;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 50;
+    }
+    .nav-btn {
+      flex: 1;
+      height: 100%;
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .nav-btn.active {
+      color: #2563eb;
+      font-weight: 700;
+    }
+    .nav-btn svg {
+      width: 22px;
+      height: 22px;
+      margin-bottom: 3px;
+      fill: currentColor;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Top Bar -->
-  <div class="topbar">
-    <span style="font-weight: 800; font-size: 18px;">📱 PhoneCases</span>
-    <div class="balance-badge" id="balance-display">150.0 ₽</div>
+  <!-- Верхняя строка баланса -->
+  <div class="header">
+    <div class="header-title" id="page-title">Кейсы</div>
+    <div class="balance-box" id="top-balance">Баланс: 0 ₽</div>
   </div>
 
-  <!-- VIEW 1: КЕЙСЫ -->
-  <div id="view-cases" class="view active">
-    <div id="drop-display" class="roulette-box" style="display: none;">
-      <div style="font-size: 40px;">🎁</div>
-      <div class="drop-name" id="drop-name">iPhone 15 Pro</div>
-      <div class="drop-price" id="drop-price">+5 500 ₽</div>
-    </div>
+  <!-- 1. ТАБ: КЕЙСЫ -->
+  <div id="tab-cases" class="tab-view active">
+    <!-- Список кейсов -->
+    <div id="cases-list">
+      <div class="case-card-nav" onclick="showCaseDetail('bomj')">
+        <div class="case-icon">🗑</div>
+        <h3>Кейс бомжа</h3>
+        <p style="color: #10b981;">Бесплатно / 10 ₽</p>
+      </div>
 
-    <div class="cases-grid">
-      <div class="case-card">
-        <div class="case-info">
-          <h3>🗑 Кейс бомжа</h3>
-          <p>Кнопочные телефоны, старый хлам</p>
-        </div>
-        <button class="btn-open" onclick="openCase('bomj', 10)">10 ₽</button>
+      <div class="case-card-nav" onclick="showCaseDetail('start')">
+        <div class="case-icon">📦</div>
+        <h3>Стартовый кейс</h3>
+        <p>50 ₽</p>
       </div>
-      <div class="case-card">
-        <div class="case-info">
-          <h3>📦 Стартовый кейс</h3>
-          <p>Redmi 9A, Realme, Infinix</p>
-        </div>
-        <button class="btn-open" onclick="openCase('start', 50)">50 ₽</button>
+
+      <div class="case-card-nav" onclick="showCaseDetail('middle')">
+        <div class="case-icon">📱</div>
+        <h3>Продвинутый кейс</h3>
+        <p>250 ₽</p>
       </div>
-      <div class="case-card">
-        <div class="case-info">
-          <h3>📱 Продвинутый кейс</h3>
-          <p>Tecno Spark, Galaxy A17, Poco</p>
-        </div>
-        <button class="btn-open" onclick="openCase('middle', 250)">250 ₽</button>
+
+      <div class="case-card-nav" onclick="showCaseDetail('premium')">
+        <div class="case-icon">💎</div>
+        <h3>Премиум кейс</h3>
+        <p>1 000 ₽</p>
       </div>
-      <div class="case-card">
-        <div class="case-info">
-          <h3>💎 Премиум кейс</h3>
-          <p>Nothing Phone, iPhone 13, S23</p>
-        </div>
-        <button class="btn-open" onclick="openCase('premium', 1000)">1 000 ₽</button>
-      </div>
-      <div class="case-card">
-        <div class="case-info">
-          <h3>👑 Легенда</h3>
-          <p>iPhone 16 Pro Max 1TB Gold</p>
-        </div>
-        <button class="btn-open" onclick="openCase('legend', 5000)">5 000 ₽</button>
+
+      <div class="case-card-nav" onclick="showCaseDetail('legend')">
+        <div class="case-icon">👑</div>
+        <h3>Кейс Легенда</h3>
+        <p>5 000 ₽</p>
       </div>
     </div>
-  </div>
 
-  <!-- VIEW 2: ИНВЕНТАРЬ -->
-  <div id="view-inventory" class="view">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h3>Ваши гаджеты</h3>
-      <button class="btn-open" style="background:#10b981; font-size:12px; padding:6px 12px;" onclick="sellAll()">Продать всё</button>
-    </div>
-    <div id="inv-container" class="inv-grid"></div>
-  </div>
+    <!-- Страница выбранного кейса (как на видео) -->
+    <div id="case-detail" style="display: none;">
+      <div class="case-detail-header">
+        <button class="btn-back" onclick="hideCaseDetail()">‹ Назад</button>
+        <h3 style="flex: 1; text-align: center; margin-right: 50px;" id="detail-case-title">Кейс бомжа</h3>
+      </div>
 
-  <!-- VIEW 3: АПГРЕЙД -->
-  <div id="view-upgrader" class="view">
-    <div class="game-card" style="text-align: center;">
-      <h3>⚡️ Улучшение девайса</h3>
-      <p style="color:var(--text-sub); margin: 8px 0; font-size: 13px;">Выберите телефон из инвентаря для шанса удвоить его стоимость!</p>
-      <div style="font-size: 48px; margin: 16px 0;">📱 ➔ 🚀</div>
-      <div style="font-size: 14px; font-weight: 700; color: var(--primary);">Шанс успеха: 48%</div>
-      <button class="btn-action btn-primary" onclick="performUpgrade()">Попробовать апгрейд</button>
-    </div>
-  </div>
+      <!-- Карусель рулетки -->
+      <div class="roulette-container">
+        <div class="roulette-pointer"></div>
+        <div class="roulette-track" id="roulette-track"></div>
+      </div>
 
-  <!-- VIEW 4: МИНИ-ИГРЫ -->
-  <div id="view-games" class="view">
-    <div class="game-card">
-      <h3>💣 Мины (3x3) — Ставка 20 ₽</h3>
-      <div class="mines-grid" id="mines-field"></div>
-      <button class="btn-action btn-primary" id="btn-mines-cashout" style="display:none;" onclick="cashoutMines()">Забрать куш</button>
-      <button class="btn-action btn-open" style="width:100%;" onclick="startMines()">Новая игра (20 ₽)</button>
-    </div>
+      <!-- Карточка выпавшего приза -->
+      <div class="won-box" id="won-box" style="display: none;">
+        <div class="phone-mockup phone-black" id="won-icon"></div>
+        <div class="won-info">
+          <p>Вам выпало</p>
+          <h4 id="won-name">Samsung A17</h4>
+          <p id="won-rarity" style="color: #2563eb; font-weight: 600;">Легендарный</p>
+          <span style="font-size: 11px; color: #10b981;">Добавлено в инвентарь</span>
+        </div>
+      </div>
 
-    <div class="game-card">
-      <h3>🔴 Плинко — Ставка 25 ₽</h3>
-      <p style="font-size:13px; color:var(--text-sub); margin-bottom:8px;">Слоты: 0.2x | 0.5x | 1.2x | 1.8x | 3.5x</p>
-      <button class="btn-action btn-primary" onclick="playPlinko()">Сбросить шар</button>
+      <button class="btn-main-open" id="btn-open-case" onclick="spinRoulette()">Открыть бесплатно</button>
+
+      <!-- «Что внутри» -->
+      <div class="content-list-title">ЧТО ВНУТРИ</div>
+      <div id="case-drop-table"></div>
     </div>
   </div>
 
-  <!-- VIEW 5: МАГАЗИН -->
-  <div id="view-shop" class="view">
-    <div class="game-card">
-      <h3>⭐️ Пополнение через Telegram Stars</h3>
-      <p style="font-size: 13px; color: var(--text-sub); margin: 6px 0 12px;">Мин. сумма: 10 Stars. Курс: 10 ⭐ = 15 ₽</p>
-      <button class="btn-action btn-deposit" onclick="openDeposit()">💳 Пополнить баланс</button>
-      <button class="btn-action btn-withdraw" onclick="openWithdraw()">📤 Вывести средства</button>
+  <!-- 2. ТАБ: ИНВЕНТАРЬ (КАК НА ВИДЕО) -->
+  <div id="tab-inventory" class="tab-view">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="font-size: 18px;">Инвентарь</h3>
+      <button onclick="sellAllItems()" style="border:none; background:none; color:#ef4444; font-weight:700; font-size:13px; cursor:pointer;">Продать всё</button>
+    </div>
+    <div id="inv-empty" style="text-align: center; color: var(--text-muted); margin-top: 50px; display: none;">
+      В инвентаре пусто.<br>Открой кейс, чтобы получить телефон.
+    </div>
+    <div class="inv-grid" id="inv-grid"></div>
+  </div>
+
+  <!-- 3. ТАБ: АПГРЕЙДЕР (КРУГЛЫЙ СО СТРЕЛКОЙ) -->
+  <div id="tab-upgrade" class="tab-view">
+    <div class="upgrader-box">
+      <h3 style="font-size: 17px; margin-bottom: 4px;">Круговой Апгрейдер</h3>
+      <p style="font-size: 12px; color: var(--text-muted);">Вращайте стрелку, чтобы приумножить стоимость</p>
+
+      <div class="wheel-wrapper">
+        <svg class="wheel-svg" viewBox="0 0 100 100">
+          <circle class="wheel-bg-circle" cx="50" cy="50" r="38"></circle>
+          <circle class="wheel-chance-circle" id="wheel-stroke" cx="50" cy="50" r="38" stroke-dasharray="119 239"></circle>
+        </svg>
+        <div class="wheel-arrow" id="wheel-arrow"></div>
+        <div class="wheel-center-info">
+          <div id="chance-text">50%</div>
+          <span>ШАНС</span>
+        </div>
+      </div>
+
+      <div class="upgrade-selectors">
+        <div class="upgrade-slot" id="slot-from">
+          <b>Ваш телефон</b>
+          <span id="slot-from-name" style="color:var(--text-muted);">Не выбран</span>
+        </div>
+        <div style="display: flex; align-items: center; font-weight: bold; color: var(--primary);">➔</div>
+        <div class="upgrade-slot" id="slot-to">
+          <b>Цель</b>
+          <span id="slot-to-name" style="color:#10b981;">x2.0 к цене</span>
+        </div>
+      </div>
+
+      <button class="btn-main-open" id="btn-spin-upgrade" onclick="runWheelUpgrade()">Улучшить девайс</button>
     </div>
   </div>
 
-  <!-- VIEW 6: АККАУНТ -->
-  <div id="view-account" class="view">
-    <div class="game-card">
-      <h3 id="acc-name">👤 Игрок</h3>
-      <p style="color:var(--text-sub); font-size:13px; margin:6px 0;" id="acc-id">ID: Загрузка...</p>
-      <hr style="border:0; border-top:1px solid var(--border); margin:12px 0;">
-      <p>💰 Игровой баланс: <b id="acc-bal">150.0 ₽</b></p>
-      <p style="margin-top:4px;">📦 Открыто коробок: <b id="acc-opened">0 шт.</b></p>
-      <button class="btn-action btn-deposit" onclick="openDeposit()">💳 Пополнить</button>
-      <button class="btn-action btn-withdraw" onclick="openWithdraw()">📤 Вывести</button>
+  <!-- 4. ТАБ: МАГАЗИН -->
+  <div id="tab-shop" class="tab-view">
+    <div class="profile-card">
+      <h3>Пополнение баланса</h3>
+      <p style="font-size: 13px; color: var(--text-muted); margin: 6px 0 12px;">Оплата через Telegram Stars (от 10 ⭐)</p>
+      <button class="btn-deposit" onclick="callDeposit()">⭐️ Пополнить (от 10 Stars)</button>
+      <button class="btn-withdraw" onclick="callWithdraw()">📤 Вывод средств</button>
     </div>
   </div>
 
-  <!-- Bottom Navigation Bar (как на видео) -->
-  <div class="bottom-nav">
-    <button class="nav-item active" onclick="switchTab('cases', this)">
-      <span class="nav-icon">📦</span>Кейсы
+  <!-- 5. ТАБ: АККАУНТ / ПРОФИЛЬ -->
+  <div id="tab-account" class="tab-view">
+    <div class="profile-card">
+      <div class="profile-avatar" id="acc-avatar">U</div>
+      <h3 id="acc-name">Пользователь</h3>
+      <p id="acc-id" style="font-size: 12px; color: var(--text-muted);">ID: 000000</p>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <h5>ОТКРЫТО</h5>
+          <b id="acc-stat-opened">0</b>
+        </div>
+        <div class="stat-item">
+          <h5>ИНВЕНТАРЬ</h5>
+          <b id="acc-stat-inv">0 ₽</b>
+        </div>
+        <div class="stat-item">
+          <h5>БАЛАНС</h5>
+          <b id="acc-stat-bal">0 ₽</b>
+        </div>
+      </div>
+
+      <button class="btn-deposit" onclick="callDeposit()">💳 Пополнить</button>
+      <button class="btn-withdraw" onclick="callWithdraw()">📤 Вывести</button>
+    </div>
+  </div>
+
+  <!-- Нижний бар навигации (как на видео) -->
+  <div class="bottom-bar">
+    <button class="nav-btn" onclick="setTab('shop', this)">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm2 3h12l-1 11H7L6 9zm5 2v7h2v-7h-2z"/></svg>
+      Магазин
     </button>
-    <button class="nav-item" onclick="switchTab('inventory', this)">
-      <span class="nav-icon">💼</span>Инвентарь
+    <button class="nav-btn active" onclick="setTab('cases', this)">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V18z"/></svg>
+      Кейсы
     </button>
-    <button class="nav-item" onclick="switchTab('upgrader', this)">
-      <span class="nav-icon">⚡️</span>Апгрейд
+    <button class="nav-btn" onclick="setTab('inventory', this)">
+      <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
+      Инвентарь
     </button>
-    <button class="nav-item" onclick="switchTab('games', this)">
-      <span class="nav-icon">🎮</span>Игры
+    <button class="nav-btn" onclick="setTab('upgrade', this)">
+      <svg viewBox="0 0 24 24"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg>
+      Апгрейд
     </button>
-    <button class="nav-item" onclick="switchTab('shop', this)">
-      <span class="nav-icon">🏪</span>Магазин
-    </button>
-    <button class="nav-item" onclick="switchTab('account', this)">
-      <span class="nav-icon">👤</span>Аккаунт
+    <button class="nav-btn" onclick="setTab('account', this)">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      Аккаунт
     </button>
   </div>
 
   <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+    const tg = window.Telegram?.WebApp;
+    if (tg) { tg.expand(); }
 
-    // Состояние игры
-    let state = {
-      balance: 150.0,
-      inventory: [],
-      opened: 0
+    // Состояние игрока
+    let userData = {
+      balance: 14100, // Начальный баланс как на видео
+      openedCount: 0,
+      inventory: [
+        { id: 1, name: "Samsung A17", rarity: "Легендарный", price: 4500, color: "phone-black", tag: "legendary" },
+        { id: 2, name: "Realme Note 80", rarity: "Обычный", price: 700, color: "phone-blue", tag: "common" },
+        { id: 3, name: "Infinix HOT 60i", rarity: "Редкий", price: 1300, color: "phone-green", tag: "rare" }
+      ]
     };
 
-    // Предметы
-    const POOLS = {
-      bomj: [{n: "Nokia 3310", p: 12}, {n: "Motorola C115", p: 18}, {n: "Siemens A52", p: 25}, {n: "Redmi 9A", p: 60}],
-      start: [{n: "Redmi 9A", p: 60}, {n: "Realme Note 80", p: 95}, {n: "Infinix HOT 60i", p: 140}],
-      middle: [{n: "Samsung A17", p: 300}, {n: "Tecno Spark 40C", p: 420}, {n: "Poco X6 Pro", p: 750}],
-      premium: [{n: "Nothing Phone (2)", p: 1200}, {n: "iPhone 13", p: 2100}, {n: "Galaxy S23", p: 3200}],
-      legend: [{n: "iPhone 15 Pro", p: 5500}, {n: "Galaxy S24 Ultra", p: 7200}, {n: "iPhone 16 Pro Max 1TB Gold", p: 15000}]
+    // База кейсов и лута (строго по видео)
+    const CASES = {
+      bomj: {
+        title: "Кейс бомжа",
+        cost: 0,
+        items: [
+          { name: "Samsung A17", rarity: "Легендарный", price: 4500, percent: "7,3%", color: "phone-black", tag: "legendary" },
+          { name: "Tecno Spark 40C", rarity: "Эпический", price: 2100, percent: "9,7%", color: "phone-yellow", tag: "epic" },
+          { name: "Xiaomi Redmi A5", rarity: "Редкий", price: 1100, percent: "17%", color: "phone-yellow", tag: "rare" },
+          { name: "Infinix HOT 60i", rarity: "Редкий", price: 1300, percent: "14,6%", color: "phone-green", tag: "rare" },
+          { name: "Redmi 9A", rarity: "Обычный", price: 800, percent: "25%", color: "phone-blue", tag: "common" },
+          { name: "Realme Note 80", rarity: "Обычный", price: 700, percent: "26,4%", color: "phone-blue", tag: "common" }
+        ]
+      },
+      start: {
+        title: "Стартовый кейс",
+        cost: 50,
+        items: [
+          { name: "Redmi Note 13", rarity: "Эпический", price: 3200, percent: "12%", color: "phone-blue", tag: "epic" },
+          { name: "Infinix HOT 60i", rarity: "Редкий", price: 1300, percent: "38%", color: "phone-green", tag: "rare" },
+          { name: "Redmi 9A", rarity: "Обычный", price: 800, percent: "50%", color: "phone-blue", tag: "common" }
+        ]
+      },
+      middle: {
+        title: "Продвинутый кейс",
+        cost: 250,
+        items: [
+          { name: "Poco X6 Pro", rarity: "Легендарный", price: 7500, percent: "10%", color: "phone-yellow", tag: "legendary" },
+          { name: "Samsung A17", rarity: "Эпический", price: 4500, percent: "40%", color: "phone-black", tag: "epic" },
+          { name: "Tecno Spark 40C", rarity: "Редкий", price: 2100, percent: "50%", color: "phone-yellow", tag: "rare" }
+        ]
+      },
+      premium: {
+        title: "Премиум кейс",
+        cost: 1000,
+        items: [
+          { name: "iPhone 13", rarity: "Легендарный", price: 18000, percent: "15%", color: "phone-black", tag: "legendary" },
+          { name: "Galaxy S23", rarity: "Эпический", price: 12000, percent: "35%", color: "phone-purple", tag: "epic" },
+          { name: "Nothing Phone (2)", rarity: "Редкий", price: 8000, percent: "50%", color: "phone-black", tag: "rare" }
+        ]
+      },
+      legend: {
+        title: "Кейс Легенда",
+        cost: 5000,
+        items: [
+          { name: "iPhone 16 Pro Max 1TB", rarity: "Легендарный", price: 65000, percent: "8%", color: "phone-yellow", tag: "legendary" },
+          { name: "Galaxy S24 Ultra", rarity: "Легендарный", price: 50000, percent: "22%", color: "phone-purple", tag: "legendary" },
+          { name: "iPhone 15 Pro", rarity: "Эпический", price: 32000, percent: "70%", color: "phone-black", tag: "epic" }
+        ]
+      }
     };
 
-    function updateUI() {
-      document.getElementById('balance-display').innerText = state.balance.toFixed(1) + ' ₽';
-      document.getElementById('acc-bal').innerText = state.balance.toFixed(1) + ' ₽';
-      document.getElementById('acc-opened').innerText = state.opened + ' шт.';
-      renderInventory();
+    let activeCaseKey = "bomj";
+    let isSpinning = false;
+
+    function updateBalanceUI() {
+      const bStr = userData.balance.toLocaleString('ru-RU') + " ₽";
+      document.getElementById("top-balance").innerText = "Баланс: " + bStr;
+      document.getElementById("acc-stat-bal").innerText = bStr;
+      document.getElementById("acc-stat-opened").innerText = userData.openedCount;
+
+      let invTotal = userData.inventory.reduce((a, b) => a + b.price, 0);
+      document.getElementById("acc-stat-inv").innerText = invTotal.toLocaleString('ru-RU') + " ₽";
     }
 
-    function switchTab(viewId, btn) {
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-      document.getElementById('view-' + viewId).classList.add('active');
-      btn.classList.add('active');
-      if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+    // --- НАВИГАЦИЯ ---
+    function setTab(tabId, el) {
+      document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+      el.classList.add('active');
+
+      const titles = { shop: "Магазин", cases: "Кейсы", inventory: "Инвентарь", upgrade: "Апгрейд", account: "Аккаунт" };
+      document.getElementById("page-title").innerText = titles[tabId] || "Кейсы";
+
+      if (tabId === "inventory") renderInventoryUI();
+      if (tabId === "upgrade") setupUpgraderUI();
+      if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
     }
 
-    function openCase(type, cost) {
-      if (state.balance < cost) {
-        if (tg.showAlert) tg.showAlert("Недостаточно средств на балансе!");
-        else alert("Недостаточно средств!");
+    // --- ОТКРЫТИЕ КЕЙСА ---
+    function showCaseDetail(caseKey) {
+      activeCaseKey = caseKey;
+      const c = CASES[caseKey];
+      document.getElementById("cases-list").style.display = "none";
+      document.getElementById("case-detail").style.display = "block";
+      document.getElementById("detail-case-title").innerText = c.title;
+      document.getElementById("won-box").style.display = "none";
+
+      const btn = document.getElementById("btn-open-case");
+      btn.innerText = c.cost === 0 ? "Открыть бесплатно" : `Открыть за ${c.cost} ₽`;
+
+      // Таблица «Что внутри»
+      const dropTable = document.getElementById("case-drop-table");
+      dropTable.innerHTML = "";
+      c.items.forEach(it => {
+        dropTable.innerHTML += `
+          <div class="content-row">
+            <div class="phone-mockup ${it.color}"></div>
+            <div class="content-row-info">
+              <div class="content-row-name">${it.name}</div>
+              <div class="content-row-rarity">${it.rarity}</div>
+            </div>
+            <div class="content-row-percent">${it.percent}</div>
+          </div>
+        `;
+      });
+
+      buildRouletteTrack();
+    }
+
+    function hideCaseDetail() {
+      document.getElementById("case-detail").style.display = "none";
+      document.getElementById("cases-list").style.display = "block";
+    }
+
+    function buildRouletteTrack() {
+      const track = document.getElementById("roulette-track");
+      track.style.transition = "none";
+      track.style.transform = "translateX(0px)";
+      track.innerHTML = "";
+
+      const pool = CASES[activeCaseKey].items;
+      // Генерируем длинную ленту из 50 элементов
+      for (let i = 0; i < 50; i++) {
+        const item = pool[Math.floor(Math.random() * pool.length)];
+        const div = document.createElement("div");
+        div.className = "roulette-item";
+        div.innerHTML = `
+          <div class="phone-mockup ${item.color}"></div>
+          <div class="roulette-item-title">${item.name}</div>
+        `;
+        track.appendChild(div);
+      }
+    }
+
+    function spinRoulette() {
+      if (isSpinning) return;
+      const c = CASES[activeCaseKey];
+      if (userData.balance < c.cost) {
+        tg?.showAlert ? tg.showAlert("Недостаточно средств на балансе!") : alert("Мало средств!");
         return;
       }
-      state.balance -= cost;
-      state.opened++;
-      const pool = POOLS[type];
-      const drop = pool[Math.floor(Math.random() * pool.length)];
-      state.inventory.push(drop);
 
-      const dBox = document.getElementById('drop-display');
-      document.getElementById('drop-name').innerText = drop.n;
-      document.getElementById('drop-price').innerText = "+" + drop.p + " ₽";
-      dBox.style.display = 'block';
+      userData.balance -= c.cost;
+      userData.openedCount++;
+      updateBalanceUI();
 
-      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
-      updateUI();
+      isSpinning = true;
+      const btn = document.getElementById("btn-open-case");
+      btn.disabled = true;
+      document.getElementById("won-box").style.display = "none";
+
+      // Сброс дорожки
+      buildRouletteTrack();
+      const track = document.getElementById("roulette-track");
+
+      // Победный элемент (например, 36-й)
+      const winIndex = 36;
+      const winItem = CASES[activeCaseKey].items[Math.floor(Math.random() * CASES[activeCaseKey].items.length)];
+      track.children[winIndex].querySelector(".roulette-item-title").innerText = winItem.name;
+      track.children[winIndex].querySelector(".phone-mockup").className = `phone-mockup ${winItem.color}`;
+
+      // Смещение ленты
+      const itemWidth = 122; // 110px ширина + 12px отступ
+      const stopOffset = winIndex * itemWidth + (Math.random() * 40 - 20);
+
+      setTimeout(() => {
+        track.style.transition = "transform 4.5s cubic-bezier(0.12, 0.8, 0.15, 1)";
+        track.style.transform = `translateX(-${stopOffset}px)`;
+      }, 50);
+
+      setTimeout(() => {
+        isSpinning = false;
+        btn.disabled = false;
+        btn.innerText = c.cost === 0 ? "Открыть ещё раз бесплатно" : `Открыть ещё раз за ${c.cost} ₽`;
+
+        // Добавляем в инвентарь
+        userData.inventory.unshift({ ...winItem, id: Date.now() });
+        updateBalanceUI();
+
+        // Показываем плашку выигрыша как на видео
+        const wonBox = document.getElementById("won-box");
+        wonBox.style.display = "flex";
+        document.getElementById("won-name").innerText = winItem.name;
+        document.getElementById("won-rarity").innerText = winItem.rarity;
+        document.getElementById("won-icon").className = `phone-mockup ${winItem.color}`;
+
+        if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
+      }, 4800);
     }
 
-    function renderInventory() {
-      const c = document.getElementById('inv-container');
-      c.innerHTML = '';
-      if (state.inventory.length === 0) {
-        c.innerHTML = '<p style="grid-column: span 2; color: var(--text-sub); text-align:center;">Инвентарь пуст</p>';
+    // --- ИНВЕНТАРЬ ---
+    function renderInventoryUI() {
+      const grid = document.getElementById("inv-grid");
+      const empty = document.getElementById("inv-empty");
+      grid.innerHTML = "";
+
+      if (userData.inventory.length === 0) {
+        empty.style.display = "block";
         return;
       }
-      state.inventory.forEach((item, idx) => {
-        const d = document.createElement('div');
-        d.className = 'inv-card';
-        d.innerHTML = `<h4>${item.n}</h4><p style="font-size:12px; color:var(--success); margin-bottom:6px;">${item.p} ₽</p><button class="btn-sell" onclick="sellItem(${idx})">Продать</button>`;
-        c.appendChild(d);
+      empty.style.display = "none";
+
+      userData.inventory.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = `inv-item-card ${item.tag}`;
+        div.innerHTML = `
+          <div class="phone-mockup ${item.color}"></div>
+          <div class="inv-item-title">${item.name}</div>
+          <div class="inv-item-sub">${item.rarity}</div>
+          <button class="btn-inv-sell" onclick="sellSingleItem(${index})">Продать за ${item.price.toLocaleString('ru-RU')} ₽</button>
+        `;
+        grid.appendChild(div);
       });
     }
 
-    function sellItem(idx) {
-      const item = state.inventory.splice(idx, 1)[0];
-      state.balance += item.p;
-      updateUI();
+    function sellSingleItem(index) {
+      const item = userData.inventory.splice(index, 1)[0];
+      userData.balance += item.price;
+      updateBalanceUI();
+      renderInventoryUI();
+      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred("medium");
     }
 
-    function sellAll() {
-      let sum = 0;
-      state.inventory.forEach(i => sum += i.p);
-      state.balance += sum;
-      state.inventory = [];
-      updateUI();
+    function sellAllItems() {
+      if (userData.inventory.length === 0) return;
+      const sum = userData.inventory.reduce((a, b) => a + b.price, 0);
+      userData.balance += sum;
+      userData.inventory = [];
+      updateBalanceUI();
+      renderInventoryUI();
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
     }
 
-    function performUpgrade() {
-      if (state.inventory.length === 0) {
-        tg.showAlert ? tg.showAlert("Инвентарь пуст!") : alert("Инвентарь пуст!");
-        return;
-      }
-      const item = state.inventory.shift();
-      if (Math.random() <= 0.48) {
-        const upgraded = { n: "Custom " + item.n, p: Math.round(item.p * 2.2) };
-        state.inventory.push(upgraded);
-        tg.showAlert ? tg.showAlert("УСПЕХ! Получен " + upgraded.n) : alert("Успех!");
+    // --- КРУГОВОЙ АПГРЕЙДЕР ---
+    let upgradeChance = 48; // Шанс 48%
+    function setupUpgraderUI() {
+      const fromName = document.getElementById("slot-from-name");
+      const toName = document.getElementById("slot-to-name");
+
+      if (userData.inventory.length > 0) {
+        const item = userData.inventory[0];
+        fromName.innerText = `${item.name} (${item.price} ₽)`;
+        toName.innerText = `Смартфон ~${Math.round(item.price * 2.1)} ₽`;
       } else {
-        tg.showAlert ? tg.showAlert("ПРОВАЛ! " + item.n + " сгорел.") : alert("Провал!");
+        fromName.innerText = "Инвентарь пуст";
+        toName.innerText = "Выберите телефон";
       }
-      updateUI();
+
+      // Настройка дуги SVG (длина окружности 2 * pi * 38 ≈ 238.7)
+      const circumference = 238.7;
+      const strokeVal = (circumference * upgradeChance) / 100;
+      document.getElementById("wheel-stroke").setAttribute("stroke-dasharray", `${strokeVal} ${circumference}`);
+      document.getElementById("chance-text").innerText = upgradeChance + "%";
     }
 
-    // Мины
-    let minesActive = false, bombs = [], openedCells = 0;
-    const MULTIS = [1.25, 1.65, 2.2, 3.1, 4.5, 7.0, 12.0];
-    function startMines() {
-      if (state.balance < 20) {
-        tg.showAlert ? tg.showAlert("Нужно минимум 20 ₽!") : alert("Мало средств");
+    function runWheelUpgrade() {
+      if (isSpinning) return;
+      if (userData.inventory.length === 0) {
+        tg?.showAlert ? tg.showAlert("Сначала выбейте предмет в кейсах!") : alert("Инвентарь пуст!");
         return;
       }
-      state.balance -= 20;
-      minesActive = true;
-      openedCells = 0;
-      bombs = [];
-      while(bombs.length < 2) {
-        let r = Math.floor(Math.random() * 9);
-        if(!bombs.includes(r)) bombs.push(r);
-      }
-      const f = document.getElementById('mines-field');
-      f.innerHTML = '';
-      for(let i=0; i<9; i++) {
-        f.innerHTML += `<button class="mine-cell" id="mc-${i}" onclick="clickMine(${i})">❓</button>`;
-      }
-      document.getElementById('btn-mines-cashout').style.display = 'none';
-      updateUI();
+
+      isSpinning = true;
+      const btn = document.getElementById("btn-spin-upgrade");
+      btn.disabled = true;
+
+      const sourceItem = userData.inventory.shift(); // Забираем предмет
+      updateBalanceUI();
+
+      // Определение победы
+      const isWin = Math.random() * 100 <= upgradeChance;
+      // Случайный градус: сектор успеха от 0 до 172 градусов
+      let finalDegree = isWin ? (Math.random() * 160 + 5) : (Math.random() * 160 + 190);
+      // Добавляем 5 полных оборотов
+      finalDegree += 360 * 5;
+
+      const arrow = document.getElementById("wheel-arrow");
+      arrow.style.transition = "transform 4s cubic-bezier(0.1, 0.7, 0.1, 1)";
+      arrow.style.transform = `rotate(${finalDegree}deg)`;
+
+      setTimeout(() => {
+        isSpinning = false;
+        btn.disabled = false;
+        arrow.style.transition = "none";
+        arrow.style.transform = `rotate(${finalDegree % 360}deg)`;
+
+        if (isWin) {
+          const upgraded = {
+            id: Date.now(),
+            name: "Turbo " + sourceItem.name,
+            rarity: "Легендарный",
+            price: Math.round(sourceItem.price * 2.1),
+            color: "phone-yellow",
+            tag: "legendary"
+          };
+          userData.inventory.unshift(upgraded);
+          tg?.showAlert ? tg.showAlert(`🎉 УСПЕХ! Получен ${upgraded.name}!`) : alert("Успех!");
+        } else {
+          tg?.showAlert ? tg.showAlert(`💥 ПРОВАЛ! ${sourceItem.name} сгорел.`) : alert("Провал!");
+        }
+        updateBalanceUI();
+        setupUpgraderUI();
+      }, 4200);
     }
 
-    function clickMine(i) {
-      if (!minesActive) return;
-      const b = document.getElementById('mc-' + i);
-      if (bombs.includes(i)) {
-        b.innerText = '💣';
-        minesActive = false;
-        document.getElementById('btn-mines-cashout').style.display = 'none';
-        tg.showAlert ? tg.showAlert("💥 БУМ! Ставка сгорела.") : alert("Бум!");
+    // --- МАГАЗИН И АККАУНТ ---
+    function callDeposit() {
+      if (tg?.sendData) {
+        tg.sendData("action_deposit");
       } else {
-        b.innerText = '💎';
-        b.disabled = true;
-        openedCells++;
-        let curWin = (20 * MULTIS[openedCells-1]).toFixed(1);
-        const cashBtn = document.getElementById('btn-mines-cashout');
-        cashBtn.style.display = 'block';
-        cashBtn.innerText = `Забрать ${curWin} ₽`;
+        tg?.showAlert ? tg.showAlert("Для пополнения введите в чате бота /deposit") : alert("Используйте бота для пополнения");
       }
     }
 
-    function cashoutMines() {
-      if (!minesActive || openedCells === 0) return;
-      let win = Number((20 * MULTIS[openedCells-1]).toFixed(1));
-      state.balance += win;
-      minesActive = false;
-      document.getElementById('btn-mines-cashout').style.display = 'none';
-      tg.showAlert ? tg.showAlert(`Забрано +${win} ₽!`) : alert(`+${win}`);
-      updateUI();
+    function callWithdraw() {
+      tg?.showAlert ? tg.showAlert("⚠️ Раздел вывода средств находится в разработке!") : alert("Вывод в разработке!");
     }
 
-    function playPlinko() {
-      if (state.balance < 25) {
-        tg.showAlert ? tg.showAlert("Нужно 25 ₽!") : alert("Мало средств");
-        return;
-      }
-      state.balance -= 25;
-      const mults = [0.2, 0.5, 1.2, 1.8, 3.5];
-      const m = mults[Math.floor(Math.random()*mults.length)];
-      const win = Number((25 * m).toFixed(1));
-      state.balance += win;
-      tg.showAlert ? tg.showAlert(`🔴 Слот: x${m}. Получено +${win} ₽!`) : alert(`x${m} -> +${win}`);
-      updateUI();
+    // Инициализация профиля из Telegram WebApp
+    if (tg?.initDataUnsafe?.user) {
+      const u = tg.initDataUnsafe.user;
+      document.getElementById("acc-name").innerText = u.first_name + (u.last_name ? " " + u.last_name : "");
+      document.getElementById("acc-id").innerText = "ID: " + u.id;
+      document.getElementById("acc-avatar").innerText = u.first_name.charAt(0);
     }
 
-    function openDeposit() {
-      // Отправляем команду боту через Mini App
-      tg.sendData ? tg.sendData("action_deposit") : alert("Используйте /deposit в боте");
-    }
-
-    function openWithdraw() {
-      tg.showAlert ? tg.showAlert("⚠️ Раздел вывода находится в разработке!") : alert("Раздел в разработке!");
-    }
-
-    // Инициализация юзера Telegram
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-      document.getElementById('acc-name').innerText = "👤 " + tg.initDataUnsafe.user.first_name;
-      document.getElementById('acc-id').innerText = "ID: " + tg.initDataUnsafe.user.id;
-    }
-    updateUI();
+    updateBalanceUI();
   </script>
 </body>
 </html>

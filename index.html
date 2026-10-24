@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Phone Cases & Crypto Market</title>
+  <title>Cases, Upgrader & Crypto Market</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
@@ -28,7 +28,7 @@
       padding: 0;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
@@ -61,11 +61,11 @@
       color: var(--primary);
     }
 
-    /* Вкладки */
+    /* Экраны */
     .tab-view { display: none; padding: 14px; }
     .tab-view.active { display: block; }
 
-    /* КЕЙСЫ */
+    /* 1. КЕЙСЫ (СТИЛЬ ИЗ ВИДЕО) */
     .case-card-nav {
       background: var(--card);
       border: 1px solid var(--border);
@@ -85,7 +85,6 @@
     .case-detail-header { display: flex; align-items: center; margin-bottom: 16px; }
     .btn-back { border: none; background: none; font-size: 15px; font-weight: 600; color: var(--text-muted); cursor: pointer; }
 
-    /* Рулетка */
     .roulette-container {
       position: relative;
       width: 100%;
@@ -201,7 +200,7 @@
     .content-row-rarity { font-size: 12px; color: var(--text-muted); }
     .content-row-percent { font-size: 14px; font-weight: 700; color: #0f172a; }
 
-    /* БИРЖА / ТРЕЙДИНГ ПО РЕАЛЬНЫМ КУРСАМ */
+    /* 2. БИРЖА КРИПТОВАЛЮТ */
     .crypto-nav {
       display: flex;
       gap: 8px;
@@ -219,15 +218,8 @@
       font-weight: 700;
       white-space: nowrap;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
-    .coin-tab.active {
-      background: #0f172a;
-      color: #ffffff;
-      border-color: #0f172a;
-    }
+    .coin-tab.active { background: #0f172a; color: #ffffff; border-color: #0f172a; }
 
     .market-card {
       background: #ffffff;
@@ -304,7 +296,7 @@
       cursor: pointer;
     }
 
-    /* ИНВЕНТАРЬ */
+    /* 3. ИНВЕНТАРЬ (КАК НА ВИДЕО) */
     .inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
     .inv-item-card {
       background: #ffffff;
@@ -333,7 +325,7 @@
       cursor: pointer;
     }
 
-    /* АПГРЕЙДЕР КРУГОВОЙ */
+    /* 4. КРУГОВОЙ АПГРЕЙДЕР (РОВНЫЕ ПРЯМЫЕ КРАЯ СЕКТОРА) */
     .upgrader-box {
       background: #ffffff;
       border: 1px solid var(--border);
@@ -343,18 +335,24 @@
     }
     .wheel-wrapper { position: relative; width: 220px; height: 220px; margin: 16px auto; }
     .wheel-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-    .wheel-bg-circle { fill: none; stroke: #f1f5f9; stroke-width: 22; }
-    .wheel-chance-circle { fill: none; stroke: #2563eb; stroke-width: 22; stroke-linecap: round; }
+    .wheel-bg-circle { fill: none; stroke: #f1f5f9; stroke-width: 24; }
+    /* Ровные, прямые границы без размытых скруглений: */
+    .wheel-chance-circle {
+      fill: none;
+      stroke: #2563eb;
+      stroke-width: 24;
+      stroke-linecap: butt;
+    }
     .wheel-center-info {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 800;
       color: #0f172a;
     }
-    .wheel-center-info span { display: block; font-size: 11px; color: var(--text-muted); }
+    .wheel-center-info span { display: block; font-size: 11px; color: var(--text-muted); font-weight: 600; }
     .wheel-arrow {
       position: absolute;
       top: 50%;
@@ -373,13 +371,13 @@
     .wheel-arrow::before {
       content: "";
       position: absolute;
-      top: -6px;
-      left: -5px;
+      top: -8px;
+      left: -6px;
       width: 0;
       height: 0;
-      border-left: 7px solid transparent;
-      border-right: 7px solid transparent;
-      border-bottom: 12px solid #ef4444;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 14px solid #ef4444;
     }
     .upgrade-selectors { display: flex; justify-content: space-between; gap: 10px; margin: 14px 0; }
     .upgrade-slot {
@@ -396,7 +394,7 @@
       align-items: center;
     }
 
-    /* АККАУНТ */
+    /* 5. АККАУНТ И МАГАЗИН */
     .profile-card {
       background: #ffffff;
       border: 1px solid var(--border);
@@ -453,7 +451,7 @@
       cursor: pointer;
     }
 
-    /* НИЖНЯЯ ПАНЕЛЬ */
+    /* НИЖНИЙ БАР (ВСЕ 5 РАЗДЕЛОВ) */
     .bottom-bar {
       position: fixed;
       bottom: 0;
@@ -551,7 +549,7 @@
     </div>
   </div>
 
-  <!-- 2. ТАБ: БИРЖА С РЕАЛЬНЫМИ ЦЕНАМИ -->
+  <!-- 2. ТАБ: БИРЖА КРИПТОВАЛЮТ -->
   <div id="tab-trade" class="tab-view">
     <div class="crypto-nav">
       <div class="coin-tab active" onclick="selectCoin('TON', this)">💎 TON (Gram)</div>
@@ -570,14 +568,12 @@
         </div>
         <div class="price-change positive" id="trade-change">+3.45% ▲</div>
       </div>
-      <div class="price-sub" id="trade-stars-sub">Цена: ~346 ⭐ (по курсу 10⭐ = 15₽)</div>
+      <div class="price-sub" id="trade-stars-sub">Эквивалент: ~346 ⭐</div>
 
-      <!-- График -->
       <div class="chart-container">
         <canvas id="tradeCanvas"></canvas>
       </div>
 
-      <!-- Выбор суммы -->
       <div class="percent-pills">
         <button class="pill-btn" onclick="setTradePercent(0.25)">25%</button>
         <button class="pill-btn" onclick="setTradePercent(0.5)">50%</button>
@@ -587,7 +583,7 @@
 
       <div style="margin-bottom: 12px;">
         <label style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Сумма сделки (виртуальные рубли):</label>
-        <input type="number" id="trade-amount-input" value="100" style="width: 100%; height: 42px; border: 1px solid var(--border); border-radius: 10px; padding: 0 12px; font-weight: 700; font-size: 16px; margin-top: 4px;">
+        <input type="number" id="trade-amount-input" value="500" style="width: 100%; height: 42px; border: 1px solid var(--border); border-radius: 10px; padding: 0 12px; font-weight: 700; font-size: 16px; margin-top: 4px;">
       </div>
 
       <div class="trade-actions">
@@ -596,7 +592,6 @@
       </div>
     </div>
 
-    <!-- Портфель -->
     <div class="market-card">
       <h4 style="font-size: 14px; margin-bottom: 10px;">💼 Ваш инвестиционный портфель</h4>
       <div id="portfolio-list" style="font-size: 13px; color: var(--text-muted);">
@@ -617,16 +612,17 @@
     <div class="inv-grid" id="inv-grid"></div>
   </div>
 
-  <!-- 4. ТАБ: КРУГОВОЙ АПГРЕЙДЕР -->
+  <!-- 4. ТАБ: АПГРЕЙДЕР (РОВНАЯ СИНЯЯ ЗОНА) -->
   <div id="tab-upgrade" class="tab-view">
     <div class="upgrader-box">
       <h3 style="font-size: 17px; margin-bottom: 4px;">Круговой Апгрейдер</h3>
-      <p style="font-size: 12px; color: var(--text-muted);">Вращайте стрелку, чтобы удвоить стоимость</p>
+      <p style="font-size: 12px; color: var(--text-muted);">Стрелка должна остановиться в синей зоне</p>
 
       <div class="wheel-wrapper">
         <svg class="wheel-svg" viewBox="0 0 100 100">
           <circle class="wheel-bg-circle" cx="50" cy="50" r="38"></circle>
-          <circle class="wheel-chance-circle" id="wheel-stroke" cx="50" cy="50" r="38" stroke-dasharray="119 239"></circle>
+          <!-- Ровная синяя зона 50% с прямыми срезами -->
+          <circle class="wheel-chance-circle" id="wheel-stroke" cx="50" cy="50" r="38" stroke-dasharray="119.3 238.7"></circle>
         </svg>
         <div class="wheel-arrow" id="wheel-arrow"></div>
         <div class="wheel-center-info">
@@ -643,7 +639,7 @@
         <div style="display: flex; align-items: center; font-weight: bold; color: var(--primary);">➔</div>
         <div class="upgrade-slot" id="slot-to">
           <b>Цель</b>
-          <span id="slot-to-name" style="color:#10b981;">x2.0 к цене</span>
+          <span id="slot-to-name" style="color:#10b981;">x2.1 к цене</span>
         </div>
       </div>
 
@@ -651,7 +647,7 @@
     </div>
   </div>
 
-  <!-- 5. ТАБ: АККАУНТ -->
+  <!-- 5. ТАБ: АККАУНТ И МАГАЗИН -->
   <div id="tab-account" class="tab-view">
     <div class="profile-card">
       <div class="profile-avatar" id="acc-avatar">U</div>
@@ -659,18 +655,9 @@
       <p id="acc-id" style="font-size: 12px; color: var(--text-muted);">ID: 8732002956</p>
 
       <div class="stats-row">
-        <div class="stat-item">
-          <h5>ОТКРЫТО</h5>
-          <b id="acc-stat-opened">0</b>
-        </div>
-        <div class="stat-item">
-          <h5>ДЕВАЙСЫ</h5>
-          <b id="acc-stat-inv">0 ₽</b>
-        </div>
-        <div class="stat-item">
-          <h5>БАЛАНС</h5>
-          <b id="acc-stat-bal">0 ₽</b>
-        </div>
+        <div class="stat-item"><h5>ОТКРЫТО</h5><b id="acc-stat-opened">0</b></div>
+        <div class="stat-item"><h5>ДЕВАЙСЫ</h5><b id="acc-stat-inv">0 ₽</b></div>
+        <div class="stat-item"><h5>БАЛАНС</h5><b id="acc-stat-bal">0 ₽</b></div>
       </div>
 
       <button class="btn-deposit" onclick="callDeposit()">💳 Пополнить баланс</button>
@@ -678,7 +665,7 @@
     </div>
   </div>
 
-  <!-- НИЖНЕЕ МЕНЮ -->
+  <!-- НИЖНЯЯ ПАНЕЛЬ МЕНЮ -->
   <div class="bottom-bar">
     <button class="nav-btn active" onclick="setTab('cases', this)">
       <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V18z"/></svg>
@@ -707,7 +694,7 @@
     if (tg) { tg.expand(); }
 
     let userData = {
-      balance: 14100, // Игровые виртуальные рубли
+      balance: 14100,
       openedCount: 0,
       inventory: [
         { id: 1, name: "Samsung A17", rarity: "Легендарный", price: 4500, color: "phone-black", tag: "legendary" },
@@ -717,7 +704,6 @@
       portfolio: {}
     };
 
-    // Реальные рыночные котировки в рублях
     const CRYPTO_MARKET = {
       TON: { name: "TON (Gram)", price: 520, history: [], change: 3.45 },
       BTC: { name: "Bitcoin", price: 6540000, history: [], change: 1.85 },
@@ -728,7 +714,6 @@
     };
     let activeCoin = "TON";
 
-    // Инициализация истории цен
     for (let c in CRYPTO_MARKET) {
       let p = CRYPTO_MARKET[c].price;
       for (let i = 0; i < 30; i++) {
@@ -739,8 +724,7 @@
 
     const CASES = {
       bomj: {
-        title: "Кейс бомжа",
-        cost: 0,
+        title: "Кейс бомжа", cost: 0,
         items: [
           { name: "Samsung A17", rarity: "Легендарный", price: 4500, percent: "7,3%", color: "phone-black", tag: "legendary" },
           { name: "Tecno Spark 40C", rarity: "Эпический", price: 2100, percent: "9,7%", color: "phone-yellow", tag: "epic" },
@@ -751,8 +735,7 @@
         ]
       },
       start: {
-        title: "Стартовый кейс",
-        cost: 50,
+        title: "Стартовый кейс", cost: 50,
         items: [
           { name: "Redmi Note 13", rarity: "Эпический", price: 3200, percent: "12%", color: "phone-blue", tag: "epic" },
           { name: "Infinix HOT 60i", rarity: "Редкий", price: 1300, percent: "38%", color: "phone-green", tag: "rare" },
@@ -760,8 +743,7 @@
         ]
       },
       middle: {
-        title: "Продвинутый кейс",
-        cost: 250,
+        title: "Продвинутый кейс", cost: 250,
         items: [
           { name: "Poco X6 Pro", rarity: "Легендарный", price: 7500, percent: "10%", color: "phone-yellow", tag: "legendary" },
           { name: "Samsung A17", rarity: "Эпический", price: 4500, percent: "40%", color: "phone-black", tag: "epic" },
@@ -769,8 +751,7 @@
         ]
       },
       premium: {
-        title: "Премиум кейс",
-        cost: 1000,
+        title: "Премиум кейс", cost: 1000,
         items: [
           { name: "iPhone 13", rarity: "Легендарный", price: 18000, percent: "15%", color: "phone-black", tag: "legendary" },
           { name: "Galaxy S23", rarity: "Эпический", price: 12000, percent: "35%", color: "phone-purple", tag: "epic" },
@@ -778,8 +759,7 @@
         ]
       },
       legend: {
-        title: "Кейс Легенда",
-        cost: 5000,
+        title: "Кейс Легенда", cost: 5000,
         items: [
           { name: "iPhone 16 Pro Max 1TB", rarity: "Легендарный", price: 65000, percent: "8%", color: "phone-yellow", tag: "legendary" },
           { name: "Galaxy S24 Ultra", rarity: "Легендарный", price: 50000, percent: "22%", color: "phone-purple", tag: "legendary" },
@@ -790,13 +770,13 @@
 
     let activeCaseKey = "bomj";
     let isSpinning = false;
+    let upgradeChance = 50; // Честный шанс 50%
 
     function updateBalanceUI() {
       const bStr = Math.round(userData.balance).toLocaleString('ru-RU') + " ₽";
       document.getElementById("top-balance").innerText = bStr;
       document.getElementById("acc-stat-bal").innerText = bStr;
       document.getElementById("acc-stat-opened").innerText = userData.openedCount;
-
       let invTotal = userData.inventory.reduce((a, b) => a + b.price, 0);
       document.getElementById("acc-stat-inv").innerText = invTotal.toLocaleString('ru-RU') + " ₽";
       renderPortfolio();
@@ -807,17 +787,15 @@
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('tab-' + tabId).classList.add('active');
       el.classList.add('active');
-
       const titles = { cases: "Кейсы", trade: "Биржа криптовалют", inventory: "Инвентарь", upgrade: "Апгрейд", account: "Аккаунт" };
       document.getElementById("page-title").innerText = titles[tabId] || "Кейсы";
-
       if (tabId === "inventory") renderInventoryUI();
       if (tabId === "upgrade") setupUpgraderUI();
       if (tabId === "trade") { renderTradeMarket(); resizeCanvas(); }
       if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
     }
 
-    // --- ТРЕЙДИНГ И РЕАЛЬНЫЕ КУРСЫ ---
+    // --- БИРЖА ---
     function selectCoin(sym, el) {
       activeCoin = sym;
       document.querySelectorAll('.coin-tab').forEach(t => t.classList.remove('active'));
@@ -828,12 +806,10 @@
     function renderTradeMarket() {
       const c = CRYPTO_MARKET[activeCoin];
       const pText = c.price < 1 ? c.price.toFixed(4) : Math.round(c.price).toLocaleString('ru-RU');
-      const starsPrice = Math.round(c.price / 1.5); // 1 Star = 1.5 ₽
-
+      const starsPrice = Math.round(c.price / 1.5);
       document.getElementById("trade-coin-title").innerText = `${c.name} / RUB`;
       document.getElementById("trade-cur-price").innerText = `${pText} ₽`;
-      document.getElementById("trade-stars-sub").innerText = `Эквивалент: ~${starsPrice.toLocaleString('ru-RU')} ⭐ (по курсу 10⭐ = 15₽)`;
-
+      document.getElementById("trade-stars-sub").innerText = `Эквивалент: ~${starsPrice.toLocaleString('ru-RU')} ⭐`;
       const changeEl = document.getElementById("trade-change");
       changeEl.innerText = `${c.change >= 0 ? '+' : ''}${c.change.toFixed(2)}% ${c.change >= 0 ? '▲' : '▼'}`;
       changeEl.className = `price-change ${c.change >= 0 ? 'positive' : 'negative'}`;
@@ -849,10 +825,9 @@
       const input = document.getElementById("trade-amount-input");
       const rub = parseFloat(input.value);
       const c = CRYPTO_MARKET[activeCoin];
-
       if (type === 'BUY') {
         if (userData.balance < rub || rub <= 0) {
-          tg?.showAlert ? tg.showAlert("Недостаточно средств на балансе!") : alert("Мало средств!");
+          tg?.showAlert ? tg.showAlert("Недостаточно средств!") : alert("Мало средств!");
           return;
         }
         userData.balance -= rub;
@@ -870,7 +845,6 @@
         delete userData.portfolio[activeCoin];
         tg?.showAlert ? tg.showAlert(`✅ Продано всё за +${Math.round(sellRub)} ₽!`) : alert("Продано!");
       }
-
       updateBalanceUI();
       if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
     }
@@ -893,7 +867,6 @@
       const w = canvas.width;
       const h = canvas.height;
       ctx.clearRect(0, 0, w, h);
-
       const hist = CRYPTO_MARKET[activeCoin].history;
       const min = Math.min(...hist) * 0.995;
       const max = Math.max(...hist) * 1.005;
@@ -901,16 +874,11 @@
       ctx.strokeStyle = "#1e293b";
       ctx.lineWidth = 1;
       for (let y = 30; y < h; y += 40) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(w, y);
-        ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
       }
-
       ctx.beginPath();
       ctx.strokeStyle = CRYPTO_MARKET[activeCoin].change >= 0 ? "#10b981" : "#ef4444";
       ctx.lineWidth = 2.5;
-
       hist.forEach((val, idx) => {
         let x = (idx / (hist.length - 1)) * w;
         let y = h - ((val - min) / (max - min)) * (h - 20) - 10;
@@ -943,153 +911,10 @@
       }
     }, 2000);
 
-    // --- КЕЙСЫ ---
-    function showCaseDetail(caseKey) {
-      activeCaseKey = caseKey;
-      const c = CASES[caseKey];
-      document.getElementById("cases-list").style.display = "none";
-      document.getElementById("case-detail").style.display = "block";
-      document.getElementById("detail-case-title").innerText = c.title;
-      document.getElementById("won-box").style.display = "none";
-
-      const btn = document.getElementById("btn-open-case");
-      btn.innerText = c.cost === 0 ? "Открыть бесплатно" : `Открыть за ${c.cost} ₽`;
-
-      const dropTable = document.getElementById("case-drop-table");
-      dropTable.innerHTML = "";
-      c.items.forEach(it => {
-        dropTable.innerHTML += `
-          <div class="content-row">
-            <div class="phone-mockup ${it.color}"></div>
-            <div class="content-row-info">
-              <div class="content-row-name">${it.name}</div>
-              <div class="content-row-rarity">${it.rarity}</div>
-            </div>
-            <div class="content-row-percent">${it.percent}</div>
-          </div>
-        `;
-      });
-      buildRouletteTrack();
-    }
-
-    function hideCaseDetail() {
-      document.getElementById("case-detail").style.display = "none";
-      document.getElementById("cases-list").style.display = "block";
-    }
-
-    function buildRouletteTrack() {
-      const track = document.getElementById("roulette-track");
-      track.style.transition = "none";
-      track.style.transform = "translateX(0px)";
-      track.innerHTML = "";
-
-      const pool = CASES[activeCaseKey].items;
-      for (let i = 0; i < 50; i++) {
-        const item = pool[Math.floor(Math.random() * pool.length)];
-        const div = document.createElement("div");
-        div.className = "roulette-item";
-        div.innerHTML = `<div class="phone-mockup ${item.color}"></div><div class="roulette-item-title">${item.name}</div>`;
-        track.appendChild(div);
-      }
-    }
-
-    function spinRoulette() {
-      if (isSpinning) return;
-      const c = CASES[activeCaseKey];
-      if (userData.balance < c.cost) {
-        tg?.showAlert ? tg.showAlert("Недостаточно средств!") : alert("Мало средств!");
-        return;
-      }
-
-      userData.balance -= c.cost;
-      userData.openedCount++;
-      updateBalanceUI();
-
-      isSpinning = true;
-      const btn = document.getElementById("btn-open-case");
-      btn.disabled = true;
-      document.getElementById("won-box").style.display = "none";
-
-      buildRouletteTrack();
-      const track = document.getElementById("roulette-track");
-      const winIndex = 36;
-      const winItem = CASES[activeCaseKey].items[Math.floor(Math.random() * CASES[activeCaseKey].items.length)];
-      track.children[winIndex].querySelector(".roulette-item-title").innerText = winItem.name;
-      track.children[winIndex].querySelector(".phone-mockup").className = `phone-mockup ${winItem.color}`;
-
-      const itemWidth = 122;
-      const stopOffset = winIndex * itemWidth + (Math.random() * 30 - 15);
-
-      setTimeout(() => {
-        track.style.transition = "transform 4.5s cubic-bezier(0.12, 0.8, 0.15, 1)";
-        track.style.transform = `translateX(-${stopOffset}px)`;
-      }, 50);
-
-      setTimeout(() => {
-        isSpinning = false;
-        btn.disabled = false;
-        btn.innerText = c.cost === 0 ? "Открыть ещё раз бесплатно" : `Открыть ещё раз за ${c.cost} ₽`;
-
-        userData.inventory.unshift({ ...winItem, id: Date.now() });
-        updateBalanceUI();
-
-        const wonBox = document.getElementById("won-box");
-        wonBox.style.display = "flex";
-        document.getElementById("won-name").innerText = winItem.name;
-        document.getElementById("won-rarity").innerText = winItem.rarity;
-        document.getElementById("won-icon").className = `phone-mockup ${winItem.color}`;
-
-        if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
-      }, 4800);
-    }
-
-    // --- ИНВЕНТАРЬ ---
-    function renderInventoryUI() {
-      const grid = document.getElementById("inv-grid");
-      const empty = document.getElementById("inv-empty");
-      grid.innerHTML = "";
-
-      if (userData.inventory.length === 0) {
-        empty.style.display = "block";
-        return;
-      }
-      empty.style.display = "none";
-
-      userData.inventory.forEach((item, index) => {
-        const div = document.createElement("div");
-        div.className = `inv-item-card ${item.tag}`;
-        div.innerHTML = `
-          <div class="phone-mockup ${item.color}"></div>
-          <div class="inv-item-title">${item.name}</div>
-          <div class="inv-item-sub">${item.rarity}</div>
-          <button class="btn-inv-sell" onclick="sellSingleItem(${index})">Продать за ${item.price.toLocaleString('ru-RU')} ₽</button>
-        `;
-        grid.appendChild(div);
-      });
-    }
-
-    function sellSingleItem(index) {
-      const item = userData.inventory.splice(index, 1)[0];
-      userData.balance += item.price;
-      updateBalanceUI();
-      renderInventoryUI();
-    }
-
-    function sellAllItems() {
-      if (userData.inventory.length === 0) return;
-      const sum = userData.inventory.reduce((a, b) => a + b.price, 0);
-      userData.balance += sum;
-      userData.inventory = [];
-      updateBalanceUI();
-      renderInventoryUI();
-    }
-
-    // --- АПГРЕЙДЕР КРУГОВОЙ ---
-    let upgradeChance = 48;
+    // --- АПГРЕЙДЕР (РОВНЫЙ СЕКТОР) ---
     function setupUpgraderUI() {
       const fromName = document.getElementById("slot-from-name");
       const toName = document.getElementById("slot-to-name");
-
       if (userData.inventory.length > 0) {
         const item = userData.inventory[0];
         fromName.innerText = `${item.name} (${item.price} ₽)`;
@@ -1098,20 +923,18 @@
         fromName.innerText = "Инвентарь пуст";
         toName.innerText = "Выберите телефон";
       }
-
+      document.getElementById("chance-text").innerText = upgradeChance + "%";
       const circ = 238.7;
       const strokeVal = (circ * upgradeChance) / 100;
       document.getElementById("wheel-stroke").setAttribute("stroke-dasharray", `${strokeVal} ${circ}`);
-      document.getElementById("chance-text").innerText = upgradeChance + "%";
     }
 
     function runWheelUpgrade() {
       if (isSpinning) return;
       if (userData.inventory.length === 0) {
-        tg?.showAlert ? tg.showAlert("Сначала выбейте девайс в кейсах!") : alert("Инвентарь пуст!");
+        tg?.showAlert ? tg.showAlert("Инвентарь пуст! Откройте кейс!") : alert("Инвентарь пуст!");
         return;
       }
-
       isSpinning = true;
       const btn = document.getElementById("btn-spin-upgrade");
       btn.disabled = true;
@@ -1119,19 +942,20 @@
       const sourceItem = userData.inventory.shift();
       updateBalanceUI();
 
-      const isWin = Math.random() * 100 <= upgradeChance;
-      let finalDegree = isWin ? (Math.random() * 160 + 5) : (Math.random() * 160 + 190);
-      finalDegree += 360 * 5;
+      const isWin = Math.random() * 100 < upgradeChance;
+      // Синий сектор ровно от 0 до 180 градусов, белый от 180 до 360
+      const targetDeg = isWin ? (Math.random() * 140 + 20) : (Math.random() * 140 + 200);
+      const totalRotation = 360 * 5 + targetDeg;
 
       const arrow = document.getElementById("wheel-arrow");
       arrow.style.transition = "transform 4s cubic-bezier(0.1, 0.7, 0.1, 1)";
-      arrow.style.transform = `rotate(${finalDegree}deg)`;
+      arrow.style.transform = `rotate(${totalRotation}deg)`;
 
       setTimeout(() => {
         isSpinning = false;
         btn.disabled = false;
         arrow.style.transition = "none";
-        arrow.style.transform = `rotate(${finalDegree % 360}deg)`;
+        arrow.style.transform = `rotate(${targetDeg}deg)`;
 
         if (isWin) {
           const upgraded = {
@@ -1152,12 +976,131 @@
       }, 4200);
     }
 
-    function callDeposit() {
-      tg?.sendData ? tg.sendData("action_deposit") : alert("Используйте бота для пополнения");
+    // --- КЕЙСЫ ---
+    function showCaseDetail(caseKey) {
+      activeCaseKey = caseKey;
+      const c = CASES[caseKey];
+      document.getElementById("cases-list").style.display = "none";
+      document.getElementById("case-detail").style.display = "block";
+      document.getElementById("detail-case-title").innerText = c.title;
+      document.getElementById("won-box").style.display = "none";
+      const btn = document.getElementById("btn-open-case");
+      btn.innerText = c.cost === 0 ? "Открыть бесплатно" : `Открыть за ${c.cost} ₽`;
+
+      const dropTable = document.getElementById("case-drop-table");
+      dropTable.innerHTML = "";
+      c.items.forEach(it => {
+        dropTable.innerHTML += `
+          <div class="content-row">
+            <div class="phone-mockup ${it.color}"></div>
+            <div class="content-row-info">
+              <div class="content-row-name">${it.name}</div>
+              <div class="content-row-rarity">${it.rarity}</div>
+            </div>
+            <div class="content-row-percent">${it.percent}</div>
+          </div>
+        `;
+      });
+      buildRouletteTrack();
     }
-    function callWithdraw() {
-      tg?.showAlert ? tg.showAlert("⚠️ Для вывода используйте меню бота в Telegram!") : alert("Используйте бота");
+    function hideCaseDetail() {
+      document.getElementById("case-detail").style.display = "none";
+      document.getElementById("cases-list").style.display = "block";
     }
+    function buildRouletteTrack() {
+      const track = document.getElementById("roulette-track");
+      track.style.transition = "none";
+      track.style.transform = "translateX(0px)";
+      track.innerHTML = "";
+      const pool = CASES[activeCaseKey].items;
+      for (let i = 0; i < 50; i++) {
+        const item = pool[Math.floor(Math.random() * pool.length)];
+        const div = document.createElement("div");
+        div.className = "roulette-item";
+        div.innerHTML = `<div class="phone-mockup ${item.color}"></div><div class="roulette-item-title">${item.name}</div>`;
+        track.appendChild(div);
+      }
+    }
+    function spinRoulette() {
+      if (isSpinning) return;
+      const c = CASES[activeCaseKey];
+      if (userData.balance < c.cost) {
+        tg?.showAlert ? tg.showAlert("Недостаточно средств!") : alert("Мало средств!");
+        return;
+      }
+      userData.balance -= c.cost;
+      userData.openedCount++;
+      updateBalanceUI();
+      isSpinning = true;
+      const btn = document.getElementById("btn-open-case");
+      btn.disabled = true;
+      document.getElementById("won-box").style.display = "none";
+      buildRouletteTrack();
+      const track = document.getElementById("roulette-track");
+      const winIndex = 36;
+      const winItem = CASES[activeCaseKey].items[Math.floor(Math.random() * CASES[activeCaseKey].items.length)];
+      track.children[winIndex].querySelector(".roulette-item-title").innerText = winItem.name;
+      track.children[winIndex].querySelector(".phone-mockup").className = `phone-mockup ${winItem.color}`;
+      const itemWidth = 122;
+      const stopOffset = winIndex * itemWidth + (Math.random() * 30 - 15);
+      setTimeout(() => {
+        track.style.transition = "transform 4.5s cubic-bezier(0.12, 0.8, 0.15, 1)";
+        track.style.transform = `translateX(-${stopOffset}px)`;
+      }, 50);
+      setTimeout(() => {
+        isSpinning = false;
+        btn.disabled = false;
+        btn.innerText = c.cost === 0 ? "Открыть ещё раз бесплатно" : `Открыть ещё раз за ${c.cost} ₽`;
+        userData.inventory.unshift({ ...winItem, id: Date.now() });
+        updateBalanceUI();
+        const wonBox = document.getElementById("won-box");
+        wonBox.style.display = "flex";
+        document.getElementById("won-name").innerText = winItem.name;
+        document.getElementById("won-rarity").innerText = winItem.rarity;
+        document.getElementById("won-icon").className = `phone-mockup ${winItem.color}`;
+        if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
+      }, 4800);
+    }
+
+    // --- ИНВЕНТАРЬ ---
+    function renderInventoryUI() {
+      const grid = document.getElementById("inv-grid");
+      const empty = document.getElementById("inv-empty");
+      grid.innerHTML = "";
+      if (userData.inventory.length === 0) {
+        empty.style.display = "block";
+        return;
+      }
+      empty.style.display = "none";
+      userData.inventory.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = `inv-item-card ${item.tag}`;
+        div.innerHTML = `
+          <div class="phone-mockup ${item.color}"></div>
+          <div class="inv-item-title">${item.name}</div>
+          <div class="inv-item-sub">${item.rarity}</div>
+          <button class="btn-inv-sell" onclick="sellSingleItem(${index})">Продать за ${item.price.toLocaleString('ru-RU')} ₽</button>
+        `;
+        grid.appendChild(div);
+      });
+    }
+    function sellSingleItem(index) {
+      const item = userData.inventory.splice(index, 1)[0];
+      userData.balance += item.price;
+      updateBalanceUI();
+      renderInventoryUI();
+    }
+    function sellAllItems() {
+      if (userData.inventory.length === 0) return;
+      const sum = userData.inventory.reduce((a, b) => a + b.price, 0);
+      userData.balance += sum;
+      userData.inventory = [];
+      updateBalanceUI();
+      renderInventoryUI();
+    }
+
+    function callDeposit() { tg?.sendData ? tg.sendData("action_deposit") : alert("Используйте меню бота"); }
+    function callWithdraw() { tg?.showAlert ? tg.showAlert("⚠️ Для вывода используйте меню бота в Telegram!") : alert("Используйте бота"); }
 
     if (tg?.initDataUnsafe?.user) {
       const u = tg.initDataUnsafe.user;

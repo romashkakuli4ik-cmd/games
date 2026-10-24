@@ -38,7 +38,6 @@
       overflow-x: hidden;
     }
 
-    /* БЛОКИРОВКА СТОРОННИХ БРАУЗЕРОВ */
     #browser-lock {
       display: none;
       position: fixed;
@@ -63,10 +62,8 @@
       text-decoration: none;
       font-weight: 700;
       font-size: 15px;
-      box-shadow: 0 4px 12px rgba(37,99,235,0.4);
     }
 
-    /* ВЕРХНЯЯ ПАНЕЛЬ */
     .header {
       background: var(--card);
       padding: 12px 16px;
@@ -93,7 +90,6 @@
     .tab-view { display: none; padding: 14px; }
     .tab-view.active { display: block; }
 
-    /* ПЛАШКА HASH PROVABLY FAIR */
     .fairness-card {
       background: #0f172a;
       color: #94a3b8;
@@ -305,7 +301,7 @@
     .inv-item-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
     .btn-inv-sell { width: 100%; height: 36px; background: #0f172a; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; }
 
-    /* АПГРЕЙДЕР С РОВНЫМ СЕКТОРОМ */
+    /* АПГРЕЙДЕР */
     .upgrader-box {
       background: #ffffff;
       border: 1px solid var(--border);
@@ -320,7 +316,7 @@
       fill: none;
       stroke: #2563eb;
       stroke-width: 24;
-      stroke-linecap: butt; /* Ровные прямые границы */
+      stroke-linecap: butt;
     }
     .wheel-center-info {
       position: absolute;
@@ -370,7 +366,6 @@
     }
     .upgrade-slot:active { border-color: var(--primary); }
 
-    /* МОДАЛЬНЫЕ ОКНА ВЫБОРА */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -401,7 +396,6 @@
       cursor: pointer;
     }
 
-    /* АДМИН-ЧИТ-ПАНЕЛЬ */
     #admin-cheat-modal {
       display: none;
       position: fixed;
@@ -415,7 +409,6 @@
     .cheat-box { background: #fff; border-radius: 20px; padding: 20px; width: 100%; max-width: 320px; text-align: center; }
     .cheat-btn { width: 100%; height: 42px; margin: 6px 0; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
 
-    /* АККАУНТ */
     .profile-card {
       background: #ffffff;
       border: 1px solid var(--border);
@@ -449,7 +442,6 @@
     .btn-deposit { width: 100%; height: 44px; background: #eab308; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; margin-top: 8px; cursor: pointer; }
     .btn-withdraw { width: 100%; height: 44px; background: #f1f5f9; color: var(--text-muted); border: 1px solid var(--border); border-radius: 12px; font-weight: 600; font-size: 14px; margin-top: 8px; cursor: pointer; }
 
-    /* НИЖНИЙ БАР */
     .bottom-bar {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -475,24 +467,22 @@
 </head>
 <body>
 
-  <!-- БЛОКИРОВКА БРАУЗЕРА (ТОЛЬКО В TELEGRAM) -->
   <div id="browser-lock">
     <h2>🚫 Доступ заблокирован</h2>
     <p>Вход разрешён исключительно через приложение Telegram Mini App. Прямой запуск через браузер отключён.</p>
     <a href="https://t.me/Kuli4ik_bot/game" class="tg-btn">Открыть в Telegram</a>
   </div>
 
-  <!-- ВЕРХНЯЯ ШАПКА -->
   <div class="header">
     <div class="header-title" id="page-title">Кейсы</div>
     <div class="balance-box" id="top-balance" onclick="handleBalanceClick()">0 ₽</div>
   </div>
 
-  <!-- ЧИТ-ПАНЕЛЬ (ТОЛЬКО АДМИНУ ID 8732002956) -->
+  <!-- ЧИТ-ПАНЕЛЬ -->
   <div id="admin-cheat-modal">
     <div class="cheat-box">
       <h3>⚡️ Панель администратора</h3>
-      <p style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">Авторизован: ID 8732002956</p>
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">ID: 8732002956 (Администратор)</p>
       
       <div style="margin-bottom:10px; text-align:left;">
         <label style="font-size:12px; font-weight:700;">Накрутить рубли на баланс:</label>
@@ -532,7 +522,6 @@
 
   <!-- 1. ТАБ: КЕЙСЫ -->
   <div id="tab-cases" class="tab-view active">
-    <!-- ПАНЕЛЬ ДОКАЗУЕМОЙ ЧЕСТНОСТИ HASH -->
     <div class="fairness-card">
       🤖 <b>AI Provably Fair Engine:</b> SHA-256 Seeded<br>
       Hash: <span id="case-hash-display">d8e8fca2dc48...</span>
@@ -738,18 +727,48 @@
   <script>
     const tg = window.Telegram?.WebApp;
 
-    // --- БЛОКИРОВКА СТОРОННИХ БРАУЗЕРОВ ---
+    // Блокировка внешнего браузера
     const isTelegramApp = tg && tg.initData && tg.initData.length > 0;
     if (!isTelegramApp) {
       document.getElementById("browser-lock").style.display = "flex";
-      throw new Error("Запуск разрешён исключительно через Telegram Mini App!");
+      throw new Error("Доступ открыт только в Telegram!");
     } else {
       tg.expand();
     }
 
     const ADMIN_TELEGRAM_ID = 8732002956;
+    const USER_STORAGE_KEY = `kuli4ik_user_save_${tg?.initDataUnsafe?.user?.id || 'admin'}`;
 
-    // --- КРИПТОГРАФИЧЕСКИЙ AI HASH ENGINE (PROVABLY FAIR SHA-256) ---
+    // --- СИСТЕМА ВЕЧНОГО СОХРАНЕНИЯ (LOCALSTORAGE) ---
+    function loadUserData() {
+      try {
+        const saved = localStorage.getItem(USER_STORAGE_KEY);
+        if (saved) {
+          return JSON.parse(saved);
+        }
+      } catch (e) {}
+
+      return {
+        balance: 14100,
+        openedCount: 0,
+        inventory: [
+          { id: 1, name: "Samsung A17", rarity: "Легендарный", price: 4500, color: "phone-black", tag: "legendary" },
+          { id: 2, name: "Realme Note 80", rarity: "Обычный", price: 700, color: "phone-blue", tag: "common" },
+          { id: 3, name: "Infinix HOT 60i", rarity: "Редкий", price: 1300, color: "phone-green", tag: "rare" }
+        ],
+        portfolio: {}
+      };
+    }
+
+    let userData = loadUserData();
+
+    function saveUserData() {
+      try {
+        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
+      } catch (e) {}
+    }
+
+    // --- КРИПТОГРАФИЧЕСКИЙ AI HASH ENGINE (SHA-256) ---
     async function generateAIFairNumber() {
       const serverSeed = crypto.getRandomValues(new Uint32Array(4)).join("-");
       const clientSeed = tg?.initDataUnsafe?.user?.id || Date.now().toString();
@@ -762,24 +781,12 @@
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-      // Извлекаем детерминированное псевдослучайное число от 0 до 100
       const subValue = (hashArray[0] << 24) | (hashArray[1] << 16) | (hashArray[2] << 8) | hashArray[3];
       const normalized = Math.abs(subValue) / 0x7FFFFFFF;
       const fairPercentage = normalized * 100;
 
       return { fairPercentage, hashHex };
     }
-
-    let userData = {
-      balance: 14100,
-      openedCount: 0,
-      inventory: [
-        { id: 1, name: "Samsung A17", rarity: "Легендарный", price: 4500, color: "phone-black", tag: "legendary" },
-        { id: 2, name: "Realme Note 80", rarity: "Обычный", price: 700, color: "phone-blue", tag: "common" },
-        { id: 3, name: "Infinix HOT 60i", rarity: "Редкий", price: 1300, color: "phone-green", tag: "rare" }
-      ],
-      portfolio: {}
-    };
 
     const ALL_TARGET_ITEMS = [
       { name: "Xiaomi Redmi A5", price: 1100, rarity: "Редкий", color: "phone-yellow", tag: "rare" },
@@ -797,7 +804,7 @@
     let selectedTargetItem = ALL_TARGET_ITEMS[1];
     let cheatAlwaysWin = false;
 
-    // --- ЧИТ-ПАНЕЛЬ (ТОЛЬКО ДЛЯ ВЛАДЕЛЬЦА) ---
+    // --- ЧИТ-ПАНЕЛЬ АДМИНА ---
     let clickBalanceCounter = 0;
     function handleBalanceClick() {
       clickBalanceCounter++;
@@ -807,7 +814,7 @@
         if (currentUid == ADMIN_TELEGRAM_ID) {
           document.getElementById("admin-cheat-modal").style.display = "flex";
         } else {
-          tg?.showAlert ? tg.showAlert("⛔️ Ошибка доступа: разрешено только администратору!") : alert("Только для админа!");
+          tg?.showAlert ? tg.showAlert("⛔️ Доступно только администратору!") : alert("Только для админа!");
         }
       }
     }
@@ -816,6 +823,7 @@
     function applyCheatMoney() {
       const sum = parseFloat(document.getElementById("cheat-custom-sum").value) || 0;
       userData.balance += sum;
+      saveUserData();
       updateBalanceUI();
       closeCheatModal();
       tg?.showAlert ? tg.showAlert(`✅ Зачислено +${sum.toLocaleString('ru-RU')} ₽!`) : alert(`+${sum} ₽`);
@@ -825,6 +833,7 @@
       userData.inventory.unshift({
         id: Date.now(), name: "iPhone 16 Pro Max 1TB", rarity: "Легендарный", price: 65000, color: "phone-yellow", tag: "legendary"
       });
+      saveUserData();
       updateBalanceUI();
       setupUpgraderUI();
       closeCheatModal();
@@ -931,12 +940,12 @@
       isSpinning = true;
       document.getElementById("btn-spin-upgrade").disabled = true;
 
-      // ГЕНЕРАЦИЯ ЧЕСТНОГО SHA-256 ХЭША РАУНДА
       const { fairPercentage, hashHex } = await generateAIFairNumber();
       document.getElementById("upgrade-hash-display").innerText = hashHex.substring(0, 24) + "...";
 
       userData.inventory.splice(selectedSourceIndex, 1);
       selectedSourceIndex = 0;
+      saveUserData();
       updateBalanceUI();
 
       let chance = Math.min(95, Math.max(2, Math.round((src.price / selectedTargetItem.price) * 95)));
@@ -961,10 +970,11 @@
         if (isWin) {
           const wonItem = { ...selectedTargetItem, id: Date.now() };
           userData.inventory.unshift(wonItem);
-          tg?.showAlert ? tg.showAlert(`🎉 УСПЕХ! AI Hash подтвердил победу: ${wonItem.name}!`) : alert("Успех!");
+          tg?.showAlert ? tg.showAlert(`🎉 УСПЕХ! Получен ${wonItem.name}!`) : alert("Успех!");
         } else {
           tg?.showAlert ? tg.showAlert(`💥 ПРОВАЛ! ${src.name} сгорел.`) : alert("Провал!");
         }
+        saveUserData();
         updateBalanceUI();
         setupUpgraderUI();
       }, 4200);
@@ -1038,6 +1048,7 @@
         delete userData.portfolio[activeCoin];
         tg?.showAlert ? tg.showAlert(`✅ Продано всё за +${Math.round(sellRub)} ₽!`) : alert("Продано!");
       }
+      saveUserData();
       updateBalanceUI();
     }
 
@@ -1205,13 +1216,13 @@
       }
       userData.balance -= c.cost;
       userData.openedCount++;
+      saveUserData();
       updateBalanceUI();
       isSpinning = true;
       const btn = document.getElementById("btn-open-case");
       btn.disabled = true;
       document.getElementById("won-box").style.display = "none";
 
-      // ВЫЧИСЛЕНИЕ ДРОПА ЧЕРЕЗ AI HASH SHA-256
       const { fairPercentage, hashHex } = await generateAIFairNumber();
       document.getElementById("case-hash-display").innerText = hashHex.substring(0, 24) + "...";
 
@@ -1243,6 +1254,7 @@
         btn.disabled = false;
         btn.innerText = c.cost === 0 ? "Открыть ещё раз бесплатно" : `Открыть ещё раз за ${c.cost} ₽`;
         userData.inventory.unshift({ ...winItem, id: Date.now() });
+        saveUserData();
         updateBalanceUI();
         setupUpgraderUI();
         const wonBox = document.getElementById("won-box");
@@ -1275,26 +1287,30 @@
         grid.appendChild(div);
       });
     }
+
     function sellSingleItem(index) {
       const item = userData.inventory.splice(index, 1)[0];
       userData.balance += item.price;
       selectedSourceIndex = 0;
+      saveUserData();
       updateBalanceUI();
       renderInventoryUI();
       setupUpgraderUI();
     }
+
     function sellAllItems() {
       if (userData.inventory.length === 0) return;
       const sum = userData.inventory.reduce((a, b) => a + b.price, 0);
       userData.balance += sum;
       userData.inventory = [];
       selectedSourceIndex = 0;
+      saveUserData();
       updateBalanceUI();
       renderInventoryUI();
       setupUpgraderUI();
     }
 
-    // --- НАВИГАЦИЯ ---
+    // --- ОБНОВЛЕНИЕ БАЛАНСА И НАВИГАЦИЯ ---
     function updateBalanceUI() {
       const bStr = Math.round(userData.balance).toLocaleString('ru-RU') + " ₽";
       document.getElementById("top-balance").innerText = bStr;
@@ -1317,7 +1333,7 @@
       if (tabId === "trade") { renderTradeMarket(); resizeCanvas(); }
     }
 
-    function callDeposit() { tg?.sendData ? tg.sendData("action_deposit") : alert("Используйте бота"); }
+    function callDeposit() { tg?.sendData ? tg.sendData("action_deposit") : alert("Используйте меню бота"); }
     function callWithdraw() { tg?.showAlert ? tg.showAlert("⚠️ Для вывода используйте меню бота в Telegram!") : alert("Используйте бота"); }
 
     if (tg?.initDataUnsafe?.user) {

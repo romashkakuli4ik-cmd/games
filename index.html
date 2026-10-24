@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Kuli4ik Cases, Upgrader & Provably Fair AI</title>
+  <title>Kuli4ik Cases, Upgrader & Crypto Market</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
@@ -396,6 +396,7 @@
       cursor: pointer;
     }
 
+    /* АДМИН-ЧИТ-ПАНЕЛЬ С ЧИТАМИ НА БИРЖУ */
     #admin-cheat-modal {
       display: none;
       position: fixed;
@@ -407,7 +408,7 @@
       padding: 20px;
     }
     .cheat-box { background: #fff; border-radius: 20px; padding: 20px; width: 100%; max-width: 320px; text-align: center; }
-    .cheat-btn { width: 100%; height: 42px; margin: 6px 0; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
+    .cheat-btn { width: 100%; height: 38px; margin: 4px 0; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 13px; }
 
     .profile-card {
       background: #ffffff;
@@ -478,27 +479,35 @@
     <div class="balance-box" id="top-balance" onclick="handleBalanceClick()">0 ₽</div>
   </div>
 
-  <!-- ЧИТ-ПАНЕЛЬ -->
+  <!-- ЧИТ-ПАНЕЛЬ АДМИНИСТРАТОРА (С ЧИТАМИ НА БИРЖУ) -->
   <div id="admin-cheat-modal">
     <div class="cheat-box">
       <h3>⚡️ Панель администратора</h3>
-      <p style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">ID: 8732002956 (Администратор)</p>
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">ID: 8732002956 (Администратор)</p>
       
-      <div style="margin-bottom:10px; text-align:left;">
-        <label style="font-size:12px; font-weight:700;">Накрутить рубли на баланс:</label>
-        <div style="display:flex; gap:6px; margin-top:4px;">
-          <input type="number" id="cheat-custom-sum" value="50000" style="flex:1; height:38px; border:1px solid var(--border); border-radius:8px; padding:0 8px; font-weight:700;">
-          <button style="background:#10b981; color:#fff; border:none; border-radius:8px; padding:0 12px; font-weight:700;" onclick="applyCheatMoney()">+ Зачислить</button>
+      <div style="margin-bottom:8px; text-align:left;">
+        <label style="font-size:11px; font-weight:700;">Накрутить рубли на баланс:</label>
+        <div style="display:flex; gap:6px; margin-top:2px;">
+          <input type="number" id="cheat-custom-sum" value="50000" style="flex:1; height:34px; border:1px solid var(--border); border-radius:8px; padding:0 8px; font-weight:700; font-size:13px;">
+          <button style="background:#10b981; color:#fff; border:none; border-radius:8px; padding:0 10px; font-weight:700; font-size:12px;" onclick="applyCheatMoney()">+ Зачислить</button>
         </div>
+      </div>
+
+      <!-- ЧИТЫ НА ТРЕЙДИНГ И БИРЖУ -->
+      <div style="background:#f1f5f9; padding:8px; border-radius:10px; margin-bottom:8px;">
+        <div style="font-size:11px; font-weight:700; color:#0f172a; margin-bottom:4px;">📈 ЧИТЫ НА БИРЖУ:</div>
+        <button class="cheat-btn" style="background:#10b981; color:#fff;" onclick="cheatPumpCrypto()">🚀 Памп монеты (+50% к цене)</button>
+        <button class="cheat-btn" style="background:#ef4444; color:#fff;" onclick="cheatDumpCrypto()">📉 Дамп монеты (-50% к цене)</button>
+        <button class="cheat-btn" style="background:#8b5cf6; color:#fff;" onclick="cheatGiveAllCrypto()">💼 Выдать по 10 монет каждого актива</button>
       </div>
 
       <button class="cheat-btn" style="background:#f59e0b; color:#fff;" onclick="cheatAddPhone()">📱 Выдать iPhone 16 Pro Max</button>
       
       <button class="cheat-btn" id="cheat-godmode-btn" style="background:#3b82f6; color:#fff;" onclick="toggleCheatWin()">
-        🎯 Чит 100% победы в апгрейде: ВЫКЛ
+        🎯 Чит 100% в апгрейде: ВЫКЛ
       </button>
 
-      <button class="cheat-btn" style="background:#64748b; color:#fff;" onclick="closeCheatModal()">Закрыть панель</button>
+      <button class="cheat-btn" style="background:#64748b; color:#fff; margin-top:4px;" onclick="closeCheatModal()">Закрыть</button>
     </div>
   </div>
 
@@ -727,11 +736,10 @@
   <script>
     const tg = window.Telegram?.WebApp;
 
-    // Блокировка внешнего браузера
     const isTelegramApp = tg && tg.initData && tg.initData.length > 0;
     if (!isTelegramApp) {
       document.getElementById("browser-lock").style.display = "flex";
-      throw new Error("Доступ открыт только в Telegram!");
+      throw new Error("Запуск разрешён исключительно через Telegram Mini App!");
     } else {
       tg.expand();
     }
@@ -739,7 +747,6 @@
     const ADMIN_TELEGRAM_ID = 8732002956;
     const USER_STORAGE_KEY = `kuli4ik_user_save_${tg?.initDataUnsafe?.user?.id || 'admin'}`;
 
-    // --- СИСТЕМА ВЕЧНОГО СОХРАНЕНИЯ (LOCALSTORAGE) ---
     function loadUserData() {
       try {
         const saved = localStorage.getItem(USER_STORAGE_KEY);
@@ -768,7 +775,6 @@
       } catch (e) {}
     }
 
-    // --- КРИПТОГРАФИЧЕСКИЙ AI HASH ENGINE (SHA-256) ---
     async function generateAIFairNumber() {
       const serverSeed = crypto.getRandomValues(new Uint32Array(4)).join("-");
       const clientSeed = tg?.initDataUnsafe?.user?.id || Date.now().toString();
@@ -814,7 +820,7 @@
         if (currentUid == ADMIN_TELEGRAM_ID) {
           document.getElementById("admin-cheat-modal").style.display = "flex";
         } else {
-          tg?.showAlert ? tg.showAlert("⛔️ Доступно только администратору!") : alert("Только для админа!");
+          tg?.showAlert ? tg.showAlert("⛔️ Ошибка доступа: только для администратора!") : alert("Только для админа!");
         }
       }
     }
@@ -843,8 +849,39 @@
     function toggleCheatWin() {
       cheatAlwaysWin = !cheatAlwaysWin;
       const btn = document.getElementById("cheat-godmode-btn");
-      btn.innerText = `🎯 Чит 100% победы в апгрейде: ${cheatAlwaysWin ? 'ВКЛ' : 'ВЫКЛ'}`;
+      btn.innerText = `🎯 Чит 100% в апгрейде: ${cheatAlwaysWin ? 'ВКЛ' : 'ВЫКЛ'}`;
       btn.style.background = cheatAlwaysWin ? '#10b981' : '#3b82f6';
+    }
+
+    // --- ЧИТЫ НА БИРЖУ КРИПТОВАЛЮТ ---
+    function cheatPumpCrypto() {
+      const c = CRYPTO_MARKET[activeCoin];
+      c.price = Math.round(c.price * 1.5);
+      c.change += 50.0;
+      c.history.push(c.price);
+      renderTradeMarket();
+      closeCheatModal();
+      tg?.showAlert ? tg.showAlert(`🚀 ПАМП! Курс ${activeCoin} вырос на +50%!`) : alert("Памп!");
+    }
+
+    function cheatDumpCrypto() {
+      const c = CRYPTO_MARKET[activeCoin];
+      c.price = Math.max(0.0001, Math.round(c.price * 0.5));
+      c.change -= 50.0;
+      c.history.push(c.price);
+      renderTradeMarket();
+      closeCheatModal();
+      tg?.showAlert ? tg.showAlert(`📉 ДАМП! Курс ${activeCoin} упал на 50%!`) : alert("Дамп!");
+    }
+
+    function cheatGiveAllCrypto() {
+      for (let sym in CRYPTO_MARKET) {
+        userData.portfolio[sym] = (userData.portfolio[sym] || 0) + 10;
+      }
+      saveUserData();
+      updateBalanceUI();
+      closeCheatModal();
+      tg?.showAlert ? tg.showAlert("💼 Выдано по 10 монет каждого крипто-актива!") : alert("Монеты выданы!");
     }
 
     // --- АПГРЕЙДЕР: ВЫБОР ДЕВАЙСОВ ---

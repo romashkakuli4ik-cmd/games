@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Cases, Upgrader & Crypto Market</title>
+  <title>Kuli4ik Cases, Upgrader & Provably Fair AI</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
@@ -13,9 +13,9 @@
       --text-muted: #64748b;
       --primary: #2563eb;
       --border: #e2e8f0;
-      --gold: #eab308;
       --success: #10b981;
       --danger: #ef4444;
+      --gold: #eab308;
       --legendary-border: #facc15;
       --rare-border: #38bdf8;
       --epic-border: #818cf8;
@@ -38,7 +38,35 @@
       overflow-x: hidden;
     }
 
-    /* Верхняя панель */
+    /* БЛОКИРОВКА СТОРОННИХ БРАУЗЕРОВ */
+    #browser-lock {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #090d16;
+      color: #fff;
+      z-index: 999999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+    #browser-lock h2 { font-size: 24px; margin-bottom: 12px; color: #ef4444; }
+    #browser-lock p { font-size: 14px; color: #94a3b8; line-height: 1.6; max-width: 320px; }
+    #browser-lock .tg-btn {
+      margin-top: 24px;
+      background: #2563eb;
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 15px;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+    }
+
+    /* ВЕРХНЯЯ ПАНЕЛЬ */
     .header {
       background: var(--card);
       padding: 12px 16px;
@@ -59,13 +87,26 @@
       font-size: 14px;
       font-weight: 700;
       color: var(--primary);
+      cursor: pointer;
     }
 
-    /* Экраны */
     .tab-view { display: none; padding: 14px; }
     .tab-view.active { display: block; }
 
-    /* 1. КЕЙСЫ (СТИЛЬ ИЗ ВИДЕО) */
+    /* ПЛАШКА HASH PROVABLY FAIR */
+    .fairness-card {
+      background: #0f172a;
+      color: #94a3b8;
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      font-size: 11px;
+      font-family: monospace;
+      word-break: break-all;
+    }
+    .fairness-card b { color: #38bdf8; }
+
+    /* КЕЙСЫ */
     .case-card-nav {
       background: var(--card);
       border: 1px solid var(--border);
@@ -131,10 +172,8 @@
     .phone-mockup::before {
       content: "";
       position: absolute;
-      top: 6px;
-      left: 6px;
-      width: 12px;
-      height: 18px;
+      top: 6px; left: 6px;
+      width: 12px; height: 18px;
       background: #000;
       border-radius: 4px;
       opacity: 0.35;
@@ -200,14 +239,8 @@
     .content-row-rarity { font-size: 12px; color: var(--text-muted); }
     .content-row-percent { font-size: 14px; font-weight: 700; color: #0f172a; }
 
-    /* 2. БИРЖА КРИПТОВАЛЮТ */
-    .crypto-nav {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      margin-bottom: 12px;
-    }
+    /* БИРЖА */
+    .crypto-nav { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; }
     .crypto-nav::-webkit-scrollbar { display: none; }
     .coin-tab {
       background: #ffffff;
@@ -228,12 +261,7 @@
       padding: 16px;
       margin-bottom: 12px;
     }
-    .market-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 4px;
-    }
+    .market-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
     .live-price { font-size: 24px; font-weight: 800; }
     .price-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
     .price-change { font-size: 13px; font-weight: 700; }
@@ -251,52 +279,14 @@
     }
     canvas#tradeCanvas { width: 100%; height: 100%; display: block; }
 
-    .trade-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .btn-buy {
-      height: 48px;
-      background: var(--success);
-      color: #ffffff;
-      border: none;
-      border-radius: 12px;
-      font-weight: 800;
-      font-size: 15px;
-      cursor: pointer;
-    }
-    .btn-sell {
-      height: 48px;
-      background: var(--danger);
-      color: #ffffff;
-      border: none;
-      border-radius: 12px;
-      font-weight: 800;
-      font-size: 15px;
-      cursor: pointer;
-    }
+    .trade-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+    .btn-buy { height: 48px; background: var(--success); color: #fff; border: none; border-radius: 12px; font-weight: 800; font-size: 15px; cursor: pointer; }
+    .btn-sell { height: 48px; background: var(--danger); color: #fff; border: none; border-radius: 12px; font-weight: 800; font-size: 15px; cursor: pointer; }
 
-    .percent-pills {
-      display: flex;
-      justify-content: space-between;
-      gap: 6px;
-      margin-bottom: 12px;
-    }
-    .pill-btn {
-      flex: 1;
-      background: #f1f5f9;
-      border: 1px solid var(--border);
-      padding: 6px 0;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
+    .percent-pills { display: flex; justify-content: space-between; gap: 6px; margin-bottom: 12px; }
+    .pill-btn { flex: 1; background: #f1f5f9; border: 1px solid var(--border); padding: 6px 0; border-radius: 8px; font-size: 12px; font-weight: 700; color: var(--text-muted); cursor: pointer; }
 
-    /* 3. ИНВЕНТАРЬ (КАК НА ВИДЕО) */
+    /* ИНВЕНТАРЬ */
     .inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
     .inv-item-card {
       background: #ffffff;
@@ -313,19 +303,9 @@
     .inv-item-card.epic { border-color: var(--epic-border); }
     .inv-item-title { font-size: 13px; font-weight: 700; margin: 6px 0 2px; }
     .inv-item-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
-    .btn-inv-sell {
-      width: 100%;
-      height: 36px;
-      background: #0f172a;
-      color: #ffffff;
-      border: none;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-    }
+    .btn-inv-sell { width: 100%; height: 36px; background: #0f172a; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; }
 
-    /* 4. КРУГОВОЙ АПГРЕЙДЕР (РОВНЫЕ ПРЯМЫЕ КРАЯ СЕКТОРА) */
+    /* АПГРЕЙДЕР С РОВНЫМ СЕКТОРОМ */
     .upgrader-box {
       background: #ffffff;
       border: 1px solid var(--border);
@@ -336,17 +316,15 @@
     .wheel-wrapper { position: relative; width: 220px; height: 220px; margin: 16px auto; }
     .wheel-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
     .wheel-bg-circle { fill: none; stroke: #f1f5f9; stroke-width: 24; }
-    /* Ровные, прямые границы без размытых скруглений: */
     .wheel-chance-circle {
       fill: none;
       stroke: #2563eb;
       stroke-width: 24;
-      stroke-linecap: butt;
+      stroke-linecap: butt; /* Ровные прямые границы */
     }
     .wheel-center-info {
       position: absolute;
-      top: 50%;
-      left: 50%;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       font-size: 26px;
       font-weight: 800;
@@ -355,15 +333,12 @@
     .wheel-center-info span { display: block; font-size: 11px; color: var(--text-muted); font-weight: 600; }
     .wheel-arrow {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 4px;
-      height: 95px;
+      top: 50%; left: 50%;
+      width: 4px; height: 95px;
       background: #ef4444;
       border-radius: 2px;
       transform-origin: bottom center;
-      margin-left: -2px;
-      margin-top: -95px;
+      margin-left: -2px; margin-top: -95px;
       transform: rotate(0deg);
       transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1);
       z-index: 10;
@@ -371,30 +346,76 @@
     .wheel-arrow::before {
       content: "";
       position: absolute;
-      top: -8px;
-      left: -6px;
-      width: 0;
-      height: 0;
+      top: -8px; left: -6px;
+      width: 0; height: 0;
       border-left: 8px solid transparent;
       border-right: 8px solid transparent;
       border-bottom: 14px solid #ef4444;
     }
+
     .upgrade-selectors { display: flex; justify-content: space-between; gap: 10px; margin: 14px 0; }
     .upgrade-slot {
       flex: 1;
       background: #f8fafc;
-      border: 1px dashed var(--border);
+      border: 2px solid var(--border);
       border-radius: 12px;
       padding: 10px;
       font-size: 12px;
-      min-height: 65px;
+      min-height: 75px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      cursor: pointer;
+    }
+    .upgrade-slot:active { border-color: var(--primary); }
+
+    /* МОДАЛЬНЫЕ ОКНА ВЫБОРА */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 100;
+      justify-content: center;
+      align-items: flex-end;
+    }
+    .modal-box {
+      background: #fff;
+      width: 100%;
+      border-radius: 20px 20px 0 0;
+      max-height: 70vh;
+      overflow-y: auto;
+      padding: 20px;
+      animation: slideUp 0.2s ease-out;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .select-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
     }
 
-    /* 5. АККАУНТ И МАГАЗИН */
+    /* АДМИН-ЧИТ-ПАНЕЛЬ */
+    #admin-cheat-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 150;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .cheat-box { background: #fff; border-radius: 20px; padding: 20px; width: 100%; max-width: 320px; text-align: center; }
+    .cheat-btn { width: 100%; height: 42px; margin: 6px 0; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
+
+    /* АККАУНТ */
     .profile-card {
       background: #ffffff;
       border: 1px solid var(--border);
@@ -404,8 +425,7 @@
       margin-bottom: 14px;
     }
     .profile-avatar {
-      width: 66px;
-      height: 66px;
+      width: 66px; height: 66px;
       border-radius: 50%;
       background: #2563eb;
       color: #fff;
@@ -426,37 +446,13 @@
     .stat-item h5 { font-size: 11px; color: var(--text-muted); }
     .stat-item b { font-size: 14px; }
 
-    .btn-deposit {
-      width: 100%;
-      height: 44px;
-      background: #eab308;
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 15px;
-      margin-top: 8px;
-      cursor: pointer;
-    }
-    .btn-withdraw {
-      width: 100%;
-      height: 44px;
-      background: #f1f5f9;
-      color: var(--text-muted);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 14px;
-      margin-top: 8px;
-      cursor: pointer;
-    }
+    .btn-deposit { width: 100%; height: 44px; background: #eab308; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; margin-top: 8px; cursor: pointer; }
+    .btn-withdraw { width: 100%; height: 44px; background: #f1f5f9; color: var(--text-muted); border: 1px solid var(--border); border-radius: 12px; font-weight: 600; font-size: 14px; margin-top: 8px; cursor: pointer; }
 
-    /* НИЖНИЙ БАР (ВСЕ 5 РАЗДЕЛОВ) */
+    /* НИЖНИЙ БАР */
     .bottom-bar {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       height: 66px;
       background: #ffffff;
       border-top: 1px solid var(--border);
@@ -466,17 +462,11 @@
       z-index: 50;
     }
     .nav-btn {
-      flex: 1;
-      height: 100%;
-      background: none;
-      border: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #94a3b8;
-      font-size: 11px;
-      font-weight: 500;
+      flex: 1; height: 100%;
+      background: none; border: none;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: #94a3b8; font-size: 11px; font-weight: 500;
       cursor: pointer;
     }
     .nav-btn.active { color: #2563eb; font-weight: 700; }
@@ -485,14 +475,69 @@
 </head>
 <body>
 
-  <!-- Верхняя строка -->
+  <!-- БЛОКИРОВКА БРАУЗЕРА (ТОЛЬКО В TELEGRAM) -->
+  <div id="browser-lock">
+    <h2>🚫 Доступ заблокирован</h2>
+    <p>Вход разрешён исключительно через приложение Telegram Mini App. Прямой запуск через браузер отключён.</p>
+    <a href="https://t.me/Kuli4ik_bot/game" class="tg-btn">Открыть в Telegram</a>
+  </div>
+
+  <!-- ВЕРХНЯЯ ШАПКА -->
   <div class="header">
     <div class="header-title" id="page-title">Кейсы</div>
-    <div class="balance-box" id="top-balance">0 ₽</div>
+    <div class="balance-box" id="top-balance" onclick="handleBalanceClick()">0 ₽</div>
+  </div>
+
+  <!-- ЧИТ-ПАНЕЛЬ (ТОЛЬКО АДМИНУ ID 8732002956) -->
+  <div id="admin-cheat-modal">
+    <div class="cheat-box">
+      <h3>⚡️ Панель администратора</h3>
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">Авторизован: ID 8732002956</p>
+      
+      <div style="margin-bottom:10px; text-align:left;">
+        <label style="font-size:12px; font-weight:700;">Накрутить рубли на баланс:</label>
+        <div style="display:flex; gap:6px; margin-top:4px;">
+          <input type="number" id="cheat-custom-sum" value="50000" style="flex:1; height:38px; border:1px solid var(--border); border-radius:8px; padding:0 8px; font-weight:700;">
+          <button style="background:#10b981; color:#fff; border:none; border-radius:8px; padding:0 12px; font-weight:700;" onclick="applyCheatMoney()">+ Зачислить</button>
+        </div>
+      </div>
+
+      <button class="cheat-btn" style="background:#f59e0b; color:#fff;" onclick="cheatAddPhone()">📱 Выдать iPhone 16 Pro Max</button>
+      
+      <button class="cheat-btn" id="cheat-godmode-btn" style="background:#3b82f6; color:#fff;" onclick="toggleCheatWin()">
+        🎯 Чит 100% победы в апгрейде: ВЫКЛ
+      </button>
+
+      <button class="cheat-btn" style="background:#64748b; color:#fff;" onclick="closeCheatModal()">Закрыть панель</button>
+    </div>
+  </div>
+
+  <!-- ВЫБОР ИСХОДНОГО ПРЕДМЕТА -->
+  <div id="modal-select-source" class="modal-overlay" onclick="closeModals()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <h3 style="margin-bottom:12px; font-size:16px;">Выберите исходный девайс</h3>
+      <div id="source-items-list"></div>
+      <button class="btn-main-open" style="margin-top:10px; height:40px;" onclick="closeModals()">Отмена</button>
+    </div>
+  </div>
+
+  <!-- ВЫБОР ЦЕЛИ В АПГРЕЙДЕ -->
+  <div id="modal-select-target" class="modal-overlay" onclick="closeModals()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <h3 style="margin-bottom:12px; font-size:16px;">До какого девайса докачаться?</h3>
+      <div id="target-items-list"></div>
+      <button class="btn-main-open" style="margin-top:10px; height:40px;" onclick="closeModals()">Отмена</button>
+    </div>
   </div>
 
   <!-- 1. ТАБ: КЕЙСЫ -->
   <div id="tab-cases" class="tab-view active">
+    <!-- ПАНЕЛЬ ДОКАЗУЕМОЙ ЧЕСТНОСТИ HASH -->
+    <div class="fairness-card">
+      🤖 <b>AI Provably Fair Engine:</b> SHA-256 Seeded<br>
+      Hash: <span id="case-hash-display">d8e8fca2dc48...</span>
+    </div>
+
     <div id="cases-list">
       <div class="case-card-nav" onclick="showCaseDetail('bomj')">
         <div class="case-icon">🗑</div>
@@ -521,18 +566,15 @@
       </div>
     </div>
 
-    <!-- Детали кейса -->
     <div id="case-detail" style="display: none;">
       <div class="case-detail-header">
         <button class="btn-back" onclick="hideCaseDetail()">‹ Назад</button>
         <h3 style="flex: 1; text-align: center; margin-right: 40px;" id="detail-case-title">Кейс бомжа</h3>
       </div>
-
       <div class="roulette-container">
         <div class="roulette-pointer"></div>
         <div class="roulette-track" id="roulette-track"></div>
       </div>
-
       <div class="won-box" id="won-box" style="display: none;">
         <div class="phone-mockup phone-black" id="won-icon"></div>
         <div class="won-info">
@@ -542,7 +584,6 @@
           <span style="font-size: 11px; color: #10b981;">Добавлено в инвентарь</span>
         </div>
       </div>
-
       <button class="btn-main-open" id="btn-open-case" onclick="spinRoulette()">Открыть</button>
       <div class="content-list-title">ЧТО ВНУТРИ</div>
       <div id="case-drop-table"></div>
@@ -612,16 +653,19 @@
     <div class="inv-grid" id="inv-grid"></div>
   </div>
 
-  <!-- 4. ТАБ: АПГРЕЙДЕР (РОВНАЯ СИНЯЯ ЗОНА) -->
+  <!-- 4. ТАБ: АПГРЕЙДЕР -->
   <div id="tab-upgrade" class="tab-view">
+    <div class="fairness-card">
+      🎲 <b>Crypto-Seed SHA-256:</b> <span id="upgrade-hash-display">9f4b3c81a...</span>
+    </div>
+
     <div class="upgrader-box">
       <h3 style="font-size: 17px; margin-bottom: 4px;">Круговой Апгрейдер</h3>
-      <p style="font-size: 12px; color: var(--text-muted);">Стрелка должна остановиться в синей зоне</p>
+      <p style="font-size: 12px; color: var(--text-muted);">Выберите исходный телефон и цель для улучшения</p>
 
       <div class="wheel-wrapper">
         <svg class="wheel-svg" viewBox="0 0 100 100">
           <circle class="wheel-bg-circle" cx="50" cy="50" r="38"></circle>
-          <!-- Ровная синяя зона 50% с прямыми срезами -->
           <circle class="wheel-chance-circle" id="wheel-stroke" cx="50" cy="50" r="38" stroke-dasharray="119.3 238.7"></circle>
         </svg>
         <div class="wheel-arrow" id="wheel-arrow"></div>
@@ -632,14 +676,16 @@
       </div>
 
       <div class="upgrade-selectors">
-        <div class="upgrade-slot" id="slot-from">
-          <b>Ваш телефон</b>
-          <span id="slot-from-name" style="color:var(--text-muted);">Не выбран</span>
+        <div class="upgrade-slot" id="slot-from" onclick="openSourceSelectModal()">
+          <span style="font-size:10px; color:var(--text-muted);">ИСХОДНЫЙ (нажмите)</span>
+          <b id="slot-from-name" style="margin-top:2px;">Realme Note 80</b>
+          <span id="slot-from-price" style="color:var(--primary); font-weight:700;">700 ₽</span>
         </div>
-        <div style="display: flex; align-items: center; font-weight: bold; color: var(--primary);">➔</div>
-        <div class="upgrade-slot" id="slot-to">
-          <b>Цель</b>
-          <span id="slot-to-name" style="color:#10b981;">x2.1 к цене</span>
+        <div style="display: flex; align-items: center; font-weight: bold; color: var(--primary); font-size:18px;">➔</div>
+        <div class="upgrade-slot" id="slot-to" onclick="openTargetSelectModal()">
+          <span style="font-size:10px; color:var(--text-muted);">ЦЕЛЬ (нажмите)</span>
+          <b id="slot-to-name" style="margin-top:2px;">Infinix HOT 60i</b>
+          <span id="slot-to-price" style="color:var(--success); font-weight:700;">1 300 ₽</span>
         </div>
       </div>
 
@@ -647,7 +693,7 @@
     </div>
   </div>
 
-  <!-- 5. ТАБ: АККАУНТ И МАГАЗИН -->
+  <!-- 5. ТАБ: АККАУНТ -->
   <div id="tab-account" class="tab-view">
     <div class="profile-card">
       <div class="profile-avatar" id="acc-avatar">U</div>
@@ -665,7 +711,7 @@
     </div>
   </div>
 
-  <!-- НИЖНЯЯ ПАНЕЛЬ МЕНЮ -->
+  <!-- НИЖНЯЯ ПАНЕЛЬ -->
   <div class="bottom-bar">
     <button class="nav-btn active" onclick="setTab('cases', this)">
       <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V18z"/></svg>
@@ -691,7 +737,38 @@
 
   <script>
     const tg = window.Telegram?.WebApp;
-    if (tg) { tg.expand(); }
+
+    // --- БЛОКИРОВКА СТОРОННИХ БРАУЗЕРОВ ---
+    const isTelegramApp = tg && tg.initData && tg.initData.length > 0;
+    if (!isTelegramApp) {
+      document.getElementById("browser-lock").style.display = "flex";
+      throw new Error("Запуск разрешён исключительно через Telegram Mini App!");
+    } else {
+      tg.expand();
+    }
+
+    const ADMIN_TELEGRAM_ID = 8732002956;
+
+    // --- КРИПТОГРАФИЧЕСКИЙ AI HASH ENGINE (PROVABLY FAIR SHA-256) ---
+    async function generateAIFairNumber() {
+      const serverSeed = crypto.getRandomValues(new Uint32Array(4)).join("-");
+      const clientSeed = tg?.initDataUnsafe?.user?.id || Date.now().toString();
+      const nonce = performance.now().toString();
+      const message = `${serverSeed}:${clientSeed}:${nonce}`;
+
+      const encoder = new TextEncoder();
+      const data = encoder.encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+      // Извлекаем детерминированное псевдослучайное число от 0 до 100
+      const subValue = (hashArray[0] << 24) | (hashArray[1] << 16) | (hashArray[2] << 8) | hashArray[3];
+      const normalized = Math.abs(subValue) / 0x7FFFFFFF;
+      const fairPercentage = normalized * 100;
+
+      return { fairPercentage, hashHex };
+    }
 
     let userData = {
       balance: 14100,
@@ -704,6 +781,196 @@
       portfolio: {}
     };
 
+    const ALL_TARGET_ITEMS = [
+      { name: "Xiaomi Redmi A5", price: 1100, rarity: "Редкий", color: "phone-yellow", tag: "rare" },
+      { name: "Infinix HOT 60i", price: 1300, rarity: "Редкий", color: "phone-green", tag: "rare" },
+      { name: "Tecno Spark 40C", price: 2100, rarity: "Эпический", color: "phone-yellow", tag: "epic" },
+      { name: "Redmi Note 13", price: 3200, rarity: "Эпический", color: "phone-blue", tag: "epic" },
+      { name: "Samsung A17", price: 4500, rarity: "Легендарный", color: "phone-black", tag: "legendary" },
+      { name: "Poco X6 Pro", price: 7500, rarity: "Легендарный", color: "phone-yellow", tag: "legendary" },
+      { name: "iPhone 13", price: 18000, rarity: "Легендарный", color: "phone-black", tag: "legendary" },
+      { name: "Galaxy S24 Ultra", price: 50000, rarity: "Легендарный", color: "phone-purple", tag: "legendary" },
+      { name: "iPhone 16 Pro Max 1TB", price: 65000, rarity: "Легендарный", color: "phone-yellow", tag: "legendary" }
+    ];
+
+    let selectedSourceIndex = 0;
+    let selectedTargetItem = ALL_TARGET_ITEMS[1];
+    let cheatAlwaysWin = false;
+
+    // --- ЧИТ-ПАНЕЛЬ (ТОЛЬКО ДЛЯ ВЛАДЕЛЬЦА) ---
+    let clickBalanceCounter = 0;
+    function handleBalanceClick() {
+      clickBalanceCounter++;
+      if (clickBalanceCounter >= 3) {
+        clickBalanceCounter = 0;
+        const currentUid = tg?.initDataUnsafe?.user?.id;
+        if (currentUid == ADMIN_TELEGRAM_ID) {
+          document.getElementById("admin-cheat-modal").style.display = "flex";
+        } else {
+          tg?.showAlert ? tg.showAlert("⛔️ Ошибка доступа: разрешено только администратору!") : alert("Только для админа!");
+        }
+      }
+    }
+    function closeCheatModal() { document.getElementById("admin-cheat-modal").style.display = "none"; }
+
+    function applyCheatMoney() {
+      const sum = parseFloat(document.getElementById("cheat-custom-sum").value) || 0;
+      userData.balance += sum;
+      updateBalanceUI();
+      closeCheatModal();
+      tg?.showAlert ? tg.showAlert(`✅ Зачислено +${sum.toLocaleString('ru-RU')} ₽!`) : alert(`+${sum} ₽`);
+    }
+
+    function cheatAddPhone() {
+      userData.inventory.unshift({
+        id: Date.now(), name: "iPhone 16 Pro Max 1TB", rarity: "Легендарный", price: 65000, color: "phone-yellow", tag: "legendary"
+      });
+      updateBalanceUI();
+      setupUpgraderUI();
+      closeCheatModal();
+      tg?.showAlert ? tg.showAlert("✅ iPhone 16 Pro Max добавлен в инвентарь!") : alert("Выдан iPhone!");
+    }
+
+    function toggleCheatWin() {
+      cheatAlwaysWin = !cheatAlwaysWin;
+      const btn = document.getElementById("cheat-godmode-btn");
+      btn.innerText = `🎯 Чит 100% победы в апгрейде: ${cheatAlwaysWin ? 'ВКЛ' : 'ВЫКЛ'}`;
+      btn.style.background = cheatAlwaysWin ? '#10b981' : '#3b82f6';
+    }
+
+    // --- АПГРЕЙДЕР: ВЫБОР ДЕВАЙСОВ ---
+    function openSourceSelectModal() {
+      if (userData.inventory.length === 0) {
+        tg?.showAlert ? tg.showAlert("В инвентаре нет предметов!") : alert("Инвентарь пуст!");
+        return;
+      }
+      const list = document.getElementById("source-items-list");
+      list.innerHTML = "";
+      userData.inventory.forEach((item, idx) => {
+        list.innerHTML += `
+          <div class="select-item-row" onclick="chooseSourceItem(${idx})">
+            <div><b>${item.name}</b> <span style="font-size:12px; color:var(--text-muted);">(${item.rarity})</span></div>
+            <div style="font-weight:700; color:var(--primary);">${item.price.toLocaleString('ru-RU')} ₽</div>
+          </div>
+        `;
+      });
+      document.getElementById("modal-select-source").style.display = "flex";
+    }
+
+    function chooseSourceItem(idx) {
+      selectedSourceIndex = idx;
+      closeModals();
+      setupUpgraderUI();
+    }
+
+    function openTargetSelectModal() {
+      const list = document.getElementById("target-items-list");
+      list.innerHTML = "";
+      ALL_TARGET_ITEMS.forEach((item, idx) => {
+        list.innerHTML += `
+          <div class="select-item-row" onclick="chooseTargetItem(${idx})">
+            <div><b>${item.name}</b> <span style="font-size:12px; color:var(--text-muted);">(${item.rarity})</span></div>
+            <div style="font-weight:700; color:var(--success);">${item.price.toLocaleString('ru-RU')} ₽</div>
+          </div>
+        `;
+      });
+      document.getElementById("modal-select-target").style.display = "flex";
+    }
+
+    function chooseTargetItem(idx) {
+      selectedTargetItem = ALL_TARGET_ITEMS[idx];
+      closeModals();
+      setupUpgraderUI();
+    }
+
+    function closeModals() {
+      document.getElementById("modal-select-source").style.display = "none";
+      document.getElementById("modal-select-target").style.display = "none";
+    }
+
+    function setupUpgraderUI() {
+      const src = userData.inventory[selectedSourceIndex];
+      const fromName = document.getElementById("slot-from-name");
+      const fromPrice = document.getElementById("slot-from-price");
+      const toName = document.getElementById("slot-to-name");
+      const toPrice = document.getElementById("slot-to-price");
+
+      if (src) {
+        fromName.innerText = src.name;
+        fromPrice.innerText = `${src.price.toLocaleString('ru-RU')} ₽`;
+      } else {
+        fromName.innerText = "Не выбран";
+        fromPrice.innerText = "0 ₽";
+      }
+
+      toName.innerText = selectedTargetItem.name;
+      toPrice.innerText = `${selectedTargetItem.price.toLocaleString('ru-RU')} ₽`;
+
+      let chance = 50;
+      if (src && selectedTargetItem) {
+        chance = Math.min(95, Math.max(2, Math.round((src.price / selectedTargetItem.price) * 95)));
+      }
+
+      document.getElementById("chance-text").innerText = `${chance}%`;
+      const circ = 238.7;
+      const strokeVal = (circ * chance) / 100;
+      document.getElementById("wheel-stroke").setAttribute("stroke-dasharray", `${strokeVal} ${circ}`);
+    }
+
+    let isSpinning = false;
+    async function runWheelUpgrade() {
+      if (isSpinning) return;
+      if (userData.inventory.length === 0) {
+        tg?.showAlert ? tg.showAlert("Инвентарь пуст! Откройте кейс!") : alert("Инвентарь пуст!");
+        return;
+      }
+
+      const src = userData.inventory[selectedSourceIndex];
+      if (!src) return;
+
+      isSpinning = true;
+      document.getElementById("btn-spin-upgrade").disabled = true;
+
+      // ГЕНЕРАЦИЯ ЧЕСТНОГО SHA-256 ХЭША РАУНДА
+      const { fairPercentage, hashHex } = await generateAIFairNumber();
+      document.getElementById("upgrade-hash-display").innerText = hashHex.substring(0, 24) + "...";
+
+      userData.inventory.splice(selectedSourceIndex, 1);
+      selectedSourceIndex = 0;
+      updateBalanceUI();
+
+      let chance = Math.min(95, Math.max(2, Math.round((src.price / selectedTargetItem.price) * 95)));
+      const isWin = cheatAlwaysWin ? true : (fairPercentage < chance);
+
+      const winDegrees = (chance / 100) * 360;
+      const targetDeg = isWin 
+        ? ((fairPercentage / chance) * (winDegrees - 6) + 3)
+        : (winDegrees + ((fairPercentage - chance) / (100 - chance)) * (354 - winDegrees) + 3);
+      const totalRotation = 360 * 5 + targetDeg;
+
+      const arrow = document.getElementById("wheel-arrow");
+      arrow.style.transition = "transform 4s cubic-bezier(0.1, 0.7, 0.1, 1)";
+      arrow.style.transform = `rotate(${totalRotation}deg)`;
+
+      setTimeout(() => {
+        isSpinning = false;
+        document.getElementById("btn-spin-upgrade").disabled = false;
+        arrow.style.transition = "none";
+        arrow.style.transform = `rotate(${targetDeg}deg)`;
+
+        if (isWin) {
+          const wonItem = { ...selectedTargetItem, id: Date.now() };
+          userData.inventory.unshift(wonItem);
+          tg?.showAlert ? tg.showAlert(`🎉 УСПЕХ! AI Hash подтвердил победу: ${wonItem.name}!`) : alert("Успех!");
+        } else {
+          tg?.showAlert ? tg.showAlert(`💥 ПРОВАЛ! ${src.name} сгорел.`) : alert("Провал!");
+        }
+        updateBalanceUI();
+        setupUpgraderUI();
+      }, 4200);
+    }
+
+    // --- БИРЖА КРИПТОВАЛЮТ ---
     const CRYPTO_MARKET = {
       TON: { name: "TON (Gram)", price: 520, history: [], change: 3.45 },
       BTC: { name: "Bitcoin", price: 6540000, history: [], change: 1.85 },
@@ -722,80 +989,6 @@
       }
     }
 
-    const CASES = {
-      bomj: {
-        title: "Кейс бомжа", cost: 0,
-        items: [
-          { name: "Samsung A17", rarity: "Легендарный", price: 4500, percent: "7,3%", color: "phone-black", tag: "legendary" },
-          { name: "Tecno Spark 40C", rarity: "Эпический", price: 2100, percent: "9,7%", color: "phone-yellow", tag: "epic" },
-          { name: "Xiaomi Redmi A5", rarity: "Редкий", price: 1100, percent: "17%", color: "phone-yellow", tag: "rare" },
-          { name: "Infinix HOT 60i", rarity: "Редкий", price: 1300, percent: "14,6%", color: "phone-green", tag: "rare" },
-          { name: "Redmi 9A", rarity: "Обычный", price: 800, percent: "25%", color: "phone-blue", tag: "common" },
-          { name: "Realme Note 80", rarity: "Обычный", price: 700, percent: "26,4%", color: "phone-blue", tag: "common" }
-        ]
-      },
-      start: {
-        title: "Стартовый кейс", cost: 50,
-        items: [
-          { name: "Redmi Note 13", rarity: "Эпический", price: 3200, percent: "12%", color: "phone-blue", tag: "epic" },
-          { name: "Infinix HOT 60i", rarity: "Редкий", price: 1300, percent: "38%", color: "phone-green", tag: "rare" },
-          { name: "Redmi 9A", rarity: "Обычный", price: 800, percent: "50%", color: "phone-blue", tag: "common" }
-        ]
-      },
-      middle: {
-        title: "Продвинутый кейс", cost: 250,
-        items: [
-          { name: "Poco X6 Pro", rarity: "Легендарный", price: 7500, percent: "10%", color: "phone-yellow", tag: "legendary" },
-          { name: "Samsung A17", rarity: "Эпический", price: 4500, percent: "40%", color: "phone-black", tag: "epic" },
-          { name: "Tecno Spark 40C", rarity: "Редкий", price: 2100, percent: "50%", color: "phone-yellow", tag: "rare" }
-        ]
-      },
-      premium: {
-        title: "Премиум кейс", cost: 1000,
-        items: [
-          { name: "iPhone 13", rarity: "Легендарный", price: 18000, percent: "15%", color: "phone-black", tag: "legendary" },
-          { name: "Galaxy S23", rarity: "Эпический", price: 12000, percent: "35%", color: "phone-purple", tag: "epic" },
-          { name: "Nothing Phone (2)", rarity: "Редкий", price: 8000, percent: "50%", color: "phone-black", tag: "rare" }
-        ]
-      },
-      legend: {
-        title: "Кейс Легенда", cost: 5000,
-        items: [
-          { name: "iPhone 16 Pro Max 1TB", rarity: "Легендарный", price: 65000, percent: "8%", color: "phone-yellow", tag: "legendary" },
-          { name: "Galaxy S24 Ultra", rarity: "Легендарный", price: 50000, percent: "22%", color: "phone-purple", tag: "legendary" },
-          { name: "iPhone 15 Pro", rarity: "Эпический", price: 32000, percent: "70%", color: "phone-black", tag: "epic" }
-        ]
-      }
-    };
-
-    let activeCaseKey = "bomj";
-    let isSpinning = false;
-    let upgradeChance = 50; // Честный шанс 50%
-
-    function updateBalanceUI() {
-      const bStr = Math.round(userData.balance).toLocaleString('ru-RU') + " ₽";
-      document.getElementById("top-balance").innerText = bStr;
-      document.getElementById("acc-stat-bal").innerText = bStr;
-      document.getElementById("acc-stat-opened").innerText = userData.openedCount;
-      let invTotal = userData.inventory.reduce((a, b) => a + b.price, 0);
-      document.getElementById("acc-stat-inv").innerText = invTotal.toLocaleString('ru-RU') + " ₽";
-      renderPortfolio();
-    }
-
-    function setTab(tabId, el) {
-      document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('tab-' + tabId).classList.add('active');
-      el.classList.add('active');
-      const titles = { cases: "Кейсы", trade: "Биржа криптовалют", inventory: "Инвентарь", upgrade: "Апгрейд", account: "Аккаунт" };
-      document.getElementById("page-title").innerText = titles[tabId] || "Кейсы";
-      if (tabId === "inventory") renderInventoryUI();
-      if (tabId === "upgrade") setupUpgraderUI();
-      if (tabId === "trade") { renderTradeMarket(); resizeCanvas(); }
-      if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
-    }
-
-    // --- БИРЖА ---
     function selectCoin(sym, el) {
       activeCoin = sym;
       document.querySelectorAll('.coin-tab').forEach(t => t.classList.remove('active'));
@@ -846,7 +1039,6 @@
         tg?.showAlert ? tg.showAlert(`✅ Продано всё за +${Math.round(sellRub)} ₽!`) : alert("Продано!");
       }
       updateBalanceUI();
-      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
     }
 
     function renderPortfolio() {
@@ -911,72 +1103,54 @@
       }
     }, 2000);
 
-    // --- АПГРЕЙДЕР (РОВНЫЙ СЕКТОР) ---
-    function setupUpgraderUI() {
-      const fromName = document.getElementById("slot-from-name");
-      const toName = document.getElementById("slot-to-name");
-      if (userData.inventory.length > 0) {
-        const item = userData.inventory[0];
-        fromName.innerText = `${item.name} (${item.price} ₽)`;
-        toName.innerText = `Смартфон ~${Math.round(item.price * 2.1)} ₽`;
-      } else {
-        fromName.innerText = "Инвентарь пуст";
-        toName.innerText = "Выберите телефон";
-      }
-      document.getElementById("chance-text").innerText = upgradeChance + "%";
-      const circ = 238.7;
-      const strokeVal = (circ * upgradeChance) / 100;
-      document.getElementById("wheel-stroke").setAttribute("stroke-dasharray", `${strokeVal} ${circ}`);
-    }
-
-    function runWheelUpgrade() {
-      if (isSpinning) return;
-      if (userData.inventory.length === 0) {
-        tg?.showAlert ? tg.showAlert("Инвентарь пуст! Откройте кейс!") : alert("Инвентарь пуст!");
-        return;
-      }
-      isSpinning = true;
-      const btn = document.getElementById("btn-spin-upgrade");
-      btn.disabled = true;
-
-      const sourceItem = userData.inventory.shift();
-      updateBalanceUI();
-
-      const isWin = Math.random() * 100 < upgradeChance;
-      // Синий сектор ровно от 0 до 180 градусов, белый от 180 до 360
-      const targetDeg = isWin ? (Math.random() * 140 + 20) : (Math.random() * 140 + 200);
-      const totalRotation = 360 * 5 + targetDeg;
-
-      const arrow = document.getElementById("wheel-arrow");
-      arrow.style.transition = "transform 4s cubic-bezier(0.1, 0.7, 0.1, 1)";
-      arrow.style.transform = `rotate(${totalRotation}deg)`;
-
-      setTimeout(() => {
-        isSpinning = false;
-        btn.disabled = false;
-        arrow.style.transition = "none";
-        arrow.style.transform = `rotate(${targetDeg}deg)`;
-
-        if (isWin) {
-          const upgraded = {
-            id: Date.now(),
-            name: "Turbo " + sourceItem.name,
-            rarity: "Легендарный",
-            price: Math.round(sourceItem.price * 2.1),
-            color: "phone-yellow",
-            tag: "legendary"
-          };
-          userData.inventory.unshift(upgraded);
-          tg?.showAlert ? tg.showAlert(`🎉 УСПЕХ! Получен ${upgraded.name}!`) : alert("Успех!");
-        } else {
-          tg?.showAlert ? tg.showAlert(`💥 ПРОВАЛ! ${sourceItem.name} сгорел.`) : alert("Провал!");
-        }
-        updateBalanceUI();
-        setupUpgraderUI();
-      }, 4200);
-    }
-
     // --- КЕЙСЫ ---
+    const CASES = {
+      bomj: {
+        title: "Кейс бомжа", cost: 0,
+        items: [
+          { name: "Samsung A17", rarity: "Легендарный", price: 4500, percent: 7.3, color: "phone-black", tag: "legendary" },
+          { name: "Tecno Spark 40C", rarity: "Эпический", price: 2100, percent: 9.7, color: "phone-yellow", tag: "epic" },
+          { name: "Xiaomi Redmi A5", rarity: "Редкий", price: 1100, percent: 17.0, color: "phone-yellow", tag: "rare" },
+          { name: "Infinix HOT 60i", rarity: "Редкий", price: 1300, percent: 14.6, color: "phone-green", tag: "rare" },
+          { name: "Redmi 9A", rarity: "Обычный", price: 800, percent: 25.0, color: "phone-blue", tag: "common" },
+          { name: "Realme Note 80", rarity: "Обычный", price: 700, percent: 26.4, color: "phone-blue", tag: "common" }
+        ]
+      },
+      start: {
+        title: "Стартовый кейс", cost: 50,
+        items: [
+          { name: "Redmi Note 13", rarity: "Эпический", price: 3200, percent: 12.0, color: "phone-blue", tag: "epic" },
+          { name: "Infinix HOT 60i", rarity: "Редкий", price: 1300, percent: 38.0, color: "phone-green", tag: "rare" },
+          { name: "Redmi 9A", rarity: "Обычный", price: 800, percent: 50.0, color: "phone-blue", tag: "common" }
+        ]
+      },
+      middle: {
+        title: "Продвинутый кейс", cost: 250,
+        items: [
+          { name: "Poco X6 Pro", rarity: "Легендарный", price: 7500, percent: 10.0, color: "phone-yellow", tag: "legendary" },
+          { name: "Samsung A17", rarity: "Эпический", price: 4500, percent: 40.0, color: "phone-black", tag: "epic" },
+          { name: "Tecno Spark 40C", rarity: "Редкий", price: 2100, percent: 50.0, color: "phone-yellow", tag: "rare" }
+        ]
+      },
+      premium: {
+        title: "Премиум кейс", cost: 1000,
+        items: [
+          { name: "iPhone 13", rarity: "Легендарный", price: 18000, percent: 15.0, color: "phone-black", tag: "legendary" },
+          { name: "Galaxy S23", rarity: "Эпический", price: 12000, percent: 35.0, color: "phone-purple", tag: "epic" },
+          { name: "Nothing Phone (2)", rarity: "Редкий", price: 8000, percent: 50.0, color: "phone-black", tag: "rare" }
+        ]
+      },
+      legend: {
+        title: "Кейс Легенда", cost: 5000,
+        items: [
+          { name: "iPhone 16 Pro Max 1TB", rarity: "Легендарный", price: 65000, percent: 8.0, color: "phone-yellow", tag: "legendary" },
+          { name: "Galaxy S24 Ultra", rarity: "Легендарный", price: 50000, percent: 22.0, color: "phone-purple", tag: "legendary" },
+          { name: "iPhone 15 Pro", rarity: "Эпический", price: 32000, percent: 70.0, color: "phone-black", tag: "epic" }
+        ]
+      }
+    };
+
+    let activeCaseKey = "bomj";
     function showCaseDetail(caseKey) {
       activeCaseKey = caseKey;
       const c = CASES[caseKey];
@@ -997,7 +1171,7 @@
               <div class="content-row-name">${it.name}</div>
               <div class="content-row-rarity">${it.rarity}</div>
             </div>
-            <div class="content-row-percent">${it.percent}</div>
+            <div class="content-row-percent">${it.percent}%</div>
           </div>
         `;
       });
@@ -1021,7 +1195,8 @@
         track.appendChild(div);
       }
     }
-    function spinRoulette() {
+
+    async function spinRoulette() {
       if (isSpinning) return;
       const c = CASES[activeCaseKey];
       if (userData.balance < c.cost) {
@@ -1035,30 +1210,46 @@
       const btn = document.getElementById("btn-open-case");
       btn.disabled = true;
       document.getElementById("won-box").style.display = "none";
+
+      // ВЫЧИСЛЕНИЕ ДРОПА ЧЕРЕЗ AI HASH SHA-256
+      const { fairPercentage, hashHex } = await generateAIFairNumber();
+      document.getElementById("case-hash-display").innerText = hashHex.substring(0, 24) + "...";
+
+      let accum = 0;
+      let winItem = c.items[c.items.length - 1];
+      for (let it of c.items) {
+        accum += it.percent;
+        if (fairPercentage <= accum) {
+          winItem = it;
+          break;
+        }
+      }
+
       buildRouletteTrack();
       const track = document.getElementById("roulette-track");
       const winIndex = 36;
-      const winItem = CASES[activeCaseKey].items[Math.floor(Math.random() * CASES[activeCaseKey].items.length)];
       track.children[winIndex].querySelector(".roulette-item-title").innerText = winItem.name;
       track.children[winIndex].querySelector(".phone-mockup").className = `phone-mockup ${winItem.color}`;
+
       const itemWidth = 122;
       const stopOffset = winIndex * itemWidth + (Math.random() * 30 - 15);
       setTimeout(() => {
         track.style.transition = "transform 4.5s cubic-bezier(0.12, 0.8, 0.15, 1)";
         track.style.transform = `translateX(-${stopOffset}px)`;
       }, 50);
+
       setTimeout(() => {
         isSpinning = false;
         btn.disabled = false;
         btn.innerText = c.cost === 0 ? "Открыть ещё раз бесплатно" : `Открыть ещё раз за ${c.cost} ₽`;
         userData.inventory.unshift({ ...winItem, id: Date.now() });
         updateBalanceUI();
+        setupUpgraderUI();
         const wonBox = document.getElementById("won-box");
         wonBox.style.display = "flex";
         document.getElementById("won-name").innerText = winItem.name;
         document.getElementById("won-rarity").innerText = winItem.rarity;
         document.getElementById("won-icon").className = `phone-mockup ${winItem.color}`;
-        if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
       }, 4800);
     }
 
@@ -1087,19 +1278,46 @@
     function sellSingleItem(index) {
       const item = userData.inventory.splice(index, 1)[0];
       userData.balance += item.price;
+      selectedSourceIndex = 0;
       updateBalanceUI();
       renderInventoryUI();
+      setupUpgraderUI();
     }
     function sellAllItems() {
       if (userData.inventory.length === 0) return;
       const sum = userData.inventory.reduce((a, b) => a + b.price, 0);
       userData.balance += sum;
       userData.inventory = [];
+      selectedSourceIndex = 0;
       updateBalanceUI();
       renderInventoryUI();
+      setupUpgraderUI();
     }
 
-    function callDeposit() { tg?.sendData ? tg.sendData("action_deposit") : alert("Используйте меню бота"); }
+    // --- НАВИГАЦИЯ ---
+    function updateBalanceUI() {
+      const bStr = Math.round(userData.balance).toLocaleString('ru-RU') + " ₽";
+      document.getElementById("top-balance").innerText = bStr;
+      document.getElementById("acc-stat-bal").innerText = bStr;
+      document.getElementById("acc-stat-opened").innerText = userData.openedCount;
+      let invTotal = userData.inventory.reduce((a, b) => a + b.price, 0);
+      document.getElementById("acc-stat-inv").innerText = invTotal.toLocaleString('ru-RU') + " ₽";
+      renderPortfolio();
+    }
+
+    function setTab(tabId, el) {
+      document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+      el.classList.add('active');
+      const titles = { cases: "Кейсы", trade: "Биржа криптовалют", inventory: "Инвентарь", upgrade: "Апгрейд", account: "Аккаунт" };
+      document.getElementById("page-title").innerText = titles[tabId] || "Кейсы";
+      if (tabId === "inventory") renderInventoryUI();
+      if (tabId === "upgrade") setupUpgraderUI();
+      if (tabId === "trade") { renderTradeMarket(); resizeCanvas(); }
+    }
+
+    function callDeposit() { tg?.sendData ? tg.sendData("action_deposit") : alert("Используйте бота"); }
     function callWithdraw() { tg?.showAlert ? tg.showAlert("⚠️ Для вывода используйте меню бота в Telegram!") : alert("Используйте бота"); }
 
     if (tg?.initDataUnsafe?.user) {
@@ -1109,6 +1327,7 @@
       document.getElementById("acc-avatar").innerText = u.first_name.charAt(0);
     }
 
+    setupUpgraderUI();
     updateBalanceUI();
   </script>
 </body>

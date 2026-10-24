@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Phone Cases Game</title>
+  <title>Phone Cases & Crypto Market</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
@@ -14,6 +14,8 @@
       --primary: #2563eb;
       --border: #e2e8f0;
       --gold: #eab308;
+      --success: #10b981;
+      --danger: #ef4444;
       --legendary-border: #facc15;
       --rare-border: #38bdf8;
       --epic-border: #818cf8;
@@ -32,7 +34,7 @@
     body {
       background-color: var(--bg);
       color: var(--text);
-      padding-bottom: 74px;
+      padding-bottom: 78px;
       overflow-x: hidden;
     }
 
@@ -48,29 +50,22 @@
       top: 0;
       z-index: 40;
     }
-    .header-title {
-      font-size: 17px;
-      font-weight: 700;
-    }
+    .header-title { font-size: 17px; font-weight: 700; }
     .balance-box {
-      background: #f1f5f9;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
       padding: 6px 14px;
       border-radius: 20px;
       font-size: 14px;
       font-weight: 700;
-      color: var(--text);
+      color: var(--primary);
     }
 
-    /* Экраны / Табы */
-    .tab-view {
-      display: none;
-      padding: 16px;
-    }
-    .tab-view.active {
-      display: block;
-    }
+    /* Вкладки */
+    .tab-view { display: none; padding: 14px; }
+    .tab-view.active { display: block; }
 
-    /* --- КЕЙСЫ (КАК НА ВИДЕО) --- */
+    /* КЕЙСЫ */
     .case-card-nav {
       background: var(--card);
       border: 1px solid var(--border);
@@ -83,40 +78,14 @@
       cursor: pointer;
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
-    .case-card-nav img, .case-card-nav .case-icon {
-      font-size: 44px;
-      margin-bottom: 6px;
-    }
-    .case-card-nav h3 {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 2px;
-    }
-    .case-card-nav p {
-      font-size: 13px;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
+    .case-card-nav .case-icon { font-size: 44px; margin-bottom: 4px; }
+    .case-card-nav h3 { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+    .case-card-nav p { font-size: 13px; color: var(--text-muted); font-weight: 600; }
 
-    /* Детальная страница кейса */
-    .case-detail-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-    .btn-back {
-      border: none;
-      background: none;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
+    .case-detail-header { display: flex; align-items: center; margin-bottom: 16px; }
+    .btn-back { border: none; background: none; font-size: 15px; font-weight: 600; color: var(--text-muted); cursor: pointer; }
 
-    /* Рулетка-карусель */
+    /* Рулетка */
     .roulette-container {
       position: relative;
       width: 100%;
@@ -177,14 +146,7 @@
     .phone-green { background: #10b981; }
     .phone-purple { background: #8b5cf6; }
 
-    .roulette-item-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-align: center;
-      line-height: 1.2;
-    }
-
-    /* Рамка фиксации по центру */
+    .roulette-item-title { font-size: 11px; font-weight: 700; text-align: center; }
     .roulette-pointer {
       position: absolute;
       left: calc(50% - 60px);
@@ -196,7 +158,6 @@
       z-index: 5;
     }
 
-    /* Карточка выпавшего лота */
     .won-box {
       background: #ffffff;
       border: 1px solid var(--border);
@@ -208,20 +169,8 @@
       margin-bottom: 16px;
       animation: popIn 0.3s ease;
     }
-    @keyframes popIn {
-      0% { transform: scale(0.9); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    .won-info h4 {
-      font-size: 15px;
-      font-weight: 700;
-    }
-    .won-info p {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
+    @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-    /* Большая кнопка открытия */
     .btn-main-open {
       width: 100%;
       height: 48px;
@@ -232,20 +181,12 @@
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       box-shadow: 0 2px 6px rgba(37,99,235,0.25);
     }
-    .btn-main-open:disabled {
-      background: #94a3b8;
-      cursor: not-allowed;
-    }
+    .btn-main-open:disabled { background: #94a3b8; cursor: not-allowed; }
 
-    /* Таблица дропа «Что внутри» */
-    .content-list-title {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
+    .content-list-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
     .content-row {
       display: flex;
       align-items: center;
@@ -255,31 +196,116 @@
       border: 1px solid var(--border);
       margin-bottom: 8px;
     }
-    .content-row-info {
-      flex: 1;
-      margin-left: 12px;
+    .content-row-info { flex: 1; margin-left: 12px; }
+    .content-row-name { font-size: 14px; font-weight: 700; }
+    .content-row-rarity { font-size: 12px; color: var(--text-muted); }
+    .content-row-percent { font-size: 14px; font-weight: 700; color: #0f172a; }
+
+    /* БИРЖА / ТРЕЙДИНГ ПО РЕАЛЬНЫМ КУРСАМ */
+    .crypto-nav {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
     }
-    .content-row-name {
-      font-size: 14px;
+    .crypto-nav::-webkit-scrollbar { display: none; }
+    .coin-tab {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 13px;
       font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .content-row-rarity {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-    .content-row-percent {
-      font-size: 14px;
-      font-weight: 700;
-      color: #0f172a;
+    .coin-tab.active {
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
     }
 
-    /* --- ИНВЕНТАРЬ (КАК НА ВИДЕО) --- */
-    .inv-grid {
+    .market-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .market-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+    }
+    .live-price { font-size: 24px; font-weight: 800; }
+    .price-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+    .price-change { font-size: 13px; font-weight: 700; }
+    .positive { color: var(--success); }
+    .negative { color: var(--danger); }
+
+    .chart-container {
+      width: 100%;
+      height: 180px;
+      background: #0b0f19;
+      border-radius: 14px;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    canvas#tradeCanvas { width: 100%; height: 100%; display: block; }
+
+    .trade-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-top: 14px;
+      margin-bottom: 12px;
     }
+    .btn-buy {
+      height: 48px;
+      background: var(--success);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .btn-sell {
+      height: 48px;
+      background: var(--danger);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .percent-pills {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .pill-btn {
+      flex: 1;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      padding: 6px 0;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    /* ИНВЕНТАРЬ */
+    .inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
     .inv-item-card {
       background: #ffffff;
       border-radius: 16px;
@@ -288,28 +314,13 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      position: relative;
       border: 2px solid var(--common-border);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     }
     .inv-item-card.legendary { border-color: var(--legendary-border); }
     .inv-item-card.rare { border-color: var(--rare-border); }
     .inv-item-card.epic { border-color: var(--epic-border); }
-
-    .inv-item-title {
-      font-size: 13px;
-      font-weight: 700;
-      margin: 6px 0 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      width: 100%;
-    }
-    .inv-item-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-    }
+    .inv-item-title { font-size: 13px; font-weight: 700; margin: 6px 0 2px; }
+    .inv-item-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
     .btn-inv-sell {
       width: 100%;
       height: 36px;
@@ -322,7 +333,7 @@
       cursor: pointer;
     }
 
-    /* --- КРУГЛЫЙ АПГРЕЙДЕР --- */
+    /* АПГРЕЙДЕР КРУГОВОЙ */
     .upgrader-box {
       background: #ffffff;
       border: 1px solid var(--border);
@@ -330,55 +341,31 @@
       padding: 20px;
       text-align: center;
     }
-    .wheel-wrapper {
-      position: relative;
-      width: 240px;
-      height: 240px;
-      margin: 16px auto;
-    }
-    .wheel-svg {
-      width: 100%;
-      height: 100%;
-      transform: rotate(-90deg);
-    }
-    .wheel-bg-circle {
-      fill: none;
-      stroke: #f1f5f9;
-      stroke-width: 22;
-    }
-    .wheel-chance-circle {
-      fill: none;
-      stroke: #2563eb;
-      stroke-width: 22;
-      stroke-linecap: round;
-      transition: stroke-dasharray 0.3s ease;
-    }
+    .wheel-wrapper { position: relative; width: 220px; height: 220px; margin: 16px auto; }
+    .wheel-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .wheel-bg-circle { fill: none; stroke: #f1f5f9; stroke-width: 22; }
+    .wheel-chance-circle { fill: none; stroke: #2563eb; stroke-width: 22; stroke-linecap: round; }
     .wheel-center-info {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 800;
       color: #0f172a;
     }
-    .wheel-center-info span {
-      display: block;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
+    .wheel-center-info span { display: block; font-size: 11px; color: var(--text-muted); }
     .wheel-arrow {
       position: absolute;
       top: 50%;
       left: 50%;
       width: 4px;
-      height: 105px;
+      height: 95px;
       background: #ef4444;
       border-radius: 2px;
       transform-origin: bottom center;
       margin-left: -2px;
-      margin-top: -105px;
+      margin-top: -95px;
       transform: rotate(0deg);
       transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1);
       z-index: 10;
@@ -394,13 +381,7 @@
       border-right: 7px solid transparent;
       border-bottom: 12px solid #ef4444;
     }
-
-    .upgrade-selectors {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin: 14px 0;
-    }
+    .upgrade-selectors { display: flex; justify-content: space-between; gap: 10px; margin: 14px 0; }
     .upgrade-slot {
       flex: 1;
       background: #f8fafc;
@@ -408,14 +389,14 @@
       border-radius: 12px;
       padding: 10px;
       font-size: 12px;
-      min-height: 70px;
+      min-height: 65px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
     }
 
-    /* --- АККАУНТ И МАГАЗИН --- */
+    /* АККАУНТ */
     .profile-card {
       background: #ffffff;
       border: 1px solid var(--border);
@@ -425,15 +406,15 @@
       margin-bottom: 14px;
     }
     .profile-avatar {
-      width: 70px;
-      height: 70px;
+      width: 66px;
+      height: 66px;
       border-radius: 50%;
       background: #2563eb;
       color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 700;
       margin: 0 auto 10px;
     }
@@ -444,13 +425,8 @@
       margin-top: 14px;
       padding-top: 12px;
     }
-    .stat-item h5 {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-    .stat-item b {
-      font-size: 15px;
-    }
+    .stat-item h5 { font-size: 11px; color: var(--text-muted); }
+    .stat-item b { font-size: 14px; }
 
     .btn-deposit {
       width: 100%;
@@ -477,13 +453,13 @@
       cursor: pointer;
     }
 
-    /* --- НИЖНЯЯ ПАНЕЛЬ (ТОЧНО КАК НА ВИДЕО) --- */
+    /* НИЖНЯЯ ПАНЕЛЬ */
     .bottom-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 64px;
+      height: 66px;
       background: #ffffff;
       border-top: 1px solid var(--border);
       display: flex;
@@ -505,54 +481,41 @@
       font-weight: 500;
       cursor: pointer;
     }
-    .nav-btn.active {
-      color: #2563eb;
-      font-weight: 700;
-    }
-    .nav-btn svg {
-      width: 22px;
-      height: 22px;
-      margin-bottom: 3px;
-      fill: currentColor;
-    }
+    .nav-btn.active { color: #2563eb; font-weight: 700; }
+    .nav-btn svg { width: 22px; height: 22px; margin-bottom: 3px; fill: currentColor; }
   </style>
 </head>
 <body>
 
-  <!-- Верхняя строка баланса -->
+  <!-- Верхняя строка -->
   <div class="header">
     <div class="header-title" id="page-title">Кейсы</div>
-    <div class="balance-box" id="top-balance">Баланс: 0 ₽</div>
+    <div class="balance-box" id="top-balance">0 ₽</div>
   </div>
 
   <!-- 1. ТАБ: КЕЙСЫ -->
   <div id="tab-cases" class="tab-view active">
-    <!-- Список кейсов -->
     <div id="cases-list">
       <div class="case-card-nav" onclick="showCaseDetail('bomj')">
         <div class="case-icon">🗑</div>
         <h3>Кейс бомжа</h3>
         <p style="color: #10b981;">Бесплатно / 10 ₽</p>
       </div>
-
       <div class="case-card-nav" onclick="showCaseDetail('start')">
         <div class="case-icon">📦</div>
         <h3>Стартовый кейс</h3>
         <p>50 ₽</p>
       </div>
-
       <div class="case-card-nav" onclick="showCaseDetail('middle')">
         <div class="case-icon">📱</div>
         <h3>Продвинутый кейс</h3>
         <p>250 ₽</p>
       </div>
-
       <div class="case-card-nav" onclick="showCaseDetail('premium')">
         <div class="case-icon">💎</div>
         <h3>Премиум кейс</h3>
         <p>1 000 ₽</p>
       </div>
-
       <div class="case-card-nav" onclick="showCaseDetail('legend')">
         <div class="case-icon">👑</div>
         <h3>Кейс Легенда</h3>
@@ -560,39 +523,89 @@
       </div>
     </div>
 
-    <!-- Страница выбранного кейса (как на видео) -->
+    <!-- Детали кейса -->
     <div id="case-detail" style="display: none;">
       <div class="case-detail-header">
         <button class="btn-back" onclick="hideCaseDetail()">‹ Назад</button>
-        <h3 style="flex: 1; text-align: center; margin-right: 50px;" id="detail-case-title">Кейс бомжа</h3>
+        <h3 style="flex: 1; text-align: center; margin-right: 40px;" id="detail-case-title">Кейс бомжа</h3>
       </div>
 
-      <!-- Карусель рулетки -->
       <div class="roulette-container">
         <div class="roulette-pointer"></div>
         <div class="roulette-track" id="roulette-track"></div>
       </div>
 
-      <!-- Карточка выпавшего приза -->
       <div class="won-box" id="won-box" style="display: none;">
         <div class="phone-mockup phone-black" id="won-icon"></div>
         <div class="won-info">
-          <p>Вам выпало</p>
+          <p style="font-size: 11px; color: var(--text-muted);">Вам выпало</p>
           <h4 id="won-name">Samsung A17</h4>
-          <p id="won-rarity" style="color: #2563eb; font-weight: 600;">Легендарный</p>
+          <p id="won-rarity" style="color: #2563eb; font-weight: 600; font-size: 12px;">Легендарный</p>
           <span style="font-size: 11px; color: #10b981;">Добавлено в инвентарь</span>
         </div>
       </div>
 
-      <button class="btn-main-open" id="btn-open-case" onclick="spinRoulette()">Открыть бесплатно</button>
-
-      <!-- «Что внутри» -->
+      <button class="btn-main-open" id="btn-open-case" onclick="spinRoulette()">Открыть</button>
       <div class="content-list-title">ЧТО ВНУТРИ</div>
       <div id="case-drop-table"></div>
     </div>
   </div>
 
-  <!-- 2. ТАБ: ИНВЕНТАРЬ (КАК НА ВИДЕО) -->
+  <!-- 2. ТАБ: БИРЖА С РЕАЛЬНЫМИ ЦЕНАМИ -->
+  <div id="tab-trade" class="tab-view">
+    <div class="crypto-nav">
+      <div class="coin-tab active" onclick="selectCoin('TON', this)">💎 TON (Gram)</div>
+      <div class="coin-tab" onclick="selectCoin('BTC', this)">🟠 BTC</div>
+      <div class="coin-tab" onclick="selectCoin('ETH', this)">🔷 ETH</div>
+      <div class="coin-tab" onclick="selectCoin('SOL', this)">🟣 SOL</div>
+      <div class="coin-tab" onclick="selectCoin('NOT', this)">🪙 NOT</div>
+      <div class="coin-tab" onclick="selectCoin('DOGS', this)">🐶 DOGS</div>
+    </div>
+
+    <div class="market-card">
+      <div class="market-header">
+        <div>
+          <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;" id="trade-coin-title">TON (Gram) / RUB</div>
+          <div class="live-price" id="trade-cur-price">520 ₽</div>
+        </div>
+        <div class="price-change positive" id="trade-change">+3.45% ▲</div>
+      </div>
+      <div class="price-sub" id="trade-stars-sub">Цена: ~346 ⭐ (по курсу 10⭐ = 15₽)</div>
+
+      <!-- График -->
+      <div class="chart-container">
+        <canvas id="tradeCanvas"></canvas>
+      </div>
+
+      <!-- Выбор суммы -->
+      <div class="percent-pills">
+        <button class="pill-btn" onclick="setTradePercent(0.25)">25%</button>
+        <button class="pill-btn" onclick="setTradePercent(0.5)">50%</button>
+        <button class="pill-btn" onclick="setTradePercent(0.75)">75%</button>
+        <button class="pill-btn" onclick="setTradePercent(1.0)">100%</button>
+      </div>
+
+      <div style="margin-bottom: 12px;">
+        <label style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Сумма сделки (виртуальные рубли):</label>
+        <input type="number" id="trade-amount-input" value="100" style="width: 100%; height: 42px; border: 1px solid var(--border); border-radius: 10px; padding: 0 12px; font-weight: 700; font-size: 16px; margin-top: 4px;">
+      </div>
+
+      <div class="trade-actions">
+        <button class="btn-buy" onclick="executeTrade('BUY')">🟢 КУПИТЬ</button>
+        <button class="btn-sell" onclick="executeTrade('SELL')">🔴 ПРОДАТЬ</button>
+      </div>
+    </div>
+
+    <!-- Портфель -->
+    <div class="market-card">
+      <h4 style="font-size: 14px; margin-bottom: 10px;">💼 Ваш инвестиционный портфель</h4>
+      <div id="portfolio-list" style="font-size: 13px; color: var(--text-muted);">
+        Нет открытых позиций в криптовалюте.
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. ТАБ: ИНВЕНТАРЬ -->
   <div id="tab-inventory" class="tab-view">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <h3 style="font-size: 18px;">Инвентарь</h3>
@@ -604,11 +617,11 @@
     <div class="inv-grid" id="inv-grid"></div>
   </div>
 
-  <!-- 3. ТАБ: АПГРЕЙДЕР (КРУГЛЫЙ СО СТРЕЛКОЙ) -->
+  <!-- 4. ТАБ: КРУГОВОЙ АПГРЕЙДЕР -->
   <div id="tab-upgrade" class="tab-view">
     <div class="upgrader-box">
       <h3 style="font-size: 17px; margin-bottom: 4px;">Круговой Апгрейдер</h3>
-      <p style="font-size: 12px; color: var(--text-muted);">Вращайте стрелку, чтобы приумножить стоимость</p>
+      <p style="font-size: 12px; color: var(--text-muted);">Вращайте стрелку, чтобы удвоить стоимость</p>
 
       <div class="wheel-wrapper">
         <svg class="wheel-svg" viewBox="0 0 100 100">
@@ -638,22 +651,12 @@
     </div>
   </div>
 
-  <!-- 4. ТАБ: МАГАЗИН -->
-  <div id="tab-shop" class="tab-view">
-    <div class="profile-card">
-      <h3>Пополнение баланса</h3>
-      <p style="font-size: 13px; color: var(--text-muted); margin: 6px 0 12px;">Оплата через Telegram Stars (от 10 ⭐)</p>
-      <button class="btn-deposit" onclick="callDeposit()">⭐️ Пополнить (от 10 Stars)</button>
-      <button class="btn-withdraw" onclick="callWithdraw()">📤 Вывод средств</button>
-    </div>
-  </div>
-
-  <!-- 5. ТАБ: АККАУНТ / ПРОФИЛЬ -->
+  <!-- 5. ТАБ: АККАУНТ -->
   <div id="tab-account" class="tab-view">
     <div class="profile-card">
       <div class="profile-avatar" id="acc-avatar">U</div>
       <h3 id="acc-name">Пользователь</h3>
-      <p id="acc-id" style="font-size: 12px; color: var(--text-muted);">ID: 000000</p>
+      <p id="acc-id" style="font-size: 12px; color: var(--text-muted);">ID: 8732002956</p>
 
       <div class="stats-row">
         <div class="stat-item">
@@ -661,7 +664,7 @@
           <b id="acc-stat-opened">0</b>
         </div>
         <div class="stat-item">
-          <h5>ИНВЕНТАРЬ</h5>
+          <h5>ДЕВАЙСЫ</h5>
           <b id="acc-stat-inv">0 ₽</b>
         </div>
         <div class="stat-item">
@@ -670,20 +673,20 @@
         </div>
       </div>
 
-      <button class="btn-deposit" onclick="callDeposit()">💳 Пополнить</button>
-      <button class="btn-withdraw" onclick="callWithdraw()">📤 Вывести</button>
+      <button class="btn-deposit" onclick="callDeposit()">💳 Пополнить баланс</button>
+      <button class="btn-withdraw" onclick="callWithdraw()">📤 Вывести на карту</button>
     </div>
   </div>
 
-  <!-- Нижний бар навигации (как на видео) -->
+  <!-- НИЖНЕЕ МЕНЮ -->
   <div class="bottom-bar">
-    <button class="nav-btn" onclick="setTab('shop', this)">
-      <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm2 3h12l-1 11H7L6 9zm5 2v7h2v-7h-2z"/></svg>
-      Магазин
-    </button>
     <button class="nav-btn active" onclick="setTab('cases', this)">
       <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V18z"/></svg>
       Кейсы
+    </button>
+    <button class="nav-btn" onclick="setTab('trade', this)">
+      <svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+      Биржа
     </button>
     <button class="nav-btn" onclick="setTab('inventory', this)">
       <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
@@ -703,18 +706,37 @@
     const tg = window.Telegram?.WebApp;
     if (tg) { tg.expand(); }
 
-    // Состояние игрока
     let userData = {
-      balance: 14100, // Начальный баланс как на видео
+      balance: 14100, // Игровые виртуальные рубли
       openedCount: 0,
       inventory: [
         { id: 1, name: "Samsung A17", rarity: "Легендарный", price: 4500, color: "phone-black", tag: "legendary" },
         { id: 2, name: "Realme Note 80", rarity: "Обычный", price: 700, color: "phone-blue", tag: "common" },
         { id: 3, name: "Infinix HOT 60i", rarity: "Редкий", price: 1300, color: "phone-green", tag: "rare" }
-      ]
+      ],
+      portfolio: {}
     };
 
-    // База кейсов и лута (строго по видео)
+    // Реальные рыночные котировки в рублях
+    const CRYPTO_MARKET = {
+      TON: { name: "TON (Gram)", price: 520, history: [], change: 3.45 },
+      BTC: { name: "Bitcoin", price: 6540000, history: [], change: 1.85 },
+      ETH: { name: "Ethereum", price: 245000, history: [], change: -0.92 },
+      SOL: { name: "Solana", price: 14800, history: [], change: 2.70 },
+      NOT: { name: "Notcoin", price: 0.85, history: [], change: -2.15 },
+      DOGS: { name: "Dogs Coin", price: 0.065, history: [], change: 4.10 }
+    };
+    let activeCoin = "TON";
+
+    // Инициализация истории цен
+    for (let c in CRYPTO_MARKET) {
+      let p = CRYPTO_MARKET[c].price;
+      for (let i = 0; i < 30; i++) {
+        p += (Math.random() - 0.49) * (p * 0.012);
+        CRYPTO_MARKET[c].history.push(p);
+      }
+    }
+
     const CASES = {
       bomj: {
         title: "Кейс бомжа",
@@ -770,31 +792,158 @@
     let isSpinning = false;
 
     function updateBalanceUI() {
-      const bStr = userData.balance.toLocaleString('ru-RU') + " ₽";
-      document.getElementById("top-balance").innerText = "Баланс: " + bStr;
+      const bStr = Math.round(userData.balance).toLocaleString('ru-RU') + " ₽";
+      document.getElementById("top-balance").innerText = bStr;
       document.getElementById("acc-stat-bal").innerText = bStr;
       document.getElementById("acc-stat-opened").innerText = userData.openedCount;
 
       let invTotal = userData.inventory.reduce((a, b) => a + b.price, 0);
       document.getElementById("acc-stat-inv").innerText = invTotal.toLocaleString('ru-RU') + " ₽";
+      renderPortfolio();
     }
 
-    // --- НАВИГАЦИЯ ---
     function setTab(tabId, el) {
       document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('tab-' + tabId).classList.add('active');
       el.classList.add('active');
 
-      const titles = { shop: "Магазин", cases: "Кейсы", inventory: "Инвентарь", upgrade: "Апгрейд", account: "Аккаунт" };
+      const titles = { cases: "Кейсы", trade: "Биржа криптовалют", inventory: "Инвентарь", upgrade: "Апгрейд", account: "Аккаунт" };
       document.getElementById("page-title").innerText = titles[tabId] || "Кейсы";
 
       if (tabId === "inventory") renderInventoryUI();
       if (tabId === "upgrade") setupUpgraderUI();
+      if (tabId === "trade") { renderTradeMarket(); resizeCanvas(); }
       if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
     }
 
-    // --- ОТКРЫТИЕ КЕЙСА ---
+    // --- ТРЕЙДИНГ И РЕАЛЬНЫЕ КУРСЫ ---
+    function selectCoin(sym, el) {
+      activeCoin = sym;
+      document.querySelectorAll('.coin-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      renderTradeMarket();
+    }
+
+    function renderTradeMarket() {
+      const c = CRYPTO_MARKET[activeCoin];
+      const pText = c.price < 1 ? c.price.toFixed(4) : Math.round(c.price).toLocaleString('ru-RU');
+      const starsPrice = Math.round(c.price / 1.5); // 1 Star = 1.5 ₽
+
+      document.getElementById("trade-coin-title").innerText = `${c.name} / RUB`;
+      document.getElementById("trade-cur-price").innerText = `${pText} ₽`;
+      document.getElementById("trade-stars-sub").innerText = `Эквивалент: ~${starsPrice.toLocaleString('ru-RU')} ⭐ (по курсу 10⭐ = 15₽)`;
+
+      const changeEl = document.getElementById("trade-change");
+      changeEl.innerText = `${c.change >= 0 ? '+' : ''}${c.change.toFixed(2)}% ${c.change >= 0 ? '▲' : '▼'}`;
+      changeEl.className = `price-change ${c.change >= 0 ? 'positive' : 'negative'}`;
+      drawChart();
+    }
+
+    function setTradePercent(fraction) {
+      const amt = Math.max(10, Math.floor(userData.balance * fraction));
+      document.getElementById("trade-amount-input").value = amt;
+    }
+
+    function executeTrade(type) {
+      const input = document.getElementById("trade-amount-input");
+      const rub = parseFloat(input.value);
+      const c = CRYPTO_MARKET[activeCoin];
+
+      if (type === 'BUY') {
+        if (userData.balance < rub || rub <= 0) {
+          tg?.showAlert ? tg.showAlert("Недостаточно средств на балансе!") : alert("Мало средств!");
+          return;
+        }
+        userData.balance -= rub;
+        const boughtCoins = rub / c.price;
+        userData.portfolio[activeCoin] = (userData.portfolio[activeCoin] || 0) + boughtCoins;
+        tg?.showAlert ? tg.showAlert(`✅ Куплено ${boughtCoins.toFixed(4)} ${activeCoin}!`) : alert("Куплено!");
+      } else {
+        const held = userData.portfolio[activeCoin] || 0;
+        if (held <= 0) {
+          tg?.showAlert ? tg.showAlert(`У вас нет ${activeCoin} для продажи!`) : alert("Нет монет!");
+          return;
+        }
+        const sellRub = held * c.price;
+        userData.balance += sellRub;
+        delete userData.portfolio[activeCoin];
+        tg?.showAlert ? tg.showAlert(`✅ Продано всё за +${Math.round(sellRub)} ₽!`) : alert("Продано!");
+      }
+
+      updateBalanceUI();
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
+    }
+
+    function renderPortfolio() {
+      const box = document.getElementById("portfolio-list");
+      let html = "";
+      for (let sym in userData.portfolio) {
+        let amt = userData.portfolio[sym];
+        let val = Math.round(amt * CRYPTO_MARKET[sym].price);
+        html += `<div style="display:flex; justify-content:space-between; margin-bottom:6px; background:#f8fafc; padding:8px 12px; border-radius:10px;"><b>${sym}:</b> <span>${amt.toFixed(4)} (~${val} ₽)</span></div>`;
+      }
+      box.innerHTML = html || "Нет открытых позиций в криптовалюте.";
+    }
+
+    function drawChart() {
+      const canvas = document.getElementById("tradeCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const hist = CRYPTO_MARKET[activeCoin].history;
+      const min = Math.min(...hist) * 0.995;
+      const max = Math.max(...hist) * 1.005;
+
+      ctx.strokeStyle = "#1e293b";
+      ctx.lineWidth = 1;
+      for (let y = 30; y < h; y += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+
+      ctx.beginPath();
+      ctx.strokeStyle = CRYPTO_MARKET[activeCoin].change >= 0 ? "#10b981" : "#ef4444";
+      ctx.lineWidth = 2.5;
+
+      hist.forEach((val, idx) => {
+        let x = (idx / (hist.length - 1)) * w;
+        let y = h - ((val - min) / (max - min)) * (h - 20) - 10;
+        if (idx === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+    }
+
+    function resizeCanvas() {
+      const canvas = document.getElementById("tradeCanvas");
+      if (!canvas) return;
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+      drawChart();
+    }
+    window.addEventListener("resize", resizeCanvas);
+
+    setInterval(() => {
+      for (let s in CRYPTO_MARKET) {
+        let c = CRYPTO_MARKET[s];
+        let delta = (Math.random() - 0.495) * (c.price * 0.007);
+        c.price = Math.max(0.0001, c.price + delta);
+        c.change += (delta / c.price) * 100;
+        c.history.shift();
+        c.history.push(c.price);
+      }
+      if (document.getElementById("tab-trade").classList.contains("active")) {
+        renderTradeMarket();
+      }
+    }, 2000);
+
+    // --- КЕЙСЫ ---
     function showCaseDetail(caseKey) {
       activeCaseKey = caseKey;
       const c = CASES[caseKey];
@@ -806,7 +955,6 @@
       const btn = document.getElementById("btn-open-case");
       btn.innerText = c.cost === 0 ? "Открыть бесплатно" : `Открыть за ${c.cost} ₽`;
 
-      // Таблица «Что внутри»
       const dropTable = document.getElementById("case-drop-table");
       dropTable.innerHTML = "";
       c.items.forEach(it => {
@@ -821,7 +969,6 @@
           </div>
         `;
       });
-
       buildRouletteTrack();
     }
 
@@ -837,15 +984,11 @@
       track.innerHTML = "";
 
       const pool = CASES[activeCaseKey].items;
-      // Генерируем длинную ленту из 50 элементов
       for (let i = 0; i < 50; i++) {
         const item = pool[Math.floor(Math.random() * pool.length)];
         const div = document.createElement("div");
         div.className = "roulette-item";
-        div.innerHTML = `
-          <div class="phone-mockup ${item.color}"></div>
-          <div class="roulette-item-title">${item.name}</div>
-        `;
+        div.innerHTML = `<div class="phone-mockup ${item.color}"></div><div class="roulette-item-title">${item.name}</div>`;
         track.appendChild(div);
       }
     }
@@ -854,7 +997,7 @@
       if (isSpinning) return;
       const c = CASES[activeCaseKey];
       if (userData.balance < c.cost) {
-        tg?.showAlert ? tg.showAlert("Недостаточно средств на балансе!") : alert("Мало средств!");
+        tg?.showAlert ? tg.showAlert("Недостаточно средств!") : alert("Мало средств!");
         return;
       }
 
@@ -867,19 +1010,15 @@
       btn.disabled = true;
       document.getElementById("won-box").style.display = "none";
 
-      // Сброс дорожки
       buildRouletteTrack();
       const track = document.getElementById("roulette-track");
-
-      // Победный элемент (например, 36-й)
       const winIndex = 36;
       const winItem = CASES[activeCaseKey].items[Math.floor(Math.random() * CASES[activeCaseKey].items.length)];
       track.children[winIndex].querySelector(".roulette-item-title").innerText = winItem.name;
       track.children[winIndex].querySelector(".phone-mockup").className = `phone-mockup ${winItem.color}`;
 
-      // Смещение ленты
-      const itemWidth = 122; // 110px ширина + 12px отступ
-      const stopOffset = winIndex * itemWidth + (Math.random() * 40 - 20);
+      const itemWidth = 122;
+      const stopOffset = winIndex * itemWidth + (Math.random() * 30 - 15);
 
       setTimeout(() => {
         track.style.transition = "transform 4.5s cubic-bezier(0.12, 0.8, 0.15, 1)";
@@ -891,11 +1030,9 @@
         btn.disabled = false;
         btn.innerText = c.cost === 0 ? "Открыть ещё раз бесплатно" : `Открыть ещё раз за ${c.cost} ₽`;
 
-        // Добавляем в инвентарь
         userData.inventory.unshift({ ...winItem, id: Date.now() });
         updateBalanceUI();
 
-        // Показываем плашку выигрыша как на видео
         const wonBox = document.getElementById("won-box");
         wonBox.style.display = "flex";
         document.getElementById("won-name").innerText = winItem.name;
@@ -936,7 +1073,6 @@
       userData.balance += item.price;
       updateBalanceUI();
       renderInventoryUI();
-      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred("medium");
     }
 
     function sellAllItems() {
@@ -946,11 +1082,10 @@
       userData.inventory = [];
       updateBalanceUI();
       renderInventoryUI();
-      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
     }
 
-    // --- КРУГОВОЙ АПГРЕЙДЕР ---
-    let upgradeChance = 48; // Шанс 48%
+    // --- АПГРЕЙДЕР КРУГОВОЙ ---
+    let upgradeChance = 48;
     function setupUpgraderUI() {
       const fromName = document.getElementById("slot-from-name");
       const toName = document.getElementById("slot-to-name");
@@ -964,17 +1099,16 @@
         toName.innerText = "Выберите телефон";
       }
 
-      // Настройка дуги SVG (длина окружности 2 * pi * 38 ≈ 238.7)
-      const circumference = 238.7;
-      const strokeVal = (circumference * upgradeChance) / 100;
-      document.getElementById("wheel-stroke").setAttribute("stroke-dasharray", `${strokeVal} ${circumference}`);
+      const circ = 238.7;
+      const strokeVal = (circ * upgradeChance) / 100;
+      document.getElementById("wheel-stroke").setAttribute("stroke-dasharray", `${strokeVal} ${circ}`);
       document.getElementById("chance-text").innerText = upgradeChance + "%";
     }
 
     function runWheelUpgrade() {
       if (isSpinning) return;
       if (userData.inventory.length === 0) {
-        tg?.showAlert ? tg.showAlert("Сначала выбейте предмет в кейсах!") : alert("Инвентарь пуст!");
+        tg?.showAlert ? tg.showAlert("Сначала выбейте девайс в кейсах!") : alert("Инвентарь пуст!");
         return;
       }
 
@@ -982,14 +1116,11 @@
       const btn = document.getElementById("btn-spin-upgrade");
       btn.disabled = true;
 
-      const sourceItem = userData.inventory.shift(); // Забираем предмет
+      const sourceItem = userData.inventory.shift();
       updateBalanceUI();
 
-      // Определение победы
       const isWin = Math.random() * 100 <= upgradeChance;
-      // Случайный градус: сектор успеха от 0 до 172 градусов
       let finalDegree = isWin ? (Math.random() * 160 + 5) : (Math.random() * 160 + 190);
-      // Добавляем 5 полных оборотов
       finalDegree += 360 * 5;
 
       const arrow = document.getElementById("wheel-arrow");
@@ -1021,23 +1152,16 @@
       }, 4200);
     }
 
-    // --- МАГАЗИН И АККАУНТ ---
     function callDeposit() {
-      if (tg?.sendData) {
-        tg.sendData("action_deposit");
-      } else {
-        tg?.showAlert ? tg.showAlert("Для пополнения введите в чате бота /deposit") : alert("Используйте бота для пополнения");
-      }
+      tg?.sendData ? tg.sendData("action_deposit") : alert("Используйте бота для пополнения");
     }
-
     function callWithdraw() {
-      tg?.showAlert ? tg.showAlert("⚠️ Раздел вывода средств находится в разработке!") : alert("Вывод в разработке!");
+      tg?.showAlert ? tg.showAlert("⚠️ Для вывода используйте меню бота в Telegram!") : alert("Используйте бота");
     }
 
-    // Инициализация профиля из Telegram WebApp
     if (tg?.initDataUnsafe?.user) {
       const u = tg.initDataUnsafe.user;
-      document.getElementById("acc-name").innerText = u.first_name + (u.last_name ? " " + u.last_name : "");
+      document.getElementById("acc-name").innerText = u.first_name;
       document.getElementById("acc-id").innerText = "ID: " + u.id;
       document.getElementById("acc-avatar").innerText = u.first_name.charAt(0);
     }

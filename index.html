@@ -3,1464 +3,1036 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Kuli4ik Cases: 10,000 Cases & 1,000,000 Phones</title>
+  <title>Mega Phone Case Simulator 1,000,000 Devices</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: #070a12;
-      --card-bg: #101626;
-      --card-border: #1e293b;
-      --primary: #38bdf8;
-      --accent: #f59e0b;
-      --win: #10b981;
-      --lose: #ef4444;
+      --bg-dark: #040711;
+      --panel-dark: #090f1d;
+      --card-dark: #10192d;
+      --card-hover: #17243f;
+      --border: #1e293b;
+      --border-active: #38bdf8;
+      
+      --accent: #0284c7;
+      --accent-glow: #38bdf8;
+      --gold: #f59e0b;
+      --gold-glow: #fbbf24;
       --text: #f8fafc;
-      --text-muted: #94a3b8;
+      --text-muted: #64748b;
+      --danger: #ef4444;
+      --success: #10b981;
+      
+      --rarity-junk: #475569;
+      --rarity-common: #64748b;
+      --rarity-uncommon: #0284c7;
+      --rarity-rare: #8b5cf6;
+      --rarity-epic: #ec4899;
+      --rarity-legendary: #f59e0b;
+      --rarity-mythic: #ef4444;
     }
 
     * {
       box-sizing: border-box;
-      margin: 0; padding: 0;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
-      background-color: var(--bg);
+      background-color: var(--bg-dark);
       color: var(--text);
-      padding-bottom: 74px;
+      padding-bottom: 90px;
       overflow-x: hidden;
-    }
-
-    #browser-lock {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: #030712;
-      z-index: 999999;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      text-align: center;
-    }
-    #browser-lock h2 { font-size: 22px; color: var(--lose); margin-bottom: 8px; }
-    #browser-lock p { font-size: 14px; color: var(--text-muted); max-width: 300px; }
-    #browser-lock .tg-btn {
-      margin-top: 20px;
-      background: var(--primary);
-      color: #000;
-      padding: 12px 24px;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: 800;
+      min-height: 100vh;
+      user-select: none;
     }
 
     .header {
-      background: #0d1322;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(9, 15, 29, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
       padding: 12px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--card-border);
-      position: sticky;
-      top: 0;
-      z-index: 40;
     }
-    .header-title { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
-    .badge-count {
-      font-size: 10px;
-      background: #38bdf822;
-      color: var(--primary);
-      border: 1px solid #38bdf855;
-      padding: 2px 6px;
-      border-radius: 6px;
-      font-weight: 800;
+
+    .brand {
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
+
     .balance-box {
-      background: #1e293b;
-      border: 1px solid #334155;
+      background: #02040a;
+      border: 1px solid var(--border);
       padding: 6px 14px;
       border-radius: 20px;
-      font-size: 14px;
       font-weight: 800;
-      color: var(--win);
-      cursor: pointer;
-    }
-
-    .tab-view { display: none; padding: 14px; }
-    .tab-view.active { display: block; }
-
-    .fairness-card {
-      background: #030712;
-      color: var(--text-muted);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 8px 12px;
-      margin-bottom: 12px;
-      font-size: 11px;
-      font-family: monospace;
+      color: var(--gold-glow);
       display: flex;
-      justify-content: space-between;
       align-items: center;
-    }
-    .fairness-card b { color: #38bdf8; }
-
-    /* ПОИСК И НАВИГАЦИЯ */
-    .filter-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-    .search-row {
-      display: flex;
       gap: 6px;
-    }
-    .search-input {
-      flex: 1;
-      height: 42px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 0 12px;
-      color: #fff;
       font-size: 14px;
-      outline: none;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
     }
-    .btn-search {
-      background: var(--primary);
-      color: #000;
-      border: none;
-      border-radius: 12px;
-      padding: 0 14px;
+
+    .tab-bar {
+      display: flex;
+      background: var(--panel-dark);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tab-bar::-webkit-scrollbar { display: none; }
+
+    .tab-item {
+      flex: 1;
+      min-width: 75px;
+      text-align: center;
+      padding: 13px 4px;
+      font-size: 11px;
       font-weight: 800;
-      font-size: 13px;
+      color: var(--text-muted);
       cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
     }
+
+    .tab-item.active {
+      color: var(--accent-glow);
+      border-bottom-color: var(--accent-glow);
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    .container { padding: 14px; }
 
     .cases-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
       margin-bottom: 16px;
     }
-    .case-card-item {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 12px 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+
+    .case-card {
+      background: var(--card-dark);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
       text-align: center;
       cursor: pointer;
       position: relative;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .case-card-item:active { transform: scale(0.98); }
-    .case-id-tag { position: absolute; top: 6px; left: 8px; font-size: 10px; color: var(--text-muted); font-weight: 800; }
-    .case-icon { font-size: 34px; margin: 8px 0 4px; }
-    .case-name { font-size: 12px; font-weight: 800; line-height: 1.2; margin-bottom: 4px; height: 30px; display: flex; align-items: center; }
-    .case-price { font-size: 13px; font-weight: 900; color: var(--accent); }
 
-    .pagination-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin: 10px 0 20px;
+    .case-card:active { transform: scale(0.97); }
+
+    .case-card.selected {
+      border-color: var(--accent-glow);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+      background: var(--card-hover);
     }
-    .page-btn {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      color: #fff;
-      padding: 8px 14px;
-      border-radius: 10px;
+
+    .case-tag {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      font-size: 9px;
       font-weight: 800;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-    .quick-jump-box { display: flex; align-items: center; gap: 4px; }
-    .jump-input {
-      width: 55px; height: 32px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      color: #fff;
+      padding: 2px 6px;
       border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .case-icon { font-size: 42px; margin: 6px 0; }
+    .case-name { font-size: 13px; font-weight: 800; margin-bottom: 4px; }
+    .case-cost { font-size: 13px; font-weight: 900; color: var(--accent-glow); }
+
+    .roulette-box {
+      background: var(--panel-dark);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 16px;
       text-align: center;
-      font-weight: 800;
-      font-size: 12px;
     }
 
-    /* РУЛЕТКА ДЛЯ ВЫБРАННОГО КЕЙСА */
-    .case-detail-header { display: flex; align-items: center; margin-bottom: 14px; }
-    .btn-back { border: none; background: none; font-size: 14px; font-weight: 800; color: var(--text-muted); cursor: pointer; }
-
-    .roulette-container {
+    .roulette-window {
       position: relative;
-      width: 100%;
-      height: 146px;
-      background: #030712;
-      border: 1px solid var(--card-border);
-      border-radius: 18px;
+      height: 130px;
+      background: #02040a;
+      border-radius: 12px;
       overflow: hidden;
-      display: flex;
-      align-items: center;
-      margin-bottom: 14px;
+      margin: 10px 0;
+      border: 1px solid var(--border);
     }
+
+    .roulette-line {
+      position: absolute;
+      top: 0; bottom: 0; left: 50%;
+      width: 2px;
+      background: var(--danger);
+      z-index: 10;
+      transform: translateX(-50%);
+      box-shadow: 0 0 10px var(--danger);
+    }
+
     .roulette-track {
       display: flex;
-      gap: 10px;
+      height: 100%;
       position: absolute;
-      left: 0;
-      transition: transform 5s cubic-bezier(0.12, 0.8, 0.15, 1);
-      padding-left: calc(50% - 55px);
+      left: 0; top: 0;
+      will-change: transform;
     }
-    .roulette-item {
-      min-width: 110px;
-      height: 126px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
+
+    .roulette-slot {
+      width: 110px;
+      height: 100%;
+      flex-shrink: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      border-right: 1px solid rgba(255,255,255,0.03);
       padding: 6px;
     }
-    .phone-mockup {
-      width: 40px;
-      height: 68px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 4px;
-      position: relative;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-    }
-    .phone-mockup::before {
-      content: "";
-      position: absolute;
-      top: 5px; left: 5px;
-      width: 10px; height: 16px;
-      background: #000;
-      border-radius: 3px;
-      opacity: 0.4;
-    }
-    .c-blue { background: #2563eb; }
-    .c-gold { background: #d97706; }
-    .c-black { background: #1e293b; }
-    .c-green { background: #059669; }
-    .c-purple { background: #7c3aed; }
-    .c-silver { background: #64748b; }
 
-    .roulette-item-title { font-size: 10px; font-weight: 700; text-align: center; line-height: 1.1; }
-    .roulette-pointer {
-      position: absolute;
-      left: calc(50% - 60px);
-      width: 120px;
-      height: 136px;
-      border: 3px solid #38bdf8;
-      border-radius: 14px;
-      pointer-events: none;
-      z-index: 5;
-    }
+    .roulette-slot-icon { font-size: 30px; margin-bottom: 4px; }
+    .roulette-slot-title { font-size: 10px; font-weight: 700; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .roulette-slot-price { font-size: 10px; font-weight: 800; color: var(--gold); }
 
-    .won-box {
-      background: var(--card-bg);
-      border: 1px solid var(--win);
-      border-radius: 16px;
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 14px;
-      animation: popIn 0.3s ease;
-    }
-    @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    .b-junk { border-bottom: 3px solid var(--rarity-junk); }
+    .b-common { border-bottom: 3px solid var(--rarity-common); }
+    .b-uncommon { border-bottom: 3px solid var(--rarity-uncommon); }
+    .b-rare { border-bottom: 3px solid var(--rarity-rare); }
+    .b-epic { border-bottom: 3px solid var(--rarity-epic); }
+    .b-legendary { border-bottom: 3px solid var(--rarity-legendary); }
+    .b-mythic { border-bottom: 3px solid var(--rarity-mythic); }
 
-    .btn-main-open {
-      width: 100%;
-      height: 48px;
-      background: var(--primary);
-      color: #000;
+    .btn {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #fff;
       border: none;
-      border-radius: 14px;
-      font-size: 16px;
-      font-weight: 900;
-      cursor: pointer;
-      margin-bottom: 16px;
-    }
-    .btn-main-open:disabled { background: #334155; color: #64748b; cursor: not-allowed; }
-
-    .content-list-title { font-size: 13px; font-weight: 800; margin-bottom: 8px; color: var(--text-muted); }
-    .content-row {
-      display: flex;
-      align-items: center;
-      background: var(--card-bg);
-      padding: 8px 12px;
-      border-radius: 10px;
-      border: 1px solid var(--card-border);
-      margin-bottom: 6px;
-    }
-    .content-row-info { flex: 1; margin-left: 10px; }
-    .content-row-name { font-size: 12px; font-weight: 800; }
-    .content-row-rarity { font-size: 11px; color: var(--win); font-weight: 700; }
-    .content-row-percent { font-size: 12px; font-weight: 800; }
-
-    /* АПГРЕЙДЕР */
-    .upgrader-box {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 16px;
-      text-align: center;
-    }
-    .wheel-wrapper { position: relative; width: 230px; height: 230px; margin: 12px auto; }
-    .wheel-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-    .wheel-bg-circle { fill: none; stroke: #1e293b; stroke-width: 22; }
-    .wheel-chance-circle { fill: none; stroke: var(--primary); stroke-width: 22; stroke-linecap: butt; }
-    .wheel-center-info { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 26px; font-weight: 900; }
-    .wheel-arrow {
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 4px; height: 100px;
-      background: var(--lose);
-      border-radius: 2px;
-      transform-origin: bottom center;
-      margin-left: -2px; margin-top: -100px;
-      transform: rotate(0deg);
-      transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1);
-      z-index: 10;
-    }
-    .wheel-arrow::before {
-      content: "";
-      position: absolute;
-      top: -9px; left: -6px;
-      width: 0; height: 0;
-      border-left: 8px solid transparent;
-      border-right: 8px solid transparent;
-      border-bottom: 14px solid var(--lose);
-    }
-    .upgrade-selectors { display: flex; justify-content: space-between; gap: 8px; margin: 14px 0; }
-    .upgrade-slot {
-      flex: 1;
-      background: #030712;
-      border: 1px dashed var(--card-border);
+      padding: 13px 18px;
       border-radius: 12px;
-      padding: 10px;
-      min-height: 80px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    /* БИРЖА */
-    .crypto-nav { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; }
-    .crypto-nav::-webkit-scrollbar { display: none; }
-    .coin-tab {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 700;
-      white-space: nowrap;
-      cursor: pointer;
-    }
-    .coin-tab.active { background: #1e293b; border-color: var(--primary); color: #fff; }
-    .market-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin-bottom: 12px; }
-    .live-price { font-size: 24px; font-weight: 900; }
-    .price-change { font-size: 13px; font-weight: 700; }
-    .positive { color: var(--win); }
-    .negative { color: var(--lose); }
-    .chart-container { width: 100%; height: 180px; background: #030712; border-radius: 14px; margin: 12px 0; }
-    canvas#tradeCanvas { width: 100%; height: 100%; display: block; }
-    .trade-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-    .btn-buy { height: 44px; background: var(--win); color: #000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
-    .btn-sell { height: 44px; background: var(--lose); color: #fff; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
-
-    /* ИНВЕНТАРЬ */
-    .inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
-    .inv-item-card {
-      background: var(--card-bg);
-      border-radius: 14px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      border: 1px solid var(--card-border);
-    }
-    .inv-item-title { font-size: 11px; font-weight: 800; margin: 6px 0 2px; }
-    .inv-item-sub { font-size: 11px; color: var(--win); font-weight: 700; margin-bottom: 6px; }
-    .btn-inv-sell { width: 100%; height: 32px; background: #1e293b; color: #fff; border: 1px solid var(--card-border); border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
-
-    /* МОДАЛКИ */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.85);
-      z-index: 100;
-      justify-content: center;
-      align-items: flex-end;
-    }
-    .modal-box {
-      background: var(--card-bg);
+      font-weight: 800;
+      font-size: 14px;
       width: 100%;
-      border-radius: 20px 20px 0 0;
-      border-top: 1px solid var(--card-border);
-      max-height: 75vh;
-      overflow-y: auto;
-      padding: 18px;
-    }
-    .select-item-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 12px;
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      margin-bottom: 6px;
       cursor: pointer;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+      transition: all 0.15s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
+    .btn-gold { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+    .btn-danger { background: linear-gradient(135deg, #ef4444, #b91c1c); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
+
+    .devices-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 2px;
     }
 
-    /* АДМИН-ЧИТ */
-    #admin-cheat-modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.8);
-      z-index: 150;
-      justify-content: center;
+    .phone-card {
+      background: var(--card-dark);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      padding: 20px;
+      text-align: center;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.15s;
     }
-    .cheat-box { background: var(--card-bg); border: 1px solid var(--accent); border-radius: 20px; padding: 20px; width: 100%; max-width: 320px; text-align: center; }
-    .cheat-btn { width: 100%; height: 38px; margin: 4px 0; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 13px; }
+    .phone-card.active-target {
+      border-color: var(--accent-glow);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+    }
+    .phone-card.contract-selected {
+      border-color: var(--gold);
+      background: rgba(245, 158, 11, 0.15);
+      transform: scale(0.98);
+    }
 
-    /* НИЖНЯЯ ПАНЕЛЬ */
-    .bottom-bar {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: 64px;
-      background: #0d1322;
-      border-top: 1px solid var(--card-border);
+    .phone-card-icon { font-size: 26px; margin-bottom: 4px; }
+    .phone-card-name { font-size: 11px; font-weight: 700; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .phone-card-cost { font-size: 12px; font-weight: 900; color: var(--gold-glow); margin: 3px 0; }
+
+    .upgrader-container {
+      background: var(--panel-dark);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .upgrade-slots-row {
       display: flex;
       justify-content: space-around;
       align-items: center;
-      z-index: 50;
+      margin-bottom: 16px;
     }
-    .nav-btn {
-      flex: 1; height: 100%;
-      background: none; border: none;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      color: #64748b; font-size: 11px; font-weight: 700;
-      cursor: pointer;
+
+    .upgrade-slot-box {
+      width: 125px;
+      height: 125px;
+      background: #02040a;
+      border: 2px dashed var(--border);
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6px;
     }
-    .nav-btn.active { color: #38bdf8; }
-    .nav-btn svg { width: 22px; height: 22px; margin-bottom: 2px; fill: currentColor; }
+    .upgrade-slot-box.filled { border-style: solid; border-color: var(--accent-glow); }
+
+    .odds-indicator {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--accent-glow);
+      margin: 10px 0;
+      text-align: center;
+    }
+
+    .contracts-panel {
+      background: var(--panel-dark);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .contract-progress-bar {
+      width: 100%;
+      height: 12px;
+      background: #02040a;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .contract-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--gold));
+      transition: width 0.25s;
+    }
+
+    .contract-chip-counter {
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+    }
+
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-inner {
+      background: var(--panel-dark);
+      border: 1px solid var(--accent-glow);
+      border-radius: 20px;
+      padding: 22px;
+      text-align: center;
+      width: 100%;
+      max-width: 310px;
+      animation: pop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes pop { 0% { transform: scale(0.7); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
   </style>
 </head>
 <body>
 
-  <!-- БЛОКИРОВКА ВНЕШНЕГО БРАУЗЕРА -->
-  <div id="browser-lock">
-    <h2>🚫 Доступ заблокирован</h2>
-    <p>Открытие разрешено исключительно через Telegram Mini App!</p>
-    <a href="https://t.me/Kuli4ik_bot/game" class="tg-btn">Открыть в Telegram</a>
-  </div>
-
-  <!-- ШАПКА -->
   <div class="header">
-    <div class="header-title">
-      <span id="page-title">10 000 Кейсов</span>
-      <div class="badge-count">1 000 000 PHONES</div>
+    <div class="brand">📱 MEGA CASINO 1M</div>
+    <div class="balance-box">
+      <span>⭐</span>
+      <span id="uiBalance">100</span>
+      <span style="font-size: 10px; color: var(--text-muted);">₽</span>
     </div>
-    <div class="balance-box" id="top-balance" onclick="handleBalanceClick()">25 000 ₽</div>
   </div>
 
-  <!-- АДМИН-ЧИТ (ID 8732002956) -->
-  <div id="admin-cheat-modal">
-    <div class="cheat-box">
-      <h3 style="color:var(--accent); margin-bottom:4px;">👑 Админ Чит-Панель</h3>
-      <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">ID: 8732002956</p>
-      
-      <div style="margin-bottom:8px; text-align:left;">
-        <label style="font-size:11px; font-weight:700;">Накрутить рубли на баланс:</label>
-        <div style="display:flex; gap:6px; margin-top:2px;">
-          <input type="number" id="cheat-custom-sum" value="500000" style="flex:1; height:34px; border:1px solid var(--card-border); background:#030712; color:#fff; border-radius:8px; padding:0 8px; font-weight:700; font-size:13px;">
-          <button style="background:var(--win); color:#000; border:none; border-radius:8px; padding:0 10px; font-weight:800;" onclick="applyCheatMoney()">+ Выдать</button>
+  <div class="tab-bar">
+    <div class="tab-item active" onclick="switchTab('cases')">📦 Сундуки</div>
+    <div class="tab-item" onclick="switchTab('catalog')">📱 Все телефоны</div>
+    <div class="tab-item" onclick="switchTab('upgrader')">⚡ Апгрейдер</div>
+    <div class="tab-item" onclick="switchTab('contracts')">📜 Контракты (<span id="contractCountTab">0</span>)</div>
+    <div class="tab-item" onclick="switchTab('inventory')">🎒 Склад (<span id="invCountLabel">0</span>)</div>
+  </div>
+
+  <div class="container">
+
+    <!-- 1. СУНДУКИ -->
+    <div id="tabCases">
+      <div class="cases-grid">
+        <div class="case-card selected" id="c_10" onclick="selectCase('10')">
+          <div class="case-tag" style="background: rgba(100, 116, 139, 0.2); color: #cbd5e1;">Эконом</div>
+          <div class="case-icon">📦</div>
+          <div class="case-name">Лут Новичка</div>
+          <div class="case-cost">10 ₽</div>
+        </div>
+        <div class="case-card" id="c_50" onclick="selectCase('50')">
+          <div class="case-tag" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8;">Хит</div>
+          <div class="case-icon">📱</div>
+          <div class="case-name">Андроид Пак</div>
+          <div class="case-cost">50 ₽</div>
+        </div>
+        <div class="case-card" id="c_150" onclick="selectCase('150')">
+          <div class="case-tag" style="background: rgba(139, 92, 246, 0.2); color: #c084fc;">Редкий</div>
+          <div class="case-icon">⚡</div>
+          <div class="case-name">Геймерский Сетап</div>
+          <div class="case-cost">150 ₽</div>
+        </div>
+        <div class="case-card" id="c_300" onclick="selectCase('300')">
+          <div class="case-tag" style="background: rgba(245, 158, 11, 0.2); color: #fcd34d;">VIP</div>
+          <div class="case-icon">👑</div>
+          <div class="case-name">Apple VIP</div>
+          <div class="case-cost">300 ₽</div>
         </div>
       </div>
 
-      <div style="background:#030712; padding:8px; border-radius:10px; margin-bottom:8px;">
-        <div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:4px;">БИРЖА:</div>
-        <button class="cheat-btn" style="background:var(--win); color:#000;" onclick="cheatPumpCrypto()">🚀 Памп монеты (+50%)</button>
-        <button class="cheat-btn" style="background:var(--lose); color:#fff;" onclick="cheatDumpCrypto()">📉 Дамп монеты (-50%)</button>
-      </div>
-
-      <button class="cheat-btn" style="background:var(--accent); color:#000;" onclick="cheatAddPhone()">📱 Выдать Телефон #1,000,000</button>
-      <button class="cheat-btn" id="cheat-godmode-btn" style="background:#2563eb; color:#fff;" onclick="toggleCheatWin()">🎯 100% Win в Апгрейде: ВЫКЛ</button>
-      <button class="cheat-btn" style="background:#374151; color:#fff;" onclick="closeCheatModal()">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- ВЫБОР ИСХОДНИКА ДЛЯ АПГРЕЙДА -->
-  <div id="modal-select-source" class="modal-overlay" onclick="closeModals()">
-    <div class="modal-box" onclick="event.stopPropagation()">
-      <h3 style="margin-bottom:12px; font-size:15px;">Выберите телефон из инвентаря</h3>
-      <div id="source-items-list"></div>
-      <button class="btn-main-open" style="margin-top:10px; height:38px;" onclick="closeModals()">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- ВЫБОР ЦЕЛЕВОГО ТЕЛЕФОНА ИЗ 1 000 000 -->
-  <div id="modal-select-target" class="modal-overlay" onclick="closeModals()">
-    <div class="modal-box" onclick="event.stopPropagation()">
-      <h3 style="margin-bottom:12px; font-size:15px;">До какого телефона докачаться?</h3>
-      <div style="display:flex; gap:6px; margin-bottom:10px;">
-        <input type="number" id="target-search-id" placeholder="Номер телефона от 1 до 1 000 000" style="flex:1; height:36px; background:#030712; border:1px solid var(--card-border); color:#fff; border-radius:8px; padding:0 8px; font-size:12px;">
-        <button style="background:var(--primary); color:#000; border:none; border-radius:8px; padding:0 12px; font-weight:800; font-size:12px;" onclick="searchTargetPhone()">Найти</button>
-      </div>
-      <div id="target-items-list"></div>
-      <button class="btn-main-open" style="margin-top:10px; height:38px;" onclick="closeModals()">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- 1. ТАБ: 10 000 КЕЙСОВ -->
-  <div id="tab-cases" class="tab-view active">
-    <div class="fairness-card">
-      <span>🤖 <b>AI Provably Fair Engine:</b> SHA-256</span>
-      <span id="case-hash-display">d8e8fca2...</span>
-    </div>
-
-    <!-- КАТАЛОГ КЕЙСОВ С ПОИСКОМ -->
-    <div id="cases-browser">
-      <div class="filter-panel">
-        <div class="search-row">
-          <input type="text" class="search-input" id="case-search-input" placeholder="Введите номер (1-10000) или название...">
-          <button class="btn-search" onclick="executeCaseSearch()">Найти</button>
+      <div class="roulette-box">
+        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px; color:var(--text-muted);">
+          <span id="rouletteTitle">Сундук: Лут Новичка</span>
+          <span id="roulettePrice" style="color:var(--accent-glow);">10 ₽</span>
         </div>
-      </div>
-
-      <div class="cases-grid" id="cases-grid-list"></div>
-
-      <div class="pagination-bar">
-        <button class="page-btn" id="btn-prev-page" onclick="prevCasePage()">‹ Назад</button>
-        <div class="quick-jump-box">
-          <span style="font-size:11px; color:var(--text-muted); font-weight:800;">Стр:</span>
-          <input type="number" class="jump-input" id="page-jump-input" value="1" onchange="jumpToCasePage()">
-          <span style="font-size:11px; color:var(--text-muted); font-weight:800;" id="total-pages-label">/ 417</span>
+        <div class="roulette-window">
+          <div class="roulette-line"></div>
+          <div class="roulette-track" id="rouletteTape"></div>
         </div>
-        <button class="page-btn" id="btn-next-page" onclick="nextCasePage()">Вперёд ›</button>
+        <button class="btn" id="spinBtn" onclick="runSpin()">ОТКРЫТЬ СУНДУК</button>
       </div>
     </div>
 
-    <!-- ОКНО КЕЙСА -->
-    <div id="case-detail" style="display: none;">
-      <div class="case-detail-header">
-        <button class="btn-back" onclick="hideCaseDetail()">‹ Назад к 10 000 кейсам</button>
-        <h3 style="flex: 1; text-align: center; margin-right: 40px; font-size:15px;" id="detail-case-title">Кейс #1</h3>
-      </div>
-      <div class="roulette-container">
-        <div class="roulette-pointer"></div>
-        <div class="roulette-track" id="roulette-track"></div>
-      </div>
-      <div class="won-box" id="won-box" style="display: none;">
-        <div class="phone-mockup c-gold" id="won-icon"></div>
-        <div class="won-info">
-          <p style="font-size: 11px; color: var(--text-muted);">Выпал девайс с уникальной ценой:</p>
-          <h4 id="won-name" style="font-size:13px;">Samsung M25</h4>
-          <p id="won-rarity" style="color: var(--win); font-weight: 800; font-size: 12px;">78 450 ₽</p>
-          <span style="font-size: 10px; color: var(--text-muted);">✓ Добавлено в инвентарь</span>
-        </div>
-      </div>
-      <button class="btn-main-open" id="btn-open-case" onclick="spinRoulette()">Открыть кейс</button>
-      <div class="content-list-title">СОДЕРЖИМОЕ (У КАЖДОГО ТЕЛЕФОНА СТРОГО СВОЯ ЦЕНА):</div>
-      <div id="case-drop-table"></div>
+    <!-- 2. ВСЕ ТЕЛЕФОНЫ -->
+    <div id="tabCatalog" style="display:none;">
+      <input type="text" id="catalogSearchInput" placeholder="🔍 Быстрый поиск девайса по марке или серии..." 
+             style="width:100%; background:var(--card-dark); border:1px solid var(--border); padding:10px 14px; border-radius:10px; color:#fff; font-size:13px; margin-bottom:10px; outline:none;" 
+             oninput="renderCatalog()">
+      <div class="devices-grid" id="catalogList"></div>
     </div>
+
+    <!-- 3. АПГРЕЙДЕР -->
+    <div id="tabUpgrader" style="display:none;">
+      <div class="upgrader-container">
+        <div class="upgrade-slots-row">
+          <div class="upgrade-slot-box" id="upSlotSource">
+            <div style="font-size:24px;">📥</div>
+            <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">Скин со склада</div>
+          </div>
+          <div style="font-size:20px; font-weight:900; color:var(--accent-glow);">➔</div>
+          <div class="upgrade-slot-box" id="upSlotTarget">
+            <div style="font-size:24px;">🎁</div>
+            <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">Желаемый скин</div>
+          </div>
+        </div>
+
+        <div class="odds-indicator" id="upOddsVal">Шанс: 0%</div>
+        <button class="btn btn-gold" id="upActionBtn" disabled onclick="executeUpgraderSpin()">КРУТИТЬ АПГРЕЙД</button>
+
+        <div style="font-size:12px; font-weight:800; margin:14px 0 6px;">1. Выберите телефон из инвентаря:</div>
+        <div class="devices-grid" style="max-height:140px; margin-bottom:12px;" id="upgraderSourceList"></div>
+
+        <div style="font-size:12px; font-weight:800; margin-bottom:6px;">2. Выберите цель (СТРОГО ДОРОЖЕ):</div>
+        <div class="devices-grid" style="max-height:180px;" id="upgraderTargetList"></div>
+      </div>
+    </div>
+
+    <!-- 4. КОНТРАКТЫ -->
+    <div id="tabContracts" style="display:none;">
+      <div class="contracts-panel">
+        <div style="font-size:14px; font-weight:900; margin-bottom:4px;">📜 КОНТРАКТ ОБМЕНА</div>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">
+          Положите <b>от 10 до 20 телефонов</b> со склада для переплавки в 1 топовый флагман:
+        </div>
+
+        <div class="contract-chip-counter">
+          <span>Выбрано скинов: <b id="contractSelectedNum" style="color:var(--gold);">0</b></span>
+          <span>Лимит: <b>10 (мин) — 20 (макс)</b></span>
+        </div>
+
+        <div class="contract-progress-bar">
+          <div class="contract-progress-fill" id="contractProgress"></div>
+        </div>
+
+        <div style="font-size:12px; margin-bottom:12px;">
+          Суммарная ценность контракта: <b id="contractPoolSum" style="color:var(--gold);">0 ₽</b>
+        </div>
+
+        <button class="btn" id="btnSignContract" disabled onclick="executeContractExchange()">ПОДПИСАТЬ КОНТРАКТ</button>
+
+        <div style="font-size:12px; font-weight:800; margin:14px 0 6px;">Нажмите на телефоны ниже, чтобы добавить в контракт:</div>
+        <div class="devices-grid" style="max-height:220px;" id="contractInventoryGrid"></div>
+      </div>
+    </div>
+
+    <!-- 5. СКЛАД -->
+    <div id="tabInventory" style="display:none;">
+      <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+        <span style="font-size:12px; font-weight:800; color:var(--text-muted);">ВАШИ ДЕВАЙСЫ</span>
+        <button class="btn btn-danger" style="width:auto; padding:6px 12px; font-size:11px;" onclick="sellAll()">Продать всё</button>
+      </div>
+      <div class="devices-grid" id="invList"></div>
+    </div>
+
   </div>
 
-  <!-- 2. ТАБ: БИРЖА -->
-  <div id="tab-trade" class="tab-view">
-    <div class="crypto-nav">
-      <div class="coin-tab active" onclick="selectCoin('TON', this)">💎 TON</div>
-      <div class="coin-tab" onclick="selectCoin('BTC', this)">🟠 BTC</div>
-      <div class="coin-tab" onclick="selectCoin('ETH', this)">🔷 ETH</div>
-      <div class="coin-tab" onclick="selectCoin('SOL', this)">🟣 SOL</div>
-      <div class="coin-tab" onclick="selectCoin('NOT', this)">🪙 NOT</div>
+  <div class="modal-overlay" id="dropModal">
+    <div class="modal-inner">
+      <div style="font-size:11px; font-weight:800; color:var(--accent-glow); margin-bottom:4px;">УСПЕШНЫЙ ДРОП!</div>
+      <div id="dropIcon" style="font-size:46px; margin:10px 0;">📱</div>
+      <div id="dropTitle" style="font-size:14px; font-weight:900;">Телефон</div>
+      <div id="dropCost" style="font-size:16px; font-weight:900; color:var(--gold); margin:4px 0 14px;">0 ₽</div>
+      <button class="btn" onclick="closeDropModal()">ЗАБРАТЬ</button>
     </div>
-
-    <div class="market-card">
-      <div style="display:flex; justify-content:space-between; align-items:baseline;">
-        <div>
-          <div style="font-size: 11px; color: var(--text-muted); font-weight: 700;" id="trade-coin-title">TON (Gram) / RUB</div>
-          <div class="live-price" id="trade-cur-price">520 ₽</div>
-        </div>
-        <div class="price-change positive" id="trade-change">+3.45% ▲</div>
-      </div>
-
-      <div class="chart-container">
-        <canvas id="tradeCanvas"></canvas>
-      </div>
-
-      <div style="margin-bottom: 12px;">
-        <label style="font-size: 11px; color: var(--text-muted); font-weight: 700;">Сумма сделки (рубли):</label>
-        <input type="number" id="trade-amount-input" value="1000" style="width: 100%; height: 38px; background:#030712; border: 1px solid var(--card-border); color:#fff; border-radius: 10px; padding: 0 10px; font-weight: 800; font-size: 15px; margin-top: 4px;">
-      </div>
-
-      <div class="trade-actions">
-        <button class="btn-buy" onclick="executeTrade('BUY')">КУПИТЬ</button>
-        <button class="btn-sell" onclick="executeTrade('SELL')">ПРОДАТЬ ВСЁ</button>
-      </div>
-    </div>
-
-    <div class="market-card">
-      <h4 style="font-size: 13px; margin-bottom: 8px;">💼 Инвестиционный портфель</h4>
-      <div id="portfolio-list" style="font-size: 12px; color: var(--text-muted);">
-        Нет открытых позиций в криптовалюте.
-      </div>
-    </div>
-  </div>
-
-  <!-- 3. ТАБ: ИНВЕНТАРЬ -->
-  <div id="tab-inventory" class="tab-view">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="font-size: 16px;">Ваш инвентарь</h3>
-      <button onclick="sellAllItems()" style="border:none; background:none; color:var(--lose); font-weight:800; font-size:12px; cursor:pointer;">Продать всё</button>
-    </div>
-    <div id="inv-empty" style="text-align: center; color: var(--text-muted); margin-top: 50px; display: none;">
-      В инвентаре пусто.<br>Откройте кейс!
-    </div>
-    <div class="inv-grid" id="inv-grid"></div>
-  </div>
-
-  <!-- 4. ТАБ: УЛУЧШЕННЫЙ АПГРЕЙДЕР -->
-  <div id="tab-upgrade" class="tab-view">
-    <div class="fairness-card">
-      <span>🎲 <b>Seed SHA-256:</b></span>
-      <span id="upgrade-hash-display">9f4b3c81...</span>
-    </div>
-
-    <div class="upgrader-box">
-      <h3 style="font-size: 16px; margin-bottom: 2px;">Круговой Апгрейдер</h3>
-      <p style="font-size: 11px; color: var(--text-muted);">Прокачайте телефон до любой модели из 1 000 000</p>
-
-      <div class="wheel-wrapper">
-        <svg class="wheel-svg" viewBox="0 0 100 100">
-          <circle class="wheel-bg-circle" cx="50" cy="50" r="38"></circle>
-          <circle class="wheel-chance-circle" id="wheel-stroke" cx="50" cy="50" r="38" stroke-dasharray="119.3 238.7"></circle>
-        </svg>
-        <div class="wheel-arrow" id="wheel-arrow"></div>
-        <div class="wheel-center-info">
-          <div id="chance-text">50.00%</div>
-          <span style="display:block; font-size:10px; color:var(--text-muted);">ШАНС</span>
-        </div>
-      </div>
-
-      <div class="upgrade-selectors">
-        <div class="upgrade-slot" id="slot-from" onclick="openSourceSelectModal()">
-          <span style="font-size:9px; color:var(--text-muted);">ИСХОДНЫЙ (нажмите)</span>
-          <b id="slot-from-name" style="margin-top:2px; font-size:12px;">Телефон #5</b>
-          <span id="slot-from-price" style="color:var(--primary); font-weight:800; font-size:11px;">1 230 ₽</span>
-        </div>
-        <div style="display: flex; align-items: center; font-weight: bold; color: var(--primary); font-size:16px;">➔</div>
-        <div class="upgrade-slot" id="slot-to" onclick="openTargetSelectModal()">
-          <span style="font-size:9px; color:var(--text-muted);">ЦЕЛЬ (нажмите)</span>
-          <b id="slot-to-name" style="margin-top:2px; font-size:12px;">Телефон #999,999</b>
-          <span id="slot-to-price" style="color:var(--win); font-weight:800; font-size:11px;">2 450 291 ₽</span>
-        </div>
-      </div>
-
-      <button class="btn-main-open" id="btn-spin-upgrade" onclick="runWheelUpgrade()">Крутить апгрейд</button>
-    </div>
-  </div>
-
-  <!-- 5. ТАБ: АККАУНТ -->
-  <div id="tab-account" class="tab-view">
-    <div style="background:var(--card-bg); border:1px solid var(--card-border); border-radius:18px; padding:18px; text-align:center;">
-      <div style="width:60px; height:60px; border-radius:50%; background:var(--primary); color:#000; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:800; margin:0 auto 10px;" id="acc-avatar">U</div>
-      <h3 id="acc-name" style="font-size:16px;">Пользователь</h3>
-      <p id="acc-id" style="font-size: 11px; color: var(--text-muted);">ID: 8732002956</p>
-
-      <div style="display:flex; justify-content:space-around; border-top:1px solid var(--card-border); margin-top:14px; padding-top:12px;">
-        <div><h5 style="font-size:10px; color:var(--text-muted);">ОТКРЫТО</h5><b id="acc-stat-opened">0</b></div>
-        <div><h5 style="font-size:10px; color:var(--text-muted);">ДЕВАЙСЫ</h5><b id="acc-stat-inv">0 ₽</b></div>
-        <div><h5 style="font-size:10px; color:var(--text-muted);">БАЛАНС</h5><b id="acc-stat-bal">0 ₽</b></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- НИЖНЯЯ ПАНЕЛЬ -->
-  <div class="bottom-bar">
-    <button class="nav-btn active" onclick="setTab('cases', this)">
-      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V18z"/></svg>
-      10k Кейсов
-    </button>
-    <button class="nav-btn" onclick="setTab('trade', this)">
-      <svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
-      Биржа
-    </button>
-    <button class="nav-btn" onclick="setTab('inventory', this)">
-      <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
-      Инвентарь
-    </button>
-    <button class="nav-btn" onclick="setTab('upgrade', this)">
-      <svg viewBox="0 0 24 24"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg>
-      Апгрейд
-    </button>
-    <button class="nav-btn" onclick="setTab('account', this)">
-      <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-      Аккаунт
-    </button>
   </div>
 
   <script>
-    const tg = window.Telegram?.WebApp;
+    const CATALOG_BRANDS = [
+      "Apple iPhone", "Samsung Galaxy", "Xiaomi", "Google Pixel", "OnePlus",
+      "Huawei", "Sony Xperia", "Realme", "Nokia Classic", "Motorola",
+      "Nothing Phone", "Asus ROG Phone", "Honor", "Poco", "Infinix"
+    ];
 
-    const isTelegramApp = tg && tg.initData && tg.initData.length > 0;
-    if (!isTelegramApp) {
-      document.getElementById("browser-lock").style.display = "flex";
-      throw new Error("Запуск только в Telegram Mini App!");
-    } else {
-      tg.expand();
-    }
+    const CATALOG_SERIES = [
+      "Pro Max", "Ultra 5G", "Lite", "GT Neo", "Fold Edition",
+      "Flip Z", "Compact", "Special Edition", "Classic", "Prime",
+      "Carbon Spec", "Cyber Limited", "Master Edition"
+    ];
 
-    const ADMIN_TELEGRAM_ID = 8732002956;
-    const STORAGE_KEY = `kuli4ik_user_save_10k_${tg?.initDataUnsafe?.user?.id || 'admin'}`;
+    const CATALOG_MODS = [
+      "64GB (Царапины)", "128GB (Б/У Идеал)", "256GB (Как новый)",
+      "512GB (В заводской пленке)", "1TB (Керамика)", "2TB (Gold Edition)"
+    ];
 
-    // =========================================================================
-    //  ДВИЖОК: 1 000 000 ТЕЛЕФОНОВ СО СТРОГО УНИКАЛЬНОЙ ЦЕНОЙ
-    // =========================================================================
-    const BRANDS = ["Apple iPhone", "Samsung Galaxy", "Xiaomi", "Poco", "Infinix", "Google Pixel", "Asus ROG", "Nothing Phone", "Honor", "Realme", "OnePlus", "Sony Xperia", "Vertu", "Caviar Gold"];
-    const COLORS = ["c-blue", "c-gold", "c-black", "c-green", "c-purple", "c-silver"];
+    const CATALOG_CONDITIONS = [
+      "Разбит экран", "После сервиса", "Идеальное состояние",
+      "Витринный образец", "В коробке с чеком", "Кастомный корпус"
+    ];
 
-    function getPhoneById(id) {
-      if (id < 1) id = 1;
-      if (id > 1000000) id = 1000000;
+    let nextUniqueId = 1;
 
-      const brand = BRANDS[id % BRANDS.length];
-      const modelNum = Math.floor(id / 14) + 1;
-      const mem = [64, 128, 256, 512, 1024][id % 5];
-      const color = COLORS[id % COLORS.length];
+    function synthesizeDevice(seedId, priceMin, priceMax) {
+      const brand = CATALOG_BRANDS[seedId % CATALOG_BRANDS.length];
+      const series = CATALOG_SERIES[(seedId * 3) % CATALOG_SERIES.length];
+      const mod = CATALOG_MODS[(seedId * 7) % CATALOG_MODS.length];
+      const cond = CATALOG_CONDITIONS[(seedId * 11) % CATALOG_CONDITIONS.length];
 
-      // Формула уникальной цены без повторов
-      const uniqueOffset = (id % 97) * 3 + (id % 13);
-      const price = Math.round(300 + (id * 2.45) + uniqueOffset);
+      const span = Math.max(1, priceMax - priceMin);
+      const calcPrice = priceMin + ((seedId * 37) % span);
 
-      let rarity = "Обычный";
-      if (price > 1500000) rarity = "Мифический (Золото)";
-      else if (price > 400000) rarity = "Легендарный";
-      else if (price > 70000) rarity = "Эпический";
-      else if (price > 15000) rarity = "Редкий";
+      let rarity = "common";
+      let icon = "📱";
+
+      if (brand.includes("Apple")) icon = "🍏";
+      if (brand.includes("ROG")) icon = "🎮";
+      if (brand.includes("Nothing")) icon = "💡";
+
+      if (calcPrice <= 6) {
+        rarity = "junk";
+        icon = "📟";
+      } else if (calcPrice <= 20) {
+        rarity = "common";
+      } else if (calcPrice <= 60) {
+        rarity = "uncommon";
+      } else if (calcPrice <= 140) {
+        rarity = "rare";
+      } else if (calcPrice <= 300) {
+        rarity = "epic";
+      } else if (calcPrice <= 550) {
+        rarity = "legendary";
+        icon = "👑";
+      } else {
+        rarity = "mythic";
+        icon = "🔥";
+      }
 
       return {
-        id: id,
-        name: `${brand} M${modelNum} (${mem}GB)`,
-        price: price,
+        uid: "dev_" + (nextUniqueId++),
+        id: seedId,
+        name: `${brand} ${series} ${mod} [${cond}]`,
+        price: Math.max(1, calcPrice),
         rarity: rarity,
-        color: color
+        icon: icon
       };
     }
 
-    // =========================================================================
-    //  ДВИЖОК: 10 000 КЕЙСОВ
-    // =========================================================================
-    const CASE_TITLES = ["Бомж", "Стартовый", "Студент", "Драйв", "Турбо", "Кибер", "Магнат", "Олигарх", "Премиум", "Ультра", "Миллионер", "Султан", "Император", "Бессмертный"];
-    const CASE_ICONS = ["🗑", "📦", "📱", "💼", "💎", "👑", "🔥", "⚡️", "🚀", "🪐"];
-
-    function getCaseById(id) {
-      if (id < 1) id = 1;
-      if (id > 10000) id = 10000;
-
-      let cost = Math.round(10 * Math.pow(1000000 / 10, (id - 1) / 9999));
-      if (cost > 10000) cost = Math.round(cost / 500) * 500;
-      else if (cost > 100) cost = Math.round(cost / 10) * 10;
-      if (id === 1) cost = 10;
-
-      const title = `Кейс #${id} «${CASE_TITLES[id % CASE_TITLES.length]}»`;
-      const icon = CASE_ICONS[id % CASE_ICONS.length];
-
-      // Пул из 6 девайсов со строго возрастающей ценой
-      const basePhoneId = Math.max(1, Math.floor((id - 1) * 98));
-      const pool = [
-        getPhoneById(basePhoneId),
-        getPhoneById(basePhoneId + 12),
-        getPhoneById(basePhoneId + 45),
-        getPhoneById(basePhoneId + 110),
-        getPhoneById(basePhoneId + 280),
-        getPhoneById(basePhoneId + 650)
-      ];
-
-      const chances = [45.0, 26.0, 15.0, 9.0, 4.0, 1.0];
-
-      return {
-        id: id,
-        title: title,
-        cost: cost,
-        icon: icon,
-        items: pool.map((p, idx) => ({ phone: p, chance: chances[idx] }))
-      };
+    const DISPLAY_CATALOG = [];
+    for (let i = 1; i <= 60; i++) {
+      DISPLAY_CATALOG.push(synthesizeDevice(i * 1234, 2, 600));
     }
+    DISPLAY_CATALOG.sort((a, b) => a.price - b.price);
 
-    function loadUserData() {
-      try {
-        const s = localStorage.getItem(STORAGE_KEY);
-        if (s) return JSON.parse(s);
-      } catch (e) {}
-      return {
-        balance: 25000,
-        openedCount: 0,
-        inventory: [getPhoneById(10), getPhoneById(55), getPhoneById(150)],
-        portfolio: {}
-      };
-    }
+    const CASINO_AI = {
+      playerSessionProfit: 0,
 
-    let userData = loadUserData();
-    function saveUserData() {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(userData)); } catch (e) {}
-    }
+      calculateCaseDrop: function(cost) {
+        this.playerSessionProfit -= cost;
+        const roll = Math.random() * 100;
+        const seed = Math.floor(Math.random() * 999999) + 1;
+        const antiFarmMod = this.playerSessionProfit > 25 ? 0.35 : 1.0;
 
-    async function generateAIFairNumber() {
-      const serverSeed = crypto.getRandomValues(new Uint32Array(4)).join("-");
-      const clientSeed = tg?.initDataUnsafe?.user?.id || Date.now().toString();
-      const nonce = performance.now().toString();
-      const message = `${serverSeed}:${clientSeed}:${nonce}`;
-
-      const encoder = new TextEncoder();
-      const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(message));
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
-      const subValue = (hashArray[0] << 24) | (hashArray[1] << 16) | (hashArray[2] << 8) | hashArray[3];
-      const normalized = Math.abs(subValue) / 0x7FFFFFFF;
-      const fairPercentage = normalized * 100;
-
-      return { fairPercentage, hashHex };
-    }
-
-    // --- ПАГИНАЦИЯ И ПОИСК КЕЙСОВ ---
-    let currentCasePage = 1;
-    const CASES_PER_PAGE = 24;
-    const TOTAL_CASES = 10000;
-    let searchResults = null;
-
-    function renderCasesList() {
-      const container = document.getElementById("cases-grid-list");
-      container.innerHTML = "";
-
-      const activeList = searchResults ? searchResults : null;
-      const totalCount = activeList ? activeList.length : TOTAL_CASES;
-      const totalPages = Math.ceil(totalCount / CASES_PER_PAGE) || 1;
-
-      document.getElementById("total-pages-label").innerText = `/ ${totalPages}`;
-      document.getElementById("page-jump-input").value = currentCasePage;
-      document.getElementById("btn-prev-page").disabled = currentCasePage <= 1;
-      document.getElementById("btn-next-page").disabled = currentCasePage >= totalPages;
-
-      const startIdx = (currentCasePage - 1) * CASES_PER_PAGE;
-      const endIdx = Math.min(totalCount, startIdx + CASES_PER_PAGE);
-
-      for (let i = startIdx; i < endIdx; i++) {
-        const caseId = activeList ? activeList[i] : (i + 1);
-        const c = getCaseById(caseId);
-        container.innerHTML += `
-          <div class="case-card-item" onclick="openCaseDetail(${c.id})">
-            <span class="case-id-tag">#${c.id}</span>
-            <div class="case-icon">${c.icon}</div>
-            <div class="case-name">${c.title}</div>
-            <div class="case-price">${c.cost.toLocaleString('ru-RU')} ₽</div>
-          </div>
-        `;
-      }
-    }
-
-    function prevCasePage() {
-      if (currentCasePage > 1) {
-        currentCasePage--;
-        renderCasesList();
-        window.scrollTo(0, 0);
-      }
-    }
-
-    function nextCasePage() {
-      const totalCount = searchResults ? searchResults.length : TOTAL_CASES;
-      const totalPages = Math.ceil(totalCount / CASES_PER_PAGE);
-      if (currentCasePage < totalPages) {
-        currentCasePage++;
-        renderCasesList();
-        window.scrollTo(0, 0);
-      }
-    }
-
-    function jumpToCasePage() {
-      const input = parseInt(document.getElementById("page-jump-input").value) || 1;
-      const totalCount = searchResults ? searchResults.length : TOTAL_CASES;
-      const totalPages = Math.ceil(totalCount / CASES_PER_PAGE);
-      currentCasePage = Math.min(totalPages, Math.max(1, input));
-      renderCasesList();
-      window.scrollTo(0, 0);
-    }
-
-    function executeCaseSearch() {
-      const q = document.getElementById("case-search-input").value.trim().toLowerCase();
-      if (!q) {
-        searchResults = null;
-        currentCasePage = 1;
-        renderCasesList();
-        return;
-      }
-
-      const matched = [];
-      const numQuery = parseInt(q);
-      if (!isNaN(numQuery) && numQuery >= 1 && numQuery <= TOTAL_CASES) {
-        matched.push(numQuery);
-      }
-
-      for (let i = 1; i <= TOTAL_CASES; i++) {
-        const titleCat = CASE_TITLES[i % CASE_TITLES.length].toLowerCase();
-        if (titleCat.includes(q)) {
-          if (!matched.includes(i)) matched.push(i);
+        if (cost === 10) {
+          if (roll < 85 / antiFarmMod) {
+            return synthesizeDevice(seed, 1, 6);
+          } else if (roll < 99.3) {
+            return synthesizeDevice(seed, 7, 12);
+          } else {
+            return synthesizeDevice(seed, 18, 35);
+          }
+        } else if (cost === 50) {
+          if (roll < 80 / antiFarmMod) return synthesizeDevice(seed, 12, 38);
+          else if (roll < 97) return synthesizeDevice(seed, 45, 62);
+          return synthesizeDevice(seed, 75, 115);
+        } else if (cost === 150) {
+          if (roll < 75 / antiFarmMod) return synthesizeDevice(seed, 45, 110);
+          else if (roll < 96) return synthesizeDevice(seed, 130, 185);
+          return synthesizeDevice(seed, 210, 280);
+        } else {
+          if (roll < 70 / antiFarmMod) return synthesizeDevice(seed, 110, 240);
+          else if (roll < 95) return synthesizeDevice(seed, 260, 360);
+          return synthesizeDevice(seed, 380, 650);
         }
-        if (matched.length >= 200) break;
       }
+    };
 
-      searchResults = matched;
-      currentCasePage = 1;
-      renderCasesList();
-    }
-
-    // --- ОТКРЫТИЕ КЕЙСА ---
-    let activeCaseObj = getCaseById(1);
+    let balance = 100;
+    let inventory = [];
+    let selectedCaseCost = 10;
     let isSpinning = false;
 
-    function openCaseDetail(caseId) {
-      activeCaseObj = getCaseById(caseId);
-      document.getElementById("cases-browser").style.display = "none";
-      document.getElementById("case-detail").style.display = "block";
-      document.getElementById("detail-case-title").innerText = activeCaseObj.title;
-      document.getElementById("won-box").style.display = "none";
-      document.getElementById("btn-open-case").innerText = `Открыть за ${activeCaseObj.cost.toLocaleString('ru-RU')} ₽`;
+    let upSourceUid = null;
+    let upTargetItem = null;
+    let contractSelectedUids = [];
 
-      const dropTable = document.getElementById("case-drop-table");
-      dropTable.innerHTML = "";
-      activeCaseObj.items.forEach(it => {
-        dropTable.innerHTML += `
-          <div class="content-row">
-            <div class="phone-mockup ${it.phone.color}"></div>
-            <div class="content-row-info">
-              <div class="content-row-name">${it.phone.name}</div>
-              <div class="content-row-rarity">${it.phone.price.toLocaleString('ru-RU')} ₽ (${it.phone.rarity})</div>
-            </div>
-            <div class="content-row-percent">${it.chance.toFixed(1)}%</div>
-          </div>
-        `;
-      });
+    function renderCatalog() {
+      const query = document.getElementById("catalogSearchInput").value.toLowerCase().trim();
+      const listContainer = document.getElementById("catalogList");
 
-      buildRouletteTrack(activeCaseObj.items);
-    }
-
-    function hideCaseDetail() {
-      document.getElementById("case-detail").style.display = "none";
-      document.getElementById("cases-browser").style.display = "block";
-    }
-
-    function buildRouletteTrack(items) {
-      const track = document.getElementById("roulette-track");
-      track.style.transition = "none";
-      track.style.transform = "translateX(0px)";
-      track.innerHTML = "";
-      for (let i = 0; i < 50; i++) {
-        const item = items[Math.floor(Math.random() * items.length)];
-        const div = document.createElement("div");
-        div.className = "roulette-item";
-        div.innerHTML = `<div class="phone-mockup ${item.phone.color}"></div><div class="roulette-item-title">${item.phone.name}</div>`;
-        track.appendChild(div);
+      let items = DISPLAY_CATALOG;
+      if (query) {
+        items = DISPLAY_CATALOG.filter(d => d.name.toLowerCase().includes(query));
       }
-    }
 
-    async function spinRoulette() {
-      if (isSpinning) return;
-      if (userData.balance < activeCaseObj.cost) {
-        tg?.showAlert ? tg.showAlert("Недостаточно средств!") : alert("Мало средств!");
+      if (!items.length) {
+        listContainer.innerHTML = `<div style="grid-column: span 2; text-align:center; color:var(--text-muted); padding:30px;">Телефоны не найдены</div>`;
         return;
       }
 
-      userData.balance -= activeCaseObj.cost;
-      userData.openedCount++;
-      saveUserData();
-      updateBalanceUI();
+      listContainer.innerHTML = items.map(d => `
+        <div class="phone-card b-${d.rarity}">
+          <div class="phone-card-icon">${d.icon}</div>
+          <div class="phone-card-name">${d.name}</div>
+          <div class="phone-card-cost">${d.price} ₽</div>
+        </div>
+      `).join("");
+    }
 
-      isSpinning = true;
-      const btn = document.getElementById("btn-open-case");
-      btn.disabled = true;
-      document.getElementById("won-box").style.display = "none";
+    function renderUpgrader() {
+      const srcBox = document.getElementById("upgraderSourceList");
 
-      const { fairPercentage, hashHex } = await generateAIFairNumber();
-      document.getElementById("case-hash-display").innerText = hashHex.substring(0, 16) + "...";
-
-      let accum = 0;
-      let wonPhone = activeCaseObj.items[0].phone;
-      for (let it of activeCaseObj.items) {
-        accum += it.chance;
-        if (fairPercentage <= accum) {
-          wonPhone = it.phone;
-          break;
-        }
+      if (!inventory.length) {
+        srcBox.innerHTML = `<div style="grid-column: span 2; text-align:center; font-size:11px; color:var(--text-muted); padding:10px;">Инвентарь пуст. Откройте сундук!</div>`;
+      } else {
+        srcBox.innerHTML = inventory.map(it => `
+          <div class="phone-card b-${it.rarity} ${upSourceUid === it.uid ? 'active-target' : ''}" 
+               onclick="selectUpSource('${it.uid}')">
+            <div class="phone-card-icon">${it.icon}</div>
+            <div class="phone-card-name">${it.name}</div>
+            <div class="phone-card-cost">${it.price} ₽</div>
+          </div>
+        `).join("");
       }
 
-      buildRouletteTrack(activeCaseObj.items);
-      const track = document.getElementById("roulette-track");
-      const winIndex = 36;
-      track.children[winIndex].querySelector(".roulette-item-title").innerText = wonPhone.name;
-      track.children[winIndex].querySelector(".phone-mockup").className = `phone-mockup ${wonPhone.color}`;
+      const tgtBox = document.getElementById("upgraderTargetList");
+      const sourceItem = inventory.find(i => i.uid === upSourceUid);
 
-      const itemWidth = 120;
-      const stopOffset = winIndex * itemWidth + (Math.random() * 20 - 10);
+      if (!sourceItem) {
+        tgtBox.innerHTML = `<div style="grid-column: span 2; text-align:center; font-size:11px; color:var(--text-muted); padding:20px;">Сначала выберите предмет со склада выше!</div>`;
+        return;
+      }
 
-      setTimeout(() => {
-        track.style.transition = "transform 4.5s cubic-bezier(0.12, 0.8, 0.15, 1)";
-        track.style.transform = `translateX(-${stopOffset}px)`;
-      }, 50);
+      const eligibleTargets = DISPLAY_CATALOG.filter(d => d.price > sourceItem.price);
+
+      if (!eligibleTargets.length) {
+        tgtBox.innerHTML = `<div style="grid-column: span 2; text-align:center; font-size:11px; color:var(--text-muted); padding:20px;">Ваш скин максимального уровня! Нет скинов дороже.</div>`;
+        return;
+      }
+
+      tgtBox.innerHTML = eligibleTargets.map(d => `
+        <div class="phone-card b-${d.rarity} ${upTargetItem && upTargetItem.id === d.id ? 'active-target' : ''}" 
+             onclick="selectUpTarget(${d.id})">
+          <div class="phone-card-icon">${d.icon}</div>
+          <div class="phone-card-name">${d.name}</div>
+          <div class="phone-card-cost">${d.price} ₽</div>
+        </div>
+      `).join("");
+    }
+
+    function selectUpSource(uid) {
+      upSourceUid = uid;
+      upTargetItem = null;
+      const sourceItem = inventory.find(i => i.uid === uid);
+
+      if (sourceItem) {
+        document.getElementById("upSlotSource").className = "upgrade-slot-box filled";
+        document.getElementById("upSlotSource").innerHTML = `
+          <div style="font-size:24px;">${sourceItem.icon}</div>
+          <div style="font-size:10px; font-weight:800; margin-top:2px;">${sourceItem.name}</div>
+          <div style="font-size:11px; font-weight:900; color:var(--gold);">${sourceItem.price} ₽</div>
+        `;
+      }
+
+      document.getElementById("upSlotTarget").className = "upgrade-slot-box";
+      document.getElementById("upSlotTarget").innerHTML = `<div style="font-size:24px;">🎁</div><div style="font-size:10px; color:var(--text-muted);">Желаемый скин</div>`;
+
+      updateUpgraderOdds();
+      renderUpgrader();
+    }
+
+    function selectUpTarget(targetId) {
+      upTargetItem = DISPLAY_CATALOG.find(d => d.id === targetId);
+
+      if (upTargetItem) {
+        document.getElementById("upSlotTarget").className = "upgrade-slot-box filled";
+        document.getElementById("upSlotTarget").innerHTML = `
+          <div style="font-size:24px;">${upTargetItem.icon}</div>
+          <div style="font-size:10px; font-weight:800; margin-top:2px;">${upTargetItem.name}</div>
+          <div style="font-size:11px; font-weight:900; color:var(--gold);">${upTargetItem.price} ₽</div>
+        `;
+      }
+
+      updateUpgraderOdds();
+      renderUpgrader();
+    }
+
+    function updateUpgraderOdds() {
+      const btn = document.getElementById("upActionBtn");
+      const sourceItem = inventory.find(i => i.uid === upSourceUid);
+
+      if (!sourceItem || !upTargetItem) {
+        document.getElementById("upOddsVal").innerText = "Шанс: 0%";
+        btn.disabled = true;
+        return;
+      }
+
+      const rawOdds = (sourceItem.price / upTargetItem.price) * 72;
+      const finalOdds = Math.min(85, Math.max(1, Math.round(rawOdds)));
+
+      document.getElementById("upOddsVal").innerText = `Шанс успеха: ${finalOdds}%`;
+      btn.disabled = false;
+    }
+
+    function executeUpgraderSpin() {
+      const sourceItem = inventory.find(i => i.uid === upSourceUid);
+      if (!sourceItem || !upTargetItem || isSpinning) return;
+
+      isSpinning = true;
+      document.getElementById("upActionBtn").disabled = true;
+
+      const idx = inventory.findIndex(i => i.uid === upSourceUid);
+      if (idx > -1) {
+        inventory.splice(idx, 1);
+      }
+      renderInventory();
+
+      const rawOdds = (sourceItem.price / upTargetItem.price) * 72;
+      const finalOdds = Math.min(85, Math.max(1, Math.round(rawOdds)));
+      const isWin = (Math.random() * 100) < finalOdds;
+
+      document.getElementById("upOddsVal").innerText = "🌀 Прокрутка апгрейда...";
 
       setTimeout(() => {
         isSpinning = false;
-        btn.disabled = false;
-        userData.inventory.unshift({ ...wonPhone, id: Date.now() });
-        saveUserData();
-        updateBalanceUI();
-        setupUpgraderUI();
-
-        const wonBox = document.getElementById("won-box");
-        wonBox.style.display = "flex";
-        document.getElementById("won-name").innerText = wonPhone.name;
-        document.getElementById("won-rarity").innerText = `${wonPhone.price.toLocaleString('ru-RU')} ₽ (${wonPhone.rarity})`;
-        document.getElementById("won-icon").className = `phone-mockup ${wonPhone.color}`;
-      }, 4800);
-    }
-
-    // --- УЛУЧШЕННЫЙ АПГРЕЙДЕР ---
-    let selectedSourceIndex = 0;
-    let selectedTargetItem = getPhoneById(999999);
-    let cheatAlwaysWin = false;
-
-    function openSourceSelectModal() {
-      if (userData.inventory.length === 0) {
-        tg?.showAlert ? tg.showAlert("Инвентарь пуст!") : alert("Инвентарь пуст!");
-        return;
-      }
-      const list = document.getElementById("source-items-list");
-      list.innerHTML = "";
-      userData.inventory.forEach((item, idx) => {
-        list.innerHTML += `
-          <div class="select-item-row" onclick="chooseSourceItem(${idx})">
-            <div><b>${item.name}</b> <span style="font-size:10px; color:var(--text-muted);">(${item.rarity})</span></div>
-            <div style="font-weight:800; color:var(--primary);">${item.price.toLocaleString('ru-RU')} ₽</div>
-          </div>
-        `;
-      });
-      document.getElementById("modal-select-source").style.display = "flex";
-    }
-
-    function chooseSourceItem(idx) {
-      selectedSourceIndex = idx;
-      closeModals();
-      setupUpgraderUI();
-    }
-
-    function openTargetSelectModal() {
-      const list = document.getElementById("target-items-list");
-      list.innerHTML = "";
-      const quickPicks = [1000, 5000, 25000, 100000, 500000, 999999];
-      quickPicks.forEach(id => {
-        const p = getPhoneById(id);
-        list.innerHTML += `
-          <div class="select-item-row" onclick="chooseTargetItem(${p.id})">
-            <div><b>${p.name}</b> <span style="font-size:10px; color:var(--text-muted);">(${p.rarity})</span></div>
-            <div style="font-weight:800; color:var(--win);">${p.price.toLocaleString('ru-RU')} ₽</div>
-          </div>
-        `;
-      });
-      document.getElementById("modal-select-target").style.display = "flex";
-    }
-
-    function searchTargetPhone() {
-      const id = parseInt(document.getElementById("target-search-id").value);
-      if (id >= 1 && id <= 1000000) {
-        chooseTargetItem(id);
-      } else {
-        tg?.showAlert ? tg.showAlert("Введите номер от 1 до 1 000 000!") : alert("От 1 до 1 000 000!");
-      }
-    }
-
-    function chooseTargetItem(phoneId) {
-      selectedTargetItem = getPhoneById(phoneId);
-      closeModals();
-      setupUpgraderUI();
-    }
-
-    function closeModals() {
-      document.getElementById("modal-select-source").style.display = "none";
-      document.getElementById("modal-select-target").style.display = "none";
-    }
-
-    function setupUpgraderUI() {
-      const src = userData.inventory[selectedSourceIndex];
-      const fromName = document.getElementById("slot-from-name");
-      const fromPrice = document.getElementById("slot-from-price");
-      const toName = document.getElementById("slot-to-name");
-      const toPrice = document.getElementById("slot-to-price");
-
-      if (src) {
-        fromName.innerText = src.name;
-        fromPrice.innerText = `${src.price.toLocaleString('ru-RU')} ₽`;
-      } else {
-        fromName.innerText = "Не выбран";
-        fromPrice.innerText = "0 ₽";
-      }
-
-      toName.innerText = selectedTargetItem.name;
-      toPrice.innerText = `${selectedTargetItem.price.toLocaleString('ru-RU')} ₽`;
-
-      let chance = 50.0;
-      if (src && selectedTargetItem) {
-        chance = Math.min(95.0, Math.max(0.01, (src.price / selectedTargetItem.price) * 95.0));
-      }
-
-      document.getElementById("chance-text").innerText = `${chance.toFixed(2)}%`;
-      const circ = 238.7;
-      const strokeVal = (circ * chance) / 100;
-      document.getElementById("wheel-stroke").setAttribute("stroke-dasharray", `${strokeVal} ${circ}`);
-    }
-
-    async function runWheelUpgrade() {
-      if (isSpinning) return;
-      if (userData.inventory.length === 0) {
-        tg?.showAlert ? tg.showAlert("Инвентарь пуст!") : alert("Инвентарь пуст!");
-        return;
-      }
-
-      const src = userData.inventory[selectedSourceIndex];
-      if (!src) return;
-
-      isSpinning = true;
-      document.getElementById("btn-spin-upgrade").disabled = true;
-
-      const { fairPercentage, hashHex } = await generateAIFairNumber();
-      document.getElementById("upgrade-hash-display").innerText = hashHex.substring(0, 16) + "...";
-
-      userData.inventory.splice(selectedSourceIndex, 1);
-      selectedSourceIndex = 0;
-      saveUserData();
-      updateBalanceUI();
-
-      let chance = Math.min(95.0, Math.max(0.01, (src.price / selectedTargetItem.price) * 95.0));
-      const isWin = cheatAlwaysWin ? true : (fairPercentage < chance);
-
-      const winDegrees = (chance / 100) * 360;
-      const targetDeg = isWin 
-        ? ((fairPercentage / chance) * (winDegrees - 6) + 3)
-        : (winDegrees + ((fairPercentage - chance) / (100 - chance)) * (354 - winDegrees) + 3);
-      const totalRotation = 360 * 5 + targetDeg;
-
-      const arrow = document.getElementById("wheel-arrow");
-      arrow.style.transition = "transform 4s cubic-bezier(0.1, 0.7, 0.1, 1)";
-      arrow.style.transform = `rotate(${totalRotation}deg)`;
-
-      setTimeout(() => {
-        isSpinning = false;
-        document.getElementById("btn-spin-upgrade").disabled = false;
-        arrow.style.transition = "none";
-        arrow.style.transform = `rotate(${targetDeg}deg)`;
-
         if (isWin) {
-          const wonItem = { ...selectedTargetItem, id: Date.now() };
-          userData.inventory.unshift(wonItem);
-          tg?.showAlert ? tg.showAlert(`🎉 УСПЕХ! Телефон улучшен до ${wonItem.name}!`) : alert("Успех!");
+          const freshWon = { ...upTargetItem, uid: "dev_" + (nextUniqueId++) };
+          inventory.unshift(freshWon);
+          renderInventory();
+          showDropModal(freshWon);
+          alert(`🎉 УСПЕХ! Вы получили ${freshWon.name} (${freshWon.price} ₽)! Вы в плюсе!`);
         } else {
-          tg?.showAlert ? tg.showAlert(`💥 НЕУДАЧА! ${src.name} сгорел.`) : alert("Провал!");
+          alert("💥 НЕУДАЧА! Предмет сгорел при апгрейде.");
         }
-        saveUserData();
-        updateBalanceUI();
-        setupUpgraderUI();
-      }, 4200);
+
+        upSourceUid = null;
+        upTargetItem = null;
+        document.getElementById("upSlotSource").className = "upgrade-slot-box";
+        document.getElementById("upSlotSource").innerHTML = `<div style="font-size:24px;">📥</div><div style="font-size:10px; color:var(--text-muted);">Скин со склада</div>`;
+        document.getElementById("upSlotTarget").className = "upgrade-slot-box";
+        document.getElementById("upSlotTarget").innerHTML = `<div style="font-size:24px;">🎁</div><div style="font-size:10px; color:var(--text-muted);">Желаемый скин</div>`;
+        updateUpgraderOdds();
+        renderUpgrader();
+      }, 850);
     }
 
-    // --- БИРЖА КРИПТОВАЛЮТ ---
-    const CRYPTO_MARKET = {
-      TON: { name: "TON", price: 520, history: [], change: 3.45 },
-      BTC: { name: "BTC", price: 6540000, history: [], change: 1.85 },
-      ETH: { name: "ETH", price: 245000, history: [], change: -0.92 },
-      SOL: { name: "SOL", price: 14800, history: [], change: 2.70 },
-      NOT: { name: "NOT", price: 0.85, history: [], change: -2.15 }
-    };
-    let activeCoin = "TON";
+    function renderContractsUI() {
+      const box = document.getElementById("contractInventoryGrid");
+      contractSelectedUids = contractSelectedUids.filter(uid => inventory.some(i => i.uid === uid));
 
-    for (let c in CRYPTO_MARKET) {
-      let p = CRYPTO_MARKET[c].price;
-      for (let i = 0; i < 30; i++) {
-        p += (Math.random() - 0.49) * (p * 0.012);
-        CRYPTO_MARKET[c].history.push(p);
-      }
-    }
+      document.getElementById("contractCountTab").innerText = contractSelectedUids.length;
+      document.getElementById("contractSelectedNum").innerText = contractSelectedUids.length;
 
-    function selectCoin(sym, el) {
-      activeCoin = sym;
-      document.querySelectorAll('.coin-tab').forEach(t => t.classList.remove('active'));
-      el.classList.add('active');
-      renderTradeMarket();
-    }
+      const pct = Math.min(100, Math.round((contractSelectedUids.length / 20) * 100));
+      document.getElementById("contractProgress").style.width = pct + "%";
 
-    function renderTradeMarket() {
-      const c = CRYPTO_MARKET[activeCoin];
-      const pText = c.price < 1 ? c.price.toFixed(4) : Math.round(c.price).toLocaleString('ru-RU');
-      document.getElementById("trade-coin-title").innerText = `${c.name} / RUB`;
-      document.getElementById("trade-cur-price").innerText = `${pText} ₽`;
-      const changeEl = document.getElementById("trade-change");
-      changeEl.innerText = `${c.change >= 0 ? '+' : ''}${c.change.toFixed(2)}% ${c.change >= 0 ? '▲' : '▼'}`;
-      changeEl.className = `price-change ${c.change >= 0 ? 'positive' : 'negative'}`;
-      drawChart();
-    }
-
-    function executeTrade(type) {
-      const input = document.getElementById("trade-amount-input");
-      const rub = parseFloat(input.value);
-      const c = CRYPTO_MARKET[activeCoin];
-      if (type === 'BUY') {
-        if (userData.balance < rub || rub <= 0) {
-          tg?.showAlert ? tg.showAlert("Недостаточно средств!") : alert("Мало средств!");
-          return;
-        }
-        userData.balance -= rub;
-        const boughtCoins = rub / c.price;
-        userData.portfolio[activeCoin] = (userData.portfolio[activeCoin] || 0) + boughtCoins;
-        tg?.showAlert ? tg.showAlert(`✅ Куплено ${boughtCoins.toFixed(4)} ${activeCoin}!`) : alert("Куплено!");
-      } else {
-        const held = userData.portfolio[activeCoin] || 0;
-        if (held <= 0) {
-          tg?.showAlert ? tg.showAlert(`У вас нет ${activeCoin}!`) : alert("Нет монет!");
-          return;
-        }
-        const sellRub = held * c.price;
-        userData.balance += sellRub;
-        delete userData.portfolio[activeCoin];
-        tg?.showAlert ? tg.showAlert(`✅ Продано всё за +${Math.round(sellRub)} ₽!`) : alert("Продано!");
-      }
-      saveUserData();
-      updateBalanceUI();
-    }
-
-    function renderPortfolio() {
-      const box = document.getElementById("portfolio-list");
-      let html = "";
-      for (let sym in userData.portfolio) {
-        let amt = userData.portfolio[sym];
-        let val = Math.round(amt * CRYPTO_MARKET[sym].price);
-        html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px; background:#030712; padding:6px 10px; border-radius:8px;"><b>${sym}:</b> <span>${amt.toFixed(4)} (~${val} ₽)</span></div>`;
-      }
-      box.innerHTML = html || "Нет открытых позиций в криптовалюте.";
-    }
-
-    function drawChart() {
-      const canvas = document.getElementById("tradeCanvas");
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d");
-      const w = canvas.width;
-      const h = canvas.height;
-      ctx.clearRect(0, 0, w, h);
-      const hist = CRYPTO_MARKET[activeCoin].history;
-      const min = Math.min(...hist) * 0.995;
-      const max = Math.max(...hist) * 1.005;
-
-      ctx.strokeStyle = "#1e293b";
-      ctx.lineWidth = 1;
-      for (let y = 30; y < h; y += 40) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
-      }
-      ctx.beginPath();
-      ctx.strokeStyle = CRYPTO_MARKET[activeCoin].change >= 0 ? "#10b981" : "#ef4444";
-      ctx.lineWidth = 2.5;
-      hist.forEach((val, idx) => {
-        let x = (idx / (hist.length - 1)) * w;
-        let y = h - ((val - min) / (max - min)) * (h - 20) - 10;
-        if (idx === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+      let poolSum = 0;
+      contractSelectedUids.forEach(uid => {
+        const item = inventory.find(i => i.uid === uid);
+        if (item) poolSum += item.price;
       });
-      ctx.stroke();
-    }
+      document.getElementById("contractPoolSum").innerText = poolSum + " ₽";
 
-    function resizeCanvas() {
-      const canvas = document.getElementById("tradeCanvas");
-      if (!canvas) return;
-      canvas.width = canvas.parentElement.clientWidth;
-      canvas.height = canvas.parentElement.clientHeight;
-      drawChart();
-    }
-    window.addEventListener("resize", resizeCanvas);
-
-    setInterval(() => {
-      for (let s in CRYPTO_MARKET) {
-        let c = CRYPTO_MARKET[s];
-        let delta = (Math.random() - 0.495) * (c.price * 0.007);
-        c.price = Math.max(0.0001, c.price + delta);
-        c.change += (delta / c.price) * 100;
-        c.history.shift();
-        c.history.push(c.price);
+      const signBtn = document.getElementById("btnSignContract");
+      if (contractSelectedUids.length >= 10 && contractSelectedUids.length <= 20) {
+        signBtn.disabled = false;
+        signBtn.innerText = `ПОДПИСАТЬ КОНТРАКТ (${contractSelectedUids.length} шт.)`;
+      } else {
+        signBtn.disabled = true;
+        signBtn.innerText = contractSelectedUids.length < 10 
+          ? `Нужно минимум 10 скинов (ещё ${10 - contractSelectedUids.length})`
+          : `Превышен лимит 20 скинов!`;
       }
-      if (document.getElementById("tab-trade").classList.contains("active")) {
-        renderTradeMarket();
-      }
-    }, 2000);
 
-    // --- ЧИТ-ПАНЕЛЬ АДМИНИСТРАТОРА ---
-    let balanceClicks = 0;
-    function handleBalanceClick() {
-      balanceClicks++;
-      if (balanceClicks >= 3) {
-        balanceClicks = 0;
-        const uid = tg?.initDataUnsafe?.user?.id;
-        if (uid == ADMIN_TELEGRAM_ID) {
-          document.getElementById("admin-cheat-modal").style.display = "flex";
-        } else {
-          tg?.showAlert ? tg.showAlert("⛔️ Доступно только администратору!") : alert("Только для админа!");
-        }
-      }
-    }
-    function closeCheatModal() { document.getElementById("admin-cheat-modal").style.display = "none"; }
-
-    function applyCheatMoney() {
-      const sum = parseFloat(document.getElementById("cheat-custom-sum").value) || 0;
-      userData.balance += sum;
-      saveUserData();
-      updateBalanceUI();
-      closeCheatModal();
-      tg?.showAlert ? tg.showAlert(`✅ Зачислено +${sum.toLocaleString('ru-RU')} ₽!`) : alert(`+${sum} ₽`);
-    }
-
-    function cheatAddPhone() {
-      const topPhone = getPhoneById(1000000);
-      userData.inventory.unshift({ ...topPhone, id: Date.now() });
-      saveUserData();
-      updateBalanceUI();
-      setupUpgraderUI();
-      closeCheatModal();
-      tg?.showAlert ? tg.showAlert(`✅ Выдан ${topPhone.name} (${topPhone.price.toLocaleString('ru-RU')} ₽)!`) : alert("Выдан телефон!");
-    }
-
-    function toggleCheatWin() {
-      cheatAlwaysWin = !cheatAlwaysWin;
-      const btn = document.getElementById("cheat-godmode-btn");
-      btn.innerText = `🎯 100% Win в Апгрейде: ${cheatAlwaysWin ? 'ВКЛ' : 'ВЫКЛ'}`;
-      btn.style.background = cheatAlwaysWin ? 'var(--win)' : '#2563eb';
-    }
-
-    function cheatPumpCrypto() {
-      const c = CRYPTO_MARKET[activeCoin];
-      c.price = Math.round(c.price * 1.5);
-      c.change += 50.0;
-      c.history.push(c.price);
-      renderTradeMarket();
-      closeCheatModal();
-      tg?.showAlert ? tg.showAlert(`🚀 Памп ${activeCoin} на +50%!`) : alert("Памп!");
-    }
-
-    function cheatDumpCrypto() {
-      const c = CRYPTO_MARKET[activeCoin];
-      c.price = Math.max(0.0001, Math.round(c.price * 0.5));
-      c.change -= 50.0;
-      c.history.push(c.price);
-      renderTradeMarket();
-      closeCheatModal();
-      tg?.showAlert ? tg.showAlert(`📉 Дамп ${activeCoin} на -50%!`) : alert("Дамп!");
-    }
-
-    // --- ИНВЕНТАРЬ ---
-    function renderInventoryUI() {
-      const grid = document.getElementById("inv-grid");
-      const empty = document.getElementById("inv-empty");
-      grid.innerHTML = "";
-      if (userData.inventory.length === 0) {
-        empty.style.display = "block";
+      if (!inventory.length) {
+        box.innerHTML = `<div style="grid-column: span 2; text-align:center; color:var(--text-muted); padding:20px;">Склад пуст. Откройте сундуки, чтобы набрать скины!</div>`;
         return;
       }
-      empty.style.display = "none";
-      userData.inventory.forEach((item, index) => {
-        const div = document.createElement("div");
-        div.className = "inv-item-card";
-        div.innerHTML = `
-          <div class="phone-mockup ${item.color}"></div>
-          <div class="inv-item-title">${item.name}</div>
-          <div class="inv-item-sub">${item.price.toLocaleString('ru-RU')} ₽</div>
-          <button class="btn-inv-sell" onclick="sellSingleItem(${index})">Продать девайс</button>
+
+      box.innerHTML = inventory.map(it => {
+        const isSelected = contractSelectedUids.includes(it.uid);
+        return `
+          <div class="phone-card b-${it.rarity} ${isSelected ? 'contract-selected' : ''}" onclick="toggleContractSkin('${it.uid}')">
+            <div class="phone-card-icon">${it.icon}</div>
+            <div class="phone-card-name">${it.name}</div>
+            <div class="phone-card-cost">${it.price} ₽</div>
+            <div style="font-size:9px; font-weight:800; color:${isSelected ? 'var(--gold)' : 'var(--text-muted)'}; margin-top:2px;">
+              ${isSelected ? '✓ В КОНТРАКТЕ' : '+ ДОБАВИТЬ'}
+            </div>
+          </div>
         `;
-        grid.appendChild(div);
+      }).join("");
+    }
+
+    function toggleContractSkin(uid) {
+      const pos = contractSelectedUids.indexOf(uid);
+      if (pos > -1) {
+        contractSelectedUids.splice(pos, 1);
+      } else {
+        if (contractSelectedUids.length >= 20) {
+          alert("Максимум можно положить 20 скинов!");
+          return;
+        }
+        contractSelectedUids.push(uid);
+      }
+      renderContractsUI();
+    }
+
+    function executeContractExchange() {
+      if (contractSelectedUids.length < 10 || contractSelectedUids.length > 20) {
+        alert("В контракте должно быть от 10 до 20 скинов!");
+        return;
+      }
+
+      let totalValue = 0;
+      contractSelectedUids.forEach(uid => {
+        const item = inventory.find(i => i.uid === uid);
+        if (item) totalValue += item.price;
       });
+
+      inventory = inventory.filter(i => !contractSelectedUids.includes(i.uid));
+      contractSelectedUids = [];
+
+      const minReward = Math.round(totalValue * 1.1);
+      const maxReward = Math.round(totalValue * 1.45);
+      const rewardDevice = synthesizeDevice(Math.floor(Math.random() * 900000) + 1, minReward, maxReward);
+
+      inventory.unshift(rewardDevice);
+      renderInventory();
+      renderContractsUI();
+      showDropModal(rewardDevice);
     }
 
-    function sellSingleItem(index) {
-      const item = userData.inventory.splice(index, 1)[0];
-      userData.balance += item.price;
-      selectedSourceIndex = 0;
-      saveUserData();
-      updateBalanceUI();
-      renderInventoryUI();
-      setupUpgraderUI();
+    function selectCase(cost) {
+      if (isSpinning) return;
+      selectedCaseCost = parseInt(cost);
+
+      document.querySelectorAll(".case-card").forEach(c => c.classList.remove("selected"));
+      document.getElementById("c_" + cost).classList.add("selected");
+
+      const names = { 10: "Лут Новичка", 50: "Андроид Пак", 150: "Геймерский Сетап", 300: "Apple VIP" };
+      document.getElementById("rouletteTitle").innerText = "Сундук: " + names[cost];
+      document.getElementById("roulettePrice").innerText = cost + " ₽";
+      fillTape();
     }
 
-    function sellAllItems() {
-      if (userData.inventory.length === 0) return;
-      const sum = userData.inventory.reduce((a, b) => a + b.price, 0);
-      userData.balance += sum;
-      userData.inventory = [];
-      selectedSourceIndex = 0;
-      saveUserData();
-      updateBalanceUI();
-      renderInventoryUI();
-      setupUpgraderUI();
+    function fillTape() {
+      const tape = document.getElementById("rouletteTape");
+      tape.style.transition = "none";
+      tape.style.transform = "translateX(0px)";
+
+      let html = "";
+      for (let i = 0; i < 45; i++) {
+        const dummy = synthesizeDevice(Math.floor(Math.random() * 800000) + 1, 2, 70);
+        html += `
+          <div class="roulette-slot b-${dummy.rarity}">
+            <div class="roulette-slot-icon">${dummy.icon}</div>
+            <div class="roulette-slot-title">${dummy.name}</div>
+            <div class="roulette-slot-price">${dummy.price} ₽</div>
+          </div>
+        `;
+      }
+      tape.innerHTML = html;
     }
 
-    // --- ОБНОВЛЕНИЕ БАЛАНСА И НАВИГАЦИЯ ---
-    function updateBalanceUI() {
-      const bStr = Math.round(userData.balance).toLocaleString('ru-RU') + " ₽";
-      document.getElementById("top-balance").innerText = bStr;
-      document.getElementById("acc-stat-bal").innerText = bStr;
-      document.getElementById("acc-stat-opened").innerText = userData.openedCount;
-      let invTotal = userData.inventory.reduce((a, b) => a + b.price, 0);
-      document.getElementById("acc-stat-inv").innerText = invTotal.toLocaleString('ru-RU') + " ₽";
-      renderPortfolio();
+    function runSpin() {
+      if (isSpinning) return;
+      if (balance < selectedCaseCost) {
+        alert("Недостаточно средств на балансе!");
+        return;
+      }
+
+      balance -= selectedCaseCost;
+      updateUI();
+
+      isSpinning = true;
+      document.getElementById("spinBtn").disabled = true;
+
+      const won = CASINO_AI.calculateCaseDrop(selectedCaseCost);
+      CASINO_AI.playerSessionProfit += won.price;
+
+      const tape = document.getElementById("rouletteTape");
+      const slots = tape.querySelectorAll(".roulette-slot");
+      const targetIdx = 36;
+
+      const target = slots[targetIdx];
+      target.className = `roulette-slot b-${won.rarity}`;
+      target.innerHTML = `
+        <div class="roulette-slot-icon">${won.icon}</div>
+        <div class="roulette-slot-title">${won.name}</div>
+        <div class="roulette-slot-price">${won.price} ₽</div>
+      `;
+
+      const slotW = 110;
+      const viewW = document.querySelector(".roulette-window").offsetWidth;
+      const offset = (targetIdx * slotW) - (viewW / 2) + (slotW / 2) + (Math.random() * 20 - 10);
+
+      tape.style.transition = "transform 4.3s cubic-bezier(0.12, 0.8, 0.15, 1)";
+      tape.style.transform = `translateX(-${offset}px)`;
+
+      setTimeout(() => {
+        isSpinning = false;
+        document.getElementById("spinBtn").disabled = false;
+        inventory.unshift(won);
+        renderInventory();
+        showDropModal(won);
+      }, 4500);
     }
 
-    function setTab(tabId, el) {
-      document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('tab-' + tabId).classList.add('active');
-      el.classList.add('active');
-      const titles = { cases: "10 000 Кейсов", trade: "Биржа криптовалют", inventory: "Инвентарь", upgrade: "Апгрейд", account: "Аккаунт" };
-      document.getElementById("page-title").innerText = titles[tabId] || "Кейсы";
-      if (tabId === "cases") hideCaseDetail();
-      if (tabId === "inventory") renderInventoryUI();
-      if (tabId === "upgrade") setupUpgraderUI();
-      if (tabId === "trade") { renderTradeMarket(); resizeCanvas(); }
+    function showDropModal(it) {
+      document.getElementById("dropIcon").innerText = it.icon;
+      document.getElementById("dropTitle").innerText = it.name;
+      document.getElementById("dropCost").innerText = it.price + " ₽";
+      document.getElementById("dropModal").style.display = "flex";
     }
 
-    if (tg?.initDataUnsafe?.user) {
-      const u = tg.initDataUnsafe.user;
-      document.getElementById("acc-name").innerText = u.first_name;
-      document.getElementById("acc-id").innerText = "ID: " + u.id;
-      document.getElementById("acc-avatar").innerText = u.first_name.charAt(0);
+    function closeDropModal() {
+      document.getElementById("dropModal").style.display = "none";
     }
 
-    renderCasesList();
-    setupUpgraderUI();
-    updateBalanceUI();
+    function renderInventory() {
+      const box = document.getElementById("invList");
+      document.getElementById("invCountLabel").innerText = inventory.length;
+
+      if (!inventory.length) {
+        box.innerHTML = `<div style="grid-column: span 2; text-align:center; color:var(--text-muted); padding:30px;">Склад пуст.</div>`;
+        return;
+      }
+
+      box.innerHTML = inventory.map(it => `
+        <div class="phone-card b-${it.rarity}">
+          <div class="phone-card-icon">${it.icon}</div>
+          <div class="phone-card-name">${it.name}</div>
+          <div class="phone-card-cost">${it.price} ₽</div>
+          <button style="background:rgba(239,68,68,0.2); border:1px solid var(--danger); color:#fca5a5; font-size:10px; font-weight:800; border-radius:6px; padding:3px 6px; width:100%; cursor:pointer; margin-top:4px;" onclick="sellOne('${it.uid}')">Продать</button>
+        </div>
+      `).join("");
+    }
+
+    function sellOne(uid) {
+      const idx = inventory.findIndex(i => i.uid === uid);
+      if (idx > -1) {
+        balance += inventory[idx].price;
+        inventory.splice(idx, 1);
+        updateUI();
+        renderInventory();
+        if (upSourceUid === uid) {
+          upSourceUid = null;
+          upTargetItem = null;
+        }
+      }
+    }
+
+    function sellAll() {
+      if (!inventory.length) return;
+      const sum = inventory.reduce((a, b) => a + b.price, 0);
+      balance += sum;
+      inventory = [];
+      upSourceUid = null;
+      upTargetItem = null;
+      contractSelectedUids = [];
+      updateUI();
+      renderInventory();
+    }
+
+    function switchTab(tabId) {
+      const tabs = ["cases", "catalog", "upgrader", "contracts", "inventory"];
+      tabs.forEach(t => {
+        const el = document.getElementById("tab" + t.charAt(0).toUpperCase() + t.slice(1));
+        if (el) el.style.display = (t === tabId) ? "block" : "none";
+      });
+
+      document.querySelectorAll(".tab-item").forEach((btn, idx) => {
+        btn.classList.toggle("active", tabs[idx] === tabId);
+      });
+
+      if (tabId === "catalog") renderCatalog();
+      if (tabId === "upgrader") renderUpgrader();
+      if (tabId === "contracts") renderContractsUI();
+      if (tabId === "inventory") renderInventory();
+    }
+
+    function updateUI() {
+      document.getElementById("uiBalance").innerText = balance;
+    }
+
+    fillTape();
+    renderInventory();
+    renderCatalog();
+    updateUI();
   </script>
 </body>
 </html>

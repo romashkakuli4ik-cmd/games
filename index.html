@@ -14,7 +14,6 @@
       --text: #f0f6fc;
       --muted: #8b949e;
       --success: #238636;
-      --danger: #da3633;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background: var(--bg); color: var(--text); padding: 14px; padding-bottom: 90px; user-select: none; }
@@ -57,7 +56,7 @@
     .btn-back {
       background: transparent; border: 1px solid var(--border); color: var(--muted);
       padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold;
-      cursor: pointer; margin-bottom: 12px;
+      cursor: pointer; margin-bottom: 12px; display: inline-flex; align-items: center; gap: 4px;
     }
 
     .bottom-bar {
@@ -70,39 +69,11 @@
       border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer;
     }
     .order-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    /* КНОПКА И МОДАЛЬНОЕ ОКНО АДМИНА */
-    #adminOpenBtn {
-      display: none; position: fixed; top: 10px; right: 10px; z-index: 999;
-      background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; border: none;
-      padding: 7px 14px; border-radius: 20px; font-size: 11px; font-weight: bold;
-      cursor: pointer; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
-    }
-    #adminModal {
-      display: none; position: fixed; inset: 0; background: rgba(5, 5, 10, 0.96);
-      z-index: 1000; padding: 14px; overflow-y: auto;
-    }
-    .admin-container { max-width: 600px; margin: 0 auto; color: #fff; }
-    .adm-code {
-      width: 100%; height: 320px; background: #0d1117; border: 1px solid #30363d;
-      color: #58a6ff; font-family: monospace; font-size: 12px; padding: 10px;
-      border-radius: 8px; margin: 8px 0 12px; outline: none; white-space: pre;
-    }
-    .adm-btn {
-      background: #8b5cf6; color: #fff; border: none; padding: 10px 14px;
-      border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;
-      margin-right: 6px; margin-bottom: 6px;
-    }
-    .adm-btn:active { opacity: 0.8; }
-    #adminStatus { font-size: 13px; margin-top: 8px; font-weight: bold; }
   </style>
 </head>
 <body>
 
-  <!-- Кнопка видна только владельцу (ID: 8732002956) -->
-  <button id="adminOpenBtn" onclick="openAdminPanel()">⚙️ ИЗМЕНИТЬ КОД САЙТА</button>
-
-  <!-- СТРАНИЦА 1: КАТАЛОГ СВЕЧЕЙ -->
+  <!-- СТРАНИЦА 1: КАТАЛОГ -->
   <div id="pageCatalog">
     <div class="header">
       <h1>🕯 Мастерская Свечей</h1>
@@ -122,10 +93,11 @@
 
   <!-- СТРАНИЦА 2: КОРЗИНА -->
   <div id="pageCart" style="display: none;">
-    <button class="btn-back" onclick="openCatalogPage()">← Вернуться в каталог</button>
+    <button class="btn-back" onclick="openCatalogPage()">← Назад в каталог</button>
+
     <div class="header" style="text-align: left; margin-bottom: 12px;">
       <h1>🛒 Ваша корзина</h1>
-      <p>Проверьте заказ перед отправкой мастеру</p>
+      <p>Проверьте товары перед отправкой мастеру</p>
     </div>
 
     <div class="card" id="cartItemsList"></div>
@@ -136,62 +108,32 @@
         <b id="cartTotalItemsCount">0 шт.</b>
       </div>
       <div style="display: flex; justify-content: space-between; font-size: 16px;">
-        <span>Сумма заказа:</span>
+        <span>Итого к оплате:</span>
         <b style="color: var(--accent); font-size: 18px;" id="cartFinalSum">0 ₽</b>
       </div>
     </div>
 
     <div class="bottom-bar">
       <div>
-        <div style="font-size: 11px; color: var(--muted);">Итого:</div>
+        <div style="font-size: 11px; color: var(--muted);">Сумма:</div>
         <div style="font-size: 16px; font-weight: bold; color: var(--accent);"><span id="barCartTotal">0</span> ₽</div>
       </div>
       <button class="order-btn" onclick="sendOrderToBot()">Заказать ✨</button>
     </div>
   </div>
 
-  <!-- РЕДАКТОР КОДА: СОХРАНЕНИЕ ПРЯМО В GITHUB -->
-  <div id="adminModal">
-    <div class="admin-container">
-      <h2 style="color: #c084fc; font-size: 16px;">👑 Редактор кода сайта</h2>
-      <p style="font-size: 11px; color: var(--muted); margin: 4px 0 10px;">
-        Меняй HTML, стили, товары или вставляй совершенно новый сайт. Нажатие на кнопку сохраняет код в GitHub для абсолютно всех пользователей.
-      </p>
-
-      <textarea id="siteCodeArea" class="adm-code"></textarea>
-
-      <div>
-        <button class="adm-btn" style="background: #16a34a;" onclick="saveToGithub()">🚀 Опубликовать для всех</button>
-        <button class="adm-btn" style="background: #2563eb;" onclick="loadCurrentHtml()">🔄 Сбросить к текущему</button>
-        <button class="adm-btn" style="background: #dc2626;" onclick="closeAdminPanel()">Закрыть</button>
-      </div>
-      <div id="adminStatus"></div>
-    </div>
-  </div>
-
   <script>
-    const OWNER_ID = 8732002956;
-    const GITHUB_REPO_OWNER = "romashkakuli4ik-cmd";
-    const GITHUB_REPO_NAME = "games";
-    const GITHUB_FILE_PATH = "index.html";
-    const GITHUB_TOKEN = "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";
-
     const tg = window.Telegram?.WebApp;
     if (tg) {
       tg.ready();
       tg.expand();
-      if (tg.initDataUnsafe?.user?.id === OWNER_ID) {
-        document.getElementById("adminOpenBtn").style.display = "block";
-      }
-    } else {
-      document.getElementById("adminOpenBtn").style.display = "block";
     }
 
     const PRODUCTS = [
-      { id: "jerusalem_33", name: "🕯 Иерусалимские свечи (факел 33 шт)", desc: "Натуральный воск, обожжённые в Иерусалиме", price: 450 },
-      { id: "voshina_honey", name: "🍯 Свечи из вощины (медовые)", desc: "Высота 13 см, диаметр 3 см, медовый аромат", price: 180 },
-      { id: "altar_herbs", name: "🌿 Травяная алтарная свеча", desc: "С добавлением горного чабреца, лаванды и полыни", price: 250 },
-      { id: "cone_church", name: "✨ Конусные свечи №40 (набор 10 шт)", desc: "Длина 20 см, чистое ровное горение", price: 220 }
+      { id: "c1", name: "🕯 Иерусалимские свечи (33 шт)", desc: "Натуральный воск, обожжённые в Иерусалиме", price: 450 },
+      { id: "c2", name: "🍯 Свечи из вощины (медовые)", desc: "Высота 13 см, пасечный воск", price: 180 },
+      { id: "c3", name: "🌿 Травяная алтарная свеча", desc: "Чабрец, лаванда, полынь", price: 250 },
+      { id: "c4", name: "✨ Конусные свечи №40 (10 шт)", desc: "Длина 20 см, ровное горение", price: 220 }
     ];
 
     let cart = {};
@@ -244,6 +186,7 @@
     function updateCatalogBar() {
       let totalCount = 0;
       let totalPrice = 0;
+
       for (const [pId, q] of Object.entries(cart)) {
         const prod = PRODUCTS.find(p => p.id === pId);
         if (prod) {
@@ -251,6 +194,7 @@
           totalPrice += prod.price * q;
         }
       }
+
       document.getElementById("barCount").innerText = totalCount;
       document.getElementById("barTotal").innerText = totalPrice;
       document.getElementById("btnGoToCart").disabled = totalCount === 0;
@@ -328,7 +272,7 @@
       if (orderItems.length === 0) return;
 
       const payload = {
-        action: "new_candle_order",
+        action: "new_order",
         items: orderItems,
         total: totalSum
       };
@@ -337,73 +281,6 @@
         tg.sendData(JSON.stringify(payload));
       } else {
         alert(`Заказ на сумму ${totalSum} ₽ сформирован!`);
-      }
-    }
-
-    /* РАБОТА С РЕДАКТОРОМ КОДА */
-    function openAdminPanel() {
-      document.getElementById("adminModal").style.display = "block";
-      loadCurrentHtml();
-    }
-
-    function closeAdminPanel() {
-      document.getElementById("adminModal").style.display = "none";
-    }
-
-    function loadCurrentHtml() {
-      document.getElementById("siteCodeArea").value = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-    }
-
-    async function saveToGithub() {
-      const newCode = document.getElementById("siteCodeArea").value;
-      const status = document.getElementById("adminStatus");
-      status.style.color = "#a78bfa";
-      status.innerText = "⏳ Связываюсь с GitHub API...";
-
-      try {
-        const apiUrl = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${GITHUB_FILE_PATH}`;
-
-        const getRes = await fetch(apiUrl, {
-          headers: {
-            "Authorization": `Bearer ${GITHUB_TOKEN}`,
-            "Accept": "application/vnd.github.v3+json"
-          }
-        });
-
-        if (!getRes.ok) throw new Error("Не удалось получить SHA файла");
-        const fileData = await getRes.json();
-        const currentSha = fileData.sha;
-
-        // Кодируем utf-8 в Base64 для GitHub API
-        const b64Data = btoa(unescape(encodeURIComponent(newCode)));
-
-        status.innerText = "⏳ Публикую изменения в GitHub...";
-        const putRes = await fetch(apiUrl, {
-          method: "PUT",
-          headers: {
-            "Authorization": `Bearer ${GITHUB_TOKEN}`,
-            "Accept": "application/vnd.github.v3+json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            message: "Live update from Admin Panel",
-            content: b64Data,
-            sha: currentSha
-          })
-        });
-
-        if (!putRes.ok) throw new Error("GitHub отклонил сохранение файла");
-
-        status.style.color = "#4ade80";
-        status.innerText = "✅ Успешно сохранено! Через 30 секунд код обновится абсолютно для всех!";
-        setTimeout(() => {
-          closeAdminPanel();
-          location.reload();
-        }, 2000);
-
-      } catch (err) {
-        status.style.color = "#f87171";
-        status.innerText = "❌ Ошибка: " + err.message;
       }
     }
 

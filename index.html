@@ -14,20 +14,14 @@
       --text: #f0f6fc;
       --muted: #8b949e;
       --success: #238636;
+      --danger: #da3633;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background: var(--bg); color: var(--text); padding: 14px; padding-bottom: 90px; user-select: none; }
 
-    .header { text-align: center; margin-bottom: 16px; }
+    .header { text-align: center; margin-bottom: 16px; position: relative; }
     .header h1 { font-size: 20px; color: var(--accent); }
     .header p { font-size: 12px; color: var(--muted); margin-top: 4px; }
-
-    .tabs { display: flex; gap: 8px; margin-bottom: 14px; }
-    .tab-btn {
-      flex: 1; padding: 10px; background: var(--card); border: 1px solid var(--border);
-      color: var(--muted); border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer;
-    }
-    .tab-btn.active { background: #d97706; color: #fff; border-color: var(--accent); }
 
     .card {
       background: var(--card); border: 1px solid var(--border); border-radius: 12px;
@@ -54,25 +48,27 @@
       border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;
     }
 
-    .field { margin-bottom: 10px; }
-    .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-    .field input {
-      width: 100%; background: #090d13; border: 1px solid var(--border);
-      padding: 8px 10px; border-radius: 6px; color: #fff; font-size: 14px; outline: none;
+    /* Экран корзины */
+    .cart-view-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+    }
+    .cart-view-item:last-child { border-bottom: none; }
+
+    .btn-back {
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
+      padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold;
+      cursor: pointer; margin-bottom: 12px; display: inline-flex; align-items: center; gap: 4px;
     }
 
-    .calc-res {
-      background: #090d13; border: 1px dashed var(--accent); border-radius: 8px;
-      padding: 10px; margin-top: 10px; font-size: 13px; line-height: 1.5;
-    }
-
+    /* Нижняя панель */
     .bottom-bar {
       position: fixed; bottom: 0; left: 0; right: 0; background: var(--card);
       border-top: 1px solid var(--border); padding: 12px 16px; display: flex;
       justify-content: space-between; align-items: center; z-index: 100;
     }
     .order-btn {
-      background: var(--success); color: #fff; border: none; padding: 10px 18px;
+      background: var(--success); color: #fff; border: none; padding: 12px 20px;
       border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer;
     }
     .order-btn:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -80,49 +76,53 @@
 </head>
 <body>
 
-  <div class="header">
-    <h1>🕯 Мастерская Свечей</h1>
-    <p>100% натуральный пчелиный воск & ручная работа</p>
-  </div>
+  <!-- СТРАНИЦА 1: КАТАЛОГ -->
+  <div id="pageCatalog">
+    <div class="header">
+      <h1>🕯 Мастерская Свечей</h1>
+      <p>100% натуральный пчелиный воск & ручная работа</p>
+    </div>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="setTab('catalog')">📦 Каталог</button>
-    <button class="tab-btn" onclick="setTab('calc')">📐 Калькулятор воска</button>
-  </div>
-
-  <!-- КАТАЛОГ -->
-  <div id="tabCatalog">
     <div id="catalogList"></div>
-  </div>
 
-  <!-- КАЛЬКУЛЯТОР -->
-  <div id="tabCalc" style="display: none;">
-    <div class="card">
-      <div style="font-weight: bold; margin-bottom: 8px; font-size: 14px;">📐 Расчёт конусных свечей</div>
-      <div class="field">
-        <label>Длина свечи (см):</label>
-        <input type="number" id="cLength" value="25" oninput="calcCandle()">
+    <div class="bottom-bar">
+      <div>
+        <div style="font-size: 11px; color: var(--muted);">В заказе: <span id="barCount">0</span> шт.</div>
+        <div style="font-size: 16px; font-weight: bold; color: var(--accent);"><span id="barTotal">0</span> ₽</div>
       </div>
-      <div class="field">
-        <label>Вес одной свечи (грамм):</label>
-        <input type="number" id="cWeight" value="6.5" oninput="calcCandle()">
-      </div>
-      <div class="field">
-        <label>Количество штук в партии:</label>
-        <input type="number" id="cCount" value="33" oninput="calcCandle()">
-      </div>
-
-      <div class="calc-res" id="calcOutput">Расчёт...</div>
+      <button class="order-btn" id="btnGoToCart" disabled onclick="openCartPage()">Оформить заказ ➔</button>
     </div>
   </div>
 
-  <!-- КОРЗИНА -->
-  <div class="bottom-bar">
-    <div>
-      <div style="font-size: 11px; color: var(--muted);">В заказе: <span id="cartCount">0</span> шт.</div>
-      <div style="font-size: 16px; font-weight: bold; color: var(--accent);"><span id="cartTotal">0</span> ₽</div>
+  <!-- СТРАНИЦА 2: КОРЗИНА -->
+  <div id="pageCart" style="display: none;">
+    <button class="btn-back" onclick="openCatalogPage()">← Вернуться к каталогу</button>
+
+    <div class="header" style="text-align: left; margin-bottom: 12px;">
+      <h1>🛒 Ваша корзина</h1>
+      <p>Проверьте состав заказа перед отправкой</p>
     </div>
-    <button class="order-btn" id="btnOrder" disabled onclick="sendOrder()">Оформить заказ</button>
+
+    <div class="card" id="cartItemsList"></div>
+
+    <div class="card" style="background: #090d13; border-style: dashed;">
+      <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px;">
+        <span>Количество товаров:</span>
+        <b id="cartTotalItemsCount">0 шт.</b>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 16px;">
+        <span>Сумма заказа:</span>
+        <b style="color: var(--accent); font-size: 18px;" id="cartFinalSum">0 ₽</b>
+      </div>
+    </div>
+
+    <div class="bottom-bar">
+      <div>
+        <div style="font-size: 11px; color: var(--muted);">Итого:</div>
+        <div style="font-size: 16px; font-weight: bold; color: var(--accent);"><span id="barCartTotal">0</span> ₽</div>
+      </div>
+      <button class="order-btn" onclick="sendOrderToBot()">Заказать ✨</button>
+    </div>
   </div>
 
   <script>
@@ -169,7 +169,7 @@
         `;
       }).join("");
 
-      updateCartSummary();
+      updateCatalogBar();
     }
 
     function changeQty(productId, delta) {
@@ -181,9 +181,12 @@
         cart[productId] = next;
       }
       renderCatalog();
+      if (document.getElementById("pageCart").style.display === "block") {
+        renderCartPage();
+      }
     }
 
-    function updateCartSummary() {
+    function updateCatalogBar() {
       let totalCount = 0;
       let totalPrice = 0;
 
@@ -195,41 +198,64 @@
         }
       }
 
-      document.getElementById("cartCount").innerText = totalCount;
-      document.getElementById("cartTotal").innerText = totalPrice;
-      document.getElementById("btnOrder").disabled = totalCount === 0;
+      document.getElementById("barCount").innerText = totalCount;
+      document.getElementById("barTotal").innerText = totalPrice;
+      document.getElementById("btnGoToCart").disabled = totalCount === 0;
     }
 
-    function setTab(name) {
-      document.getElementById('tabCatalog').style.display = name === 'catalog' ? 'block' : 'none';
-      document.getElementById('tabCalc').style.display = name === 'calc' ? 'block' : 'none';
-      const btns = document.querySelectorAll('.tab-btn');
-      btns[0].classList.toggle('active', name === 'catalog');
-      btns[1].classList.toggle('active', name === 'calc');
-      if (name === 'calc') calcCandle();
+    function openCartPage() {
+      document.getElementById("pageCatalog").style.display = "none";
+      document.getElementById("pageCart").style.display = "block";
+      renderCartPage();
+      window.scrollTo(0, 0);
     }
 
-    function calcCandle() {
-      const L = parseFloat(document.getElementById('cLength').value) || 0;
-      const W = parseFloat(document.getElementById('cWeight').value) || 0;
-      const count = parseInt(document.getElementById('cCount').value) || 1;
-
-      if (L <= 0 || W <= 0) return;
-
-      const density = 0.96;
-      const volume = W / density;
-      const avgDiameterCm = 2 * Math.sqrt(volume / (Math.PI * L));
-      const avgDiameterMm = (avgDiameterCm * 10).toFixed(2);
-      const totalWaxKg = ((W * count) / 1000).toFixed(3);
-
-      document.getElementById('calcOutput').innerHTML = `
-        • Средний диаметр свечи: <b>~${avgDiameterMm} мм</b><br>
-        • Объём одной свечи: <b>${volume.toFixed(2)} см³</b><br>
-        • Воска на партию (${count} шт): <b>${totalWaxKg} кг</b>
-      `;
+    function openCatalogPage() {
+      document.getElementById("pageCart").style.display = "none";
+      document.getElementById("pageCatalog").style.display = "block";
+      renderCatalog();
     }
 
-    function sendOrder() {
+    function renderCartPage() {
+      const box = document.getElementById("cartItemsList");
+      const orderItems = [];
+      let totalSum = 0;
+      let totalCount = 0;
+
+      for (const [pId, q] of Object.entries(cart)) {
+        const prod = PRODUCTS.find(p => p.id === pId);
+        if (prod) {
+          orderItems.push({ ...prod, qty: q, subtotal: prod.price * q });
+          totalSum += prod.price * q;
+          totalCount += q;
+        }
+      }
+
+      if (orderItems.length === 0) {
+        openCatalogPage();
+        return;
+      }
+
+      box.innerHTML = orderItems.map(item => `
+        <div class="cart-view-item">
+          <div>
+            <div style="font-size: 13px; font-weight: bold;">${item.name}</div>
+            <div style="font-size: 12px; color: var(--muted);">${item.qty} × ${item.price} ₽ = <b style="color: var(--accent);">${item.subtotal} ₽</b></div>
+          </div>
+          <div class="qty-controls">
+            <button class="btn-qty" onclick="changeQty('${item.id}', -1)">-</button>
+            <span class="qty-display">${item.qty}</span>
+            <button class="btn-qty" onclick="changeQty('${item.id}', 1)">+</button>
+          </div>
+        </div>
+      `).join("");
+
+      document.getElementById("cartTotalItemsCount").innerText = totalCount + " шт.";
+      document.getElementById("cartFinalSum").innerText = totalSum + " ₽";
+      document.getElementById("barCartTotal").innerText = totalSum;
+    }
+
+    function sendOrderToBot() {
       const orderItems = [];
       let totalSum = 0;
 
@@ -262,7 +288,6 @@
     }
 
     renderCatalog();
-    calcCandle();
   </script>
 </body>
 </html>

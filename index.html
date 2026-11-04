@@ -22,10 +22,9 @@
 
     body {
       background-color: #5c2900;
-      /* Реалистичный узор медовых сот: восковые перегородки, медовая глубина и глянцевые блики */
       background-image: 
         radial-gradient(circle at 50% 10%, rgba(255, 235, 150, 0.3) 0%, transparent 70%),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='138.56' viewBox='0 0 80 138.56'%3E%3Cdefs%3E%3CradialGradient id='honeyCell' cx='45%25' cy='45%25' r='55%25'%3E%3Cstop offset='0%25' stop-color='%23f59e0b'/%3E%3Cstop offset='50%25' stop-color='%23d97706'/%3E%3Cstop offset='85%25' stop-color='%2392400e'/%3E%3Cstop offset='100%25' stop-color='%23451a03'/%3E%3C/radialGradient%3E%3Cfilter id='dropGlow' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='1.5' result='blur'/%3E%3C/filter%3E%3C/defs%3E%3Cg stroke='%23fef3c7' stroke-width='3.2' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpolygon points='40,2.5 77.5,24.15 77.5,67.45 40,89.1 2.5,67.45 2.5,24.15' fill='url(%23honeyCell)'/%3E%3Cpolygon points='40,71.78 77.5,93.43 77.5,136.73 40,158.38 2.5,136.73 2.5,93.43' fill='url(%23honeyCell)'/%3E%3Cpolygon points='80,-45.03 117.5,-23.38 117.5,19.92 80,41.57 42.5,19.92 42.5,-23.38' fill='url(%23honeyCell)'/%3E%3Cpolygon points='0,-45.03 37.5,-23.38 37.5,19.92 0,41.57 -37.5,19.92 -37.5,-23.38' fill='url(%23honeyCell)'/%3E%3C/g%3E%3C!-- Глянцевые блики на поверхности мёда --%3E%3Cellipse cx='32' cy='32' rx='7' ry='3.5' fill='%23ffffff' fill-opacity='0.45' transform='rotate(-25 32 32)'/%3E%3Cellipse cx='32' cy='101' rx='7' ry='3.5' fill='%23ffffff' fill-opacity='0.45' transform='rotate(-25 32 101)'/%3E%3C/svg%3E");
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='138.56' viewBox='0 0 80 138.56'%3E%3Cdefs%3E%3CradialGradient id='honeyCell' cx='45%25' cy='45%25' r='55%25'%3E%3Cstop offset='0%25' stop-color='%23f59e0b'/%3E%3Cstop offset='50%25' stop-color='%23d97706'/%3E%3Cstop offset='85%25' stop-color='%2392400e'/%3E%3Cstop offset='100%25' stop-color='%23451a03'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23fef3c7' stroke-width='3.2' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpolygon points='40,2.5 77.5,24.15 77.5,67.45 40,89.1 2.5,67.45 2.5,24.15' fill='url(%23honeyCell)'/%3E%3Cpolygon points='40,71.78 77.5,93.43 77.5,136.73 40,158.38 2.5,136.73 2.5,93.43' fill='url(%23honeyCell)'/%3E%3Cpolygon points='80,-45.03 117.5,-23.38 117.5,19.92 80,41.57 42.5,19.92 42.5,-23.38' fill='url(%23honeyCell)'/%3E%3Cpolygon points='0,-45.03 37.5,-23.38 37.5,19.92 0,41.57 -37.5,19.92 -37.5,-23.38' fill='url(%23honeyCell)'/%3E%3C/g%3E%3Cellipse cx='32' cy='32' rx='7' ry='3.5' fill='%23ffffff' fill-opacity='0.45' transform='rotate(-25 32 32)'/%3E%3Cellipse cx='32' cy='101' rx='7' ry='3.5' fill='%23ffffff' fill-opacity='0.45' transform='rotate(-25 32 101)'/%3E%3C/svg%3E");
       background-repeat: repeat;
       background-size: 80px 138.56px;
       background-attachment: fixed;
@@ -38,7 +37,6 @@
       position: relative;
     }
 
-    /* АНИМИРОВАННЫЕ РЕАЛИСТИЧНЫЕ МЕДОНОСНЫЕ ПЧЁЛЫ */
     .bee-box {
       position: fixed;
       pointer-events: none;
@@ -60,13 +58,12 @@
     .pos-5 { top: 82%; right: 10%; animation-duration: 20s; animation-delay: -3s; }
     .pos-6 { top: 6%; right: 26%; animation-duration: 24s; animation-delay: -8s; }
 
-    /* Трепетание полупрозрачных крылышек */
     .wing {
-      transform-origin: 30px 24px;
+      transform-origin: 23px 20px;
       animation: wingFlutter 0.08s infinite alternate ease-in-out;
     }
     .wing-right {
-      transform-origin: 34px 24px;
+      transform-origin: 41px 20px;
       animation-delay: 0.04s;
     }
 
@@ -103,7 +100,6 @@
     }
     .header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
 
-    /* Медовые янтарные карточки */
     .honey-card {
       background: var(--card-bg);
       border: 1.5px solid var(--card-border);
@@ -202,11 +198,10 @@
 </head>
 <body>
 
-  <!-- РЕАЛИСТИЧНЫЙ ШАБЛОН ПЧЕЛЫ С ПОЛОСАТЫМ ТЕЛЬЦЕМ И КРЫЛЬЯМИ -->
+  <!-- SVG ПЧЕЛА -->
   <svg style="display: none;">
     <defs>
       <g id="photo-bee" viewBox="0 0 64 64">
-        <!-- Крылья с жилками -->
         <g class="wing">
           <ellipse cx="23" cy="20" rx="9" ry="19" fill="#e0f2fe" fill-opacity="0.65" stroke="#7dd3fc" stroke-width="0.8" transform="rotate(-30 23 20)" />
           <path d="M23 38 Q22 20 20 4 M23 22 Q17 14 14 18" stroke="#38bdf8" stroke-width="0.6" fill="none" opacity="0.7"/>
@@ -215,31 +210,23 @@
           <ellipse cx="41" cy="20" rx="9" ry="19" fill="#e0f2fe" fill-opacity="0.65" stroke="#7dd3fc" stroke-width="0.8" transform="rotate(30 41 20)" />
           <path d="M41 38 Q42 20 44 4 M41 22 Q47 14 50 18" stroke="#38bdf8" stroke-width="0.6" fill="none" opacity="0.7"/>
         </g>
-        <!-- Лапки пчелы -->
         <path d="M22 35 L12 43 M20 42 L10 50 M42 35 L52 43 M44 42 L54 50" stroke="#1c1208" stroke-width="2.2" stroke-linecap="round" fill="none" />
-        <!-- Брюшко: желто-черные полоски как на фото -->
         <ellipse cx="32" cy="42" rx="14" ry="19" fill="#f59e0b" />
         <path d="M19 33 Q32 37 45 33 M18 39 Q32 44 46 39 M19 46 Q32 50 45 46 M22 53 Q32 56 42 53" stroke="#1c0f04" stroke-width="3.5" fill="none" stroke-linecap="round" />
-        <!-- Жало -->
         <polygon points="32,61 30,58 34,58" fill="#0a0502" />
-        <!-- Пушистая золотистая грудка -->
         <ellipse cx="32" cy="26" rx="11" ry="9" fill="#b45309" stroke="#78350f" stroke-width="1.2" />
-        <!-- Голова с фасеточными глазами -->
         <circle cx="32" cy="16" r="7.5" fill="#291405" />
         <ellipse cx="27" cy="15" rx="2.5" ry="3.5" fill="#050302" />
         <ellipse cx="37" cy="15" rx="2.5" ry="3.5" fill="#050302" />
-        <!-- Усики -->
         <path d="M30 11 Q24 5 19 7 M34 11 Q40 5 45 7" stroke="#1a0b02" stroke-width="1.4" fill="none" stroke-linecap="round" />
       </g>
     </defs>
   </svg>
 
-  <!-- ПЧЕЛЫ ЗА КАРТОЧКАМИ -->
   <div class="bee-box layer-back b-sm pos-1"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
   <div class="bee-box layer-back b-lg pos-2"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
   <div class="bee-box layer-back b-md pos-3"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
 
-  <!-- ОСНОВНОЙ КОНТЕНТ -->
   <div class="main-wrapper">
     
     <div id="pageCatalog">
@@ -291,7 +278,6 @@
 
   </div>
 
-  <!-- ПЧЕЛЫ ПЕРЕД КАРТОЧКАМИ -->
   <div class="bee-box layer-front b-md pos-4"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
   <div class="bee-box layer-front b-sm pos-5"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
   <div class="bee-box layer-front b-lg pos-6"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
@@ -303,11 +289,38 @@
       tg.expand();
     }
 
+    // ТОВАРЫ (Первым идет новый товар из фотографии за 2000 ₽)
     const PRODUCTS = [
-      { id: "c1", name: "🕯 Иерусалимский факел (33 свечи)", desc: "100% пасечный воск, обожжённые в Иерусалиме", price: 450 },
-      { id: "c2", name: "🍯 Медовые свечи из вощины", desc: "Высота 13 см, насыщенный аромат прополиса и мёда", price: 180 },
-      { id: "c3", name: "🌿 Травяная алтарная скрутка", desc: "С добавлением горного чабреца, лаванды и полыни", price: 250 },
-      { id: "c4", name: "✨ Конусные свечи №40 (набор 10 шт)", desc: "Высота 20 см, чистое ровное горение без копоти", price: 220 }
+      { 
+        id: "candle_natural_pure", 
+        name: "🕯 Свечи восковые", 
+        desc: "100% пасечный пчелиный воск, ручная работа, чистое горение", 
+        price: 2000 
+      },
+      { 
+        id: "c1", 
+        name: "🕯 Иерусалимский факел (33 свечи)", 
+        desc: "100% пасечный воск, обожжённые в Иерусалиме", 
+        price: 450 
+      },
+      { 
+        id: "c2", 
+        name: "🍯 Медовые свечи из вощины", 
+        desc: "Высота 13 см, насыщенный аромат прополиса и мёда", 
+        price: 180 
+      },
+      { 
+        id: "c3", 
+        name: "🌿 Травяная алтарная скрутка", 
+        desc: "С добавлением горного чабреца, лаванды и полыни", 
+        price: 250 
+      },
+      { 
+        id: "c4", 
+        name: "✨ Конусные свечи №40 (набор 10 шт)", 
+        desc: "Высота 20 см, чистое ровное горение без копоти", 
+        price: 220 
+      }
     ];
 
     let cart = {};

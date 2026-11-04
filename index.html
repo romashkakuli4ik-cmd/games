@@ -7,14 +7,13 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg-dark: #0a0703;
-      --card-bg: rgba(24, 16, 9, 0.88);
-      --card-border: rgba(245, 158, 11, 0.45);
-      --gold-primary: #d97706;
-      --gold-light: #fbbf24;
-      --gold-glow: rgba(251, 191, 36, 0.35);
-      --text-main: #fef3c7;
-      --text-muted: #d6be9f;
+      --honey-glow: #ffb703;
+      --honey-deep: #b05700;
+      --wax-edge: #fff3bf;
+      --card-bg: rgba(26, 15, 6, 0.90);
+      --card-border: rgba(255, 183, 3, 0.55);
+      --text-main: #fffdf5;
+      --text-muted: #fcd34d;
       --btn-grad: linear-gradient(135deg, #f59e0b, #b45309);
       --btn-green: linear-gradient(135deg, #10b981, #047857);
     }
@@ -22,12 +21,13 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
     body {
-      background-color: var(--bg-dark);
-      /* Реалистичный шестиугольный узор медовых сот через SVG */
+      background-color: #5c2900;
+      /* Реалистичный узор медовых сот: восковые перегородки, медовая глубина и глянцевые блики */
       background-image: 
-        radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.18) 0%, transparent 70%),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96' viewBox='0 0 56 96'%3E%3Cpath d='M28 0 L56 16 L56 48 L28 64 L0 48 L0 16 Z M28 48 L56 64 L56 96 L28 112 L0 96 L0 64 Z' fill='none' stroke='%23f59e0b' stroke-width='1.2' stroke-opacity='0.16'/%3E%3Cpath d='M28 16 L48 27 L48 43 L28 54 L8 43 L8 27 Z' fill='%23b45309' fill-opacity='0.03'/%3E%3C/svg%3E");
+        radial-gradient(circle at 50% 10%, rgba(255, 235, 150, 0.3) 0%, transparent 70%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='138.56' viewBox='0 0 80 138.56'%3E%3Cdefs%3E%3CradialGradient id='honeyCell' cx='45%25' cy='45%25' r='55%25'%3E%3Cstop offset='0%25' stop-color='%23f59e0b'/%3E%3Cstop offset='50%25' stop-color='%23d97706'/%3E%3Cstop offset='85%25' stop-color='%2392400e'/%3E%3Cstop offset='100%25' stop-color='%23451a03'/%3E%3C/radialGradient%3E%3Cfilter id='dropGlow' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='1.5' result='blur'/%3E%3C/filter%3E%3C/defs%3E%3Cg stroke='%23fef3c7' stroke-width='3.2' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpolygon points='40,2.5 77.5,24.15 77.5,67.45 40,89.1 2.5,67.45 2.5,24.15' fill='url(%23honeyCell)'/%3E%3Cpolygon points='40,71.78 77.5,93.43 77.5,136.73 40,158.38 2.5,136.73 2.5,93.43' fill='url(%23honeyCell)'/%3E%3Cpolygon points='80,-45.03 117.5,-23.38 117.5,19.92 80,41.57 42.5,19.92 42.5,-23.38' fill='url(%23honeyCell)'/%3E%3Cpolygon points='0,-45.03 37.5,-23.38 37.5,19.92 0,41.57 -37.5,19.92 -37.5,-23.38' fill='url(%23honeyCell)'/%3E%3C/g%3E%3C!-- Глянцевые блики на поверхности мёда --%3E%3Cellipse cx='32' cy='32' rx='7' ry='3.5' fill='%23ffffff' fill-opacity='0.45' transform='rotate(-25 32 32)'/%3E%3Cellipse cx='32' cy='101' rx='7' ry='3.5' fill='%23ffffff' fill-opacity='0.45' transform='rotate(-25 32 101)'/%3E%3C/svg%3E");
       background-repeat: repeat;
+      background-size: 80px 138.56px;
       background-attachment: fixed;
       color: var(--text-main);
       padding: 14px;
@@ -38,92 +38,98 @@
       position: relative;
     }
 
-    /* РЕАЛИСТИЧНЫЕ АНИМИРОВАННЫЕ ПЧЁЛЫ (SVG) */
-    .bee-container {
+    /* АНИМИРОВАННЫЕ РЕАЛИСТИЧНЫЕ МЕДОНОСНЫЕ ПЧЁЛЫ */
+    .bee-box {
       position: fixed;
       pointer-events: none;
       will-change: transform;
       animation: beeFlight 16s infinite alternate ease-in-out;
     }
 
-    /* Слои: за товарами и перед ними */
-    .layer-back { z-index: 1; opacity: 0.5; filter: blur(0.3px); }
-    .layer-front { z-index: 60; opacity: 0.95; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6)); }
+    .layer-back { z-index: 1; opacity: 0.7; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); }
+    .layer-front { z-index: 60; opacity: 0.98; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.7)); }
 
-    /* Размеры */
-    .b-sm { width: 22px; height: 22px; }
-    .b-md { width: 32px; height: 32px; }
-    .b-lg { width: 44px; height: 44px; }
+    .b-sm { width: 34px; height: 34px; }
+    .b-md { width: 48px; height: 48px; }
+    .b-lg { width: 64px; height: 64px; }
 
-    /* Траектории и тайминги */
-    .pos-1 { top: 14%; left: 6%; animation-duration: 18s; animation-delay: 0s; }
-    .pos-2 { top: 40%; right: 8%; animation-duration: 22s; animation-delay: -5s; }
-    .pos-3 { top: 68%; left: 12%; animation-duration: 16s; animation-delay: -2s; }
-    .pos-4 { top: 24%; right: 18%; animation-duration: 14s; animation-delay: -7s; }
-    .pos-5 { top: 82%; right: 14%; animation-duration: 19s; animation-delay: -3s; }
-    .pos-6 { top: 8%; right: 30%; animation-duration: 24s; animation-delay: -9s; }
+    .pos-1 { top: 10%; left: 4%; animation-duration: 18s; animation-delay: 0s; }
+    .pos-2 { top: 38%; right: 5%; animation-duration: 22s; animation-delay: -4s; }
+    .pos-3 { top: 68%; left: 8%; animation-duration: 17s; animation-delay: -2s; }
+    .pos-4 { top: 22%; right: 12%; animation-duration: 14s; animation-delay: -6s; }
+    .pos-5 { top: 82%; right: 10%; animation-duration: 20s; animation-delay: -3s; }
+    .pos-6 { top: 6%; right: 26%; animation-duration: 24s; animation-delay: -8s; }
 
-    /* Трепетание крыльев */
-    .bee-wing {
-      transform-origin: center;
-      animation: wingBuzz 0.08s infinite alternate ease-in-out;
+    /* Трепетание полупрозрачных крылышек */
+    .wing {
+      transform-origin: 30px 24px;
+      animation: wingFlutter 0.08s infinite alternate ease-in-out;
     }
-    .wing-right { animation-delay: 0.04s; }
+    .wing-right {
+      transform-origin: 34px 24px;
+      animation-delay: 0.04s;
+    }
 
-    @keyframes wingBuzz {
-      0% { transform: scaleY(0.7) rotate(-15deg); opacity: 0.4; }
-      100% { transform: scaleY(1.3) rotate(15deg); opacity: 0.9; }
+    @keyframes wingFlutter {
+      0% { transform: scaleY(0.7) rotate(-20deg); opacity: 0.45; }
+      100% { transform: scaleY(1.3) rotate(20deg); opacity: 0.9; }
     }
 
     @keyframes beeFlight {
-      0%   { transform: translate(0, 0) rotate(2deg) scaleX(1); }
-      20%  { transform: translate(30px, -25px) rotate(12deg) scaleX(1); }
-      45%  { transform: translate(60px, 40px) rotate(-8deg) scaleX(1); }
-      50%  { transform: translate(65px, 45px) rotate(-12deg) scaleX(-1); }
-      75%  { transform: translate(-20px, 20px) rotate(6deg) scaleX(-1); }
+      0%   { transform: translate(0, 0) rotate(3deg) scaleX(1); }
+      25%  { transform: translate(40px, -20px) rotate(14deg) scaleX(1); }
+      50%  { transform: translate(75px, 50px) rotate(-10deg) scaleX(-1); }
+      75%  { transform: translate(-25px, 20px) rotate(8deg) scaleX(-1); }
       100% { transform: translate(-10px, -15px) rotate(-4deg) scaleX(1); }
     }
 
     .main-wrapper { position: relative; z-index: 10; }
 
-    .header { text-align: center; margin-bottom: 20px; }
+    .header {
+      text-align: center;
+      margin-bottom: 18px;
+      background: rgba(22, 12, 4, 0.88);
+      border: 1.5px solid var(--card-border);
+      border-radius: 16px;
+      padding: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
+    }
     .header h1 {
-      font-size: 22px;
+      font-size: 21px;
       font-weight: 800;
-      color: var(--gold-light);
-      text-shadow: 0 0 16px var(--gold-glow);
-      letter-spacing: 0.4px;
+      color: #fffbeb;
+      text-shadow: 0 0 14px var(--honey-glow);
     }
     .header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
 
     /* Медовые янтарные карточки */
     .honey-card {
       background: var(--card-bg);
-      border: 1px solid var(--card-border);
+      border: 1.5px solid var(--card-border);
       border-radius: 16px;
       padding: 14px 16px;
       margin-bottom: 12px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(251, 191, 36, 0.15);
-      backdrop-filter: blur(10px);
+      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 235, 150, 0.25);
+      backdrop-filter: blur(12px);
     }
 
     .item-row { display: flex; justify-content: space-between; align-items: center; }
     .item-info { flex: 1; padding-right: 12px; }
     .item-title { font-size: 15px; font-weight: 700; color: #fff; }
     .item-desc { font-size: 12px; color: var(--text-muted); margin-top: 3px; line-height: 1.35; }
-    .item-price { font-size: 15px; font-weight: 800; color: var(--gold-light); margin-top: 6px; }
+    .item-price { font-size: 16px; font-weight: 800; color: var(--honey-glow); margin-top: 6px; }
 
-    /* Кнопки заказа */
     .btn-add {
       background: var(--btn-grad);
       color: #fff;
-      border: none;
+      border: 1px solid #fed7aa;
       padding: 9px 15px;
       border-radius: 10px;
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 3px 12px rgba(217, 119, 6, 0.4);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     }
     .btn-add:active { transform: scale(0.96); }
 
@@ -131,15 +137,15 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      background: rgba(10, 7, 3, 0.9);
-      border: 1px solid var(--card-border);
+      background: rgba(15, 8, 2, 0.95);
+      border: 1.5px solid var(--card-border);
       border-radius: 10px;
       padding: 3px;
     }
     .btn-qty {
-      background: rgba(245, 158, 11, 0.15);
+      background: rgba(245, 158, 11, 0.25);
       border: none;
-      color: var(--gold-light);
+      color: var(--honey-glow);
       width: 30px;
       height: 30px;
       border-radius: 8px;
@@ -150,12 +156,12 @@
       justify-content: center;
       cursor: pointer;
     }
-    .btn-qty:active { background: rgba(245, 158, 11, 0.35); }
+    .btn-qty:active { background: rgba(245, 158, 11, 0.45); }
     .qty-num { font-size: 14px; font-weight: bold; min-width: 22px; text-align: center; color: #fff; }
 
     .btn-return {
-      background: rgba(245, 158, 11, 0.12);
-      border: 1px solid rgba(245, 158, 11, 0.35);
+      background: rgba(22, 12, 4, 0.9);
+      border: 1px solid var(--card-border);
       color: var(--text-muted);
       padding: 8px 14px;
       border-radius: 10px;
@@ -170,68 +176,72 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background: rgba(14, 9, 4, 0.95);
-      border-top: 1px solid rgba(245, 158, 11, 0.35);
+      background: rgba(18, 9, 3, 0.96);
+      border-top: 1.5px solid var(--card-border);
       backdrop-filter: blur(14px);
       padding: 12px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       z-index: 100;
+      box-shadow: 0 -4px 18px rgba(0,0,0,0.6);
     }
     .btn-order-main {
       background: var(--btn-green);
       color: #fff;
-      border: none;
+      border: 1px solid #6ee7b7;
       padding: 12px 22px;
       border-radius: 12px;
       font-weight: 700;
       font-size: 14px;
       cursor: pointer;
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
     }
     .btn-order-main:disabled { opacity: 0.35; box-shadow: none; cursor: not-allowed; }
   </style>
 </head>
 <body>
 
-  <!-- SVG ШАБЛОН РЕАЛИСТИЧНОЙ ПЧЕЛЫ -->
+  <!-- РЕАЛИСТИЧНЫЙ ШАБЛОН ПЧЕЛЫ С ПОЛОСАТЫМ ТЕЛЬЦЕМ И КРЫЛЬЯМИ -->
   <svg style="display: none;">
     <defs>
-      <g id="realistic-bee" viewBox="0 0 64 64">
-        <!-- Заднее левое крыло -->
-        <ellipse class="bee-wing" cx="24" cy="22" rx="9" ry="17" fill="%23e0f2fe" fill-opacity="0.65" stroke="%2338bdf8" stroke-width="0.8" transform="rotate(-35 24 22)" />
-        <!-- Заднее правое крыло -->
-        <ellipse class="bee-wing wing-right" cx="40" cy="22" rx="9" ry="17" fill="%23e0f2fe" fill-opacity="0.65" stroke="%2338bdf8" stroke-width="0.8" transform="rotate(35 40 22)" />
-        <!-- Лапки -->
-        <path d="M22 36 L14 42 M20 42 L12 49 M42 36 L50 42 M44 42 L52 49" stroke="%23261a0c" stroke-width="1.8" stroke-linecap="round" fill="none" />
-        <!-- Тело пчелы: полосы и пузико -->
-        <ellipse cx="32" cy="40" rx="13" ry="18" fill="%23f59e0b" />
-        <path d="M20 33 Q32 36 44 33 M19 39 Q32 43 45 39 M21 46 Q32 49 43 46 M25 52 Q32 54 39 52" stroke="%231c1208" stroke-width="3.2" fill="none" stroke-linecap="round" />
+      <g id="photo-bee" viewBox="0 0 64 64">
+        <!-- Крылья с жилками -->
+        <g class="wing">
+          <ellipse cx="23" cy="20" rx="9" ry="19" fill="#e0f2fe" fill-opacity="0.65" stroke="#7dd3fc" stroke-width="0.8" transform="rotate(-30 23 20)" />
+          <path d="M23 38 Q22 20 20 4 M23 22 Q17 14 14 18" stroke="#38bdf8" stroke-width="0.6" fill="none" opacity="0.7"/>
+        </g>
+        <g class="wing wing-right">
+          <ellipse cx="41" cy="20" rx="9" ry="19" fill="#e0f2fe" fill-opacity="0.65" stroke="#7dd3fc" stroke-width="0.8" transform="rotate(30 41 20)" />
+          <path d="M41 38 Q42 20 44 4 M41 22 Q47 14 50 18" stroke="#38bdf8" stroke-width="0.6" fill="none" opacity="0.7"/>
+        </g>
+        <!-- Лапки пчелы -->
+        <path d="M22 35 L12 43 M20 42 L10 50 M42 35 L52 43 M44 42 L54 50" stroke="#1c1208" stroke-width="2.2" stroke-linecap="round" fill="none" />
+        <!-- Брюшко: желто-черные полоски как на фото -->
+        <ellipse cx="32" cy="42" rx="14" ry="19" fill="#f59e0b" />
+        <path d="M19 33 Q32 37 45 33 M18 39 Q32 44 46 39 M19 46 Q32 50 45 46 M22 53 Q32 56 42 53" stroke="#1c0f04" stroke-width="3.5" fill="none" stroke-linecap="round" />
         <!-- Жало -->
-        <polygon points="32,58 30,55 34,55" fill="%230f0a04" />
-        <!-- Грудь / шея -->
-        <ellipse cx="32" cy="27" rx="10" ry="8" fill="%2378350f" />
-        <!-- Голова -->
-        <circle cx="32" cy="18" r="7" fill="%2327170a" />
-        <!-- Глаза -->
-        <ellipse cx="28" cy="17" rx="2" ry="3" fill="%23000" />
-        <ellipse cx="36" cy="17" rx="2" ry="3" fill="%23000" />
+        <polygon points="32,61 30,58 34,58" fill="#0a0502" />
+        <!-- Пушистая золотистая грудка -->
+        <ellipse cx="32" cy="26" rx="11" ry="9" fill="#b45309" stroke="#78350f" stroke-width="1.2" />
+        <!-- Голова с фасеточными глазами -->
+        <circle cx="32" cy="16" r="7.5" fill="#291405" />
+        <ellipse cx="27" cy="15" rx="2.5" ry="3.5" fill="#050302" />
+        <ellipse cx="37" cy="15" rx="2.5" ry="3.5" fill="#050302" />
         <!-- Усики -->
-        <path d="M30 13 Q26 8 22 9 M34 13 Q38 8 42 9" stroke="%231f1307" stroke-width="1.3" fill="none" stroke-linecap="round" />
+        <path d="M30 11 Q24 5 19 7 M34 11 Q40 5 45 7" stroke="#1a0b02" stroke-width="1.4" fill="none" stroke-linecap="round" />
       </g>
     </defs>
   </svg>
 
-  <!-- ПЧЕЛЫ ЗА ТОВАРАМИ -->
-  <div class="bee-container layer-back b-sm pos-1"><svg viewBox="0 0 64 64"><use href="#realistic-bee"/></svg></div>
-  <div class="bee-container layer-back b-lg pos-2"><svg viewBox="0 0 64 64"><use href="#realistic-bee"/></svg></div>
-  <div class="bee-container layer-back b-md pos-3"><svg viewBox="0 0 64 64"><use href="#realistic-bee"/></svg></div>
+  <!-- ПЧЕЛЫ ЗА КАРТОЧКАМИ -->
+  <div class="bee-box layer-back b-sm pos-1"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
+  <div class="bee-box layer-back b-lg pos-2"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
+  <div class="bee-box layer-back b-md pos-3"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
 
-  <!-- ОСНОВНОЙ КОНТЕНТ МАГАЗИНА -->
+  <!-- ОСНОВНОЙ КОНТЕНТ -->
   <div class="main-wrapper">
     
-    <!-- СТРАНИЦА 1: КАТАЛОГ -->
     <div id="pageCatalog">
       <div class="header">
         <h1>🍯 Пасечная Мастерская</h1>
@@ -242,39 +252,38 @@
 
       <div class="bottom-bar">
         <div>
-          <div style="font-size: 11px; color: var(--text-muted);">В заказе: <span id="barCount">0</span> шт.</div>
-          <div style="font-size: 17px; font-weight: 800; color: var(--gold-light);"><span id="barTotal">0</span> ₽</div>
+          <div style="font-size: 11px; color: var(--text-muted);">В корзине: <span id="barCount">0</span> шт.</div>
+          <div style="font-size: 18px; font-weight: 800; color: var(--honey-glow);"><span id="barTotal">0</span> ₽</div>
         </div>
         <button class="btn-order-main" id="btnGoToCart" disabled onclick="openCartPage()">В корзину ➔</button>
       </div>
     </div>
 
-    <!-- СТРАНИЦА 2: КОРЗИНА -->
     <div id="pageCart" style="display: none;">
       <button class="btn-return" onclick="openCatalogPage()">← Назад к витрине</button>
 
       <div class="header" style="text-align: left; margin-bottom: 12px;">
         <h1>🛒 Ваша корзина</h1>
-        <p>Проверьте товары перед передачей мастеру</p>
+        <p>Проверьте заказ перед подтверждением</p>
       </div>
 
       <div class="honey-card" id="cartItemsList"></div>
 
-      <div class="honey-card" style="border-style: dashed; background: rgba(12, 8, 4, 0.7);">
+      <div class="honey-card" style="border-style: dashed; background: rgba(16, 8, 3, 0.88);">
         <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px;">
-          <span>Свечей выбрано:</span>
+          <span>Свечей в заказе:</span>
           <b id="cartTotalItemsCount">0 шт.</b>
         </div>
         <div style="display: flex; justify-content: space-between; font-size: 16px;">
-          <span>Итоговая стоимость:</span>
-          <b style="color: var(--gold-light); font-size: 19px;" id="cartFinalSum">0 ₽</b>
+          <span>Сумма к оплате:</span>
+          <b style="color: var(--honey-glow); font-size: 20px;" id="cartFinalSum">0 ₽</b>
         </div>
       </div>
 
       <div class="bottom-bar">
         <div>
           <div style="font-size: 11px; color: var(--text-muted);">Итого:</div>
-          <div style="font-size: 17px; font-weight: 800; color: var(--gold-light);"><span id="barCartTotal">0</span> ₽</div>
+          <div style="font-size: 18px; font-weight: 800; color: var(--honey-glow);"><span id="barCartTotal">0</span> ₽</div>
         </div>
         <button class="btn-order-main" onclick="sendOrderToBot()">Оформить заказ ✨</button>
       </div>
@@ -282,10 +291,10 @@
 
   </div>
 
-  <!-- ПЧЕЛЫ ПЕРЕД ТОВАРАМИ -->
-  <div class="bee-container layer-front b-md pos-4"><svg viewBox="0 0 64 64"><use href="#realistic-bee"/></svg></div>
-  <div class="bee-container layer-front b-sm pos-5"><svg viewBox="0 0 64 64"><use href="#realistic-bee"/></svg></div>
-  <div class="bee-container layer-front b-lg pos-6"><svg viewBox="0 0 64 64"><use href="#realistic-bee"/></svg></div>
+  <!-- ПЧЕЛЫ ПЕРЕД КАРТОЧКАМИ -->
+  <div class="bee-box layer-front b-md pos-4"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
+  <div class="bee-box layer-front b-sm pos-5"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
+  <div class="bee-box layer-front b-lg pos-6"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
 
   <script>
     const tg = window.Telegram?.WebApp;
@@ -399,10 +408,10 @@
       }
 
       box.innerHTML = orderItems.map(item => `
-        <div class="item-row" style="padding: 10px 0; border-bottom: 1px solid rgba(245, 158, 11, 0.2);">
+        <div class="item-row" style="padding: 10px 0; border-bottom: 1px solid rgba(255, 183, 3, 0.25);">
           <div>
             <div style="font-size: 14px; font-weight: bold; color: #fff;">${item.name}</div>
-            <div style="font-size: 12px; color: var(--text-muted);">${item.qty} × ${item.price} ₽ = <b style="color: var(--gold-light);">${item.subtotal} ₽</b></div>
+            <div style="font-size: 12px; color: var(--text-muted);">${item.qty} × ${item.price} ₽ = <b style="color: var(--honey-glow);">${item.subtotal} ₽</b></div>
           </div>
           <div class="counter-box">
             <button class="btn-qty" onclick="changeQty('${item.id}', -1)">-</button>

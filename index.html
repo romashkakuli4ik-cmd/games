@@ -3,1036 +3,225 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Mega Phone Case Simulator 1,000,000 Devices</title>
+  <title>Мастерская Свечей</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg-dark: #040711;
-      --panel-dark: #090f1d;
-      --card-dark: #10192d;
-      --card-hover: #17243f;
-      --border: #1e293b;
-      --border-active: #38bdf8;
-      
-      --accent: #0284c7;
-      --accent-glow: #38bdf8;
-      --gold: #f59e0b;
-      --gold-glow: #fbbf24;
-      --text: #f8fafc;
-      --text-muted: #64748b;
-      --danger: #ef4444;
-      --success: #10b981;
-      
-      --rarity-junk: #475569;
-      --rarity-common: #64748b;
-      --rarity-uncommon: #0284c7;
-      --rarity-rare: #8b5cf6;
-      --rarity-epic: #ec4899;
-      --rarity-legendary: #f59e0b;
-      --rarity-mythic: #ef4444;
+      --bg: #0d1117;
+      --card: #161b22;
+      --border: #30363d;
+      --accent: #f59e0b;
+      --text: #f0f6fc;
+      --muted: #8b949e;
+      --btn-bg: #d97706;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 14px; padding-bottom: 70px; }
+
+    .header { text-align: center; margin-bottom: 16px; }
+    .header h1 { font-size: 20px; color: var(--accent); }
+    .header p { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+    .tab-btn {
+      flex: 1; padding: 10px; background: var(--card); border: 1px solid var(--border);
+      color: var(--muted); border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer;
+    }
+    .tab-btn.active { background: var(--btn-bg); color: #fff; border-color: var(--accent); }
+
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 12px; margin-bottom: 12px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      -webkit-tap-highlight-color: transparent;
+    .catalog-item { display: flex; justify-content: space-between; align-items: center; }
+    .item-title { font-size: 14px; font-weight: bold; }
+    .item-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .item-price { font-size: 14px; color: var(--accent); font-weight: bold; }
+
+    .btn-add {
+      background: var(--btn-bg); color: #fff; border: none; padding: 6px 12px;
+      border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; margin-top: 6px;
     }
 
-    body {
-      background-color: var(--bg-dark);
-      color: var(--text);
-      padding-bottom: 90px;
-      overflow-x: hidden;
-      min-height: 100vh;
-      user-select: none;
+    /* Калькулятор */
+    .field { margin-bottom: 10px; }
+    .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .field input {
+      width: 100%; background: #090d13; border: 1px solid var(--border);
+      padding: 8px 10px; border-radius: 6px; color: #fff; font-size: 14px;
     }
 
-    .header {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background: rgba(9, 15, 29, 0.96);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .calc-res {
+      background: #090d13; border: 1px dashed var(--accent); border-radius: 8px;
+      padding: 10px; margin-top: 10px; font-size: 13px; line-height: 1.5;
     }
 
-    .brand {
-      font-size: 15px;
-      font-weight: 900;
-      letter-spacing: 0.5px;
-      background: linear-gradient(135deg, #38bdf8, #818cf8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .bottom-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; background: var(--card);
+      border-top: 1px solid var(--border); padding: 12px; display: flex;
+      justify-content: space-between; align-items: center;
     }
-
-    .balance-box {
-      background: #02040a;
-      border: 1px solid var(--border);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-weight: 800;
-      color: var(--gold-glow);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 14px;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+    .order-btn {
+      background: #238636; color: #fff; border: none; padding: 10px 18px;
+      border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer;
     }
-
-    .tab-bar {
-      display: flex;
-      background: var(--panel-dark);
-      border-bottom: 1px solid var(--border);
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-    .tab-bar::-webkit-scrollbar { display: none; }
-
-    .tab-item {
-      flex: 1;
-      min-width: 75px;
-      text-align: center;
-      padding: 13px 4px;
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-
-    .tab-item.active {
-      color: var(--accent-glow);
-      border-bottom-color: var(--accent-glow);
-      background: rgba(56, 189, 248, 0.05);
-    }
-
-    .container { padding: 14px; }
-
-    .cases-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .case-card {
-      background: var(--card-dark);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px;
-      text-align: center;
-      cursor: pointer;
-      position: relative;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .case-card:active { transform: scale(0.97); }
-
-    .case-card.selected {
-      border-color: var(--accent-glow);
-      box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
-      background: var(--card-hover);
-    }
-
-    .case-tag {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      font-size: 9px;
-      font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 6px;
-      text-transform: uppercase;
-    }
-
-    .case-icon { font-size: 42px; margin: 6px 0; }
-    .case-name { font-size: 13px; font-weight: 800; margin-bottom: 4px; }
-    .case-cost { font-size: 13px; font-weight: 900; color: var(--accent-glow); }
-
-    .roulette-box {
-      background: var(--panel-dark);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 16px;
-      text-align: center;
-    }
-
-    .roulette-window {
-      position: relative;
-      height: 130px;
-      background: #02040a;
-      border-radius: 12px;
-      overflow: hidden;
-      margin: 10px 0;
-      border: 1px solid var(--border);
-    }
-
-    .roulette-line {
-      position: absolute;
-      top: 0; bottom: 0; left: 50%;
-      width: 2px;
-      background: var(--danger);
-      z-index: 10;
-      transform: translateX(-50%);
-      box-shadow: 0 0 10px var(--danger);
-    }
-
-    .roulette-track {
-      display: flex;
-      height: 100%;
-      position: absolute;
-      left: 0; top: 0;
-      will-change: transform;
-    }
-
-    .roulette-slot {
-      width: 110px;
-      height: 100%;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      border-right: 1px solid rgba(255,255,255,0.03);
-      padding: 6px;
-    }
-
-    .roulette-slot-icon { font-size: 30px; margin-bottom: 4px; }
-    .roulette-slot-title { font-size: 10px; font-weight: 700; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .roulette-slot-price { font-size: 10px; font-weight: 800; color: var(--gold); }
-
-    .b-junk { border-bottom: 3px solid var(--rarity-junk); }
-    .b-common { border-bottom: 3px solid var(--rarity-common); }
-    .b-uncommon { border-bottom: 3px solid var(--rarity-uncommon); }
-    .b-rare { border-bottom: 3px solid var(--rarity-rare); }
-    .b-epic { border-bottom: 3px solid var(--rarity-epic); }
-    .b-legendary { border-bottom: 3px solid var(--rarity-legendary); }
-    .b-mythic { border-bottom: 3px solid var(--rarity-mythic); }
-
-    .btn {
-      background: linear-gradient(135deg, #0284c7, #0369a1);
-      color: #fff;
-      border: none;
-      padding: 13px 18px;
-      border-radius: 12px;
-      font-weight: 800;
-      font-size: 14px;
-      width: 100%;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
-      transition: all 0.15s;
-    }
-    .btn:active { transform: scale(0.98); }
-    .btn:disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
-    .btn-gold { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
-    .btn-danger { background: linear-gradient(135deg, #ef4444, #b91c1c); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
-
-    .devices-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      max-height: 480px;
-      overflow-y: auto;
-      padding-right: 2px;
-    }
-
-    .phone-card {
-      background: var(--card-dark);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      position: relative;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .phone-card.active-target {
-      border-color: var(--accent-glow);
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
-    }
-    .phone-card.contract-selected {
-      border-color: var(--gold);
-      background: rgba(245, 158, 11, 0.15);
-      transform: scale(0.98);
-    }
-
-    .phone-card-icon { font-size: 26px; margin-bottom: 4px; }
-    .phone-card-name { font-size: 11px; font-weight: 700; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .phone-card-cost { font-size: 12px; font-weight: 900; color: var(--gold-glow); margin: 3px 0; }
-
-    .upgrader-container {
-      background: var(--panel-dark);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-    }
-
-    .upgrade-slots-row {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .upgrade-slot-box {
-      width: 125px;
-      height: 125px;
-      background: #02040a;
-      border: 2px dashed var(--border);
-      border-radius: 14px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 6px;
-    }
-    .upgrade-slot-box.filled { border-style: solid; border-color: var(--accent-glow); }
-
-    .odds-indicator {
-      font-size: 22px;
-      font-weight: 900;
-      color: var(--accent-glow);
-      margin: 10px 0;
-      text-align: center;
-    }
-
-    .contracts-panel {
-      background: var(--panel-dark);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-    }
-
-    .contract-progress-bar {
-      width: 100%;
-      height: 12px;
-      background: #02040a;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      overflow: hidden;
-      margin: 10px 0;
-    }
-
-    .contract-progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent), var(--gold));
-      transition: width 0.25s;
-    }
-
-    .contract-chip-counter {
-      font-size: 12px;
-      font-weight: 800;
-      display: flex;
-      justify-content: space-between;
-      color: var(--text-muted);
-    }
-
-    .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(8px);
-      z-index: 2000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .modal-inner {
-      background: var(--panel-dark);
-      border: 1px solid var(--accent-glow);
-      border-radius: 20px;
-      padding: 22px;
-      text-align: center;
-      width: 100%;
-      max-width: 310px;
-      animation: pop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    @keyframes pop { 0% { transform: scale(0.7); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
   </style>
 </head>
 <body>
 
   <div class="header">
-    <div class="brand">📱 MEGA CASINO 1M</div>
-    <div class="balance-box">
-      <span>⭐</span>
-      <span id="uiBalance">100</span>
-      <span style="font-size: 10px; color: var(--text-muted);">₽</span>
+    <h1>🕯 Мастерская Свечей</h1>
+    <p>Натуральный пчелиный воск & Иерусалимские свечи</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="setTab('catalog')">Каталог</button>
+    <button class="tab-btn" onclick="setTab('calc')">Калькулятор воска</button>
+  </div>
+
+  <!-- ВКЛАДКА КАТАЛОГА -->
+  <div id="tabCatalog">
+    <div class="card">
+      <div class="catalog-item">
+        <div>
+          <div class="item-title">🕯 Иерусалимские свечи (факел 33 шт)</div>
+          <div class="item-desc">Конусные восковые свечи, обожженные Благодатным огнем</div>
+          <button class="btn-add" onclick="addItem('Иерусалимские (пучок 33 шт)', 450)">В заказ (+450 ₽)</button>
+        </div>
+        <div class="item-price">450 ₽</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="catalog-item">
+        <div>
+          <div class="item-title">🍯 Свечи из вощины (медовые)</div>
+          <div class="item-desc">Высота 13 см, диаметр 3 см. Чистый пасечный воск</div>
+          <button class="btn-add" onclick="addItem('Вощина 13х3 см', 180)">В заказ (+180 ₽)</button>
+        </div>
+        <div class="item-price">180 ₽</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="catalog-item">
+        <div>
+          <div class="item-title">🌿 Травяная алтарная свеча</div>
+          <div class="item-desc">С добавлением чабреца, лаванды и полыни</div>
+          <button class="btn-add" onclick="addItem('Травяная свеча', 250)">В заказ (+250 ₽)</button>
+        </div>
+        <div class="item-price">250 ₽</div>
+      </div>
     </div>
   </div>
 
-  <div class="tab-bar">
-    <div class="tab-item active" onclick="switchTab('cases')">📦 Сундуки</div>
-    <div class="tab-item" onclick="switchTab('catalog')">📱 Все телефоны</div>
-    <div class="tab-item" onclick="switchTab('upgrader')">⚡ Апгрейдер</div>
-    <div class="tab-item" onclick="switchTab('contracts')">📜 Контракты (<span id="contractCountTab">0</span>)</div>
-    <div class="tab-item" onclick="switchTab('inventory')">🎒 Склад (<span id="invCountLabel">0</span>)</div>
+  <!-- ВКЛАДКА КАЛЬКУЛЯТОРА -->
+  <div id="tabCalc" style="display: none;">
+    <div class="card">
+      <div style="font-weight: bold; margin-bottom: 8px; font-size: 14px;">📐 Расчёт конусных свечей</div>
+      <div class="field">
+        <label>Длина свечи (см):</label>
+        <input type="number" id="cLength" value="25" oninput="calcCandle()">
+      </div>
+      <div class="field">
+        <label>Вес одной свечи (грамм):</label>
+        <input type="number" id="cWeight" value="6.5" oninput="calcCandle()">
+      </div>
+      <div class="field">
+        <label>Количество штук в партии:</label>
+        <input type="number" id="cCount" value="33" oninput="calcCandle()">
+      </div>
+
+      <div class="calc-res" id="calcOutput">
+        Рассчитываем параметры...
+      </div>
+    </div>
   </div>
 
-  <div class="container">
-
-    <!-- 1. СУНДУКИ -->
-    <div id="tabCases">
-      <div class="cases-grid">
-        <div class="case-card selected" id="c_10" onclick="selectCase('10')">
-          <div class="case-tag" style="background: rgba(100, 116, 139, 0.2); color: #cbd5e1;">Эконом</div>
-          <div class="case-icon">📦</div>
-          <div class="case-name">Лут Новичка</div>
-          <div class="case-cost">10 ₽</div>
-        </div>
-        <div class="case-card" id="c_50" onclick="selectCase('50')">
-          <div class="case-tag" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8;">Хит</div>
-          <div class="case-icon">📱</div>
-          <div class="case-name">Андроид Пак</div>
-          <div class="case-cost">50 ₽</div>
-        </div>
-        <div class="case-card" id="c_150" onclick="selectCase('150')">
-          <div class="case-tag" style="background: rgba(139, 92, 246, 0.2); color: #c084fc;">Редкий</div>
-          <div class="case-icon">⚡</div>
-          <div class="case-name">Геймерский Сетап</div>
-          <div class="case-cost">150 ₽</div>
-        </div>
-        <div class="case-card" id="c_300" onclick="selectCase('300')">
-          <div class="case-tag" style="background: rgba(245, 158, 11, 0.2); color: #fcd34d;">VIP</div>
-          <div class="case-icon">👑</div>
-          <div class="case-name">Apple VIP</div>
-          <div class="case-cost">300 ₽</div>
-        </div>
-      </div>
-
-      <div class="roulette-box">
-        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px; color:var(--text-muted);">
-          <span id="rouletteTitle">Сундук: Лут Новичка</span>
-          <span id="roulettePrice" style="color:var(--accent-glow);">10 ₽</span>
-        </div>
-        <div class="roulette-window">
-          <div class="roulette-line"></div>
-          <div class="roulette-track" id="rouletteTape"></div>
-        </div>
-        <button class="btn" id="spinBtn" onclick="runSpin()">ОТКРЫТЬ СУНДУК</button>
-      </div>
+  <!-- ПАНЕЛЬ ЗАКАЗА -->
+  <div class="bottom-bar">
+    <div>
+      <div style="font-size: 11px; color: var(--muted);">Выбрано: <span id="cartCount">0</span> поз.</div>
+      <div style="font-size: 15px; font-weight: bold; color: var(--accent);"><span id="cartTotal">0</span> ₽</div>
     </div>
-
-    <!-- 2. ВСЕ ТЕЛЕФОНЫ -->
-    <div id="tabCatalog" style="display:none;">
-      <input type="text" id="catalogSearchInput" placeholder="🔍 Быстрый поиск девайса по марке или серии..." 
-             style="width:100%; background:var(--card-dark); border:1px solid var(--border); padding:10px 14px; border-radius:10px; color:#fff; font-size:13px; margin-bottom:10px; outline:none;" 
-             oninput="renderCatalog()">
-      <div class="devices-grid" id="catalogList"></div>
-    </div>
-
-    <!-- 3. АПГРЕЙДЕР -->
-    <div id="tabUpgrader" style="display:none;">
-      <div class="upgrader-container">
-        <div class="upgrade-slots-row">
-          <div class="upgrade-slot-box" id="upSlotSource">
-            <div style="font-size:24px;">📥</div>
-            <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">Скин со склада</div>
-          </div>
-          <div style="font-size:20px; font-weight:900; color:var(--accent-glow);">➔</div>
-          <div class="upgrade-slot-box" id="upSlotTarget">
-            <div style="font-size:24px;">🎁</div>
-            <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">Желаемый скин</div>
-          </div>
-        </div>
-
-        <div class="odds-indicator" id="upOddsVal">Шанс: 0%</div>
-        <button class="btn btn-gold" id="upActionBtn" disabled onclick="executeUpgraderSpin()">КРУТИТЬ АПГРЕЙД</button>
-
-        <div style="font-size:12px; font-weight:800; margin:14px 0 6px;">1. Выберите телефон из инвентаря:</div>
-        <div class="devices-grid" style="max-height:140px; margin-bottom:12px;" id="upgraderSourceList"></div>
-
-        <div style="font-size:12px; font-weight:800; margin-bottom:6px;">2. Выберите цель (СТРОГО ДОРОЖЕ):</div>
-        <div class="devices-grid" style="max-height:180px;" id="upgraderTargetList"></div>
-      </div>
-    </div>
-
-    <!-- 4. КОНТРАКТЫ -->
-    <div id="tabContracts" style="display:none;">
-      <div class="contracts-panel">
-        <div style="font-size:14px; font-weight:900; margin-bottom:4px;">📜 КОНТРАКТ ОБМЕНА</div>
-        <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">
-          Положите <b>от 10 до 20 телефонов</b> со склада для переплавки в 1 топовый флагман:
-        </div>
-
-        <div class="contract-chip-counter">
-          <span>Выбрано скинов: <b id="contractSelectedNum" style="color:var(--gold);">0</b></span>
-          <span>Лимит: <b>10 (мин) — 20 (макс)</b></span>
-        </div>
-
-        <div class="contract-progress-bar">
-          <div class="contract-progress-fill" id="contractProgress"></div>
-        </div>
-
-        <div style="font-size:12px; margin-bottom:12px;">
-          Суммарная ценность контракта: <b id="contractPoolSum" style="color:var(--gold);">0 ₽</b>
-        </div>
-
-        <button class="btn" id="btnSignContract" disabled onclick="executeContractExchange()">ПОДПИСАТЬ КОНТРАКТ</button>
-
-        <div style="font-size:12px; font-weight:800; margin:14px 0 6px;">Нажмите на телефоны ниже, чтобы добавить в контракт:</div>
-        <div class="devices-grid" style="max-height:220px;" id="contractInventoryGrid"></div>
-      </div>
-    </div>
-
-    <!-- 5. СКЛАД -->
-    <div id="tabInventory" style="display:none;">
-      <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-        <span style="font-size:12px; font-weight:800; color:var(--text-muted);">ВАШИ ДЕВАЙСЫ</span>
-        <button class="btn btn-danger" style="width:auto; padding:6px 12px; font-size:11px;" onclick="sellAll()">Продать всё</button>
-      </div>
-      <div class="devices-grid" id="invList"></div>
-    </div>
-
-  </div>
-
-  <div class="modal-overlay" id="dropModal">
-    <div class="modal-inner">
-      <div style="font-size:11px; font-weight:800; color:var(--accent-glow); margin-bottom:4px;">УСПЕШНЫЙ ДРОП!</div>
-      <div id="dropIcon" style="font-size:46px; margin:10px 0;">📱</div>
-      <div id="dropTitle" style="font-size:14px; font-weight:900;">Телефон</div>
-      <div id="dropCost" style="font-size:16px; font-weight:900; color:var(--gold); margin:4px 0 14px;">0 ₽</div>
-      <button class="btn" onclick="closeDropModal()">ЗАБРАТЬ</button>
-    </div>
+    <button class="order-btn" onclick="sendOrder()">Отправить заказ</button>
   </div>
 
   <script>
-    const CATALOG_BRANDS = [
-      "Apple iPhone", "Samsung Galaxy", "Xiaomi", "Google Pixel", "OnePlus",
-      "Huawei", "Sony Xperia", "Realme", "Nokia Classic", "Motorola",
-      "Nothing Phone", "Asus ROG Phone", "Honor", "Poco", "Infinix"
-    ];
-
-    const CATALOG_SERIES = [
-      "Pro Max", "Ultra 5G", "Lite", "GT Neo", "Fold Edition",
-      "Flip Z", "Compact", "Special Edition", "Classic", "Prime",
-      "Carbon Spec", "Cyber Limited", "Master Edition"
-    ];
-
-    const CATALOG_MODS = [
-      "64GB (Царапины)", "128GB (Б/У Идеал)", "256GB (Как новый)",
-      "512GB (В заводской пленке)", "1TB (Керамика)", "2TB (Gold Edition)"
-    ];
-
-    const CATALOG_CONDITIONS = [
-      "Разбит экран", "После сервиса", "Идеальное состояние",
-      "Витринный образец", "В коробке с чеком", "Кастомный корпус"
-    ];
-
-    let nextUniqueId = 1;
-
-    function synthesizeDevice(seedId, priceMin, priceMax) {
-      const brand = CATALOG_BRANDS[seedId % CATALOG_BRANDS.length];
-      const series = CATALOG_SERIES[(seedId * 3) % CATALOG_SERIES.length];
-      const mod = CATALOG_MODS[(seedId * 7) % CATALOG_MODS.length];
-      const cond = CATALOG_CONDITIONS[(seedId * 11) % CATALOG_CONDITIONS.length];
-
-      const span = Math.max(1, priceMax - priceMin);
-      const calcPrice = priceMin + ((seedId * 37) % span);
-
-      let rarity = "common";
-      let icon = "📱";
-
-      if (brand.includes("Apple")) icon = "🍏";
-      if (brand.includes("ROG")) icon = "🎮";
-      if (brand.includes("Nothing")) icon = "💡";
-
-      if (calcPrice <= 6) {
-        rarity = "junk";
-        icon = "📟";
-      } else if (calcPrice <= 20) {
-        rarity = "common";
-      } else if (calcPrice <= 60) {
-        rarity = "uncommon";
-      } else if (calcPrice <= 140) {
-        rarity = "rare";
-      } else if (calcPrice <= 300) {
-        rarity = "epic";
-      } else if (calcPrice <= 550) {
-        rarity = "legendary";
-        icon = "👑";
-      } else {
-        rarity = "mythic";
-        icon = "🔥";
-      }
-
-      return {
-        uid: "dev_" + (nextUniqueId++),
-        id: seedId,
-        name: `${brand} ${series} ${mod} [${cond}]`,
-        price: Math.max(1, calcPrice),
-        rarity: rarity,
-        icon: icon
-      };
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
     }
 
-    const DISPLAY_CATALOG = [];
-    for (let i = 1; i <= 60; i++) {
-      DISPLAY_CATALOG.push(synthesizeDevice(i * 1234, 2, 600));
-    }
-    DISPLAY_CATALOG.sort((a, b) => a.price - b.price);
+    let cart = [];
 
-    const CASINO_AI = {
-      playerSessionProfit: 0,
-
-      calculateCaseDrop: function(cost) {
-        this.playerSessionProfit -= cost;
-        const roll = Math.random() * 100;
-        const seed = Math.floor(Math.random() * 999999) + 1;
-        const antiFarmMod = this.playerSessionProfit > 25 ? 0.35 : 1.0;
-
-        if (cost === 10) {
-          if (roll < 85 / antiFarmMod) {
-            return synthesizeDevice(seed, 1, 6);
-          } else if (roll < 99.3) {
-            return synthesizeDevice(seed, 7, 12);
-          } else {
-            return synthesizeDevice(seed, 18, 35);
-          }
-        } else if (cost === 50) {
-          if (roll < 80 / antiFarmMod) return synthesizeDevice(seed, 12, 38);
-          else if (roll < 97) return synthesizeDevice(seed, 45, 62);
-          return synthesizeDevice(seed, 75, 115);
-        } else if (cost === 150) {
-          if (roll < 75 / antiFarmMod) return synthesizeDevice(seed, 45, 110);
-          else if (roll < 96) return synthesizeDevice(seed, 130, 185);
-          return synthesizeDevice(seed, 210, 280);
-        } else {
-          if (roll < 70 / antiFarmMod) return synthesizeDevice(seed, 110, 240);
-          else if (roll < 95) return synthesizeDevice(seed, 260, 360);
-          return synthesizeDevice(seed, 380, 650);
-        }
-      }
-    };
-
-    let balance = 100;
-    let inventory = [];
-    let selectedCaseCost = 10;
-    let isSpinning = false;
-
-    let upSourceUid = null;
-    let upTargetItem = null;
-    let contractSelectedUids = [];
-
-    function renderCatalog() {
-      const query = document.getElementById("catalogSearchInput").value.toLowerCase().trim();
-      const listContainer = document.getElementById("catalogList");
-
-      let items = DISPLAY_CATALOG;
-      if (query) {
-        items = DISPLAY_CATALOG.filter(d => d.name.toLowerCase().includes(query));
-      }
-
-      if (!items.length) {
-        listContainer.innerHTML = `<div style="grid-column: span 2; text-align:center; color:var(--text-muted); padding:30px;">Телефоны не найдены</div>`;
-        return;
-      }
-
-      listContainer.innerHTML = items.map(d => `
-        <div class="phone-card b-${d.rarity}">
-          <div class="phone-card-icon">${d.icon}</div>
-          <div class="phone-card-name">${d.name}</div>
-          <div class="phone-card-cost">${d.price} ₽</div>
-        </div>
-      `).join("");
+    function setTab(name) {
+      document.getElementById('tabCatalog').style.display = name === 'catalog' ? 'block' : 'none';
+      document.getElementById('tabCalc').style.display = name === 'calc' ? 'block' : 'none';
+      const btns = document.querySelectorAll('.tab-btn');
+      btns[0].classList.toggle('active', name === 'catalog');
+      btns[1].classList.toggle('active', name === 'calc');
+      if (name === 'calc') calcCandle();
     }
 
-    function renderUpgrader() {
-      const srcBox = document.getElementById("upgraderSourceList");
-
-      if (!inventory.length) {
-        srcBox.innerHTML = `<div style="grid-column: span 2; text-align:center; font-size:11px; color:var(--text-muted); padding:10px;">Инвентарь пуст. Откройте сундук!</div>`;
-      } else {
-        srcBox.innerHTML = inventory.map(it => `
-          <div class="phone-card b-${it.rarity} ${upSourceUid === it.uid ? 'active-target' : ''}" 
-               onclick="selectUpSource('${it.uid}')">
-            <div class="phone-card-icon">${it.icon}</div>
-            <div class="phone-card-name">${it.name}</div>
-            <div class="phone-card-cost">${it.price} ₽</div>
-          </div>
-        `).join("");
-      }
-
-      const tgtBox = document.getElementById("upgraderTargetList");
-      const sourceItem = inventory.find(i => i.uid === upSourceUid);
-
-      if (!sourceItem) {
-        tgtBox.innerHTML = `<div style="grid-column: span 2; text-align:center; font-size:11px; color:var(--text-muted); padding:20px;">Сначала выберите предмет со склада выше!</div>`;
-        return;
-      }
-
-      const eligibleTargets = DISPLAY_CATALOG.filter(d => d.price > sourceItem.price);
-
-      if (!eligibleTargets.length) {
-        tgtBox.innerHTML = `<div style="grid-column: span 2; text-align:center; font-size:11px; color:var(--text-muted); padding:20px;">Ваш скин максимального уровня! Нет скинов дороже.</div>`;
-        return;
-      }
-
-      tgtBox.innerHTML = eligibleTargets.map(d => `
-        <div class="phone-card b-${d.rarity} ${upTargetItem && upTargetItem.id === d.id ? 'active-target' : ''}" 
-             onclick="selectUpTarget(${d.id})">
-          <div class="phone-card-icon">${d.icon}</div>
-          <div class="phone-card-name">${d.name}</div>
-          <div class="phone-card-cost">${d.price} ₽</div>
-        </div>
-      `).join("");
+    function addItem(name, price) {
+      cart.push({ name, price });
+      updateCartUI();
     }
 
-    function selectUpSource(uid) {
-      upSourceUid = uid;
-      upTargetItem = null;
-      const sourceItem = inventory.find(i => i.uid === uid);
-
-      if (sourceItem) {
-        document.getElementById("upSlotSource").className = "upgrade-slot-box filled";
-        document.getElementById("upSlotSource").innerHTML = `
-          <div style="font-size:24px;">${sourceItem.icon}</div>
-          <div style="font-size:10px; font-weight:800; margin-top:2px;">${sourceItem.name}</div>
-          <div style="font-size:11px; font-weight:900; color:var(--gold);">${sourceItem.price} ₽</div>
-        `;
-      }
-
-      document.getElementById("upSlotTarget").className = "upgrade-slot-box";
-      document.getElementById("upSlotTarget").innerHTML = `<div style="font-size:24px;">🎁</div><div style="font-size:10px; color:var(--text-muted);">Желаемый скин</div>`;
-
-      updateUpgraderOdds();
-      renderUpgrader();
+    function updateCartUI() {
+      document.getElementById('cartCount').innerText = cart.length;
+      const total = cart.reduce((acc, i) => acc + i.price, 0);
+      document.getElementById('cartTotal').innerText = total;
     }
 
-    function selectUpTarget(targetId) {
-      upTargetItem = DISPLAY_CATALOG.find(d => d.id === targetId);
+    function calcCandle() {
+      const L = parseFloat(document.getElementById('cLength').value) || 0;
+      const W = parseFloat(document.getElementById('cWeight').value) || 0;
+      const count = parseInt(document.getElementById('cCount').value) || 1;
 
-      if (upTargetItem) {
-        document.getElementById("upSlotTarget").className = "upgrade-slot-box filled";
-        document.getElementById("upSlotTarget").innerHTML = `
-          <div style="font-size:24px;">${upTargetItem.icon}</div>
-          <div style="font-size:10px; font-weight:800; margin-top:2px;">${upTargetItem.name}</div>
-          <div style="font-size:11px; font-weight:900; color:var(--gold);">${upTargetItem.price} ₽</div>
-        `;
-      }
+      if (L <= 0 || W <= 0) return;
 
-      updateUpgraderOdds();
-      renderUpgrader();
-    }
+      // Плотность воска ~ 0.96 г/см3
+      const density = 0.96;
+      const volume = W / density; // см3
+      // Объем цилиндра эквивалентного сечения: V = pi * (d/2)^2 * L
+      // d = 2 * sqrt(V / (pi * L))
+      const avgDiameterCm = 2 * Math.sqrt(volume / (Math.PI * L));
+      const avgDiameterMm = (avgDiameterCm * 10).toFixed(2);
+      const totalWaxKg = ((W * count) / 1000).toFixed(3);
 
-    function updateUpgraderOdds() {
-      const btn = document.getElementById("upActionBtn");
-      const sourceItem = inventory.find(i => i.uid === upSourceUid);
-
-      if (!sourceItem || !upTargetItem) {
-        document.getElementById("upOddsVal").innerText = "Шанс: 0%";
-        btn.disabled = true;
-        return;
-      }
-
-      const rawOdds = (sourceItem.price / upTargetItem.price) * 72;
-      const finalOdds = Math.min(85, Math.max(1, Math.round(rawOdds)));
-
-      document.getElementById("upOddsVal").innerText = `Шанс успеха: ${finalOdds}%`;
-      btn.disabled = false;
-    }
-
-    function executeUpgraderSpin() {
-      const sourceItem = inventory.find(i => i.uid === upSourceUid);
-      if (!sourceItem || !upTargetItem || isSpinning) return;
-
-      isSpinning = true;
-      document.getElementById("upActionBtn").disabled = true;
-
-      const idx = inventory.findIndex(i => i.uid === upSourceUid);
-      if (idx > -1) {
-        inventory.splice(idx, 1);
-      }
-      renderInventory();
-
-      const rawOdds = (sourceItem.price / upTargetItem.price) * 72;
-      const finalOdds = Math.min(85, Math.max(1, Math.round(rawOdds)));
-      const isWin = (Math.random() * 100) < finalOdds;
-
-      document.getElementById("upOddsVal").innerText = "🌀 Прокрутка апгрейда...";
-
-      setTimeout(() => {
-        isSpinning = false;
-        if (isWin) {
-          const freshWon = { ...upTargetItem, uid: "dev_" + (nextUniqueId++) };
-          inventory.unshift(freshWon);
-          renderInventory();
-          showDropModal(freshWon);
-          alert(`🎉 УСПЕХ! Вы получили ${freshWon.name} (${freshWon.price} ₽)! Вы в плюсе!`);
-        } else {
-          alert("💥 НЕУДАЧА! Предмет сгорел при апгрейде.");
-        }
-
-        upSourceUid = null;
-        upTargetItem = null;
-        document.getElementById("upSlotSource").className = "upgrade-slot-box";
-        document.getElementById("upSlotSource").innerHTML = `<div style="font-size:24px;">📥</div><div style="font-size:10px; color:var(--text-muted);">Скин со склада</div>`;
-        document.getElementById("upSlotTarget").className = "upgrade-slot-box";
-        document.getElementById("upSlotTarget").innerHTML = `<div style="font-size:24px;">🎁</div><div style="font-size:10px; color:var(--text-muted);">Желаемый скин</div>`;
-        updateUpgraderOdds();
-        renderUpgrader();
-      }, 850);
-    }
-
-    function renderContractsUI() {
-      const box = document.getElementById("contractInventoryGrid");
-      contractSelectedUids = contractSelectedUids.filter(uid => inventory.some(i => i.uid === uid));
-
-      document.getElementById("contractCountTab").innerText = contractSelectedUids.length;
-      document.getElementById("contractSelectedNum").innerText = contractSelectedUids.length;
-
-      const pct = Math.min(100, Math.round((contractSelectedUids.length / 20) * 100));
-      document.getElementById("contractProgress").style.width = pct + "%";
-
-      let poolSum = 0;
-      contractSelectedUids.forEach(uid => {
-        const item = inventory.find(i => i.uid === uid);
-        if (item) poolSum += item.price;
-      });
-      document.getElementById("contractPoolSum").innerText = poolSum + " ₽";
-
-      const signBtn = document.getElementById("btnSignContract");
-      if (contractSelectedUids.length >= 10 && contractSelectedUids.length <= 20) {
-        signBtn.disabled = false;
-        signBtn.innerText = `ПОДПИСАТЬ КОНТРАКТ (${contractSelectedUids.length} шт.)`;
-      } else {
-        signBtn.disabled = true;
-        signBtn.innerText = contractSelectedUids.length < 10 
-          ? `Нужно минимум 10 скинов (ещё ${10 - contractSelectedUids.length})`
-          : `Превышен лимит 20 скинов!`;
-      }
-
-      if (!inventory.length) {
-        box.innerHTML = `<div style="grid-column: span 2; text-align:center; color:var(--text-muted); padding:20px;">Склад пуст. Откройте сундуки, чтобы набрать скины!</div>`;
-        return;
-      }
-
-      box.innerHTML = inventory.map(it => {
-        const isSelected = contractSelectedUids.includes(it.uid);
-        return `
-          <div class="phone-card b-${it.rarity} ${isSelected ? 'contract-selected' : ''}" onclick="toggleContractSkin('${it.uid}')">
-            <div class="phone-card-icon">${it.icon}</div>
-            <div class="phone-card-name">${it.name}</div>
-            <div class="phone-card-cost">${it.price} ₽</div>
-            <div style="font-size:9px; font-weight:800; color:${isSelected ? 'var(--gold)' : 'var(--text-muted)'}; margin-top:2px;">
-              ${isSelected ? '✓ В КОНТРАКТЕ' : '+ ДОБАВИТЬ'}
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    function toggleContractSkin(uid) {
-      const pos = contractSelectedUids.indexOf(uid);
-      if (pos > -1) {
-        contractSelectedUids.splice(pos, 1);
-      } else {
-        if (contractSelectedUids.length >= 20) {
-          alert("Максимум можно положить 20 скинов!");
-          return;
-        }
-        contractSelectedUids.push(uid);
-      }
-      renderContractsUI();
-    }
-
-    function executeContractExchange() {
-      if (contractSelectedUids.length < 10 || contractSelectedUids.length > 20) {
-        alert("В контракте должно быть от 10 до 20 скинов!");
-        return;
-      }
-
-      let totalValue = 0;
-      contractSelectedUids.forEach(uid => {
-        const item = inventory.find(i => i.uid === uid);
-        if (item) totalValue += item.price;
-      });
-
-      inventory = inventory.filter(i => !contractSelectedUids.includes(i.uid));
-      contractSelectedUids = [];
-
-      const minReward = Math.round(totalValue * 1.1);
-      const maxReward = Math.round(totalValue * 1.45);
-      const rewardDevice = synthesizeDevice(Math.floor(Math.random() * 900000) + 1, minReward, maxReward);
-
-      inventory.unshift(rewardDevice);
-      renderInventory();
-      renderContractsUI();
-      showDropModal(rewardDevice);
-    }
-
-    function selectCase(cost) {
-      if (isSpinning) return;
-      selectedCaseCost = parseInt(cost);
-
-      document.querySelectorAll(".case-card").forEach(c => c.classList.remove("selected"));
-      document.getElementById("c_" + cost).classList.add("selected");
-
-      const names = { 10: "Лут Новичка", 50: "Андроид Пак", 150: "Геймерский Сетап", 300: "Apple VIP" };
-      document.getElementById("rouletteTitle").innerText = "Сундук: " + names[cost];
-      document.getElementById("roulettePrice").innerText = cost + " ₽";
-      fillTape();
-    }
-
-    function fillTape() {
-      const tape = document.getElementById("rouletteTape");
-      tape.style.transition = "none";
-      tape.style.transform = "translateX(0px)";
-
-      let html = "";
-      for (let i = 0; i < 45; i++) {
-        const dummy = synthesizeDevice(Math.floor(Math.random() * 800000) + 1, 2, 70);
-        html += `
-          <div class="roulette-slot b-${dummy.rarity}">
-            <div class="roulette-slot-icon">${dummy.icon}</div>
-            <div class="roulette-slot-title">${dummy.name}</div>
-            <div class="roulette-slot-price">${dummy.price} ₽</div>
-          </div>
-        `;
-      }
-      tape.innerHTML = html;
-    }
-
-    function runSpin() {
-      if (isSpinning) return;
-      if (balance < selectedCaseCost) {
-        alert("Недостаточно средств на балансе!");
-        return;
-      }
-
-      balance -= selectedCaseCost;
-      updateUI();
-
-      isSpinning = true;
-      document.getElementById("spinBtn").disabled = true;
-
-      const won = CASINO_AI.calculateCaseDrop(selectedCaseCost);
-      CASINO_AI.playerSessionProfit += won.price;
-
-      const tape = document.getElementById("rouletteTape");
-      const slots = tape.querySelectorAll(".roulette-slot");
-      const targetIdx = 36;
-
-      const target = slots[targetIdx];
-      target.className = `roulette-slot b-${won.rarity}`;
-      target.innerHTML = `
-        <div class="roulette-slot-icon">${won.icon}</div>
-        <div class="roulette-slot-title">${won.name}</div>
-        <div class="roulette-slot-price">${won.price} ₽</div>
+      document.getElementById('calcOutput').innerHTML = `
+        • Средний диаметр свечи: <b>~${avgDiameterMm} мм</b><br>
+        • Объём одной свечи: <b>${volume.toFixed(2)} см³</b><br>
+        • Всего воска на партию (${count} шт): <b>${totalWaxKg} кг</b>
       `;
-
-      const slotW = 110;
-      const viewW = document.querySelector(".roulette-window").offsetWidth;
-      const offset = (targetIdx * slotW) - (viewW / 2) + (slotW / 2) + (Math.random() * 20 - 10);
-
-      tape.style.transition = "transform 4.3s cubic-bezier(0.12, 0.8, 0.15, 1)";
-      tape.style.transform = `translateX(-${offset}px)`;
-
-      setTimeout(() => {
-        isSpinning = false;
-        document.getElementById("spinBtn").disabled = false;
-        inventory.unshift(won);
-        renderInventory();
-        showDropModal(won);
-      }, 4500);
     }
 
-    function showDropModal(it) {
-      document.getElementById("dropIcon").innerText = it.icon;
-      document.getElementById("dropTitle").innerText = it.name;
-      document.getElementById("dropCost").innerText = it.price + " ₽";
-      document.getElementById("dropModal").style.display = "flex";
-    }
-
-    function closeDropModal() {
-      document.getElementById("dropModal").style.display = "none";
-    }
-
-    function renderInventory() {
-      const box = document.getElementById("invList");
-      document.getElementById("invCountLabel").innerText = inventory.length;
-
-      if (!inventory.length) {
-        box.innerHTML = `<div style="grid-column: span 2; text-align:center; color:var(--text-muted); padding:30px;">Склад пуст.</div>`;
+    function sendOrder() {
+      if (cart.length === 0) {
+        alert("Корзина пуста. Добавьте свечи из каталога!");
         return;
       }
+      const total = cart.reduce((acc, i) => acc + i.price, 0);
+      const itemsText = cart.map(i => i.name).join(", ");
+      const resultData = {
+        type: "candle_order",
+        items: itemsText,
+        total: total,
+        count: cart.length
+      };
 
-      box.innerHTML = inventory.map(it => `
-        <div class="phone-card b-${it.rarity}">
-          <div class="phone-card-icon">${it.icon}</div>
-          <div class="phone-card-name">${it.name}</div>
-          <div class="phone-card-cost">${it.price} ₽</div>
-          <button style="background:rgba(239,68,68,0.2); border:1px solid var(--danger); color:#fca5a5; font-size:10px; font-weight:800; border-radius:6px; padding:3px 6px; width:100%; cursor:pointer; margin-top:4px;" onclick="sellOne('${it.uid}')">Продать</button>
-        </div>
-      `).join("");
-    }
-
-    function sellOne(uid) {
-      const idx = inventory.findIndex(i => i.uid === uid);
-      if (idx > -1) {
-        balance += inventory[idx].price;
-        inventory.splice(idx, 1);
-        updateUI();
-        renderInventory();
-        if (upSourceUid === uid) {
-          upSourceUid = null;
-          upTargetItem = null;
-        }
+      if (tg) {
+        tg.sendData(JSON.stringify(resultData));
+      } else {
+        alert(`Заказ оформлен на сумму ${total} ₽!\n(Откройте через Telegram для отправки боту)`);
       }
     }
 
-    function sellAll() {
-      if (!inventory.length) return;
-      const sum = inventory.reduce((a, b) => a + b.price, 0);
-      balance += sum;
-      inventory = [];
-      upSourceUid = null;
-      upTargetItem = null;
-      contractSelectedUids = [];
-      updateUI();
-      renderInventory();
-    }
-
-    function switchTab(tabId) {
-      const tabs = ["cases", "catalog", "upgrader", "contracts", "inventory"];
-      tabs.forEach(t => {
-        const el = document.getElementById("tab" + t.charAt(0).toUpperCase() + t.slice(1));
-        if (el) el.style.display = (t === tabId) ? "block" : "none";
-      });
-
-      document.querySelectorAll(".tab-item").forEach((btn, idx) => {
-        btn.classList.toggle("active", tabs[idx] === tabId);
-      });
-
-      if (tabId === "catalog") renderCatalog();
-      if (tabId === "upgrader") renderUpgrader();
-      if (tabId === "contracts") renderContractsUI();
-      if (tabId === "inventory") renderInventory();
-    }
-
-    function updateUI() {
-      document.getElementById("uiBalance").innerText = balance;
-    }
-
-    fillTape();
-    renderInventory();
-    renderCatalog();
-    updateUI();
+    calcCandle();
   </script>
 </body>
 </html>

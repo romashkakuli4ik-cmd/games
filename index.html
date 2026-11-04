@@ -3,175 +3,112 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Мастерская Натуральных Свечей</title>
+  <title>Dynamic App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: #0d1117;
-      --card: #161b22;
-      --border: #30363d;
+      --bg: #0b0f19;
+      --card: #151b2b;
+      --border: #232d42;
       --accent: #f59e0b;
-      --text: #f0f6fc;
-      --muted: #8b949e;
-      --success: #238636;
-      --admin-bg: #1f1f2e;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --btn: #2563eb;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background: var(--bg); color: var(--text); padding: 14px; padding-bottom: 90px; user-select: none; }
 
-    .header { text-align: center; margin-bottom: 16px; position: relative; }
+    .header { text-align: center; margin-bottom: 16px; }
     .header h1 { font-size: 20px; color: var(--accent); }
     .header p { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-    .card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-      padding: 14px; margin-bottom: 12px;
-    }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+    .row { display: flex; justify-content: space-between; align-items: center; }
 
-    .catalog-item { display: flex; justify-content: space-between; align-items: center; }
-    .item-info { flex: 1; padding-right: 10px; }
-    .item-title { font-size: 14px; font-weight: bold; }
-    .item-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
-    .item-price { font-size: 14px; color: var(--accent); font-weight: bold; margin-top: 4px; }
+    .btn { background: var(--btn); color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    .btn-qty { width: 30px; height: 30px; background: #232d42; border: 1px solid var(--border); color: #fff; border-radius: 6px; font-size: 16px; font-weight: bold; }
 
-    .qty-controls { display: flex; align-items: center; gap: 8px; }
-    .btn-qty {
-      background: #21262d; border: 1px solid var(--border); color: #fff;
-      width: 32px; height: 32px; border-radius: 6px; font-size: 16px; font-weight: bold;
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .btn-qty:active { background: #30363d; }
-    .qty-display { font-size: 14px; font-weight: bold; min-width: 20px; text-align: center; }
+    .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid var(--border); padding: 12px; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+    .order-btn { background: #16a34a; color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
 
-    .btn-add-main {
-      background: #d97706; color: #fff; border: none; padding: 8px 14px;
-      border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;
-    }
-
-    .cart-view-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 0; border-bottom: 1px solid var(--border);
-    }
-    .cart-view-item:last-child { border-bottom: none; }
-
-    .btn-back {
-      background: transparent; border: 1px solid var(--border); color: var(--muted);
-      padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold;
-      cursor: pointer; margin-bottom: 12px; display: inline-flex; align-items: center; gap: 4px;
-    }
-
-    .bottom-bar {
-      position: fixed; bottom: 0; left: 0; right: 0; background: var(--card);
-      border-top: 1px solid var(--border); padding: 12px 16px; display: flex;
-      justify-content: space-between; align-items: center; z-index: 100;
-    }
-    .order-btn {
-      background: var(--success); color: #fff; border: none; padding: 12px 20px;
-      border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer;
-    }
-    .order-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    /* СЕКРЕТНЫЙ РЕЖИМ АДМИНА */
-    #adminBadge {
+    /* Панель создателя */
+    #adminFab {
       display: none; position: fixed; top: 10px; right: 10px; z-index: 999;
-      background: #8b5cf6; color: #fff; border: none; padding: 6px 10px;
-      border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      background: linear-gradient(135deg, #9333ea, #4f46e5); color: #fff;
+      border: none; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer;
     }
     #adminModal {
-      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
       z-index: 1000; padding: 16px; overflow-y: auto;
     }
-    .admin-box {
-      background: var(--admin-bg); border: 1px solid #8b5cf6; border-radius: 12px;
-      padding: 14px; color: #fff;
-    }
-    .admin-box h2 { font-size: 16px; color: #c084fc; margin-bottom: 8px; }
-    .admin-input {
-      width: 100%; background: #0f0f17; border: 1px solid #4c1d95; color: #fff;
-      padding: 8px; border-radius: 6px; font-size: 13px; margin-bottom: 8px;
-    }
-    .admin-btn {
-      background: #8b5cf6; color: #fff; border: none; padding: 8px 12px;
-      border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; margin-right: 6px; margin-bottom: 6px;
-    }
+    .admin-box { background: #111827; border: 1px solid #6366f1; border-radius: 12px; padding: 14px; }
+    .admin-input { width: 100%; background: #030712; border: 1px solid #374151; color: #fff; padding: 8px; border-radius: 6px; margin: 6px 0 10px; }
+
+    /* Рулетка / Казино */
+    .wheel-box { text-align: center; padding: 20px 0; }
+    .wheel-val { font-size: 42px; font-weight: 900; color: #fbbf24; margin: 15px 0; }
   </style>
 </head>
 <body>
 
-  <!-- Кнопка только для создателя бота -->
-  <button id="adminBadge" onclick="toggleAdminModal()">🛠 Режим Создателя</button>
+  <button id="adminFab" onclick="toggleAdmin()">⚙️ ПУЛЬТ СОЗДАТЕЛЯ</button>
 
-  <!-- СТРАНИЦА 1: КАТАЛОГ -->
-  <div id="pageCatalog">
-    <div class="header">
-      <h1>🕯 Мастерская Свечей</h1>
-      <p>100% натуральный пчелиный воск & ручная работа</p>
-    </div>
+  <div class="header">
+    <h1 id="appTitle">Магазин</h1>
+    <p id="appSub">Выберите товары</p>
+  </div>
 
+  <!-- РЕЖИМ 1: МАГАЗИН (Свечи / Продукты / Одежда) -->
+  <div id="storeView">
     <div id="catalogList"></div>
+  </div>
 
-    <div class="bottom-bar">
-      <div>
-        <div style="font-size: 11px; color: var(--muted);">В заказе: <span id="barCount">0</span> шт.</div>
-        <div style="font-size: 16px; font-weight: bold; color: var(--accent);"><span id="barTotal">0</span> ₽</div>
-      </div>
-      <button class="order-btn" id="btnGoToCart" disabled onclick="openCartPage()">Оформить заказ ➔</button>
+  <!-- РЕЖИМ 2: КАЗИНО / РУЛЕТКА -->
+  <div id="casinoView" style="display: none;">
+    <div class="card wheel-box">
+      <div>Баланс: <b id="casBalance" style="color: #22c55e;">1000</b> монет</div>
+      <div class="wheel-val" id="wheelDigit">🎰 777</div>
+      <button class="btn" style="background: #e11d48; padding: 12px 24px; font-size: 16px;" onclick="spinWheel()">КРУТИТЬ (100 монет)</button>
     </div>
   </div>
 
-  <!-- СТРАНИЦА 2: КОРЗИНА -->
-  <div id="pageCart" style="display: none;">
-    <button class="btn-back" onclick="openCatalogPage()">← Назад в каталог</button>
-
-    <div class="header" style="text-align: left; margin-bottom: 12px;">
-      <h1>🛒 Ваша корзина</h1>
-      <p>Проверьте товары перед отправкой мастеру</p>
-    </div>
-
-    <div class="card" id="cartItemsList"></div>
-
-    <div class="card" style="background: #090d13; border-style: dashed;">
-      <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px;">
-        <span>Количество:</span>
-        <b id="cartTotalItemsCount">0 шт.</b>
-      </div>
-      <div style="display: flex; justify-content: space-between; font-size: 16px;">
-        <span>Итого к оплате:</span>
-        <b style="color: var(--accent); font-size: 18px;" id="cartFinalSum">0 ₽</b>
-      </div>
-    </div>
-
-    <div class="bottom-bar">
-      <div>
-        <div style="font-size: 11px; color: var(--muted);">Сумма:</div>
-        <div style="font-size: 16px; font-weight: bold; color: var(--accent);"><span id="barCartTotal">0</span> ₽</div>
-      </div>
-      <button class="order-btn" onclick="sendOrderToBot()">Заказать ✨</button>
+  <!-- РЕЖИМ КОРЗИНЫ ДЛЯ МАГАЗИНА -->
+  <div id="cartView" style="display: none;">
+    <button class="btn" style="background: #374151; margin-bottom: 12px;" onclick="showCatalog()">← Назад</button>
+    <div class="card" id="cartList"></div>
+    <div class="card" style="border-style: dashed;">
+      <div class="row"><span>Итого:</span><b style="font-size: 18px; color: var(--accent);" id="cartFinalSum">0 ₽</b></div>
     </div>
   </div>
 
-  <!-- СЕКРЕТНАЯ АДМИНКА / ИИ РЕДАКТОР -->
+  <!-- НИЖНЯЯ ПАНЕЛЬ -->
+  <div class="bottom-bar" id="mainBar">
+    <div>
+      <div style="font-size: 11px; color: var(--muted);" id="barLabel">В корзине:</div>
+      <div style="font-size: 16px; font-weight: bold; color: var(--accent);"><span id="barSum">0</span> <span id="barUnit">₽</span></div>
+    </div>
+    <button class="order-btn" id="btnOrder" onclick="onBarBtnClick()">Оформить ➔</button>
+  </div>
+
+  <!-- АДМИН-КОНСОЛЬ (ТОЛЬКО ДЛЯ ТЕБЯ) -->
   <div id="adminModal">
     <div class="admin-box">
-      <h2>🤖 ИИ-Редактор Сайта (Только для Вас)</h2>
-      <p style="font-size: 12px; color: #a78bfa; margin-bottom: 10px;">
-        Добавьте товар или измените цены прямо отсюда. Изменения применятся мгновенно!
-      </p>
+      <h2 style="color: #a5b4fc; font-size: 16px; margin-bottom: 8px;">👑 Консоль Создателя</h2>
+      <p style="font-size: 11px; color: var(--muted); margin-bottom: 12px;">Изменение конфигурации сайта на лету:</p>
 
-      <label style="font-size: 11px;">Название нового товара:</label>
-      <input type="text" id="admName" class="admin-input" placeholder="Например: Лавандовая свеча">
-
-      <label style="font-size: 11px;">Описание:</label>
-      <input type="text" id="admDesc" class="admin-input" placeholder="С крымской лавандой, 10 см">
-
-      <label style="font-size: 11px;">Цена (₽):</label>
-      <input type="number" id="admPrice" class="admin-input" placeholder="300">
-
-      <div style="margin-top: 10px;">
-        <button class="admin-btn" onclick="adminAddProduct()">⚡ Вставить и обновить страницу</button>
-        <button class="admin-btn" style="background: #374151;" onclick="adminResetStorage()">Сбросить к оригиналу</button>
-        <button class="admin-btn" style="background: #dc2626;" onclick="toggleAdminModal()">Закрыть</button>
+      <label style="font-size: 11px;">Переключить шаблон сайта:</label>
+      <div style="display: flex; gap: 6px; margin: 6px 0 12px;">
+        <button class="btn" style="font-size: 11px;" onclick="applyPreset('candles')">🕯 Свечи</button>
+        <button class="btn" style="font-size: 11px; background: #059669;" onclick="applyPreset('grocery')">🍎 Продукты</button>
+        <button class="btn" style="font-size: 11px; background: #dc2626;" onclick="applyPreset('casino')">🎰 Казино</button>
       </div>
+
+      <label style="font-size: 11px;">Прямая инъекция (Добавить свой товар):</label>
+      <input id="injName" class="admin-input" placeholder="Название (напр. Чипсы Lays или Рулетка VIP)">
+      <input id="injPrice" type="number" class="admin-input" placeholder="Цена / Стоимость">
+      <button class="btn" style="width: 100%; margin-bottom: 12px;" onclick="injectCustomItem()">Вставить в проект</button>
+
+      <button class="btn" style="width: 100%; background: #374151;" onclick="toggleAdmin()">Закрыть</button>
     </div>
   </div>
 
@@ -181,207 +118,220 @@
     if (tg) {
       tg.ready();
       tg.expand();
-      // Проверяем: если открыл владелец, показываем админку
-      const currentUserId = tg.initDataUnsafe?.user?.id;
-      if (currentUserId === OWNER_ID) {
-        document.getElementById("adminBadge").style.display = "block";
+      if (tg.initDataUnsafe?.user?.id === OWNER_ID) {
+        document.getElementById("adminFab").style.display = "block";
       }
     } else {
-      // Для тестов в обычном браузере
-      document.getElementById("adminBadge").style.display = "block";
+      document.getElementById("adminFab").style.display = "block";
     }
 
-    const DEFAULT_PRODUCTS = [
-      { id: "jerusalem_33", name: "🕯 Иерусалимские свечи (факел 33 шт)", desc: "Натуральный воск, обожжённые в Иерусалиме", price: 450 },
-      { id: "voshina_honey", name: "🍯 Свечи из вощины (медовые)", desc: "Высота 13 см, диаметр 3 см, медовый аромат", price: 180 },
-      { id: "altar_herbs", name: "🌿 Травяная алтарная свеча", desc: "С добавлением горного чабреца, лаванды и полыни", price: 250 },
-      { id: "cone_church", name: "✨ Конусные свечи №40 (набор 10 шт)", desc: "Длина 20 см, чистое ровное горение", price: 220 }
-    ];
+    // ГОТОВЫЕ ШАБЛОНЫ
+    const PRESETS = {
+      candles: {
+        title: "🕯 Мастерская Свечей",
+        sub: "100% натуральный пчелиный воск",
+        mode: "store",
+        currency: "₽",
+        items: [
+          { id: "c1", name: "Иерусалимские свечи (33 шт)", desc: "Натуральный воск, факел", price: 450 },
+          { id: "c2", name: "Свечи из вощины (медовые)", desc: "Высота 13 см, пасечный воск", price: 180 },
+          { id: "c3", name: "Травяная алтарная свеча", desc: "Чабрец, лаванда, полынь", price: 250 }
+        ]
+      },
+      grocery: {
+        title: "🛒 Продуктовый Экспресс",
+        sub: "Свежая доставка за 15 минут",
+        mode: "store",
+        currency: "₽",
+        items: [
+          { id: "g1", name: "Молоко фермерское 3.2%", desc: "Пастеризованное, 900 мл", price: 89 },
+          { id: "g2", name: "Хлеб ремесленный горячий", desc: "Хрустящая корочка, 400 г", price: 65 },
+          { id: "g3", name: "Сыр пармезан колотый", desc: "Выдержка 12 месяцев, 150 г", price: 280 }
+        ]
+      },
+      casino: {
+        title: "🎰 Royal Telegram Casino",
+        sub: "Испытай свою удачу",
+        mode: "casino",
+        currency: "COIN",
+        items: []
+      }
+    };
 
-    // Загрузка товаров (с сохранением твоих правок на лету)
-    let PRODUCTS = JSON.parse(localStorage.getItem("candle_products")) || DEFAULT_PRODUCTS;
+    let config = JSON.parse(localStorage.getItem("app_config")) || PRESETS.candles;
     let cart = {};
+    let casinoCoins = 1000;
 
-    function renderCatalog() {
-      const container = document.getElementById("catalogList");
-      container.innerHTML = PRODUCTS.map(p => {
-        const qty = cart[p.id] || 0;
+    function applyConfig() {
+      document.getElementById("appTitle").innerText = config.title;
+      document.getElementById("appSub").innerText = config.sub;
+      document.getElementById("barUnit").innerText = config.currency;
+
+      if (config.mode === "casino") {
+        document.getElementById("storeView").style.display = "none";
+        document.getElementById("cartView").style.display = "none";
+        document.getElementById("casinoView").style.display = "block";
+        document.getElementById("barLabel").innerText = "Текущий банк:";
+        document.getElementById("barSum").innerText = casinoCoins;
+        document.getElementById("btnOrder").innerText = "Забрать куш 💸";
+      } else {
+        document.getElementById("casinoView").style.display = "none";
+        document.getElementById("storeView").style.display = "block";
+        document.getElementById("barLabel").innerText = "В корзине:";
+        document.getElementById("btnOrder").innerText = "Оформить ➔";
+        renderStore();
+      }
+    }
+
+    function renderStore() {
+      const box = document.getElementById("catalogList");
+      box.innerHTML = config.items.map(i => {
+        const q = cart[i.id] || 0;
         return `
-          <div class="card">
-            <div class="catalog-item">
-              <div class="item-info">
-                <div class="item-title">${p.name}</div>
-                <div class="item-desc">${p.desc}</div>
-                <div class="item-price">${p.price} ₽ / шт.</div>
-              </div>
-              <div>
-                ${qty === 0 ? `
-                  <button class="btn-add-main" onclick="changeQty('${p.id}', 1)">+ В заказ</button>
-                ` : `
-                  <div class="qty-controls">
-                    <button class="btn-qty" onclick="changeQty('${p.id}', -1)">-</button>
-                    <span class="qty-display">${qty}</span>
-                    <button class="btn-qty" onclick="changeQty('${p.id}', 1)">+</button>
-                  </div>
-                `}
-              </div>
+          <div class="card row">
+            <div>
+              <div style="font-weight: bold; font-size: 14px;">${i.name}</div>
+              <div style="font-size: 12px; color: var(--muted);">${i.desc || ''}</div>
+              <div style="color: var(--accent); font-weight: bold; margin-top: 4px;">${i.price} ${config.currency}</div>
+            </div>
+            <div>
+              ${q === 0 ? `
+                <button class="btn" onclick="addQty('${i.id}', 1)">+ В заказ</button>
+              ` : `
+                <div class="row" style="gap: 6px;">
+                  <button class="btn-qty" onclick="addQty('${i.id}', -1)">-</button>
+                  <b style="min-width: 18px; text-align: center;">${q}</b>
+                  <button class="btn-qty" onclick="addQty('${i.id}', 1)">+</button>
+                </div>
+              `}
             </div>
           </div>
         `;
       }).join("");
-
-      updateCatalogBar();
+      updateBar();
     }
 
-    function changeQty(productId, delta) {
-      const current = cart[productId] || 0;
-      const next = current + delta;
-      if (next <= 0) {
-        delete cart[productId];
+    function addQty(id, delta) {
+      cart[id] = (cart[id] || 0) + delta;
+      if (cart[id] <= 0) delete cart[id];
+      renderStore();
+      if (document.getElementById("cartView").style.display === "block") renderCart();
+    }
+
+    function updateBar() {
+      let sum = 0;
+      for (let id in cart) {
+        const item = config.items.find(x => x.id === id);
+        if (item) sum += item.price * cart[id];
+      }
+      document.getElementById("barSum").innerText = sum;
+    }
+
+    function onBarBtnClick() {
+      if (config.mode === "casino") {
+        sendPayload({ type: "casino_cashout", balance: casinoCoins });
       } else {
-        cart[productId] = next;
-      }
-      renderCatalog();
-      if (document.getElementById("pageCart").style.display === "block") {
-        renderCartPage();
+        showCart();
       }
     }
 
-    function updateCatalogBar() {
-      let totalCount = 0;
-      let totalPrice = 0;
+    function showCart() {
+      document.getElementById("storeView").style.display = "none";
+      document.getElementById("cartView").style.display = "block";
+      document.getElementById("btnOrder").innerText = "Подтвердить заказ ✨";
+      document.getElementById("btnOrder").onclick = finalizeStoreOrder;
+      renderCart();
+    }
 
-      for (const [pId, q] of Object.entries(cart)) {
-        const prod = PRODUCTS.find(p => p.id === pId);
-        if (prod) {
-          totalCount += q;
-          totalPrice += prod.price * q;
+    function showCatalog() {
+      document.getElementById("cartView").style.display = "none";
+      document.getElementById("storeView").style.display = "block";
+      document.getElementById("btnOrder").innerText = "Оформить ➔";
+      document.getElementById("btnOrder").onclick = onBarBtnClick;
+      renderStore();
+    }
+
+    function renderCart() {
+      let sum = 0;
+      let html = "";
+      for (let id in cart) {
+        const item = config.items.find(x => x.id === id);
+        if (item) {
+          const cost = item.price * cart[id];
+          sum += cost;
+          html += `
+            <div class="row" style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+              <div><b>${item.name}</b><br><span style="font-size: 12px; color: var(--muted);">${cart[id]} × ${item.price}</span></div>
+              <div style="font-weight: bold; color: var(--accent);">${cost} ${config.currency}</div>
+            </div>
+          `;
         }
       }
-
-      document.getElementById("barCount").innerText = totalCount;
-      document.getElementById("barTotal").innerText = totalPrice;
-      document.getElementById("btnGoToCart").disabled = totalCount === 0;
+      document.getElementById("cartList").innerHTML = html || "Пусто";
+      document.getElementById("cartFinalSum").innerText = sum + " " + config.currency;
     }
 
-    function openCartPage() {
-      document.getElementById("pageCatalog").style.display = "none";
-      document.getElementById("pageCart").style.display = "block";
-      renderCartPage();
-      window.scrollTo(0, 0);
-    }
-
-    function openCatalogPage() {
-      document.getElementById("pageCart").style.display = "none";
-      document.getElementById("pageCatalog").style.display = "block";
-      renderCatalog();
-    }
-
-    function renderCartPage() {
-      const box = document.getElementById("cartItemsList");
-      const orderItems = [];
-      let totalSum = 0;
-      let totalCount = 0;
-
-      for (const [pId, q] of Object.entries(cart)) {
-        const prod = PRODUCTS.find(p => p.id === pId);
-        if (prod) {
-          orderItems.push({ ...prod, qty: q, subtotal: prod.price * q });
-          totalSum += prod.price * q;
-          totalCount += q;
+    function finalizeStoreOrder() {
+      const order = [];
+      let total = 0;
+      for (let id in cart) {
+        const item = config.items.find(x => x.id === id);
+        if (item) {
+          order.push({ name: item.name, qty: cart[id], price: item.price, sum: item.price * cart[id] });
+          total += item.price * cart[id];
         }
       }
-
-      if (orderItems.length === 0) {
-        openCatalogPage();
-        return;
-      }
-
-      box.innerHTML = orderItems.map(item => `
-        <div class="cart-view-item">
-          <div>
-            <div style="font-size: 13px; font-weight: bold;">${item.name}</div>
-            <div style="font-size: 12px; color: var(--muted);">${item.qty} × ${item.price} ₽ = <b style="color: var(--accent);">${item.subtotal} ₽</b></div>
-          </div>
-          <div class="qty-controls">
-            <button class="btn-qty" onclick="changeQty('${item.id}', -1)">-</button>
-            <span class="qty-display">${item.qty}</span>
-            <button class="btn-qty" onclick="changeQty('${item.id}', 1)">+</button>
-          </div>
-        </div>
-      `).join("");
-
-      document.getElementById("cartTotalItemsCount").innerText = totalCount + " шт.";
-      document.getElementById("cartFinalSum").innerText = totalSum + " ₽";
-      document.getElementById("barCartTotal").innerText = totalSum;
+      sendPayload({ type: "store_order", category: config.title, items: order, total: total });
     }
 
-    function sendOrderToBot() {
-      const orderItems = [];
-      let totalSum = 0;
+    function spinWheel() {
+      if (casinoCoins < 100) { alert("Недостаточно монет!"); return; }
+      casinoCoins -= 100;
+      const symbols = ["🍒", "🍋", "🍇", "💎", "777"];
+      const pick = symbols[Math.floor(Math.random() * symbols.length)];
+      document.getElementById("wheelDigit").innerText = pick;
 
-      for (const [pId, q] of Object.entries(cart)) {
-        const prod = PRODUCTS.find(p => p.id === pId);
-        if (prod) {
-          orderItems.push({
-            name: prod.name,
-            qty: q,
-            price: prod.price,
-            subtotal: prod.price * q
-          });
-          totalSum += prod.price * q;
-        }
+      if (pick === "777" || pick === "💎") {
+        casinoCoins += 500;
+        alert("ДЖЕКПОТ! +500 монет!");
       }
+      document.getElementById("casBalance").innerText = casinoCoins;
+      document.getElementById("barSum").innerText = casinoCoins;
+    }
 
-      if (orderItems.length === 0) return;
-
-      const payload = {
-        action: "new_candle_order",
-        items: orderItems,
-        total: totalSum
-      };
-
+    function sendPayload(data) {
       if (tg && tg.initData) {
-        tg.sendData(JSON.stringify(payload));
+        tg.sendData(JSON.stringify(data));
       } else {
-        alert(`Заказ на ${totalSum} ₽ сформирован!`);
+        alert("Данные для бота: " + JSON.stringify(data));
       }
     }
 
-    /* ФУНКЦИИ РЕДАКТОРА ДЛЯ СОЗДАТЕЛЯ */
-    function toggleAdminModal() {
-      const modal = document.getElementById("adminModal");
-      modal.style.display = modal.style.display === "block" ? "none" : "block";
+    /* АДМИНКА */
+    function toggleAdmin() {
+      const m = document.getElementById("adminModal");
+      m.style.display = m.style.display === "block" ? "none" : "block";
     }
 
-    function adminAddProduct() {
-      const name = document.getElementById("admName").value.trim();
-      const desc = document.getElementById("admDesc").value.trim();
-      const price = parseInt(document.getElementById("admPrice").value);
-
-      if (!name || !price) {
-        alert("Заполните название и цену!");
-        return;
-      }
-
-      const newId = "custom_" + Date.now();
-      PRODUCTS.push({ id: newId, name: name, desc: desc || "Ручная работа", price: price });
-      localStorage.setItem("candle_products", JSON.stringify(PRODUCTS));
-
-      toggleAdminModal();
-      renderCatalog();
-      alert("✨ Изменения применились! Товар сразу добавлен в витрину.");
+    function applyPreset(name) {
+      config = PRESETS[name];
+      cart = {};
+      localStorage.setItem("app_config", JSON.stringify(config));
+      applyConfig();
+      toggleAdmin();
     }
 
-    function adminResetStorage() {
-      localStorage.removeItem("candle_products");
-      PRODUCTS = [...DEFAULT_PRODUCTS];
-      renderCatalog();
-      toggleAdminModal();
-      alert("Каталог сброшен к исходному.");
+    function injectCustomItem() {
+      const n = document.getElementById("injName").value.trim();
+      const p = parseInt(document.getElementById("injPrice").value);
+      if (!n || !p) return;
+      config.items.push({ id: "item_" + Date.now(), name: n, desc: "Пользовательский объект", price: p });
+      localStorage.setItem("app_config", JSON.stringify(config));
+      applyConfig();
+      toggleAdmin();
     }
 
-    renderCatalog();
+    applyConfig();
   </script>
 </body>
 </html>

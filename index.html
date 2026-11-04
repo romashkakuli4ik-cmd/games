@@ -14,7 +14,7 @@
       --text: #f0f6fc;
       --muted: #8b949e;
       --success: #238636;
-      --danger: #da3633;
+      --admin-bg: #1f1f2e;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background: var(--bg); color: var(--text); padding: 14px; padding-bottom: 90px; user-select: none; }
@@ -48,7 +48,6 @@
       border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;
     }
 
-    /* Экран корзины */
     .cart-view-item {
       display: flex; justify-content: space-between; align-items: center;
       padding: 10px 0; border-bottom: 1px solid var(--border);
@@ -61,7 +60,6 @@
       cursor: pointer; margin-bottom: 12px; display: inline-flex; align-items: center; gap: 4px;
     }
 
-    /* Нижняя панель */
     .bottom-bar {
       position: fixed; bottom: 0; left: 0; right: 0; background: var(--card);
       border-top: 1px solid var(--border); padding: 12px 16px; display: flex;
@@ -72,9 +70,36 @@
       border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer;
     }
     .order-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* СЕКРЕТНЫЙ РЕЖИМ АДМИНА */
+    #adminBadge {
+      display: none; position: fixed; top: 10px; right: 10px; z-index: 999;
+      background: #8b5cf6; color: #fff; border: none; padding: 6px 10px;
+      border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    #adminModal {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+      z-index: 1000; padding: 16px; overflow-y: auto;
+    }
+    .admin-box {
+      background: var(--admin-bg); border: 1px solid #8b5cf6; border-radius: 12px;
+      padding: 14px; color: #fff;
+    }
+    .admin-box h2 { font-size: 16px; color: #c084fc; margin-bottom: 8px; }
+    .admin-input {
+      width: 100%; background: #0f0f17; border: 1px solid #4c1d95; color: #fff;
+      padding: 8px; border-radius: 6px; font-size: 13px; margin-bottom: 8px;
+    }
+    .admin-btn {
+      background: #8b5cf6; color: #fff; border: none; padding: 8px 12px;
+      border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; margin-right: 6px; margin-bottom: 6px;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Кнопка только для создателя бота -->
+  <button id="adminBadge" onclick="toggleAdminModal()">🛠 Режим Создателя</button>
 
   <!-- СТРАНИЦА 1: КАТАЛОГ -->
   <div id="pageCatalog">
@@ -96,49 +121,85 @@
 
   <!-- СТРАНИЦА 2: КОРЗИНА -->
   <div id="pageCart" style="display: none;">
-    <button class="btn-back" onclick="openCatalogPage()">← Вернуться к каталогу</button>
+    <button class="btn-back" onclick="openCatalogPage()">← Назад в каталог</button>
 
     <div class="header" style="text-align: left; margin-bottom: 12px;">
       <h1>🛒 Ваша корзина</h1>
-      <p>Проверьте состав заказа перед отправкой</p>
+      <p>Проверьте товары перед отправкой мастеру</p>
     </div>
 
     <div class="card" id="cartItemsList"></div>
 
     <div class="card" style="background: #090d13; border-style: dashed;">
       <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px;">
-        <span>Количество товаров:</span>
+        <span>Количество:</span>
         <b id="cartTotalItemsCount">0 шт.</b>
       </div>
       <div style="display: flex; justify-content: space-between; font-size: 16px;">
-        <span>Сумма заказа:</span>
+        <span>Итого к оплате:</span>
         <b style="color: var(--accent); font-size: 18px;" id="cartFinalSum">0 ₽</b>
       </div>
     </div>
 
     <div class="bottom-bar">
       <div>
-        <div style="font-size: 11px; color: var(--muted);">Итого:</div>
+        <div style="font-size: 11px; color: var(--muted);">Сумма:</div>
         <div style="font-size: 16px; font-weight: bold; color: var(--accent);"><span id="barCartTotal">0</span> ₽</div>
       </div>
       <button class="order-btn" onclick="sendOrderToBot()">Заказать ✨</button>
     </div>
   </div>
 
+  <!-- СЕКРЕТНАЯ АДМИНКА / ИИ РЕДАКТОР -->
+  <div id="adminModal">
+    <div class="admin-box">
+      <h2>🤖 ИИ-Редактор Сайта (Только для Вас)</h2>
+      <p style="font-size: 12px; color: #a78bfa; margin-bottom: 10px;">
+        Добавьте товар или измените цены прямо отсюда. Изменения применятся мгновенно!
+      </p>
+
+      <label style="font-size: 11px;">Название нового товара:</label>
+      <input type="text" id="admName" class="admin-input" placeholder="Например: Лавандовая свеча">
+
+      <label style="font-size: 11px;">Описание:</label>
+      <input type="text" id="admDesc" class="admin-input" placeholder="С крымской лавандой, 10 см">
+
+      <label style="font-size: 11px;">Цена (₽):</label>
+      <input type="number" id="admPrice" class="admin-input" placeholder="300">
+
+      <div style="margin-top: 10px;">
+        <button class="admin-btn" onclick="adminAddProduct()">⚡ Вставить и обновить страницу</button>
+        <button class="admin-btn" style="background: #374151;" onclick="adminResetStorage()">Сбросить к оригиналу</button>
+        <button class="admin-btn" style="background: #dc2626;" onclick="toggleAdminModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    const OWNER_ID = 8732002956;
     const tg = window.Telegram?.WebApp;
     if (tg) {
       tg.ready();
       tg.expand();
+      // Проверяем: если открыл владелец, показываем админку
+      const currentUserId = tg.initDataUnsafe?.user?.id;
+      if (currentUserId === OWNER_ID) {
+        document.getElementById("adminBadge").style.display = "block";
+      }
+    } else {
+      // Для тестов в обычном браузере
+      document.getElementById("adminBadge").style.display = "block";
     }
 
-    const PRODUCTS = [
+    const DEFAULT_PRODUCTS = [
       { id: "jerusalem_33", name: "🕯 Иерусалимские свечи (факел 33 шт)", desc: "Натуральный воск, обожжённые в Иерусалиме", price: 450 },
       { id: "voshina_honey", name: "🍯 Свечи из вощины (медовые)", desc: "Высота 13 см, диаметр 3 см, медовый аромат", price: 180 },
       { id: "altar_herbs", name: "🌿 Травяная алтарная свеча", desc: "С добавлением горного чабреца, лаванды и полыни", price: 250 },
       { id: "cone_church", name: "✨ Конусные свечи №40 (набор 10 шт)", desc: "Длина 20 см, чистое ровное горение", price: 220 }
     ];
 
+    // Загрузка товаров (с сохранением твоих правок на лету)
+    let PRODUCTS = JSON.parse(localStorage.getItem("candle_products")) || DEFAULT_PRODUCTS;
     let cart = {};
 
     function renderCatalog() {
@@ -283,8 +344,41 @@
       if (tg && tg.initData) {
         tg.sendData(JSON.stringify(payload));
       } else {
-        alert(`Заказ на сумму ${totalSum} ₽ сформирован!\n(Откройте через Telegram для отправки боту)`);
+        alert(`Заказ на ${totalSum} ₽ сформирован!`);
       }
+    }
+
+    /* ФУНКЦИИ РЕДАКТОРА ДЛЯ СОЗДАТЕЛЯ */
+    function toggleAdminModal() {
+      const modal = document.getElementById("adminModal");
+      modal.style.display = modal.style.display === "block" ? "none" : "block";
+    }
+
+    function adminAddProduct() {
+      const name = document.getElementById("admName").value.trim();
+      const desc = document.getElementById("admDesc").value.trim();
+      const price = parseInt(document.getElementById("admPrice").value);
+
+      if (!name || !price) {
+        alert("Заполните название и цену!");
+        return;
+      }
+
+      const newId = "custom_" + Date.now();
+      PRODUCTS.push({ id: newId, name: name, desc: desc || "Ручная работа", price: price });
+      localStorage.setItem("candle_products", JSON.stringify(PRODUCTS));
+
+      toggleAdminModal();
+      renderCatalog();
+      alert("✨ Изменения применились! Товар сразу добавлен в витрину.");
+    }
+
+    function adminResetStorage() {
+      localStorage.removeItem("candle_products");
+      PRODUCTS = [...DEFAULT_PRODUCTS];
+      renderCatalog();
+      toggleAdminModal();
+      alert("Каталог сброшен к исходному.");
     }
 
     renderCatalog();

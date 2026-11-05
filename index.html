@@ -6,26 +6,63 @@
   <title>Пасечная Мастерская Свечей</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
+    /* =========================================================
+       1. АТМОСФЕРА БРАУЗЕРА (Светлая крафтовая мастерская)
+       ========================================================= */
     :root {
-      --honey-glow: #ffb703;
+      --bg-color: #fbf7ee;
+      --bg-pattern: 
+        radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.15) 0%, transparent 60%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='103.92' viewBox='0 0 60 103.92'%3E%3Cpath d='M30 0 L60 17.32 L60 51.96 L30 69.28 L0 51.96 L0 17.32 Z M30 103.92 L60 86.6 L60 51.96 L30 69.28 L0 51.96 L0 86.6 Z' fill='%23fef3c7' fill-opacity='0.45' stroke='%23fde68a' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E");
+      --bg-size: 60px 103.92px;
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --card-border: rgba(217, 119, 6, 0.28);
+      --card-shadow: 0 10px 25px rgba(180, 83, 9, 0.08);
+      --text-main: #3d2406;
+      --text-muted: #85531d;
+      --accent-gold: #b45309;
+      --accent-badge: #d97706;
+      --btn-main: linear-gradient(135deg, #f59e0b, #d97706);
+      --btn-green: linear-gradient(135deg, #059669, #047857);
+      --bar-bg: rgba(255, 255, 255, 0.95);
+      --bar-border: rgba(217, 119, 6, 0.2);
+      --creator-btn-bg: rgba(217, 119, 6, 0.12);
+      --creator-btn-border: #d97706;
+      --creator-btn-color: #92400e;
+    }
+
+    /* =========================================================
+       2. АТМОСФЕРА TELEGRAM (Глубокий янтарный мед и соты)
+       ========================================================= */
+    body.telegram-mode {
+      --bg-color: #451a03;
+      --bg-pattern: 
+        radial-gradient(circle at 50% 10%, rgba(255, 235, 150, 0.25) 0%, transparent 75%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='103.92' viewBox='0 0 60 103.92'%3E%3Cdefs%3E%3CradialGradient id='h' cx='45%25' cy='45%25' r='55%25'%3E%3Cstop offset='0%25' stop-color='%23f59e0b'/%3E%3Cstop offset='55%25' stop-color='%23d97706'/%3E%3Cstop offset='85%25' stop-color='%2392400e'/%3E%3Cstop offset='100%25' stop-color='%23451a03'/%3E%3C/radialGradient%3E%3Cg id='hex'%3E%3Cpath d='M30 0 L60 17.32 L60 51.96 L30 69.28 L0 51.96 L0 17.32 Z' fill='url(%23h)' stroke='%23fef3c7' stroke-width='2.2' stroke-linejoin='round'/%3E%3Cellipse cx='24' cy='24' rx='5' ry='2.5' fill='%23ffffff' fill-opacity='0.4' transform='rotate(-25 24 24)'/%3E%3C/g%3E%3C/defs%3E%3Cuse href='%23hex' x='0' y='0'/%3E%3Cuse href='%23hex' x='30' y='51.96'/%3E%3Cuse href='%23hex' x='-30' y='51.96'/%3E%3Cuse href='%23hex' x='0' y='103.92'/%3E%3C/svg%3E");
+      --bg-size: 60px 103.92px;
       --card-bg: rgba(26, 15, 6, 0.92);
       --card-border: rgba(255, 183, 3, 0.55);
+      --card-shadow: 0 6px 22px rgba(0, 0, 0, 0.55);
       --text-main: #fffdf5;
       --text-muted: #fcd34d;
-      --btn-grad: linear-gradient(135deg, #f59e0b, #b45309);
+      --accent-gold: #ffb703;
+      --accent-badge: #fbbf24;
+      --btn-main: linear-gradient(135deg, #f59e0b, #b45309);
       --btn-green: linear-gradient(135deg, #10b981, #047857);
+      --bar-bg: rgba(18, 9, 3, 0.96);
+      --bar-border: rgba(255, 183, 3, 0.35);
+      --creator-btn-bg: rgba(245, 158, 11, 0.15);
+      --creator-btn-border: #f59e0b;
+      --creator-btn-color: #fbbf24;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
     body {
-      background-color: #451a03;
-      /* Бесшовный математически точный паттерн сот без стыков (период 60x103.92) */
-      background-image: 
-        radial-gradient(circle at 50% 15%, rgba(255, 235, 150, 0.25) 0%, transparent 75%),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='103.92' viewBox='0 0 60 103.92'%3E%3Cdefs%3E%3CradialGradient id='h' cx='45%25' cy='45%25' r='55%25'%3E%3Cstop offset='0%25' stop-color='%23f59e0b'/%3E%3Cstop offset='55%25' stop-color='%23d97706'/%3E%3Cstop offset='85%25' stop-color='%2392400e'/%3E%3Cstop offset='100%25' stop-color='%23451a03'/%3E%3C/radialGradient%3E%3Cg id='hex'%3E%3Cpath d='M30 0 L60 17.32 L60 51.96 L30 69.28 L0 51.96 L0 17.32 Z' fill='url(%23h)' stroke='%23fef3c7' stroke-width='2.2' stroke-linejoin='round'/%3E%3Cellipse cx='24' cy='24' rx='5' ry='2.5' fill='%23ffffff' fill-opacity='0.4' transform='rotate(-25 24 24)'/%3E%3C/g%3E%3C/defs%3E%3Cuse href='%23hex' x='0' y='0'/%3E%3Cuse href='%23hex' x='30' y='51.96'/%3E%3Cuse href='%23hex' x='-30' y='51.96'/%3E%3Cuse href='%23hex' x='0' y='103.92'/%3E%3C/svg%3E");
+      background-color: var(--bg-color);
+      background-image: var(--bg-pattern);
+      background-size: var(--bg-size);
       background-repeat: repeat;
-      background-size: 60px 103.92px;
       background-attachment: fixed;
       color: var(--text-main);
       padding: 14px;
@@ -34,8 +71,10 @@
       min-height: 100vh;
       overflow-x: hidden;
       position: relative;
+      transition: background-color 0.3s ease;
     }
 
+    /* АНИМИРОВАННЫЕ ПЧЕЛЫ */
     .bee-box {
       position: fixed;
       pointer-events: none;
@@ -43,19 +82,19 @@
       animation: beeFlight 16s infinite alternate ease-in-out;
     }
 
-    .layer-back { z-index: 1; opacity: 0.7; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); }
-    .layer-front { z-index: 60; opacity: 0.98; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.7)); }
+    .layer-back { z-index: 1; opacity: 0.65; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+    .layer-front { z-index: 60; opacity: 0.98; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4)); }
 
-    .b-sm { width: 34px; height: 34px; }
-    .b-md { width: 48px; height: 48px; }
-    .b-lg { width: 64px; height: 64px; }
+    .b-sm { width: 30px; height: 30px; }
+    .b-md { width: 44px; height: 44px; }
+    .b-lg { width: 58px; height: 58px; }
 
-    .pos-1 { top: 10%; left: 4%; animation-duration: 18s; animation-delay: 0s; }
-    .pos-2 { top: 38%; right: 5%; animation-duration: 22s; animation-delay: -4s; }
-    .pos-3 { top: 68%; left: 8%; animation-duration: 17s; animation-delay: -2s; }
-    .pos-4 { top: 22%; right: 12%; animation-duration: 14s; animation-delay: -6s; }
-    .pos-5 { top: 82%; right: 10%; animation-duration: 20s; animation-delay: -3s; }
-    .pos-6 { top: 6%; right: 26%; animation-duration: 24s; animation-delay: -8s; }
+    .pos-1 { top: 12%; left: 4%; animation-duration: 17s; animation-delay: 0s; }
+    .pos-2 { top: 38%; right: 5%; animation-duration: 21s; animation-delay: -4s; }
+    .pos-3 { top: 68%; left: 8%; animation-duration: 16s; animation-delay: -2s; }
+    .pos-4 { top: 20%; right: 10%; animation-duration: 14s; animation-delay: -6s; }
+    .pos-5 { top: 82%; right: 12%; animation-duration: 19s; animation-delay: -3s; }
+    .pos-6 { top: 7%; right: 28%; animation-duration: 23s; animation-delay: -8s; }
 
     .wing {
       transform-origin: 23px 20px;
@@ -73,58 +112,89 @@
 
     @keyframes beeFlight {
       0%   { transform: translate(0, 0) rotate(3deg) scaleX(1); }
-      25%  { transform: translate(40px, -20px) rotate(14deg) scaleX(1); }
-      50%  { transform: translate(75px, 50px) rotate(-10deg) scaleX(-1); }
+      25%  { transform: translate(35px, -18px) rotate(12deg) scaleX(1); }
+      50%  { transform: translate(70px, 45px) rotate(-10deg) scaleX(-1); }
       75%  { transform: translate(-25px, 20px) rotate(8deg) scaleX(-1); }
       100% { transform: translate(-10px, -15px) rotate(-4deg) scaleX(1); }
     }
 
-    .main-wrapper { position: relative; z-index: 10; }
+    .main-wrapper { position: relative; z-index: 10; max-width: 620px; margin: 0 auto; }
+
+    .mode-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-badge);
+      margin-bottom: 8px;
+      border: 1px solid var(--card-border);
+    }
 
     .header {
       text-align: center;
       margin-bottom: 18px;
-      background: rgba(22, 12, 4, 0.88);
+      background: var(--card-bg);
       border: 1.5px solid var(--card-border);
-      border-radius: 16px;
-      padding: 12px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(12px);
     }
     .header h1 {
       font-size: 21px;
       font-weight: 800;
-      color: #fffbeb;
-      text-shadow: 0 0 14px var(--honey-glow);
+      color: var(--text-main);
     }
     .header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+    /* Кнопка связи с создателем (в браузере) */
+    .btn-creator-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--creator-btn-bg);
+      border: 1px solid var(--creator-btn-border);
+      color: var(--creator-btn-color);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .btn-creator-link:active { transform: scale(0.97); }
 
     .honey-card {
       background: var(--card-bg);
       border: 1.5px solid var(--card-border);
-      border-radius: 16px;
+      border-radius: 18px;
       padding: 14px 16px;
       margin-bottom: 12px;
-      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 235, 150, 0.25);
+      box-shadow: var(--card-shadow);
       backdrop-filter: blur(12px);
     }
 
     .item-row { display: flex; justify-content: space-between; align-items: center; }
     .item-info { flex: 1; padding-right: 12px; }
-    .item-title { font-size: 15px; font-weight: 700; color: #fff; }
+    .item-title { font-size: 15px; font-weight: 700; color: var(--text-main); }
     .item-desc { font-size: 12px; color: var(--text-muted); margin-top: 3px; line-height: 1.35; }
-    .item-price { font-size: 16px; font-weight: 800; color: var(--honey-glow); margin-top: 6px; }
+    .item-price { font-size: 16px; font-weight: 800; color: var(--accent-gold); margin-top: 6px; }
 
     .btn-add {
-      background: var(--btn-grad);
+      background: var(--btn-main);
       color: #fff;
-      border: 1px solid #fed7aa;
+      border: none;
       padding: 9px 15px;
       border-radius: 10px;
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
     }
     .btn-add:active { transform: scale(0.96); }
 
@@ -132,15 +202,19 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      background: rgba(15, 8, 2, 0.95);
+      background: rgba(0, 0, 0, 0.08);
       border: 1.5px solid var(--card-border);
       border-radius: 10px;
       padding: 3px;
     }
+    body.telegram-mode .counter-box {
+      background: rgba(15, 8, 2, 0.95);
+    }
+
     .btn-qty {
-      background: rgba(245, 158, 11, 0.25);
+      background: rgba(245, 158, 11, 0.2);
       border: none;
-      color: var(--honey-glow);
+      color: var(--accent-gold);
       width: 30px;
       height: 30px;
       border-radius: 8px;
@@ -151,11 +225,11 @@
       justify-content: center;
       cursor: pointer;
     }
-    .btn-qty:active { background: rgba(245, 158, 11, 0.45); }
-    .qty-num { font-size: 14px; font-weight: bold; min-width: 22px; text-align: center; color: #fff; }
+    .btn-qty:active { opacity: 0.7; }
+    .qty-num { font-size: 14px; font-weight: bold; min-width: 22px; text-align: center; color: var(--text-main); }
 
     .btn-return {
-      background: rgba(22, 12, 4, 0.9);
+      background: var(--card-bg);
       border: 1px solid var(--card-border);
       color: var(--text-muted);
       padding: 8px 14px;
@@ -171,20 +245,20 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background: rgba(18, 9, 3, 0.96);
-      border-top: 1.5px solid var(--card-border);
+      background: var(--bar-bg);
+      border-top: 1.5px solid var(--bar-border);
       backdrop-filter: blur(14px);
       padding: 12px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       z-index: 100;
-      box-shadow: 0 -4px 18px rgba(0,0,0,0.6);
+      box-shadow: 0 -4px 18px rgba(0,0,0,0.15);
     }
     .btn-order-main {
       background: var(--btn-green);
       color: #fff;
-      border: 1px solid #6ee7b7;
+      border: none;
       padding: 12px 22px;
       border-radius: 12px;
       font-weight: 700;
@@ -197,6 +271,7 @@
 </head>
 <body>
 
+  <!-- SVG ПЧЕЛА -->
   <svg style="display: none;">
     <defs>
       <g id="photo-bee" viewBox="0 0 64 64">
@@ -229,8 +304,14 @@
     
     <div id="pageCatalog">
       <div class="header">
+        <span class="mode-badge" id="envBadge">🌐 Веб-версия</span>
         <h1>🍯 Пасечная Мастерская</h1>
         <p>100% натуральный пчелиный воск & ручная работа</p>
+        <div id="browserCreatorBlock" style="display: none;">
+          <a class="btn-creator-link" href="https://t.me/kuli4ik_cmd" target="_blank" id="creatorHeaderLink">
+            💬 Связаться с создателем
+          </a>
+        </div>
       </div>
 
       <div id="catalogList"></div>
@@ -238,7 +319,7 @@
       <div class="bottom-bar">
         <div>
           <div style="font-size: 11px; color: var(--text-muted);">В корзине: <span id="barCount">0</span> шт.</div>
-          <div style="font-size: 18px; font-weight: 800; color: var(--honey-glow);"><span id="barTotal">0</span> ₽</div>
+          <div style="font-size: 18px; font-weight: 800; color: var(--accent-gold);"><span id="barTotal">0</span> ₽</div>
         </div>
         <button class="btn-order-main" id="btnGoToCart" disabled onclick="openCartPage()">В корзину ➔</button>
       </div>
@@ -254,21 +335,29 @@
 
       <div class="honey-card" id="cartItemsList"></div>
 
-      <div class="honey-card" style="border-style: dashed; background: rgba(16, 8, 3, 0.88);">
+      <div class="honey-card" style="border-style: dashed;">
         <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px;">
           <span>Свечей в заказе:</span>
           <b id="cartTotalItemsCount">0 шт.</b>
         </div>
         <div style="display: flex; justify-content: space-between; font-size: 16px;">
           <span>Сумма к оплате:</span>
-          <b style="color: var(--honey-glow); font-size: 20px;" id="cartFinalSum">0 ₽</b>
+          <b style="color: var(--accent-gold); font-size: 20px;" id="cartFinalSum">0 ₽</b>
         </div>
+      </div>
+
+      <!-- Дополнительная плашка для браузера -->
+      <div class="honey-card" id="browserCartContact" style="display: none; text-align: center;">
+        <div style="font-size: 13px; font-weight: 700; margin-bottom: 6px;">Есть вопросы по индивидуальному заказу?</div>
+        <a class="btn-creator-link" href="https://t.me/kuli4ik_cmd" target="_blank" style="margin-top: 0; width: 100%;">
+          💬 Написать создателю напрямую
+        </a>
       </div>
 
       <div class="bottom-bar">
         <div>
           <div style="font-size: 11px; color: var(--text-muted);">Итого:</div>
-          <div style="font-size: 18px; font-weight: 800; color: var(--honey-glow);"><span id="barCartTotal">0</span> ₽</div>
+          <div style="font-size: 18px; font-weight: 800; color: var(--accent-gold);"><span id="barCartTotal">0</span> ₽</div>
         </div>
         <button class="btn-order-main" id="btnSubmitOrder" onclick="sendOrderToBot()">Оформить заказ ✨</button>
       </div>
@@ -282,10 +371,23 @@
 
   <script>
     const BOT_TOKEN = "8868108142:AAG6oTSadt2X3gUEw_-kqEXTmSISxicdnL4";
+    const CREATOR_ID = "8732002956";
+    const SELLER_ID = "5249130818";
+    const CREATOR_TG_LINK = "https://t.me/kuli4ik_cmd";
+
     const tg = window.Telegram?.WebApp;
-    if (tg) {
+    const isTelegram = Boolean(tg && tg.initData && tg.initData.length > 0);
+
+    if (isTelegram) {
+      document.body.classList.add("telegram-mode");
+      document.getElementById("envBadge").innerText = "🐝 Telegram WebApp";
       tg.ready();
       tg.expand();
+    } else {
+      document.getElementById("envBadge").innerText = "🌐 Крафтовая Веб-мастерская";
+      // В браузере показываем кнопки связи с создателем
+      document.getElementById("browserCreatorBlock").style.display = "block";
+      document.getElementById("browserCartContact").style.display = "block";
     }
 
     const PRODUCTS = [
@@ -419,108 +521,4 @@
       }
 
       box.innerHTML = orderItems.map(item => `
-        <div class="item-row" style="padding: 10px 0; border-bottom: 1px solid rgba(255, 183, 3, 0.25);">
-          <div>
-            <div style="font-size: 14px; font-weight: bold; color: #fff;">${item.name}</div>
-            <div style="font-size: 12px; color: var(--text-muted);">${item.qty} × ${item.price} ₽ = <b style="color: var(--honey-glow);">${item.subtotal} ₽</b></div>
-          </div>
-          <div class="counter-box">
-            <button class="btn-qty" onclick="changeQty('${item.id}', -1)">-</button>
-            <span class="qty-num">${item.qty}</span>
-            <button class="btn-qty" onclick="changeQty('${item.id}', 1)">+</button>
-          </div>
-        </div>
-      `).join("");
-
-      document.getElementById("cartTotalItemsCount").innerText = totalCount + " шт.";
-      document.getElementById("cartFinalSum").innerText = totalSum + " ₽";
-      document.getElementById("barCartTotal").innerText = totalSum;
-    }
-
-    async function sendOrderToBot() {
-      const submitBtn = document.getElementById("btnSubmitOrder");
-      submitBtn.disabled = true;
-      submitBtn.innerText = "Отправка...";
-
-      const orderItems = [];
-      let totalSum = 0;
-
-      for (const [pId, q] of Object.entries(cart)) {
-        const prod = PRODUCTS.find(p => p.id === pId);
-        if (prod) {
-          orderItems.push({
-            name: prod.name,
-            qty: q,
-            price: prod.price,
-            subtotal: prod.price * q
-          });
-          totalSum += prod.price * q;
-        }
-      }
-
-      if (orderItems.length === 0) {
-        submitBtn.disabled = false;
-        submitBtn.innerText = "Оформить заказ ✨";
-        return;
-      }
-
-      const payload = {
-        action: "new_order",
-        items: orderItems,
-        total: totalSum
-      };
-
-      const payloadStr = JSON.stringify(payload);
-
-      // Способ 1: Прямой WebApp sendData
-      try {
-        if (tg && typeof tg.sendData === "function") {
-          tg.sendData(payloadStr);
-        }
-      } catch (e) {
-        console.log("sendData error:", e);
-      }
-
-      // Способ 2: Резервная прямая отправка в Telegram API (если окно открыто через URL/inline)
-      const user = tg?.initDataUnsafe?.user;
-      if (user && user.id) {
-        try {
-          const itemsText = orderItems.map((it, idx) => `${idx + 1}. ${it.name} - ${it.qty} шт. (${it.subtotal} ₽)`).join("%0A");
-          const buyerTag = user.username ? `@${user.username}` : `${user.first_name} (ID: ${user.id})`;
-          const notifyMsg = `🚨 *НОВЫЙ ЗАКАЗ!*%0A👤 Клиент: ${buyerTag}%0A%0A📦 *Состав заказа:*%0A${itemsText}%0A%0A💰 *ИТОГО К ОПЛАТЕ: ${totalSum} ₽*`;
-
-          // Оповещаем обоих админов напрямую через бота
-          const admins = [8732002956, 5249130818];
-          for (const aid of admins) {
-            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${aid}&text=${notifyMsg}&parse_mode=Markdown`);
-          }
-
-          // Отправляем подтверждение покупателю с кнопками
-          const keyboard = JSON.stringify({
-            inline_keyboard: [
-              [{ text: "💬 Связаться с продавцом", url: "tg://user?id=5249130818" }],
-              [{ text: `💳 Оплатить заказ (${totalSum} ₽)`, url: "https://www.tbank.ru/" }]
-            ]
-          });
-          const clientText = `✅ *Заказ оформлен!*%0A%0A📦 *Товары:*%0A${itemsText}%0A%0A💰 *Сумма: ${totalSum} ₽*%0A%0AМастер получил ваш заказ! Для связи и оплаты нажмите кнопки ниже:`;
-          fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${user.id}&text=${clientText}&parse_mode=Markdown&reply_markup=${encodeURIComponent(keyboard)}`);
-        } catch (err) {
-          console.log("Direct API notify error:", err);
-        }
-      }
-
-      setTimeout(() => {
-        if (tg && typeof tg.close === "function") {
-          tg.close();
-        } else {
-          alert(`Заказ на сумму ${totalSum} ₽ успешно оформлен!`);
-          submitBtn.disabled = false;
-          submitBtn.innerText = "Оформить заказ ✨";
-        }
-      }, 300);
-    }
-
-    renderCatalog();
-  </script>
-</body>
-</html>
+        <div class="item-row" 

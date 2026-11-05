@@ -8,9 +8,7 @@
   <style>
     :root {
       --honey-glow: #ffb703;
-      --honey-deep: #b05700;
-      --wax-edge: #fff3bf;
-      --card-bg: rgba(26, 15, 6, 0.90);
+      --card-bg: rgba(26, 15, 6, 0.92);
       --card-border: rgba(255, 183, 3, 0.55);
       --text-main: #fffdf5;
       --text-muted: #fcd34d;
@@ -21,12 +19,13 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
     body {
-      background-color: #5c2900;
+      background-color: #451a03;
+      /* Бесшовный математически точный паттерн сот без стыков (период 60x103.92) */
       background-image: 
-        radial-gradient(circle at 50% 10%, rgba(255, 235, 150, 0.3) 0%, transparent 70%),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='138.56' viewBox='0 0 80 138.56'%3E%3Cdefs%3E%3CradialGradient id='honeyCell' cx='45%25' cy='45%25' r='55%25'%3E%3Cstop offset='0%25' stop-color='%23f59e0b'/%3E%3Cstop offset='50%25' stop-color='%23d97706'/%3E%3Cstop offset='85%25' stop-color='%2392400e'/%3E%3Cstop offset='100%25' stop-color='%23451a03'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg stroke='%23fef3c7' stroke-width='3.2' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpolygon points='40,2.5 77.5,24.15 77.5,67.45 40,89.1 2.5,67.45 2.5,24.15' fill='url(%23honeyCell)'/%3E%3Cpolygon points='40,71.78 77.5,93.43 77.5,136.73 40,158.38 2.5,136.73 2.5,93.43' fill='url(%23honeyCell)'/%3E%3Cpolygon points='80,-45.03 117.5,-23.38 117.5,19.92 80,41.57 42.5,19.92 42.5,-23.38' fill='url(%23honeyCell)'/%3E%3Cpolygon points='0,-45.03 37.5,-23.38 37.5,19.92 0,41.57 -37.5,19.92 -37.5,-23.38' fill='url(%23honeyCell)'/%3E%3C/g%3E%3Cellipse cx='32' cy='32' rx='7' ry='3.5' fill='%23ffffff' fill-opacity='0.45' transform='rotate(-25 32 32)'/%3E%3Cellipse cx='32' cy='101' rx='7' ry='3.5' fill='%23ffffff' fill-opacity='0.45' transform='rotate(-25 32 101)'/%3E%3C/svg%3E");
+        radial-gradient(circle at 50% 15%, rgba(255, 235, 150, 0.25) 0%, transparent 75%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='103.92' viewBox='0 0 60 103.92'%3E%3Cdefs%3E%3CradialGradient id='h' cx='45%25' cy='45%25' r='55%25'%3E%3Cstop offset='0%25' stop-color='%23f59e0b'/%3E%3Cstop offset='55%25' stop-color='%23d97706'/%3E%3Cstop offset='85%25' stop-color='%2392400e'/%3E%3Cstop offset='100%25' stop-color='%23451a03'/%3E%3C/radialGradient%3E%3Cg id='hex'%3E%3Cpath d='M30 0 L60 17.32 L60 51.96 L30 69.28 L0 51.96 L0 17.32 Z' fill='url(%23h)' stroke='%23fef3c7' stroke-width='2.2' stroke-linejoin='round'/%3E%3Cellipse cx='24' cy='24' rx='5' ry='2.5' fill='%23ffffff' fill-opacity='0.4' transform='rotate(-25 24 24)'/%3E%3C/g%3E%3C/defs%3E%3Cuse href='%23hex' x='0' y='0'/%3E%3Cuse href='%23hex' x='30' y='51.96'/%3E%3Cuse href='%23hex' x='-30' y='51.96'/%3E%3Cuse href='%23hex' x='0' y='103.92'/%3E%3C/svg%3E");
       background-repeat: repeat;
-      background-size: 80px 138.56px;
+      background-size: 60px 103.92px;
       background-attachment: fixed;
       color: var(--text-main);
       padding: 14px;
@@ -198,7 +197,6 @@
 </head>
 <body>
 
-  <!-- SVG ПЧЕЛА -->
   <svg style="display: none;">
     <defs>
       <g id="photo-bee" viewBox="0 0 64 64">
@@ -272,7 +270,7 @@
           <div style="font-size: 11px; color: var(--text-muted);">Итого:</div>
           <div style="font-size: 18px; font-weight: 800; color: var(--honey-glow);"><span id="barCartTotal">0</span> ₽</div>
         </div>
-        <button class="btn-order-main" onclick="sendOrderToBot()">Оформить заказ ✨</button>
+        <button class="btn-order-main" id="btnSubmitOrder" onclick="sendOrderToBot()">Оформить заказ ✨</button>
       </div>
     </div>
 
@@ -283,13 +281,13 @@
   <div class="bee-box layer-front b-lg pos-6"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
 
   <script>
+    const BOT_TOKEN = "8868108142:AAG6oTSadt2X3gUEw_-kqEXTmSISxicdnL4";
     const tg = window.Telegram?.WebApp;
     if (tg) {
       tg.ready();
       tg.expand();
     }
 
-    // ТОВАРЫ (Первым идет новый товар из фотографии за 2000 ₽)
     const PRODUCTS = [
       { 
         id: "candle_natural_pure", 
@@ -439,7 +437,11 @@
       document.getElementById("barCartTotal").innerText = totalSum;
     }
 
-    function sendOrderToBot() {
+    async function sendOrderToBot() {
+      const submitBtn = document.getElementById("btnSubmitOrder");
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Отправка...";
+
       const orderItems = [];
       let totalSum = 0;
 
@@ -456,7 +458,11 @@
         }
       }
 
-      if (orderItems.length === 0) return;
+      if (orderItems.length === 0) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Оформить заказ ✨";
+        return;
+      }
 
       const payload = {
         action: "new_order",
@@ -464,11 +470,54 @@
         total: totalSum
       };
 
-      if (tg && tg.initData) {
-        tg.sendData(JSON.stringify(payload));
-      } else {
-        alert(`Заказ на сумму ${totalSum} ₽ сформирован!`);
+      const payloadStr = JSON.stringify(payload);
+
+      // Способ 1: Прямой WebApp sendData
+      try {
+        if (tg && typeof tg.sendData === "function") {
+          tg.sendData(payloadStr);
+        }
+      } catch (e) {
+        console.log("sendData error:", e);
       }
+
+      // Способ 2: Резервная прямая отправка в Telegram API (если окно открыто через URL/inline)
+      const user = tg?.initDataUnsafe?.user;
+      if (user && user.id) {
+        try {
+          const itemsText = orderItems.map((it, idx) => `${idx + 1}. ${it.name} - ${it.qty} шт. (${it.subtotal} ₽)`).join("%0A");
+          const buyerTag = user.username ? `@${user.username}` : `${user.first_name} (ID: ${user.id})`;
+          const notifyMsg = `🚨 *НОВЫЙ ЗАКАЗ!*%0A👤 Клиент: ${buyerTag}%0A%0A📦 *Состав заказа:*%0A${itemsText}%0A%0A💰 *ИТОГО К ОПЛАТЕ: ${totalSum} ₽*`;
+
+          // Оповещаем обоих админов напрямую через бота
+          const admins = [8732002956, 5249130818];
+          for (const aid of admins) {
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${aid}&text=${notifyMsg}&parse_mode=Markdown`);
+          }
+
+          // Отправляем подтверждение покупателю с кнопками
+          const keyboard = JSON.stringify({
+            inline_keyboard: [
+              [{ text: "💬 Связаться с продавцом", url: "tg://user?id=5249130818" }],
+              [{ text: `💳 Оплатить заказ (${totalSum} ₽)`, url: "https://www.tbank.ru/" }]
+            ]
+          });
+          const clientText = `✅ *Заказ оформлен!*%0A%0A📦 *Товары:*%0A${itemsText}%0A%0A💰 *Сумма: ${totalSum} ₽*%0A%0AМастер получил ваш заказ! Для связи и оплаты нажмите кнопки ниже:`;
+          fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${user.id}&text=${clientText}&parse_mode=Markdown&reply_markup=${encodeURIComponent(keyboard)}`);
+        } catch (err) {
+          console.log("Direct API notify error:", err);
+        }
+      }
+
+      setTimeout(() => {
+        if (tg && typeof tg.close === "function") {
+          tg.close();
+        } else {
+          alert(`Заказ на сумму ${totalSum} ₽ успешно оформлен!`);
+          submitBtn.disabled = false;
+          submitBtn.innerText = "Оформить заказ ✨";
+        }
+      }, 300);
     }
 
     renderCatalog();

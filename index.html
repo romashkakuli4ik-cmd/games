@@ -3,522 +3,401 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Пасечная Мастерская Свечей</title>
+  <title>Live Feed Helpers</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    /* =========================================================
-       1. АТМОСФЕРА БРАУЗЕРА (Светлая крафтовая мастерская)
-       ========================================================= */
     :root {
-      --bg-color: #fbf7ee;
-      --bg-pattern: 
-        radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.15) 0%, transparent 60%),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='103.92' viewBox='0 0 60 103.92'%3E%3Cpath d='M30 0 L60 17.32 L60 51.96 L30 69.28 L0 51.96 L0 17.32 Z M30 103.92 L60 86.6 L60 51.96 L30 69.28 L0 51.96 L0 86.6 Z' fill='%23fef3c7' fill-opacity='0.45' stroke='%23fde68a' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E");
-      --bg-size: 60px 103.92px;
-      --card-bg: rgba(255, 255, 255, 0.88);
-      --card-border: rgba(217, 119, 6, 0.28);
-      --card-shadow: 0 10px 25px rgba(180, 83, 9, 0.08);
-      --text-main: #3d2406;
-      --text-muted: #85531d;
-      --accent-gold: #b45309;
-      --accent-badge: #d97706;
-      --btn-main: linear-gradient(135deg, #f59e0b, #d97706);
-      --btn-green: linear-gradient(135deg, #059669, #047857);
-      --bar-bg: rgba(255, 255, 255, 0.95);
-      --bar-border: rgba(217, 119, 6, 0.2);
-      --creator-btn-bg: rgba(217, 119, 6, 0.12);
-      --creator-btn-border: #d97706;
-      --creator-btn-color: #92400e;
-    }
-
-    /* =========================================================
-       2. АТМОСФЕРА TELEGRAM (Глубокий янтарный мед и соты)
-       ========================================================= */
-    body.telegram-mode {
-      --bg-color: #451a03;
-      --bg-pattern: 
-        radial-gradient(circle at 50% 10%, rgba(255, 235, 150, 0.25) 0%, transparent 75%),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='103.92' viewBox='0 0 60 103.92'%3E%3Cdefs%3E%3CradialGradient id='h' cx='45%25' cy='45%25' r='55%25'%3E%3Cstop offset='0%25' stop-color='%23f59e0b'/%3E%3Cstop offset='55%25' stop-color='%23d97706'/%3E%3Cstop offset='85%25' stop-color='%2392400e'/%3E%3Cstop offset='100%25' stop-color='%23451a03'/%3E%3C/radialGradient%3E%3Cg id='hex'%3E%3Cpath d='M30 0 L60 17.32 L60 51.96 L30 69.28 L0 51.96 L0 17.32 Z' fill='url(%23h)' stroke='%23fef3c7' stroke-width='2.2' stroke-linejoin='round'/%3E%3Cellipse cx='24' cy='24' rx='5' ry='2.5' fill='%23ffffff' fill-opacity='0.4' transform='rotate(-25 24 24)'/%3E%3C/g%3E%3C/defs%3E%3Cuse href='%23hex' x='0' y='0'/%3E%3Cuse href='%23hex' x='30' y='51.96'/%3E%3Cuse href='%23hex' x='-30' y='51.96'/%3E%3Cuse href='%23hex' x='0' y='103.92'/%3E%3C/svg%3E");
-      --bg-size: 60px 103.92px;
-      --card-bg: rgba(26, 15, 6, 0.92);
-      --card-border: rgba(255, 183, 3, 0.55);
-      --card-shadow: 0 6px 22px rgba(0, 0, 0, 0.55);
-      --text-main: #fffdf5;
-      --text-muted: #fcd34d;
-      --accent-gold: #ffb703;
-      --accent-badge: #fbbf24;
-      --btn-main: linear-gradient(135deg, #f59e0b, #b45309);
-      --btn-green: linear-gradient(135deg, #10b981, #047857);
-      --bar-bg: rgba(18, 9, 3, 0.96);
-      --bar-border: rgba(255, 183, 3, 0.35);
-      --creator-btn-bg: rgba(245, 158, 11, 0.15);
-      --creator-btn-border: #f59e0b;
-      --creator-btn-color: #fbbf24;
+      --bg: #0b0e14;
+      --card: #151b26;
+      --card-border: #222d3d;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent: #3b82f6;
+      --cold: #38bdf8;
+      --warm: #facc15;
+      --hot: #f97316;
+      --fire: #ef4444;
+      --green: #10b981;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text-main); padding: 14px; user-select: none; }
 
-    body {
-      background-color: var(--bg-color);
-      background-image: var(--bg-pattern);
-      background-size: var(--bg-size);
-      background-repeat: repeat;
-      background-attachment: fixed;
-      color: var(--text-main);
-      padding: 14px;
-      padding-bottom: 96px;
-      user-select: none;
-      min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
-      transition: background-color 0.3s ease;
+    .header { text-align: center; margin-bottom: 14px; }
+    .header h1 { font-size: 20px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .header p { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    /* Вкладки переключения платформ */
+    .tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 14px; }
+    .tab-btn {
+      background: var(--card); border: 1px solid var(--card-border); color: var(--text-muted);
+      padding: 10px 8px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: rgba(59, 130, 246, 0.15); border-color: var(--accent); color: #fff;
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
     }
 
-    /* АНИМИРОВАННЫЕ ПЧЕЛЫ */
-    .bee-box {
-      position: fixed;
-      pointer-events: none;
-      will-change: transform;
-      animation: beeFlight 16s infinite alternate ease-in-out;
+    /* Главная панель Score */
+    .panel {
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 14px; margin-bottom: 12px;
     }
 
-    .layer-back { z-index: 1; opacity: 0.65; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
-    .layer-front { z-index: 60; opacity: 0.98; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4)); }
-
-    .b-sm { width: 30px; height: 30px; }
-    .b-md { width: 44px; height: 44px; }
-    .b-lg { width: 58px; height: 58px; }
-
-    .pos-1 { top: 12%; left: 4%; animation-duration: 17s; animation-delay: 0s; }
-    .pos-2 { top: 38%; right: 5%; animation-duration: 21s; animation-delay: -4s; }
-    .pos-3 { top: 68%; left: 8%; animation-duration: 16s; animation-delay: -2s; }
-    .pos-4 { top: 20%; right: 10%; animation-duration: 14s; animation-delay: -6s; }
-    .pos-5 { top: 82%; right: 12%; animation-duration: 19s; animation-delay: -3s; }
-    .pos-6 { top: 7%; right: 28%; animation-duration: 23s; animation-delay: -8s; }
-
-    .wing {
-      transform-origin: 23px 20px;
-      animation: wingFlutter 0.08s infinite alternate ease-in-out;
-    }
-    .wing-right {
-      transform-origin: 41px 20px;
-      animation-delay: 0.04s;
+    .score-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; }
+    .score-num { font-size: 38px; font-weight: 900; line-height: 1; }
+    .badge-level {
+      font-size: 13px; font-weight: 800; padding: 4px 12px; border-radius: 20px;
+      text-transform: uppercase; letter-spacing: 0.5px;
     }
 
-    @keyframes wingFlutter {
-      0% { transform: scaleY(0.7) rotate(-20deg); opacity: 0.45; }
-      100% { transform: scaleY(1.3) rotate(20deg); opacity: 0.9; }
-    }
+    /* Прогресс-бар */
+    .bar-bg { width: 100%; height: 12px; background: #080b10; border-radius: 6px; overflow: hidden; margin-bottom: 8px; border: 1px solid #1f2937; }
+    .bar-fill { height: 100%; width: 50%; transition: width 0.4s ease, background 0.4s ease; }
 
-    @keyframes beeFlight {
-      0%   { transform: translate(0, 0) rotate(3deg) scaleX(1); }
-      25%  { transform: translate(35px, -18px) rotate(12deg) scaleX(1); }
-      50%  { transform: translate(70px, 45px) rotate(-10deg) scaleX(-1); }
-      75%  { transform: translate(-25px, 20px) rotate(8deg) scaleX(-1); }
-      100% { transform: translate(-10px, -15px) rotate(-4deg) scaleX(1); }
-    }
+    .desc-text { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4; }
 
-    .main-wrapper { position: relative; z-index: 10; max-width: 620px; margin: 0 auto; }
+    /* Метрики фона */
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; border-top: 1px solid var(--card-border); padding-top: 12px; }
+    .metric-col { text-align: center; }
+    .metric-val { font-size: 15px; font-weight: 800; color: #fff; }
+    .metric-lbl { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
-    .mode-badge {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 20px;
-      background: rgba(245, 158, 11, 0.15);
-      color: var(--accent-badge);
-      margin-bottom: 8px;
-      border: 1px solid var(--card-border);
-    }
+    /* Live-лента событий */
+    .feed-title { font-size: 14px; font-weight: 700; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .feed-badge { font-size: 11px; color: var(--green); display: flex; align-items: center; gap: 4px; }
+    .pulse-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 1.2s infinite; }
+    @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
 
-    .header {
-      text-align: center;
-      margin-bottom: 18px;
-      background: var(--card-bg);
-      border: 1.5px solid var(--card-border);
-      border-radius: 18px;
-      padding: 14px;
-      box-shadow: var(--card-shadow);
-      backdrop-filter: blur(12px);
+    .feed-list { display: flex; flex-direction: column; gap: 8px; max-height: 380px; overflow-y: auto; }
+    .feed-item {
+      background: rgba(11, 14, 20, 0.7); border: 1px solid var(--card-border); border-radius: 10px;
+      padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;
+      animation: fadeIn 0.25s ease;
     }
-    .header h1 {
-      font-size: 21px;
-      font-weight: 800;
-      color: var(--text-main);
-    }
-    .header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Кнопка связи с создателем (в браузере) */
-    .btn-creator-link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      background: var(--creator-btn-bg);
-      border: 1px solid var(--creator-btn-border);
-      color: var(--creator-btn-color);
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 700;
-      margin-top: 10px;
-      cursor: pointer;
-      transition: transform 0.15s ease;
-    }
-    .btn-creator-link:active { transform: scale(0.97); }
+    .item-user { font-size: 11px; color: var(--text-muted); }
+    .item-name { font-size: 13px; font-weight: 700; margin-top: 2px; }
+    .item-price { font-size: 14px; font-weight: 800; text-align: right; }
 
-    .honey-card {
-      background: var(--card-bg);
-      border: 1.5px solid var(--card-border);
-      border-radius: 18px;
-      padding: 14px 16px;
-      margin-bottom: 12px;
-      box-shadow: var(--card-shadow);
-      backdrop-filter: blur(12px);
-    }
+    .badge-cheap { color: #64748b; }
+    .badge-mid { color: #f1f5f9; }
+    .badge-high { color: var(--hot); }
+    .badge-fire { color: var(--fire); text-shadow: 0 0 8px rgba(239, 68, 68, 0.5); }
 
-    .item-row { display: flex; justify-content: space-between; align-items: center; }
-    .item-info { flex: 1; padding-right: 12px; }
-    .item-title { font-size: 15px; font-weight: 700; color: var(--text-main); }
-    .item-desc { font-size: 12px; color: var(--text-muted); margin-top: 3px; line-height: 1.35; }
-    .item-price { font-size: 16px; font-weight: 800; color: var(--accent-gold); margin-top: 6px; }
-
-    .btn-add {
-      background: var(--btn-main);
-      color: #fff;
-      border: none;
-      padding: 9px 15px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+    .disclaimer {
+      font-size: 11px; color: #6b7280; text-align: center; margin-top: 14px; line-height: 1.4;
+      padding: 8px; border: 1px dashed #1f2937; border-radius: 8px;
     }
-    .btn-add:active { transform: scale(0.96); }
-
-    .counter-box {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(0, 0, 0, 0.08);
-      border: 1.5px solid var(--card-border);
-      border-radius: 10px;
-      padding: 3px;
-    }
-    body.telegram-mode .counter-box {
-      background: rgba(15, 8, 2, 0.95);
-    }
-
-    .btn-qty {
-      background: rgba(245, 158, 11, 0.2);
-      border: none;
-      color: var(--accent-gold);
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
-      font-size: 18px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-    .btn-qty:active { opacity: 0.7; }
-    .qty-num { font-size: 14px; font-weight: bold; min-width: 22px; text-align: center; color: var(--text-main); }
-
-    .btn-return {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      color: var(--text-muted);
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-bottom: 14px;
-    }
-
-    .bottom-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--bar-bg);
-      border-top: 1.5px solid var(--bar-border);
-      backdrop-filter: blur(14px);
-      padding: 12px 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 100;
-      box-shadow: 0 -4px 18px rgba(0,0,0,0.15);
-    }
-    .btn-order-main {
-      background: var(--btn-green);
-      color: #fff;
-      border: none;
-      padding: 12px 22px;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
-    }
-    .btn-order-main:disabled { opacity: 0.35; box-shadow: none; cursor: not-allowed; }
   </style>
 </head>
 <body>
 
-  <!-- SVG ПЧЕЛА -->
-  <svg style="display: none;">
-    <defs>
-      <g id="photo-bee" viewBox="0 0 64 64">
-        <g class="wing">
-          <ellipse cx="23" cy="20" rx="9" ry="19" fill="#e0f2fe" fill-opacity="0.65" stroke="#7dd3fc" stroke-width="0.8" transform="rotate(-30 23 20)" />
-          <path d="M23 38 Q22 20 20 4 M23 22 Q17 14 14 18" stroke="#38bdf8" stroke-width="0.6" fill="none" opacity="0.7"/>
-        </g>
-        <g class="wing wing-right">
-          <ellipse cx="41" cy="20" rx="9" ry="19" fill="#e0f2fe" fill-opacity="0.65" stroke="#7dd3fc" stroke-width="0.8" transform="rotate(30 41 20)" />
-          <path d="M41 38 Q42 20 44 4 M41 22 Q47 14 50 18" stroke="#38bdf8" stroke-width="0.6" fill="none" opacity="0.7"/>
-        </g>
-        <path d="M22 35 L12 43 M20 42 L10 50 M42 35 L52 43 M44 42 L54 50" stroke="#1c1208" stroke-width="2.2" stroke-linecap="round" fill="none" />
-        <ellipse cx="32" cy="42" rx="14" ry="19" fill="#f59e0b" />
-        <path d="M19 33 Q32 37 45 33 M18 39 Q32 44 46 39 M19 46 Q32 50 45 46 M22 53 Q32 56 42 53" stroke="#1c0f04" stroke-width="3.5" fill="none" stroke-linecap="round" />
-        <polygon points="32,61 30,58 34,58" fill="#0a0502" />
-        <ellipse cx="32" cy="26" rx="11" ry="9" fill="#b45309" stroke="#78350f" stroke-width="1.2" />
-        <circle cx="32" cy="16" r="7.5" fill="#291405" />
-        <ellipse cx="27" cy="15" rx="2.5" ry="3.5" fill="#050302" />
-        <ellipse cx="37" cy="15" rx="2.5" ry="3.5" fill="#050302" />
-        <path d="M30 11 Q24 5 19 7 M34 11 Q40 5 45 7" stroke="#1a0b02" stroke-width="1.4" fill="none" stroke-linecap="round" />
-      </g>
-    </defs>
-  </svg>
-
-  <div class="bee-box layer-back b-sm pos-1"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
-  <div class="bee-box layer-back b-lg pos-2"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
-  <div class="bee-box layer-back b-md pos-3"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
-
-  <div class="main-wrapper">
-    
-    <div id="pageCatalog">
-      <div class="header">
-        <span class="mode-badge" id="envBadge">🌐 Веб-версия</span>
-        <h1>🍯 Пасечная Мастерская</h1>
-        <p>100% натуральный пчелиный воск & ручная работа</p>
-        <div id="browserCreatorBlock" style="display: none;">
-          <a class="btn-creator-link" href="https://t.me/kuli4ik_cmd" target="_blank" id="creatorHeaderLink">
-            💬 Связаться с создателем
-          </a>
-        </div>
-      </div>
-
-      <div id="catalogList"></div>
-
-      <div class="bottom-bar">
-        <div>
-          <div style="font-size: 11px; color: var(--text-muted);">В корзине: <span id="barCount">0</span> шт.</div>
-          <div style="font-size: 18px; font-weight: 800; color: var(--accent-gold);"><span id="barTotal">0</span> ₽</div>
-        </div>
-        <button class="btn-order-main" id="btnGoToCart" disabled onclick="openCartPage()">В корзину ➔</button>
-      </div>
-    </div>
-
-    <div id="pageCart" style="display: none;">
-      <button class="btn-return" onclick="openCatalogPage()">← Назад к витрине</button>
-
-      <div class="header" style="text-align: left; margin-bottom: 12px;">
-        <h1>🛒 Ваша корзина</h1>
-        <p>Проверьте заказ перед подтверждением</p>
-      </div>
-
-      <div class="honey-card" id="cartItemsList"></div>
-
-      <div class="honey-card" style="border-style: dashed;">
-        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px;">
-          <span>Свечей в заказе:</span>
-          <b id="cartTotalItemsCount">0 шт.</b>
-        </div>
-        <div style="display: flex; justify-content: space-between; font-size: 16px;">
-          <span>Сумма к оплате:</span>
-          <b style="color: var(--accent-gold); font-size: 20px;" id="cartFinalSum">0 ₽</b>
-        </div>
-      </div>
-
-      <!-- Дополнительная плашка для браузера -->
-      <div class="honey-card" id="browserCartContact" style="display: none; text-align: center;">
-        <div style="font-size: 13px; font-weight: 700; margin-bottom: 6px;">Есть вопросы по индивидуальному заказу?</div>
-        <a class="btn-creator-link" href="https://t.me/kuli4ik_cmd" target="_blank" style="margin-top: 0; width: 100%;">
-          💬 Написать создателю напрямую
-        </a>
-      </div>
-
-      <div class="bottom-bar">
-        <div>
-          <div style="font-size: 11px; color: var(--text-muted);">Итого:</div>
-          <div style="font-size: 18px; font-weight: 800; color: var(--accent-gold);"><span id="barCartTotal">0</span> ₽</div>
-        </div>
-        <button class="btn-order-main" id="btnSubmitOrder" onclick="sendOrderToBot()">Оформить заказ ✨</button>
-      </div>
-    </div>
-
+  <div class="header">
+    <h1>📡 Live Feed Helpers</h1>
+    <p>Анализ ленты выигрышей в реальном времени</p>
   </div>
 
-  <div class="bee-box layer-front b-md pos-4"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
-  <div class="bee-box layer-front b-sm pos-5"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
-  <div class="bee-box layer-front b-lg pos-6"><svg viewBox="0 0 64 64"><use href="#photo-bee"/></svg></div>
+  <!-- Селектор площадок -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchPlatform('musor')">🗑 Musor Drop</button>
+    <button class="tab-btn" onclick="switchPlatform('battle')">⚔️ Case Battle</button>
+    <button class="tab-btn" onclick="switchPlatform('caser')">📦 Caser.One</button>
+    <button class="tab-btn" onclick="switchPlatform('upgrader')">⚡️ Upgrader</button>
+  </div>
+
+  <!-- Панель единого скоринга (0-100) -->
+  <div class="panel">
+    <div class="score-row">
+      <div>
+        <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">АКТИВНОСТЬ ЛЕНТЫ</div>
+        <div class="score-num" id="scoreDisplay">50.0</div>
+      </div>
+      <div class="badge-level" id="levelBadge" style="background: rgba(250, 204, 21, 0.15); color: var(--warm);">
+        WARM 🌤
+      </div>
+    </div>
+
+    <div class="bar-bg">
+      <div class="bar-fill" id="scoreBar" style="width: 50%; background: var(--warm);"></div>
+    </div>
+
+    <div class="desc-text" id="levelDesc">Штатный темп, стандартное распределение выигрышей</div>
+
+    <div class="metrics-grid">
+      <div class="metric-col">
+        <div class="metric-val" id="dpmVal">0</div>
+        <div class="metric-lbl">Дропов / мин</div>
+      </div>
+      <div class="metric-col">
+        <div class="metric-val" id="cheapVal">0%</div>
+        <div class="metric-lbl">Дешёвые исходы</div>
+      </div>
+      <div class="metric-col">
+        <div class="metric-val" id="upsetVal">0</div>
+        <div class="metric-lbl">Апсеты (окно)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live поток событий -->
+  <div class="panel">
+    <div class="feed-title">
+      <span>Поток дропов</span>
+      <span class="feed-badge"><span class="pulse-dot"></span> LIVE-STREAM</span>
+    </div>
+    <div class="feed-list" id="feedContainer"></div>
+  </div>
+
+  <div class="disclaimer">
+    ℹ️ Статистика по уже прошедшим событиям, а не прогноз, не рекомендация делать ставки и не вмешательство в сайт.
+  </div>
 
   <script>
-    const BOT_TOKEN = "8868108142:AAG6oTSadt2X3gUEw_-kqEXTmSISxicdnL4";
-    const CREATOR_ID = "8732002956";
-    const SELLER_ID = "5249130818";
-    const CREATOR_TG_LINK = "https://t.me/kuli4ik_cmd";
-
     const tg = window.Telegram?.WebApp;
-    const isTelegram = Boolean(tg && tg.initData && tg.initData.length > 0);
+    if (tg) { tg.ready(); tg.expand(); }
 
-    if (isTelegram) {
-      document.body.classList.add("telegram-mode");
-      document.getElementById("envBadge").innerText = "🐝 Telegram WebApp";
-      tg.ready();
-      tg.expand();
-    } else {
-      document.getElementById("envBadge").innerText = "🌐 Крафтовая Веб-мастерская";
-      // В браузере показываем кнопки связи с создателем
-      document.getElementById("browserCreatorBlock").style.display = "block";
-      document.getElementById("browserCartContact").style.display = "block";
-    }
-
-    const PRODUCTS = [
-      { 
-        id: "candle_natural_pure", 
-        name: "🕯 Свечи восковые", 
-        desc: "100% пасечный пчелиный воск, ручная работа, чистое горение", 
-        price: 2000 
+    // Конфигурации пулов дропов по площадкам
+    const PLATFORMS = {
+      musor: {
+        name: "Musor Drop Helper",
+        baselinePrice: 180,
+        cheapLimit: 100,
+        expensiveLimit: 1200,
+        pool: [
+          { name: "P250 | Sand Dune", price: 8 },
+          { name: "Nova | Predator", price: 16 },
+          { name: "AK-47 | Safari Mesh", price: 48 },
+          { name: "M4A4 | Evil Daimyo", price: 340 },
+          { name: "USP-S | Cyrex", price: 920 },
+          { name: "AWP | Hyper Beast", price: 4600 },
+          { name: "★ Skeleton Knife | Fade", price: 85000 }
+        ],
+        weights: [48, 28, 14, 6, 2.8, 1, 0.2]
       },
-      { 
-        id: "c1", 
-        name: "🕯 Иерусалимский факел (33 свечи)", 
-        desc: "100% пасечный воск, обожжённые в Иерусалиме", 
-        price: 450 
+      battle: {
+        name: "Case Battle Helper",
+        baselinePrice: 380,
+        cheapLimit: 140,
+        expensiveLimit: 2000,
+        pool: [
+          { name: "Glock-18 | High Beam", price: 110 },
+          { name: "M4A1-S | Night Terror", price: 240 },
+          { name: "M4A4 | The Emperor", price: 2800 },
+          { name: "Desert Eagle | Printstream", price: 6800 },
+          { name: "AK-47 | Vulcan", price: 17500 },
+          { name: "★ Butterfly Knife | Doppler", price: 140000 }
+        ],
+        weights: [38, 30, 18, 9, 4, 1]
       },
-      { 
-        id: "c2", 
-        name: "🍯 Медовые свечи из вощины", 
-        desc: "Высота 13 см, насыщенный аромат прополиса и мёда", 
-        price: 180 
+      caser: {
+        name: "Caser.One Helper",
+        baselinePrice: 260,
+        cheapLimit: 120,
+        expensiveLimit: 1500,
+        pool: [
+          { name: "P90 | Grim", price: 45 },
+          { name: "MP9 | Starlight Protector", price: 130 },
+          { name: "SSG 08 | Dragonfire", price: 890 },
+          { name: "AK-47 | Ice Coaled", price: 1350 },
+          { name: "★ Karambit | Gamma Doppler", price: 110000 }
+        ],
+        weights: [42, 34, 14, 8, 2]
       },
-      { 
-        id: "c3", 
-        name: "🌿 Травяная алтарная скрутка", 
-        desc: "С добавлением горного чабреца, лаванды и полыни", 
-        price: 250 
-      },
-      { 
-        id: "c4", 
-        name: "✨ Конусные свечи №40 (набор 10 шт)", 
-        desc: "Высота 20 см, чистое ровное горение без копоти", 
-        price: 220 
+      upgrader: {
+        name: "Upgrader Helper",
+        baselinePrice: 400,
+        cheapLimit: 150,
+        expensiveLimit: 2500,
+        pool: [
+          { name: "Неудачный исход (0x)", price: 0 },
+          { name: "XM1014 | Oxide Blaze (1.5x)", price: 180 },
+          { name: "AWP | Mortis (3x)", price: 750 },
+          { name: "AK-47 | Bloodsport (8x)", price: 5800 },
+          { name: "★ Talon Knife | Fade (25x)", price: 64000 }
+        ],
+        weights: [50, 26, 14, 8, 2]
       }
-    ];
+    };
 
-    let cart = {};
+    let activeKey = "musor";
+    let windowEvents = [];
+    const WINDOW_SIZE = 30;
+    let timerId = null;
 
-    function renderCatalog() {
-      const container = document.getElementById("catalogList");
-      container.innerHTML = PRODUCTS.map(p => {
-        const qty = cart[p.id] || 0;
-        return `
-          <div class="honey-card">
-            <div class="item-row">
-              <div class="item-info">
-                <div class="item-title">${p.name}</div>
-                <div class="item-desc">${p.desc}</div>
-                <div class="item-price">${p.price} ₽</div>
-              </div>
-              <div>
-                ${qty === 0 ? `
-                  <button class="btn-add" onclick="changeQty('${p.id}', 1)">+ В заказ</button>
-                ` : `
-                  <div class="counter-box">
-                    <button class="btn-qty" onclick="changeQty('${p.id}', -1)">-</button>
-                    <span class="qty-num">${qty}</span>
-                    <button class="btn-qty" onclick="changeQty('${p.id}', 1)">+</button>
-                  </div>
-                `}
-              </div>
-            </div>
-          </div>
-        `;
-      }).join("");
+    // Смена площадки
+    function switchPlatform(key) {
+      if (activeKey === key) return;
+      activeKey = key;
 
-      updateCatalogBar();
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      event.currentTarget.classList.add("active");
+
+      windowEvents = [];
+      document.getElementById("feedContainer").innerHTML = "";
+      recalculate();
     }
 
-    function changeQty(productId, delta) {
-      const current = cart[productId] || 0;
-      const next = current + delta;
-      if (next <= 0) {
-        delete cart[productId];
-      } else {
-        cart[productId] = next;
+    // Случайный дроп по весам площадки
+    function getRandomDrop(cfg) {
+      const sum = cfg.weights.reduce((a, b) => a + b, 0);
+      let r = Math.random() * sum;
+      for (let i = 0; i < cfg.weights.length; i++) {
+        if (r < cfg.weights[i]) return cfg.pool[i];
+        r -= cfg.weights[i];
       }
-      renderCatalog();
-      if (document.getElementById("pageCart").style.display === "block") {
-        renderCartPage();
-      }
+      return cfg.pool[0];
     }
 
-    function updateCatalogBar() {
-      let totalCount = 0;
-      let totalPrice = 0;
+    // ЕДИНЫЙ АЛГОРИТМ СКОРИНГА (0–100)
+    function recalculate() {
+      const cfg = PLATFORMS[activeKey];
+      const n = windowEvents.length;
 
-      for (const [pId, q] of Object.entries(cart)) {
-        const prod = PRODUCTS.find(p => p.id === pId);
-        if (prod) {
-          totalCount += q;
-          totalPrice += prod.price * q;
-        }
-      }
-
-      document.getElementById("barCount").innerText = totalCount;
-      document.getElementById("barTotal").innerText = totalPrice;
-      document.getElementById("btnGoToCart").disabled = totalCount === 0;
-    }
-
-    function openCartPage() {
-      document.getElementById("pageCatalog").style.display = "none";
-      document.getElementById("pageCart").style.display = "block";
-      renderCartPage();
-      window.scrollTo(0, 0);
-    }
-
-    function openCatalogPage() {
-      document.getElementById("pageCart").style.display = "none";
-      document.getElementById("pageCatalog").style.display = "block";
-      renderCatalog();
-    }
-
-    function renderCartPage() {
-      const box = document.getElementById("cartItemsList");
-      const orderItems = [];
-      let totalSum = 0;
-      let totalCount = 0;
-
-      for (const [pId, q] of Object.entries(cart)) {
-        const prod = PRODUCTS.find(p => p.id === pId);
-        if (prod) {
-          orderItems.push({ ...prod, qty: q, subtotal: prod.price * q });
-          totalSum += prod.price * q;
-          totalCount += q;
-        }
-      }
-
-      if (orderItems.length === 0) {
-        openCatalogPage();
+      if (n === 0) {
+        updateUI(50.0, "WARM", "Штатный темп, стандартное распределение", 0, 0, 0);
         return;
       }
 
-      box.innerHTML = orderItems.map(item => `
-        <div class="item-row" 
+      const prices = windowEvents.map(e => e.price);
+      const cheapCount = prices.filter(p => p <= cfg.cheapLimit).length;
+      const cheapRatio = cheapCount / n;
+      const expensiveCount = prices.filter(p => p >= cfg.expensiveLimit).length;
+
+      // Momentum с затуханием по времени
+      const now = Date.now();
+      let weightedVal = 0;
+      let weightSum = 0;
+
+      windowEvents.forEach(e => {
+        const ageSec = Math.max(1, (now - e.timestamp) / 1000);
+        const w = 1 / Math.sqrt(ageSec);
+        const rel = e.price / cfg.baselinePrice;
+        weightedVal += Math.min(rel, 7.0) * w;
+        weightSum += w;
+      });
+
+      const momentum = weightSum > 0 ? (weightedVal / weightSum) : 1.0;
+
+      // Вычисление итогового скора
+      let rawScore = 50.0 
+        - (cheapRatio - 0.5) * 40.0 
+        + (expensiveCount / n) * 85.0 
+        + (momentum - 1.0) * 18.0;
+
+      let score = Math.max(0, Math.min(100, rawScore));
+
+      // Уровни COLD / WARM / HOT / FIRE
+      let level = "WARM";
+      let desc = "Штатный темп, стандартное распределение";
+
+      if (score < 28) {
+        level = "COLD";
+        desc = "Преобладание дешёвых исходов, фон ниже нормы";
+      } else if (score < 58) {
+        level = "WARM";
+        desc = "Штатный темп, обычные выигрыши";
+      } else if (score < 82) {
+        level = "HOT";
+        desc = "Повышенная плотность ценных дропов и апсетов";
+      } else {
+        level = "FIRE";
+        desc = "Аномальный кластер редких и дорогих исходов";
+      }
+
+      // Темп в минуту
+      let dpm = n;
+      if (n > 1) {
+        const spanSec = (windowEvents[0].timestamp - windowEvents[n - 1].timestamp) / 1000;
+        if (spanSec > 2) dpm = (n / spanSec) * 60;
+      }
+
+      updateUI(score, level, desc, Math.round(dpm), Math.round(cheapRatio * 100), expensiveCount);
+    }
+
+    function updateUI(score, level, desc, dpm, cheapPercent, upsets) {
+      document.getElementById("scoreDisplay").innerText = score.toFixed(1);
+      document.getElementById("scoreBar").style.width = score + "%";
+      document.getElementById("levelDesc").innerText = desc;
+      document.getElementById("dpmVal").innerText = dpm;
+      document.getElementById("cheapVal").innerText = cheapPercent + "%";
+      document.getElementById("upsetVal").innerText = upsets;
+
+      const badge = document.getElementById("levelBadge");
+      const bar = document.getElementById("scoreBar");
+
+      if (level === "COLD") {
+        badge.innerText = "COLD ❄️";
+        badge.style.background = "rgba(56, 189, 248, 0.15)";
+        badge.style.color = "var(--cold)";
+        bar.style.background = "var(--cold)";
+      } else if (level === "WARM") {
+        badge.innerText = "WARM 🌤";
+        badge.style.background = "rgba(250, 204, 21, 0.15)";
+        badge.style.color = "var(--warm)";
+        bar.style.background = "var(--warm)";
+      } else if (level === "HOT") {
+        badge.innerText = "HOT 🔥";
+        badge.style.background = "rgba(249, 115, 22, 0.15)";
+        badge.style.color = "var(--hot)";
+        bar.style.background = "var(--hot)";
+      } else {
+        badge.innerText = "FIRE ⚡️";
+        badge.style.background = "rgba(239, 68, 68, 0.2)";
+        badge.style.color = "var(--fire)";
+        bar.style.background = "var(--fire)";
+      }
+    }
+
+    function addFeedDrop() {
+      const cfg = PLATFORMS[activeKey];
+      const raw = getRandomDrop(cfg);
+      const user = "user_" + Math.floor(100 + Math.random() * 900);
+
+      const eventItem = {
+        user: user,
+        name: raw.name,
+        price: raw.price,
+        timestamp: Date.now()
+      };
+
+      windowEvents.unshift(eventItem);
+      if (windowEvents.length > WINDOW_SIZE) windowEvents.pop();
+
+      // Добавление строки в DOM
+      const feed = document.getElementById("feedContainer");
+      const row = document.createElement("div");
+      row.className = "feed-item";
+
+      let priceClass = "badge-mid";
+      if (raw.price <= cfg.cheapLimit) priceClass = "badge-cheap";
+      else if (raw.price >= cfg.expensiveLimit * 2) priceClass = "badge-fire";
+      else if (raw.price >= cfg.expensiveLimit) priceClass = "badge-high";
+
+      row.innerHTML = `
+        <div>
+          <div class="item-user">${user}</div>
+          <div class="item-name">${raw.name}</div>
+        </div>
+        <div class="item-price ${priceClass}">
+          ${raw.price > 0 ? raw.price.toLocaleString("ru-RU") + " ₽" : "0 ₽ (0x)"}
+        </div>
+      `;
+
+      feed.insertBefore(row, feed.firstChild);
+      if (feed.children.length > 20) feed.removeChild(feed.lastChild);
+
+      recalculate();
+
+      // Случайный интервал следующего события ленты (0.6 - 2.2 сек)
+      const nextDelay = 600 + Math.random() * 1600;
+      timerId = setTimeout(addFeedDrop, nextDelay);
+    }
+
+    // Старт потока
+    addFeedDrop();
+  </script>
+</body>
+</html>

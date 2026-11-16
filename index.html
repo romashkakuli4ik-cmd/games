@@ -1,12 +1,1822 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-  <title>Мой сайт</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CASER 2.0 | [БЕТА]</title>
+  <style>
+    :root {
+      --bg-main: #0c0e11;
+      --bg-header: #12151a;
+      --bg-card: #161a20;
+      --bg-card-hover: #1d222a;
+      --bg-dark-box: #101317;
+      --border: #242a33;
+      --text-main: #f3f5f7;
+      --text-muted: #7f8999;
+      --green: #22c55e;
+      --green-dark: #15803d;
+      --amber: #f59e0b;
+      --amber-glow: rgba(245, 158, 11, 0.3);
+      --cyan: #38bdf8;
+      --red: #ef4444;
+      --purple: #a855f7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Inter, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ==================== LOADING SCREEN ==================== */
+    #loadingScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: radial-gradient(circle at 50% 45%, #1c1710 0%, #0b0c0e 65%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      transition: opacity 0.45s ease;
+    }
+
+    #loadingScreen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loader-brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .loader-hex {
+      width: 68px;
+      height: 68px;
+      background: linear-gradient(145deg, #2a2114, #141210);
+      border: 2px solid var(--amber);
+      border-radius: 16px;
+      box-shadow: 0 0 30px var(--amber-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loader-title {
+      font-size: 38px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: #fff;
+    }
+
+    .loader-status-row {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .loader-bar-wrap {
+      width: 100%;
+      max-width: 440px;
+      height: 6px;
+      background: #1b1f26;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .loader-bar-fill {
+      height: 100%;
+      width: 4%;
+      background: linear-gradient(90deg, var(--amber), #fbbf24);
+      box-shadow: 0 0 12px var(--amber);
+      transition: width 0.25s ease;
+    }
+
+    .loader-tip-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #9ca3af;
+      text-align: center;
+      max-width: 460px;
+    }
+
+    .tip-badge {
+      background: rgba(245, 158, 11, 0.18);
+      color: var(--amber);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ==================== HEADER ==================== */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-header);
+      border-bottom: 1px solid var(--border);
+      height: 60px;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      overflow-x: auto;
+    }
+
+    .brand-mini {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 900;
+      font-size: 16px;
+      cursor: pointer;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+      white-space: nowrap;
+    }
+
+    .nav-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-btn.active {
+      color: var(--cyan);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    .nav-btn.rewards-btn {
+      color: var(--amber);
+      font-weight: 800;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .balance-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #181c23;
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .bal-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .icon-gun {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      background: linear-gradient(135deg, #38bdf8, #0284c7);
+      display: inline-block;
+    }
+
+    .icon-coin {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #6ee7b7, #10b981);
+      display: inline-block;
+    }
+
+    .plus-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: var(--green);
+      color: #06180d;
+      font-size: 20px;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn {
+      position: relative;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #181c23;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
+
+    .badge-notif {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--cyan);
+      color: #04131c;
+      font-size: 9px;
+      font-weight: 900;
+      padding: 1px 4px;
+      border-radius: 8px;
+    }
+
+    /* ==================== PROFILE MENU ==================== */
+    .profile-menu {
+      position: fixed;
+      top: 66px;
+      right: 18px;
+      width: 320px;
+      background: #151920;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      z-index: 250;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75);
+      display: none;
+    }
+
+    .profile-menu.open {
+      display: block;
+    }
+
+    .profile-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 14px;
+    }
+
+    .profile-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: #232a35;
+      border: 2px solid var(--cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .profile-id {
+      background: #1d242e;
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--cyan);
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .menu-tile {
+      background: #1b2028;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .menu-tile:hover {
+      border-color: var(--green);
+      background: #222933;
+    }
+
+    .menu-tile span {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    /* ==================== MAIN & SECTIONS ==================== */
+    main {
+      max-width: 1340px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .tab-section {
+      display: none;
+    }
+
+    .tab-section.active {
+      display: block;
+    }
+
+    .search-input {
+      width: 100%;
+      background: #14181e;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 16px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 18px;
+    }
+
+    .search-input:focus {
+      border-color: var(--cyan);
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 800;
+      margin: 22px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ==================== CASES CARDS ==================== */
+    .featured-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .featured-card {
+      background: linear-gradient(155deg, #18231c, #12161b);
+      border: 1px solid #263b2d;
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .featured-card.vip {
+      background: linear-gradient(155deg, #292012, #13161b);
+      border-color: #574119;
+    }
+
+    .featured-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .tag-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .tag-vip { background: var(--amber); color: #111; }
+    .tag-new { background: var(--cyan); color: #051622; }
+    .tag-limited { background: var(--red); color: #fff; }
+
+    .cases-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+      gap: 12px;
+    }
+
+    .case-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+      position: relative;
+    }
+
+    .case-card:hover {
+      background: var(--bg-card-hover);
+      border-color: #364152;
+      transform: translateY(-2px);
+    }
+
+    .case-art {
+      height: 92px;
+      border-radius: 9px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .case-name {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .case-price {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* ==================== UPGRADER (1:1 WHEEL & PANELS) ==================== */
+    .upgrader-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 1024px) {
+      .upgrader-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .upg-side-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .upg-slot-box {
+      background: #101318;
+      border: 1px dashed #2d3542;
+      border-radius: 12px;
+      min-height: 150px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      margin: 12px 0;
+    }
+
+    .upg-center-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .wheel-outer {
+      position: relative;
+      width: 266px;
+      height: 266px;
+      border-radius: 50%;
+      background: #101318;
+      border: 2px solid #2b323d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 8px 0 14px;
+      box-shadow: inset 0 0 25px rgba(0,0,0,0.85);
+    }
+
+    .wheel-scale-label {
+      position: absolute;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      z-index: 4;
+    }
+
+    .wheel-scale-top { top: 6px; left: 50%; transform: translateX(-50%); }
+    .wheel-scale-right { right: 8px; top: 50%; transform: translateY(-50%); }
+    .wheel-scale-bottom { bottom: 6px; left: 50%; transform: translateX(-50%); }
+    .wheel-scale-left { left: 8px; top: 50%; transform: translateY(-50%); }
+
+    .wheel-sector {
+      width: 224px;
+      height: 224px;
+      border-radius: 50%;
+      background: conic-gradient(from 180deg, rgba(245, 158, 11, 0.32) 0% 50%, #171b22 50% 100%);
+      border: 2px solid #2f3744;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .wheel-inner-core {
+      width: 152px;
+      height: 152px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #191e26 0%, #101318 100%);
+      border: 2px solid #2b3340;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+    }
+
+    .wheel-pointer-wrap {
+      position: absolute;
+      inset: 14px;
+      z-index: 5;
+      transition: transform 2.8s cubic-bezier(0.12, 0.85, 0.2, 1);
+      pointer-events: none;
+    }
+
+    .wheel-triangle {
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 13px solid var(--amber);
+      filter: drop-shadow(0 0 6px var(--amber));
+    }
+
+    .roll-banner {
+      position: absolute;
+      top: 44px;
+      background: rgba(18, 22, 28, 0.94);
+      border: 1px solid var(--amber);
+      color: var(--amber);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 6px;
+      z-index: 8;
+      display: none;
+    }
+
+    .fair-badge {
+      align-self: flex-start;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--text-muted);
+      background: #101318;
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .upg-controls-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    .upg-chip {
+      background: #101318;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 7px 11px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .upg-chip.active {
+      background: rgba(34, 197, 94, 0.16);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .add-bal-box {
+      width: 100%;
+      background: #101318;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+    }
+
+    .add-bal-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+    }
+
+    .add-bal-slider {
+      width: 100%;
+      accent-color: var(--green);
+      cursor: pointer;
+    }
+
+    /* ==================== BUTTONS & GRIDS ==================== */
+    .btn-primary {
+      background: var(--green);
+      color: #05180c;
+      border: none;
+      padding: 11px 20px;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-amber {
+      background: var(--amber);
+      color: #161004;
+      border: none;
+      padding: 11px 20px;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .skin-mini-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+      gap: 8px;
+      max-height: 220px;
+      overflow-y: auto;
+      margin-top: 8px;
+    }
+
+    .skin-mini-card {
+      background: #101318;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 8px;
+      text-align: center;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .skin-mini-card.selected {
+      border-color: var(--green);
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    /* ==================== BATTLES, REWARDS, SHOP ==================== */
+    .panel-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .cards-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .banner-preview {
+      height: 76px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      letter-spacing: 1px;
+      font-size: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .frame-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      margin: 0 auto 10px;
+      background: #1b212a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+
+    /* ==================== MODAL & TOAST ==================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 9, 12, 0.9);
+      z-index: 400;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .case-modal {
+      width: 100%;
+      max-width: 820px;
+      background: #14181f;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .roulette-window {
+      position: relative;
+      height: 146px;
+      background: #0c0e12;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 18px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .roulette-pointer {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--amber);
+      z-index: 10;
+      box-shadow: 0 0 12px var(--amber);
+    }
+
+    .roulette-track {
+      display: flex;
+      gap: 10px;
+      padding: 0 10px;
+    }
+
+    .roulette-item {
+      min-width: 130px;
+      height: 120px;
+      background: #161b23;
+      border: 1px solid var(--border);
+      border-bottom: 4px solid var(--cyan);
+      border-radius: 10px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 11px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      background: #181e27;
+      border-left: 4px solid var(--green);
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 700;
+      z-index: 900;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <!-- другой контент сайта -->
 
-  <!-- ВСТАВЬ КОД СЮДА -->
+  <!-- ЭКРАН ЗАГРУЗКИ CASER (1:1 КАК НА ВИДЕО) -->
+  <div id="loadingScreen">
+    <div class="loader-brand">
+      <div class="loader-hex">
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none">
+          <path d="M4 4L9 8L12 5L15 8L20 4L19 14L12 20L5 14L4 4Z" fill="#f59e0b" stroke="#fde68a" stroke-width="1.5"/>
+          <path d="M8 12L10.5 13.5M16 12L13.5 13.5" stroke="#111" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="loader-title">CASER</div>
+    </div>
+    <div class="loader-status-row">
+      <span id="loaderStatusText">Connecting to server...</span>
+      <span id="loaderPercent">4%</span>
+    </div>
+    <div class="loader-bar-wrap">
+      <div class="loader-bar-fill" id="loaderBarFill"></div>
+    </div>
+    <div class="loader-tip-row">
+      <span class="tip-badge">TIP</span>
+      <span id="loaderTipText">Spin the hourly wheel for free every hour: wins and up to 20,000 coins.</span>
+    </div>
+  </div>
 
+  <!-- ШАПКА САЙТА -->
+  <header>
+    <div class="header-left">
+      <div class="brand-mini" onclick="switchTab('cases')">
+        <span style="color:var(--amber);">◆</span> CASER
+      </div>
+      <nav>
+        <button class="nav-btn" data-tab="inventory" onclick="switchTab('inventory')">Инвентарь</button>
+        <button class="nav-btn active" data-tab="cases" onclick="switchTab('cases')">Случаи</button>
+        <button class="nav-btn" data-tab="battles" onclick="switchTab('battles')">Битвы</button>
+        <button class="nav-btn" data-tab="upgrader" onclick="switchTab('upgrader')">Улучшения</button>
+        <button class="nav-btn rewards-btn" data-tab="rewards" onclick="switchTab('rewards')">НАГРАДЫ</button>
+      </nav>
+    </div>
+
+    <div class="header-right">
+      <div class="balance-box">
+        <div class="bal-item"><span class="icon-gun"></span><span id="headerInvVal">0.00</span></div>
+        <div class="bal-item"><span class="icon-coin"></span><span id="headerCoins">7.85</span></div>
+      </div>
+      <button class="plus-btn" title="Магазин" onclick="switchTab('shop')">+</button>
+      <button class="icon-btn" onclick="showToast('Уведомления (99+)')">🔔<span class="badge-notif">99+</span></button>
+      <button class="icon-btn" onclick="toggleProfileMenu()">☰</button>
+    </div>
+  </header>
+
+  <!-- МЕНЮ ПРОФИЛЯ ROMAWE4KA13 -->
+  <div class="profile-menu" id="profileMenu">
+    <div class="profile-top">
+      <div class="profile-user">
+        <div class="avatar-box">😎</div>
+        <div>
+          <div style="font-weight:800; font-size:14px;">Romawe4ka13</div>
+          <div style="font-size:12px; color:var(--cyan); cursor:pointer;">Просмотреть профиль ›</div>
+        </div>
+      </div>
+      <div class="profile-id">2,646</div>
+    </div>
+    <div class="menu-grid">
+      <div class="menu-tile" onclick="spinHourlyWheel()"><span>🎡</span>Колесо часов</div>
+      <div class="menu-tile" onclick="showToast('Активных Giveaways сейчас нет')"><span>🎁</span>GIVEAWAYS</div>
+      <div class="menu-tile" onclick="addCoins(150); showToast('Ежедневная серия: +150 монет!')"><span>📅</span>Ежедневная серия</div>
+      <div class="menu-tile" onclick="switchTab('shop'); toggleProfileMenu();"><span>➕</span>Магазин</div>
+      <div class="menu-tile" onclick="showToast('Чат игроков подключён')"><span>💬</span>Чат</div>
+      <div class="menu-tile" onclick="showToast('CASER 2.0 [БЕТА] от 1F3ndy')"><span>📢</span>ЧТО НОВОГО</div>
+    </div>
+  </div>
+
+  <main>
+    <!-- ВКЛАДКА: СЛУЧАИ (КЕЙСЫ) -->
+    <section id="tab-cases" class="tab-section active">
+      <input type="text" class="search-input" id="caseSearch" placeholder="🔍 поиск..." oninput="renderCases()" />
+
+      <div class="featured-grid">
+        <div class="featured-card" onclick="openCaseModal('Бесплатный кейс', 0)">
+          <span class="tag-badge" style="background:var(--green); color:#041a0c;">БЕСПЛАТНО</span>
+          <div id="art-free"></div>
+          <div class="case-name">Бесплатный кейс</div>
+          <div class="case-price">БЕСПЛАТНО</div>
+        </div>
+
+        <div class="featured-card vip" onclick="openCaseModal('VIP-кейс', 0)">
+          <span class="tag-badge tag-vip">ВИП</span>
+          <div id="art-vip"></div>
+          <div class="case-name">VIP-кейс</div>
+          <div class="case-price" style="color:var(--amber);">Только для VIP</div>
+        </div>
+      </div>
+
+      <div id="casesContainer"></div>
+    </section>
+
+    <!-- ВКЛАДКА: ИНВЕНТАРЬ -->
+    <section id="tab-inventory" class="tab-section">
+      <div class="panel-box" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h3>Инвентарь</h3>
+          <p style="font-size:12px; color:var(--text-muted);">Нажмите «Продать», чтобы обменять скин на монеты</p>
+        </div>
+        <button class="btn-primary" onclick="sellAllInventory()">Продать всё</button>
+      </div>
+      <div class="cases-grid" id="inventoryGrid"></div>
+    </section>
+
+    <!-- ВКЛАДКА: БИТВЫ -->
+    <section id="tab-battles" class="tab-section">
+      <div class="panel-box" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h3>Бои с кейсами</h3>
+          <p style="font-size:12px; color:var(--text-muted);">Откройте одни и те же кейсы рядом друг с другом — в одиночку или в командах 2v2</p>
+        </div>
+        <span style="font-size:12px; color:var(--text-muted);">Этот сервер • до 16 сражений одновременно</span>
+      </div>
+
+      <div class="panel-box">
+        <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:16px;">
+          <div style="flex:1; min-width:240px;">
+            <div style="font-size:11px; color:var(--text-muted); font-weight:800; margin-bottom:6px;">РЕЖИМЫ</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button class="upg-chip active" onclick="toggleChip(this)">1v1 (2 ИГРОКОВ)</button>
+              <button class="upg-chip" onclick="toggleChip(this)">1v1v1 (3 ИГРОКОВ)</button>
+              <button class="upg-chip" onclick="toggleChip(this)">1v1v1v1 (4 ИГРОКОВ)</button>
+              <button class="upg-chip" onclick="toggleChip(this)">2v2 (2 КОМАНД)</button>
+            </div>
+          </div>
+          <div style="flex:1; min-width:240px;">
+            <div style="font-size:11px; color:var(--text-muted); font-weight:800; margin-bottom:6px;">ПОБЕДИТЕЛЬ</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button class="upg-chip active" onclick="toggleChip(this)">Наивысшая общая сумма</button>
+              <button class="upg-chip" onclick="toggleChip(this)">Джекпот</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Раунды: <strong id="battleRoundsCount">0</strong>/20 • Нажмите на кейс, чтобы добавить раунд</div>
+        <div class="cases-grid" id="battleCasesGrid" style="margin-bottom:16px;"></div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-top:1px solid var(--border); padding-top:14px;">
+          <div>Стоимость на одного игрока: <strong style="color:var(--green);" id="battleTotalCost">0</strong></div>
+          <div style="display:flex; gap:8px;">
+            <button class="upg-chip" onclick="clearBattle()">Очистить</button>
+            <button class="btn-primary" onclick="startBattle()">Создать битву</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ВКЛАДКА: УЛУЧШЕНИЯ (КОЛЕСО 1:1 КАК НА ВИДЕО) -->
+    <section id="tab-upgrader" class="tab-section">
+      <div class="upgrader-grid">
+        <!-- Левый блок: Ваши предметы -->
+        <div class="upg-side-card">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h4>Ваши предметы</h4>
+              <span style="font-size:12px; color:var(--green); font-weight:800;" id="upgSourcePrice">0.00</span>
+            </div>
+            <div class="upg-slot-box" id="upgSourceSlot">
+              <div style="font-size:13px; color:var(--text-muted);">Нажмите на скины в разделе «МОИ ПРЕДМЕТЫ», чтобы добавить их</div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:12px; font-weight:800; color:var(--text-muted);">Мои предметы</div>
+            <div class="skin-mini-grid" id="upgMySkinsList"></div>
+          </div>
+        </div>
+
+        <!-- Центральное колесо улучшений -->
+        <div class="upg-center-card">
+          <div class="wheel-outer">
+            <span class="wheel-scale-label wheel-scale-top">100%</span>
+            <span class="wheel-scale-label wheel-scale-right">50%</span>
+            <span class="wheel-scale-label wheel-scale-bottom">0%</span>
+            <span class="wheel-scale-label wheel-scale-left">50%</span>
+
+            <div class="roll-banner" id="rollBanner">Roll 91.40 - under 47.97</div>
+
+            <div class="wheel-sector" id="wheelSector">
+              <div class="wheel-pointer-wrap" id="wheelPointerWrap">
+                <div class="wheel-triangle"></div>
+              </div>
+              <div class="wheel-inner-core">
+                <div style="font-size:28px; font-weight:900;" id="upgChancePct">50.00%</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;" id="upgChanceDesc">Средний шанс</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="fair-badge">🛡️ FAIR</div>
+
+          <div class="upg-controls-bar">
+            <button class="upg-chip" onclick="invertWheelSide()" title="Инвертировать сторону">⇅</button>
+            <button class="upg-chip" onclick="applyMult(2)">x2</button>
+            <button class="upg-chip" onclick="applyMult(5)">x5</button>
+            <button class="upg-chip" onclick="applyMult(10)">x10</button>
+            <button class="upg-chip" onclick="setDirectChance(30)">30%</button>
+            <button class="upg-chip active" onclick="setDirectChance(50)">50%</button>
+            <button class="upg-chip" onclick="setDirectChance(80)">80%</button>
+          </div>
+
+          <div class="add-bal-box">
+            <div class="add-bal-top">
+              <span>Добавить баланс: <strong style="color:#fff;" id="addedBalLabel">0.00</strong></span>
+              <span>Максимум <span id="maxBalLabel">7.85</span></span>
+            </div>
+            <input type="range" class="add-bal-slider" id="addBalSlider" min="0" max="7.85" step="0.05" value="0" oninput="onBalanceSlider(this.value)" />
+          </div>
+
+          <button class="btn-primary" id="upgradeBtn" style="width:100%;" onclick="spinUpgrade()">Улучшение</button>
+        </div>
+
+        <!-- Правый блок: Цель -->
+        <div class="upg-side-card">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h4>Цель</h4>
+              <span style="font-size:12px; color:var(--amber); font-weight:800;" id="upgTargetPrice">19.31</span>
+            </div>
+            <div class="upg-slot-box" id="upgTargetSlot">
+              <div style="font-size:13px; color:var(--text-muted);">Выберите скин в разделе «Выбор предметов» или нажмите на пресет</div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:12px; font-weight:800; color:var(--text-muted);">Выбрать предмет</div>
+            <div class="skin-mini-grid" id="upgTargetSkinsList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ВКЛАДКА: НАГРАДЫ -->
+    <section id="tab-rewards" class="tab-section">
+      <div class="panel-box" style="border-color:#574119; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div>
+          <span class="tag-badge tag-vip">★ ЛЮБИМОЕ</span>
+          <div style="font-weight:800; font-size:15px;">Любимый кейсер — получите этот скин бесплатно</div>
+          <div style="font-size:12px; color:var(--amber);">StatTrak™ Huntsman Knife • Servo Frame • 19,677.81</div>
+        </div>
+        <button class="btn-amber" onclick="claimRewardSkin('StatTrak™ Huntsman Knife | Servo Frame', 19677.81)">Получить бесплатно</button>
+      </div>
+
+      <div class="section-title">Награды за игровое время</div>
+      <div class="cards-3">
+        <div class="panel-box">
+          <div style="font-size:12px; color:var(--text-muted);">Играть 10 минут</div>
+          <div style="font-weight:800; margin:6px 0;">CZ75-Авто • Початковая динамика</div>
+          <div style="color:var(--green); font-weight:800; margin-bottom:12px;">1,036.78</div>
+          <button class="btn-primary" style="width:100%;" onclick="claimRewardSkin('CZ75-Авто | Початковая динамика', 1036.78)">Получить скин</button>
+        </div>
+        <div class="panel-box">
+          <div style="font-size:12px; color:var(--text-muted);">Играть 30 минут</div>
+          <div style="font-weight:800; margin:6px 0;">★ Нож для выживания • Рассвет</div>
+          <div style="color:var(--amber); font-weight:800; margin-bottom:12px;">15,154.60</div>
+          <button class="btn-primary" style="width:100%;" onclick="claimRewardSkin('★ Нож для выживания', 15154.60)">Получить скин</button>
+        </div>
+        <div class="panel-box">
+          <div style="font-size:12px; color:var(--text-muted);">Играть 60 минут</div>
+          <div style="font-weight:800; margin:6px 0;">Нож-стилет • Кровавая паутина</div>
+          <div style="color:var(--amber); font-weight:800; margin-bottom:12px;">27,999.00</div>
+          <button class="btn-primary" style="width:100%;" onclick="claimRewardSkin('Нож-стилет', 27999.00)">Получить скин</button>
+        </div>
+      </div>
+
+      <div class="section-title">Ежедневный дроп и Задачи</div>
+      <div class="cards-3">
+        <div class="panel-box">
+          <span class="tag-badge" style="background:var(--green); color:#000;">ЛЕГКО</span>
+          <div style="font-weight:800; margin:8px 0;">Открыть 40 кейсов</div>
+          <div style="color:var(--green); font-weight:800;">Награда: +600.00</div>
+        </div>
+        <div class="panel-box">
+          <span class="tag-badge tag-vip">СРЕДНИЙ</span>
+          <div style="font-weight:800; margin:8px 0;">Выиграйте 2 улучшений с вероятностью 25% или ниже</div>
+          <div style="color:var(--green); font-weight:800;">Награда: +1,200.00</div>
+        </div>
+        <div class="panel-box">
+          <span class="tag-badge tag-limited">СЛОЖНО</span>
+          <div style="font-weight:800; margin:8px 0;">Выиграйте 20 улучшений</div>
+          <div style="color:var(--green); font-weight:800;">Награда: +1,800.00</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ВКЛАДКА: МАГАЗИН (МОНЕТЫ, VIP, РАМКИ, БАННЕРЫ, ПРОМОКОД) -->
+    <section id="tab-shop" class="tab-section">
+      <div class="section-title">МОНЕТЫ</div>
+      <div class="cards-3">
+        <div class="panel-box"><div style="font-size:20px; font-weight:900;">5,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(5000)">20 R$</button></div>
+        <div class="panel-box"><div style="font-size:20px; font-weight:900;">15,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(15000)">50 R$</button></div>
+        <div class="panel-box"><div style="font-size:20px; font-weight:900;">30,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(30000)">85 R$</button></div>
+        <div class="panel-box"><div style="font-size:20px; font-weight:900;">50,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(50000)">140 R$</button></div>
+        <div class="panel-box"><span class="tag-badge tag-new">ПОПУЛЯРНЫЕ</span><div style="font-size:20px; font-weight:900;">100,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(100000)">250 R$</button></div>
+        <div class="panel-box"><div style="font-size:20px; font-weight:900;">500,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(500000)">1000 R$</button></div>
+      </div>
+
+      <div class="section-title">Рамки для аватара</div>
+      <div class="cards-3">
+        <div class="panel-box" style="text-align:center;">
+          <div class="frame-circle" style="border:3px solid #a855f7; box-shadow:0 0 15px rgba(168,85,247,0.4);">😎</div>
+          <div style="font-weight:700; margin-bottom:8px;">Фиолетовое разделение</div>
+          <button class="btn-primary" onclick="showToast('Рамка «Фиолетовое разделение» куплена!')">Купить • 50 R$</button>
+        </div>
+        <div class="panel-box" style="text-align:center;">
+          <div class="frame-circle" style="border:3px solid #10b981; box-shadow:0 0 15px rgba(16,185,129,0.4);">😎</div>
+          <div style="font-weight:700; margin-bottom:8px;">Изумруд</div>
+          <button class="btn-primary" onclick="showToast('Рамка «Изумруд» куплена!')">Купить • 50 R$</button>
+        </div>
+        <div class="panel-box" style="text-align:center;">
+          <div class="frame-circle" style="border:3px solid #ef4444; box-shadow:0 0 15px rgba(239,68,68,0.4);">😎</div>
+          <div style="font-weight:700; margin-bottom:8px;">Багровый импульс</div>
+          <button class="btn-primary" onclick="showToast('Рамка «Багровый импульс» куплена!')">Купить • 50 R$</button>
+        </div>
+        <div class="panel-box" style="text-align:center;">
+          <div class="frame-circle" style="border:3px solid #38bdf8; box-shadow:0 0 15px rgba(56,189,248,0.4);">😎</div>
+          <div style="font-weight:700; margin-bottom:8px;">Ледяной голубой</div>
+          <button class="btn-primary" onclick="showToast('Рамка «Ледяной голубой» куплена!')">Купить • 50 R$</button>
+        </div>
+        <div class="panel-box" style="text-align:center;">
+          <div class="frame-circle" style="border:3px solid #f59e0b; box-shadow:0 0 15px rgba(245,158,11,0.4);">😎</div>
+          <div style="font-weight:700; margin-bottom:8px;">Золотой</div>
+          <button class="btn-amber" onclick="showToast('Только для VIP!')">Только для VIP</button>
+        </div>
+      </div>
+
+      <div class="section-title">BANNERS (Баннеры профиля)</div>
+      <div class="cards-3">
+        <div class="panel-box">
+          <div class="banner-preview" style="background:linear-gradient(135deg,#064e3b,#10b981); color:#ecfdf5;">EMERALD WAVE</div>
+          <div style="font-weight:700; margin-bottom:6px;">EMERALD WAVE • 100,000</div>
+          <button class="btn-primary" style="width:100%;" onclick="buyBanner(100000, 'EMERALD WAVE')">Купить за монеты</button>
+        </div>
+        <div class="panel-box">
+          <div class="banner-preview" style="background:linear-gradient(135deg,#3b0764,#ec4899); color:#fdf2f8;">НЕОНОВАЯ АРКАДА</div>
+          <div style="font-weight:700; margin-bottom:6px;">Неоновая аркада • 500,000</div>
+          <button class="btn-primary" style="width:100%;" onclick="buyBanner(500000, 'Неоновая аркада')">Купить за монеты</button>
+        </div>
+        <div class="panel-box">
+          <div class="banner-preview" style="background:linear-gradient(135deg,#0f172a,#f59e0b); color:#fef3c7;">НЕОНОВЫЙ ГОРОДСКОЙ КАРАМБИТ</div>
+          <div style="font-weight:700; margin-bottom:6px;">Неоновый городской карамбит • 1,000,000</div>
+          <button class="btn-primary" style="width:100%;" onclick="buyBanner(1000000, 'Неоновый городской карамбит')">Купить за монеты</button>
+        </div>
+      </div>
+
+      <div class="section-title">Дополнительные материалы</div>
+      <div class="cards-3">
+        <div class="panel-box">
+          <div style="font-weight:800; margin-bottom:6px;">Еще один запуск часового колеса</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">16 призов до 60,000 монет</div>
+          <button class="btn-amber" onclick="spinHourlyWheel()">Дополнительное вращение • 15</button>
+        </div>
+        <div class="panel-box">
+          <div style="font-weight:800; margin-bottom:6px;">Промо-код (попробуй CASER2026)</div>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="promoCodeInput" class="search-input" style="margin:0;" placeholder="ВВЕДИТЕ КОД" />
+            <button class="btn-primary" onclick="redeemPromo()">Активировать</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- МОДАЛЬНОЕ ОКНО ОТКРЫТИЯ КЕЙСА -->
+  <div class="modal-overlay" id="caseModal">
+    <div class="case-modal">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <button class="upg-chip" onclick="closeCaseModal()">← Назад к кейсам</button>
+        <h3 id="modalCaseTitle">Бесплатный кейс</h3>
+        <span style="font-size:12px; color:var(--text-muted);">Шансы на получение приза</span>
+      </div>
+      <div class="roulette-window">
+        <div class="roulette-pointer"></div>
+        <div class="roulette-track" id="rouletteTrack"></div>
+      </div>
+      <div style="display:flex; justify-content:center;">
+        <button class="btn-primary" id="spinCaseBtn" onclick="spinCase()">Открыть кейс</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ГЕНЕРАТОР SVG-КОНТЕЙНЕРА КЕЙСА С УНИКАЛЬНЫМ ЦВЕТОМ
+    function getCaseSVG(color) {
+      return `
+        <svg width="86" height="64" viewBox="0 0 96 72" fill="none">
+          <rect x="8" y="14" width="80" height="48" rx="8" fill="#1b222c" stroke="${color}" stroke-width="2.5"/>
+          <rect x="8" y="14" width="80" height="14" rx="5" fill="${color}" fill-opacity="0.28"/>
+          <rect x="38" y="24" width="20" height="12" rx="3" fill="${color}"/>
+          <line x1="20" y1="14" x2="20" y2="62" stroke="${color}" stroke-opacity="0.45" stroke-width="2"/>
+          <line x1="76" y1="14" x2="76" y2="62" stroke="${color}" stroke-opacity="0.45" stroke-width="2"/>
+        </svg>
+      `;
+    }
+
+    // ДАННЫЕ КАТЕГОРИЙ И КЕЙСОВ
+    const caseCategories = [
+      {
+        title: 'НОВЫЙ',
+        items: [
+          { name: 'Багровый лист', price: 39, tag: 'НОВЫЙ', color: '#ef4444' },
+          { name: 'Морфий', price: 79, tag: 'НОВЫЙ', color: '#22c55e' },
+          { name: 'Миньон', price: 99, color: '#eab308' },
+          { name: 'Задержка ввода', price: 167, tag: 'ОГРАНИЧ.', color: '#f97316' },
+          { name: 'Дождливый вечер', price: 349, color: '#38bdf8' }
+        ]
+      },
+      {
+        title: 'Коллекция цветов',
+        items: [
+          { name: 'Черно-белый', price: 479, color: '#cbd5e1' },
+          { name: 'Зеленый', price: 799, color: '#22c55e' },
+          { name: 'Желтый', price: 999, color: '#facc15' },
+          { name: 'Синий', price: 1199, color: '#3b82f6' },
+          { name: 'Фиолетовый', price: 1499, color: '#a855f7' }
+        ]
+      },
+      {
+        title: 'Наши постройки',
+        items: [
+          { name: 'Магнум', price: 19, color: '#ef4444' },
+          { name: 'Выставка', price: 69, color: '#94a3b8' },
+          { name: 'Летний набор', price: 199, color: '#fb923c' },
+          { name: 'Паук', price: 499, color: '#10b981' },
+          { name: 'Шепот осени', price: 699, color: '#d97706' }
+        ]
+      },
+      {
+        title: 'Специальная серия',
+        items: [
+          { name: 'Новые перчатки', price: 22999, color: '#a855f7' },
+          { name: 'Доплер', price: 34999, color: '#3b82f6' },
+          { name: 'Зуб тигра', price: 39999, color: '#f59e0b' },
+          { name: 'Закалка поверхности', price: 40999, color: '#38bdf8' },
+          { name: 'Затухание', price: 54999, color: '#ec4899' },
+          { name: 'Роскошные перчатки', price: 64999, color: '#eab308' },
+          { name: 'Сапфир', price: 74999, color: '#2563eb' },
+          { name: 'Изумруд', price: 84999, color: '#10b981' },
+          { name: 'Рубин', price: 94999, color: '#dc2626' }
+        ]
+      },
+      {
+        title: 'Ножи',
+        items: [
+          { name: 'Нож скелета', price: 27999, color: '#14b8a6' },
+          { name: 'Нож-стилет', price: 27999, color: '#0d9488' },
+          { name: 'Штык М9', price: 79999, color: '#2dd4bf' },
+          { name: 'Карамбит', price: 89999, color: '#34d399' },
+          { name: 'Нож-бабочка', price: 99999, color: '#10b981' }
+        ]
+      },
+      {
+        title: 'Арсенал',
+        items: [
+          { name: 'Prisma', price: 316, color: '#38bdf8' },
+          { name: 'Призма 2', price: 277, color: '#ec4899' },
+          { name: 'Горизонт', price: 285, color: '#f59e0b' },
+          { name: 'Сны и кошмары', price: 317, color: '#8b5cf6' },
+          { name: 'Киловатт', price: 95, color: '#a855f7' },
+          { name: 'CS20', price: 176, color: '#eab308' },
+          { name: 'Тень', price: 272, color: '#64748b' },
+          { name: 'Разрушенная паутина', price: 451, color: '#ef4444' },
+          { name: 'Операция «Феникс»', price: 346, color: '#f97316' },
+          { name: 'Операция «Прилив»', price: 612, color: '#06b6d4' },
+          { name: 'Револьвер', price: 318, color: '#94a3b8' },
+          { name: 'Операция «Дикий огонь»', price: 374, color: '#f59e0b' },
+          { name: 'Спектр 2', price: 463, color: '#a855f7' },
+          { name: 'Спектр', price: 470, color: '#6366f1' },
+          { name: 'Операция «Сломанный клык»', price: 553, color: '#eab308' },
+          { name: 'Операция «Гидра»', price: 1852, color: '#22c55e' }
+        ]
+      },
+      {
+        title: 'Коллекции',
+        items: [
+          { name: 'Коллекция «Анубис»', price: 58, color: '#f59e0b' },
+          { name: 'Древняя коллекция', price: 238, color: '#10b981' },
+          { name: 'Коллекция «Магазин»', price: 841, color: '#38bdf8' },
+          { name: 'Коллекция каналов', price: 733, color: '#0ea5e9' },
+          { name: 'Коллекция богов и чудовищ', price: 1467, color: '#3b82f6' },
+          { name: 'Коллекция святого Марка', price: 1497, color: '#ef4444' },
+          { name: 'Коллекция из брусчатки', price: 1970, color: '#94a3b8' },
+          { name: 'Коллекция нордиков', price: 1954, color: '#38bdf8' }
+        ]
+      }
+    ];
+
+    const skinPool = [
+      { name: 'Амулет-сувенир | Подсветка', price: 9.55, color: '#94a3b8' },
+      { name: 'Наклейка | Веселый мороженок', price: 4.20, color: '#38bdf8' },
+      { name: 'Сержант 08 | Гнев когтей', price: 14.80, color: '#a855f7' },
+      { name: 'Галиль АР | Запретная зона', price: 19.31, color: '#ef4444' },
+      { name: 'Р90 | Спираль', price: 31.06, color: '#3b82f6' },
+      { name: 'СГ 553 | Интеграл', price: 95.70, color: '#ec4899' },
+      { name: 'AK-47 | Императрица', price: 420.00, color: '#f59e0b' },
+      { name: '★ Карамбит | Градиент', price: 18500.00, color: '#eab308' }
+    ];
+
+    // СОСТОЯНИЕ ИГРЫ
+    let coins = 7.85;
+    let inventory = [{ id: 101, name: 'Амулет-сувенир | Подсветка', price: 9.55, color: '#94a3b8' }];
+    let currentModalCase = { name: 'Бесплатный кейс', price: 0 };
+    let battleCases = [];
+    let selectedSourceId = 101;
+    let selectedTargetIdx = 3;
+    let upgradeChance = 47.97;
+    let addedBalanceBet = 0;
+    let wheelInverted = false;
+
+    // ЗАГРУЗОЧНЫЙ ЭКРАН CASER
+    function runLoader() {
+      const tips = [
+        'Spin the hourly wheel for free every hour: wins and up to 20,000 coins.',
+        'Got a promo code? Redeem it at the bottom of the Shop.',
+        'Join giveaways for a shot at free skins.',
+        'Big drops show up in the live feed for everyone.',
+        'Lock your best skins so you never sell them by accident.'
+      ];
+      let pct = 4;
+      const bar = document.getElementById('loaderBarFill');
+      const pctEl = document.getElementById('loaderPercent');
+      const statusEl = document.getElementById('loaderStatusText');
+      const tipEl = document.getElementById('loaderTipText');
+
+      const timer = setInterval(() => {
+        pct += Math.floor(Math.random() * 18) + 12;
+        if (pct >= 100) {
+          pct = 100;
+          bar.style.width = '100%';
+          pctEl.textContent = '100%';
+          statusEl.textContent = 'Подготовка меню...';
+          clearInterval(timer);
+          setTimeout(() => {
+            document.getElementById('loadingScreen').classList.add('hidden');
+          }, 450);
+        } else {
+          bar.style.width = pct + '%';
+          pctEl.textContent = pct + '%';
+          tipEl.textContent = tips[Math.floor(Math.random() * tips.length)];
+        }
+      }, 240);
+    }
+
+    function updateUI() {
+      document.getElementById('headerCoins').textContent = coins.toFixed(2);
+      const invTotal = inventory.reduce((s, i) => s + i.price, 0);
+      document.getElementById('headerInvVal').textContent = invTotal.toFixed(2);
+
+      const slider = document.getElementById('addBalSlider');
+      slider.max = coins.toFixed(2);
+      if (addedBalanceBet > coins) {
+        addedBalanceBet = 0;
+        slider.value = 0;
+      }
+      document.getElementById('maxBalLabel').textContent = coins.toFixed(2);
+      document.getElementById('addedBalLabel').textContent = addedBalanceBet.toFixed(2);
+
+      renderInventory();
+      renderUpgrader();
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      const btn = document.querySelector(`.nav-btn[data-tab="${tab}"]`);
+      if (btn) btn.classList.add('active');
+    }
+
+    function toggleProfileMenu() {
+      document.getElementById('profileMenu').classList.toggle('open');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      clearTimeout(window._t);
+      window._t = setTimeout(() => { t.style.display = 'none'; }, 3200);
+    }
+
+    // ОТРИСОВКА КЕЙСОВ
+    function renderCases() {
+      document.getElementById('art-free').innerHTML = `<div class="case-art">${getCaseSVG('#22c55e')}</div>`;
+      document.getElementById('art-vip').innerHTML = `<div class="case-art">${getCaseSVG('#f59e0b')}</div>`;
+
+      const q = document.getElementById('caseSearch').value.toLowerCase();
+      const container = document.getElementById('casesContainer');
+      container.innerHTML = '';
+
+      caseCategories.forEach(cat => {
+        const list = cat.items.filter(i => i.name.toLowerCase().includes(q));
+        if (!list.length) return;
+
+        const h = document.createElement('div');
+        h.className = 'section-title';
+        h.textContent = cat.title;
+        container.appendChild(h);
+
+        const grid = document.createElement('div');
+        grid.className = 'cases-grid';
+        list.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'case-card';
+          card.onclick = () => openCaseModal(item.name, item.price);
+          card.innerHTML = `
+            ${item.tag ? `<span class="tag-badge ${item.tag === 'НОВЫЙ' ? 'tag-new' : 'tag-limited'}">${item.tag}</span>` : ''}
+            <div class="case-art">${getCaseSVG(item.color)}</div>
+            <div class="case-name">${item.name}</div>
+            <div class="case-price"><span class="icon-coin"></span> ${item.price.toLocaleString()}</div>
+          `;
+          grid.appendChild(card);
+        });
+        container.appendChild(grid);
+      });
+    }
+
+    // ОТКРЫТИЕ КЕЙСОВ
+    function openCaseModal(name, price) {
+      currentModalCase = { name, price };
+      document.getElementById('modalCaseTitle').textContent = name;
+      const track = document.getElementById('rouletteTrack');
+      track.style.transition = 'none';
+      track.style.transform = 'translateX(0px)';
+      track.innerHTML = '';
+
+      for (let i = 0; i < 34; i++) {
+        const s = skinPool[Math.floor(Math.random() * skinPool.length)];
+        const d = document.createElement('div');
+        d.className = 'roulette-item';
+        d.style.borderBottomColor = s.color;
+        d.innerHTML = `<div style="font-weight:700; margin-bottom:6px;">${s.name}</div><div style="color:var(--green); font-weight:800;">${s.price.toFixed(2)}</div>`;
+        track.appendChild(d);
+      }
+      document.getElementById('caseModal').classList.add('open');
+    }
+
+    function closeCaseModal() {
+      document.getElementById('caseModal').classList.remove('open');
+    }
+
+    function spinCase() {
+      if (coins < currentModalCase.price) {
+        showToast('Недостаточно монет!');
+        return;
+      }
+      coins -= currentModalCase.price;
+      updateUI();
+
+      const btn = document.getElementById('spinCaseBtn');
+      btn.disabled = true;
+
+      const track = document.getElementById('rouletteTrack');
+      const winIdx = 25;
+      const won = { ...skinPool[Math.floor(Math.random() * skinPool.length)], id: Date.now() };
+      track.children[winIdx].style.borderBottomColor = won.color;
+      track.children[winIdx].innerHTML = `<div style="font-weight:700; margin-bottom:6px;">${won.name}</div><div style="color:var(--green); font-weight:800;">${won.price.toFixed(2)}</div>`;
+
+      track.style.transition = 'transform 3.5s cubic-bezier(0.12, 0.85, 0.18, 1)';
+      track.style.transform = `translateX(-${winIdx * 140 - 310}px)`;
+
+      setTimeout(() => {
+        inventory.push(won);
+        selectedSourceId = won.id;
+        updateUI();
+        btn.disabled = false;
+        showToast(`Выпало: ${won.name} (${won.price.toFixed(2)})`);
+      }, 3600);
+    }
+
+    // ИНВЕНТАРЬ
+    function renderInventory() {
+      const grid = document.getElementById('inventoryGrid');
+      grid.innerHTML = '';
+      if (!inventory.length) {
+        grid.innerHTML = '<div style="color:var(--text-muted);">Ваш инвентарь пуст. Откройте свой первый кейс!</div>';
+        return;
+      }
+      inventory.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'case-card';
+        card.innerHTML = `
+          <div class="case-art" style="border-bottom:3px solid ${item.color};">${getCaseSVG(item.color)}</div>
+          <div class="case-name">${item.name}</div>
+          <div class="case-price" style="justify-content:space-between;">
+            <span>${item.price.toFixed(2)}</span>
+            <button class="upg-chip" onclick="sellSkin(${item.id})">Продать</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function sellSkin(id) {
+      const idx = inventory.findIndex(i => i.id === id);
+      if (idx !== -1) {
+        coins += inventory[idx].price;
+        inventory.splice(idx, 1);
+        updateUI();
+      }
+    }
+
+    function sellAllInventory() {
+      if (!inventory.length) return;
+      coins += inventory.reduce((s, i) => s + i.price, 0);
+      inventory = [];
+      updateUI();
+      showToast('Весь инвентарь продан!');
+    }
+
+    // БИТВЫ
+    function renderBattleCases() {
+      const grid = document.getElementById('battleCasesGrid');
+      const list = caseCategories[0].items.concat(caseCategories[2].items);
+      grid.innerHTML = '';
+      list.forEach(c => {
+        const card = document.createElement('div');
+        card.className = 'case-card';
+        card.onclick = () => {
+          if (battleCases.length >= 20) return;
+          battleCases.push(c);
+          document.getElementById('battleRoundsCount').textContent = battleCases.length;
+          document.getElementById('battleTotalCost').textContent = battleCases.reduce((s, x) => s + x.price, 0);
+        };
+        card.innerHTML = `
+          <div class="case-art" style="height:64px;">${getCaseSVG(c.color)}</div>
+          <div class="case-name">${c.name}</div>
+          <div class="case-price"><span class="icon-coin"></span> ${c.price}</div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function toggleChip(btn) {
+      btn.parentElement.querySelectorAll('.upg-chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function clearBattle() {
+      battleCases = [];
+      document.getElementById('battleRoundsCount').textContent = '0';
+      document.getElementById('battleTotalCost').textContent = '0';
+    }
+
+    function startBattle() {
+      if (!battleCases.length) return showToast('Добавьте хотя бы 1 кейс!');
+      const cost = battleCases.reduce((s, x) => s + x.price, 0);
+      if (coins < cost) return showToast('Недостаточно монет!');
+      coins -= cost;
+      const myPts = cost * (0.6 + Math.random() * 1.2);
+      const botPts = cost * (0.6 + Math.random() * 1.2);
+      if (myPts >= botPts) {
+        coins += myPts + botPts;
+        showToast(`Победа в битве! Выигрыш: ${(myPts + botPts).toFixed(2)}`);
+      } else {
+        showToast(`Бот победил (${botPts.toFixed(1)} против ${myPts.toFixed(1)})`);
+      }
+      updateUI();
+    }
+
+    // УЛУЧШЕНИЯ (АПГРЕЙДЕР)
+    function renderUpgrader() {
+      const myList = document.getElementById('upgMySkinsList');
+      myList.innerHTML = '';
+      inventory.forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'skin-mini-card' + (item.id === selectedSourceId ? ' selected' : '');
+        el.onclick = () => {
+          selectedSourceId = item.id;
+          recalcUpgradeChance();
+          renderUpgrader();
+        };
+        el.innerHTML = `<div style="font-weight:700; margin-bottom:4px;">${item.name}</div><div style="color:var(--green);">${item.price.toFixed(2)}</div>`;
+        myList.appendChild(el);
+      });
+
+      const tgtList = document.getElementById('upgTargetSkinsList');
+      tgtList.innerHTML = '';
+      skinPool.forEach((item, idx) => {
+        const el = document.createElement('div');
+        el.className = 'skin-mini-card' + (idx === selectedTargetIdx ? ' selected' : '');
+        el.onclick = () => {
+          selectedTargetIdx = idx;
+          recalcUpgradeChance();
+          renderUpgrader();
+        };
+        el.innerHTML = `<div style="font-weight:700; margin-bottom:4px;">${item.name}</div><div style="color:var(--amber);">${item.price.toFixed(2)}</div>`;
+        tgtList.appendChild(el);
+      });
+
+      const src = inventory.find(i => i.id === selectedSourceId);
+      const tgt = skinPool[selectedTargetIdx];
+
+      document.getElementById('upgSourcePrice').textContent = src ? src.price.toFixed(2) : '0.00';
+      document.getElementById('upgSourceSlot').innerHTML = src
+        ? `<div style="font-weight:800; color:#fff;">${src.name}</div><div style="color:var(--green); font-size:13px; margin-top:4px;">${src.price.toFixed(2)}</div>`
+        : `<div style="font-size:13px; color:var(--text-muted);">Нажмите на скины в разделе «МОИ ПРЕДМЕТЫ», чтобы добавить их</div>`;
+
+      document.getElementById('upgTargetPrice').textContent = tgt.price.toFixed(2);
+      document.getElementById('upgTargetSlot').innerHTML = `<div style="font-weight:800; color:#fff;">${tgt.name}</div><div style="color:var(--amber); font-size:13px; margin-top:4px;">${tgt.price.toFixed(2)}</div>`;
+
+      recalcUpgradeChance();
+    }
+
+    function onBalanceSlider(val) {
+      addedBalanceBet = parseFloat(val) || 0;
+      document.getElementById('addedBalLabel').textContent = addedBalanceBet.toFixed(2);
+      recalcUpgradeChance();
+    }
+
+    function recalcUpgradeChance() {
+      const src = inventory.find(i => i.id === selectedSourceId);
+      const tgt = skinPool[selectedTargetIdx];
+      const totalBet = (src ? src.price : 0) + addedBalanceBet;
+      if (totalBet > 0 && tgt && tgt.price > 0) {
+        upgradeChance = Math.min(80, Math.max(5, +((totalBet / tgt.price) * 95).toFixed(2)));
+      }
+      paintWheel();
+    }
+
+    function setDirectChance(pct) {
+      upgradeChance = pct;
+      paintWheel();
+    }
+
+    function applyMult(mult) {
+      const src = inventory.find(i => i.id === selectedSourceId);
+      const base = (src ? src.price : 10) + addedBalanceBet;
+      const desired = base * mult;
+      let bestIdx = 0;
+      skinPool.forEach((s, i) => {
+        if (Math.abs(s.price - desired) < Math.abs(skinPool[bestIdx].price - desired)) bestIdx = i;
+      });
+      selectedTargetIdx = bestIdx;
+      renderUpgrader();
+    }
+
+    function invertWheelSide() {
+      wheelInverted = !wheelInverted;
+      paintWheel();
+    }
+
+    function paintWheel() {
+      document.getElementById('upgChancePct').textContent = upgradeChance.toFixed(2) + '%';
+      document.getElementById('upgChanceDesc').textContent =
+        upgradeChance < 25 ? 'Очень низкая вероятность' : upgradeChance < 48 ? 'Низкая вероятность' : 'Средний шанс';
+
+      const sector = document.getElementById('wheelSector');
+      if (!wheelInverted) {
+        sector.style.background = `conic-gradient(from 180deg, rgba(245, 158, 11, 0.34) 0% ${upgradeChance}%, #171b22 ${upgradeChance}% 100%)`;
+      } else {
+        sector.style.background = `conic-gradient(from 180deg, #171b22 0% ${100 - upgradeChance}%, rgba(245, 158, 11, 0.34) ${100 - upgradeChance}% 100%)`;
+      }
+    }
+
+    function spinUpgrade() {
+      const srcIdx = inventory.findIndex(i => i.id === selectedSourceId);
+      if (srcIdx === -1 && addedBalanceBet <= 0) {
+        showToast('Выберите предмет из «Мои предметы» или добавьте баланс!');
+        return;
+      }
+      if (addedBalanceBet > coins) return showToast('Недостаточно монет!');
+
+      const btn = document.getElementById('upgradeBtn');
+      btn.disabled = true;
+
+      coins -= addedBalanceBet;
+      if (srcIdx !== -1) inventory.splice(srcIdx, 1);
+      selectedSourceId = null;
+
+      const roll = +(Math.random() * 100).toFixed(2);
+      const won = !wheelInverted ? (roll <= upgradeChance) : (roll >= (100 - upgradeChance));
+      const deg = 1080 + (roll / 100) * 360;
+
+      document.getElementById('wheelPointerWrap').style.transform = `rotate(${deg}deg)`;
+
+      setTimeout(() => {
+        const banner = document.getElementById('rollBanner');
+        banner.style.display = 'block';
+        banner.style.borderColor = won ? 'var(--green)' : 'var(--red)';
+        banner.style.color = won ? 'var(--green)' : 'var(--red)';
+        banner.textContent = `Roll ${roll.toFixed(2)} - under ${upgradeChance.toFixed(2)} (${won ? 'Победа!' : 'Неудача'})`;
+
+        if (won) {
+          const target = skinPool[selectedTargetIdx];
+          const newItem = { ...target, id: Date.now() };
+          inventory.push(newItem);
+          selectedSourceId = newItem.id;
+          showToast(`УЛУЧШЕНИЕ УСПЕШНО! Получен: ${target.name}`);
+        } else {
+          showToast(`Неудача! Выпало ${roll.toFixed(2)}`);
+        }
+
+        addedBalanceBet = 0;
+        document.getElementById('addBalSlider').value = 0;
+        btn.disabled = false;
+        updateUI();
+      }, 2850);
+    }
+
+    // НАГРАДЫ И МАГАЗИН
+    function claimRewardSkin(name, price) {
+      inventory.push({ id: Date.now(), name, price, color: '#f59e0b' });
+      updateUI();
+      showToast(`Получен скин: ${name}`);
+    }
+
+    function addCoins(val) {
+      coins += val;
+      updateUI();
+      showToast(`+${val.toLocaleString()} монет зачислено!`);
+    }
+
+    function buyBanner(price, title) {
+      if (coins < price) return showToast(`Не хватает ${(price - coins).toFixed(2)} монет`);
+      coins -= price;
+      updateUI();
+      showToast(`Баннер «${title}» установлен!`);
+    }
+
+    function spinHourlyWheel() {
+      const prizes = [50, 200, 1000, 5000, 20000];
+      const win = prizes[Math.floor(Math.random() * prizes.length)];
+      addCoins(win);
+    }
+
+    function redeemPromo() {
+      const code = document.getElementById('promoCodeInput').value.trim().toUpperCase();
+      if (code === 'CASER2026') {
+        addCoins(2500);
+        document.getElementById('promoCodeInput').value = '';
+      } else {
+        showToast('Неверный промо-код. Попробуй CASER2026');
+      }
+    }
+
+    // СТАРТ
+    runLoader();
+    renderCases();
+    renderBattleCases();
+    updateUI();
+  </script>
 </body>
 </html>

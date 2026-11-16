@@ -48,11 +48,12 @@
       align-items: center;
       justify-content: center;
       padding: 24px;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
     }
 
     #loadingScreen.hidden {
       opacity: 0;
+      visibility: hidden;
       pointer-events: none;
     }
 
@@ -60,7 +61,7 @@
       display: flex;
       align-items: center;
       gap: 16px;
-      margin-bottom: 26px;
+      margin-bottom: 24px;
     }
 
     .loader-hex {
@@ -84,7 +85,7 @@
 
     .loader-status-row {
       width: 100%;
-      max-width: 440px;
+      max-width: 420px;
       display: flex;
       justify-content: space-between;
       font-size: 13px;
@@ -94,20 +95,20 @@
 
     .loader-bar-wrap {
       width: 100%;
-      max-width: 440px;
+      max-width: 420px;
       height: 6px;
       background: #1b1f26;
       border-radius: 6px;
       overflow: hidden;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .loader-bar-fill {
       height: 100%;
-      width: 4%;
+      width: 15%;
       background: linear-gradient(90deg, var(--amber), #fbbf24);
       box-shadow: 0 0 12px var(--amber);
-      transition: width 0.2s ease;
+      transition: width 0.2s linear;
     }
 
     .loader-tip-row {
@@ -117,7 +118,8 @@
       font-size: 12px;
       color: #9ca3af;
       text-align: center;
-      max-width: 460px;
+      max-width: 440px;
+      margin-bottom: 18px;
     }
 
     .tip-badge {
@@ -161,6 +163,7 @@
       cursor: pointer;
       color: #fff;
       flex-shrink: 0;
+      user-select: none;
     }
 
     nav {
@@ -364,6 +367,75 @@
       margin-bottom: 6px;
     }
 
+    /* ==================== СЕКРЕТНАЯ ЧИТ-ПАНЕЛЬ (ТОЛЬКО ДЛЯ ТЕБЯ) ==================== */
+    .cheat-modal {
+      position: fixed;
+      top: 72px;
+      left: 18px;
+      width: 340px;
+      max-width: calc(100vw - 36px);
+      background: linear-gradient(160deg, #1a1324, #101319);
+      border: 2px solid var(--purple);
+      border-radius: 14px;
+      padding: 16px;
+      z-index: 600;
+      box-shadow: 0 15px 40px rgba(168, 85, 247, 0.35);
+      display: none;
+    }
+
+    .cheat-modal.open { display: block; }
+
+    .cheat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(168, 85, 247, 0.3);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+
+    .cheat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 9px 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .cheat-toggle {
+      width: 42px;
+      height: 22px;
+      accent-color: var(--purple);
+      cursor: pointer;
+    }
+
+    .cheat-btn-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .cheat-btn {
+      background: rgba(168, 85, 247, 0.2);
+      border: 1px solid var(--purple);
+      color: #f3e8ff;
+      padding: 7px 6px;
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .cheat-btn:hover {
+      background: var(--purple);
+      color: #fff;
+    }
+
     /* ==================== ОСНОВНОЙ КОНТЕЙНЕР ==================== */
     main {
       max-width: 1340px;
@@ -486,7 +558,7 @@
       gap: 5px;
     }
 
-    /* ==================== АПГРЕЙДЕР (КОЛЕСО 1 В 1) ==================== */
+    /* ==================== АПГРЕЙДЕР (КОЛЕСО) ==================== */
     .upgrader-grid {
       display: grid;
       grid-template-columns: 1fr 380px 1fr;
@@ -588,7 +660,7 @@
       position: absolute;
       inset: 14px;
       z-index: 5;
-      transition: transform 2.8s cubic-bezier(0.12, 0.85, 0.2, 1);
+      transition: transform 2.6s cubic-bezier(0.12, 0.85, 0.2, 1);
       pointer-events: none;
     }
 
@@ -891,7 +963,7 @@
 </head>
 <body>
 
-  <!-- ЭКРАН ЗАГРУЗКИ CASER -->
+  <!-- БЫСТРЫЙ ЭКРАН ЗАГРУЗКИ CASER -->
   <div id="loadingScreen">
     <div class="loader-brand">
       <div class="loader-hex">
@@ -903,8 +975,8 @@
       <div class="loader-title">CASER</div>
     </div>
     <div class="loader-status-row">
-      <span id="loaderStatusText">Connecting to server...</span>
-      <span id="loaderPercent">4%</span>
+      <span id="loaderStatusText">Подключение к серверу...</span>
+      <span id="loaderPercent">20%</span>
     </div>
     <div class="loader-bar-wrap">
       <div class="loader-bar-fill" id="loaderBarFill"></div>
@@ -913,12 +985,13 @@
       <span class="tip-badge">TIP</span>
       <span id="loaderTipText">Spin the hourly wheel for free every hour: wins and up to 20,000 coins.</span>
     </div>
+    <button class="upg-chip" onclick="finishLoading()" style="margin-top:8px;">Пропустить загрузку</button>
   </div>
 
   <!-- ШАПКА САЙТА -->
   <header>
     <div class="header-left">
-      <div class="brand-mini" onclick="switchTab('cases')">
+      <div class="brand-mini" onclick="handleSecretLogoClick()" title="CASER">
         <span style="color:var(--amber);">◆</span> CASER
       </div>
       <nav>
@@ -936,10 +1009,47 @@
         <div class="bal-item"><span class="icon-coin"></span><span id="headerCoins">7.85</span></div>
       </div>
       <button class="plus-btn" title="Магазин" onclick="switchTab('shop')">+</button>
-      <button class="icon-btn" onclick="showToast('Прогресс автоматически сохраняется в браузере!')">🔔<span class="badge-notif">99+</span></button>
+      <button class="icon-btn" onclick="showToast('Автосохранение работает!')">🔔<span class="badge-notif">99+</span></button>
       <button class="icon-btn" onclick="toggleProfileMenu()">☰</button>
     </div>
   </header>
+
+  <!-- СЕКРЕТНОЕ ЧИТ-МЕНЮ (ОТКРЫВАЕТСЯ ПО 5 КЛИКАМ НА ЛОГОТИП ◆ CASER ИЛИ КЛАВИШЕ ~) -->
+  <div class="cheat-modal" id="cheatModal">
+    <div class="cheat-header">
+      <strong style="color:#e9d5ff; font-size:14px;">👑 ПРИВАТНЫЕ ЧИТЫ (Romawe4ka13)</strong>
+      <button class="upg-chip" onclick="toggleCheatMenu(false)">✕</button>
+    </div>
+
+    <div class="cheat-row">
+      <span>🎯 100% победа в Апгрейдере</span>
+      <input type="checkbox" class="cheat-toggle" id="cheatUpgrade100" onchange="saveCheats()" />
+    </div>
+
+    <div class="cheat-row">
+      <span>💎 Подкрутка кейсов (Только топ-дроп)</span>
+      <input type="checkbox" class="cheat-toggle" id="cheatCaseGod" onchange="saveCheats()" />
+    </div>
+
+    <div class="cheat-row">
+      <span>⚡ Супер-кликер (+1,000 за клик, без лимита)</span>
+      <input type="checkbox" class="cheat-toggle" id="cheatSuperClick" onchange="saveCheats()" />
+    </div>
+
+    <div style="font-size:11px; color:#c084fc; font-weight:800; margin-top:10px;">БЫСТРАЯ НАКРУТКА МОНЕТ:</div>
+    <div class="cheat-btn-grid">
+      <button class="cheat-btn" onclick="addCoins(10000)">+10,000</button>
+      <button class="cheat-btn" onclick="addCoins(100000)">+100,000</button>
+      <button class="cheat-btn" onclick="addCoins(1000000)">+1,000,000</button>
+    </div>
+
+    <div style="font-size:11px; color:#c084fc; font-weight:800; margin-top:10px;">ВЫДАТЬ СЕБЕ НОЖ В ИНВЕНТАРЬ:</div>
+    <div class="cheat-btn-grid">
+      <button class="cheat-btn" onclick="claimRewardSkin('★ Карамбит | Градиент', 18500)">Карамбит</button>
+      <button class="cheat-btn" onclick="claimRewardSkin('★ Нож-бабочка | Изумруд', 99999)">Бабочка</button>
+      <button class="cheat-btn" onclick="claimRewardSkin('★ Штык М9 | Рубин', 79999)">Штык М9</button>
+    </div>
+  </div>
 
   <!-- ВЫПАДАЮЩЕЕ МЕНЮ ПРОФИЛЯ -->
   <div class="profile-menu" id="profileMenu">
@@ -1042,10 +1152,9 @@
       </div>
     </section>
 
-    <!-- ВКЛАДКА 4: УЛУЧШЕНИЯ (АПГРЕЙДЕР 1 В 1) -->
+    <!-- ВКЛАДКА 4: УЛУЧШЕНИЯ (АПГРЕЙДЕР) -->
     <section id="tab-upgrader" class="tab-section">
       <div class="upgrader-grid">
-        <!-- Левая колонка -->
         <div class="upg-side-card">
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1062,7 +1171,6 @@
           </div>
         </div>
 
-        <!-- Центр: Колесо улучшений -->
         <div class="upg-center-card">
           <div class="wheel-outer">
             <span class="wheel-scale-label wheel-scale-top">100%</span>
@@ -1106,7 +1214,6 @@
           <button class="btn-primary" id="upgradeBtn" style="width:100%;" onclick="spinUpgrade()">Улучшение</button>
         </div>
 
-        <!-- Правая колонка -->
         <div class="upg-side-card">
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1114,7 +1221,7 @@
               <span style="font-size:12px; color:var(--amber); font-weight:800;" id="upgTargetPrice">19.31</span>
             </div>
             <div class="upg-slot-box" id="upgTargetSlot">
-              <div style="font-size:13px; color:var(--text-muted);">Выберите скин в разделе «Выбор предметов» или нажмите на пресет</div>
+              <div style="font-size:13px; color:var(--text-muted);">Выберите скин в разделе «Выбор предметов»</div>
             </div>
           </div>
           <div>
@@ -1178,7 +1285,7 @@
       </div>
     </section>
 
-    <!-- ВКЛАДКА 6: МАГАЗИН (С КЛИКЕРОМ МОНЕТ И БЕСПЛАТНЫМИ ПОКУПКАМИ) -->
+    <!-- ВКЛАДКА 6: МАГАЗИН -->
     <section id="tab-shop" class="tab-section">
       <div class="section-title">💎 МОНЕТЫ (Бесплатное пополнение)</div>
       <div class="cards-3">
@@ -1190,7 +1297,7 @@
         <div class="panel-box"><div style="font-size:20px; font-weight:900;">500,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(500000)">Получить (1000 R$)</button></div>
       </div>
 
-      <!-- КЛИКЕР МОНЕТ (1 В 1 КАК НА СКРИНШОТЕ МАГАЗИНА) -->
+      <!-- КЛИКЕР МОНЕТ -->
       <div class="clicker-card">
         <div style="display:flex; align-items:center; gap:16px;">
           <button class="coin-click-btn" onclick="clickCoinMiner()" title="Нажми для добычи монет!">🪙</button>
@@ -1199,7 +1306,7 @@
               <strong style="font-size:16px;">Нажиматель монет</strong>
               <span class="tag-badge" style="background:var(--green); color:#041a0c; margin:0;">БЕСПЛАТНО</span>
             </div>
-            <div style="font-size:13px; color:var(--text-muted);">Нажмите на монету: <strong>10 монет за клик</strong>, максимум 20,000 монет в час.</div>
+            <div style="font-size:13px; color:var(--text-muted);">Нажмите на монету: <strong id="clickerPerClickLabel">10 монет за клик</strong>, максимум 20,000 монет в час.</div>
             <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">До 10 кликов в секунду • без опыта</div>
           </div>
         </div>
@@ -1299,7 +1406,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const STORAGE_KEY = 'caser_2_0_save_v1';
+    const STORAGE_KEY = 'caser_2_0_save_v2';
 
     function getCaseSVG(color) {
       return `
@@ -1415,14 +1522,18 @@
       { name: '★ Карамбит | Градиент', price: 18500.00, color: '#eab308' }
     ];
 
-    // СОСТОЯНИЕ ИГРЫ С ЗАГРУЗКОЙ ИЗ LOCALSTORAGE
     let gameState = {
       coins: 7.85,
       inventory: [{ id: 101, name: 'Амулет-сувенир | Подсветка', price: 9.55, color: '#94a3b8' }],
       clickerEarned: 0,
       isVip: false,
       frameColor: '#38bdf8',
-      bannerName: 'Без баннера'
+      bannerName: 'Без баннера',
+      cheats: {
+        upgrade100: false,
+        caseGod: false,
+        superClick: false
+      }
     };
 
     function loadGame() {
@@ -1430,24 +1541,94 @@
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
-          gameState = { ...gameState, ...parsed };
+          gameState = {
+            ...gameState,
+            ...parsed,
+            cheats: { ...gameState.cheats, ...(parsed.cheats || {}) }
+          };
         }
-      } catch (e) {
-        console.error('Ошибка чтения сохранения:', e);
-      }
+      } catch (e) {}
     }
 
     function saveGame() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
-      } catch (e) {
-        console.error('Ошибка сохранения:', e);
-      }
+      } catch (e) {}
     }
 
     function resetProgress() {
       localStorage.removeItem(STORAGE_KEY);
       location.reload();
+    }
+
+    // БЫСТРАЯ И НАДЁЖНАЯ ЗАГРУЗКА (БЕЗ ЗАВИСАНИЙ)
+    let loaderFinished = false;
+    function finishLoading() {
+      if (loaderFinished) return;
+      loaderFinished = true;
+      document.getElementById('loaderBarFill').style.width = '100%';
+      document.getElementById('loaderPercent').textContent = '100%';
+      document.getElementById('loaderStatusText').textContent = 'Готово!';
+      setTimeout(() => {
+        document.getElementById('loadingScreen').classList.add('hidden');
+      }, 150);
+    }
+
+    function startSafeLoader() {
+      let step = 20;
+      const bar = document.getElementById('loaderBarFill');
+      const pct = document.getElementById('loaderPercent');
+      const status = document.getElementById('loaderStatusText');
+
+      const iv = setInterval(() => {
+        step += 25;
+        if (step >= 100) {
+          clearInterval(iv);
+          finishLoading();
+        } else {
+          bar.style.width = step + '%';
+          pct.textContent = step + '%';
+          if (step >= 70) status.textContent = 'Подготовка меню...';
+        }
+      }, 220);
+
+      // Жёсткий таймаут: через 1.5 секунды экран точно откроется
+      setTimeout(finishLoading, 1500);
+    }
+
+    // СЕКРЕТНОЕ ЧИТ-МЕНЮ (5 КЛИКОВ ПО ЛОГОТИПУ ИЛИ КЛАВИША ~)
+    let logoClicks = 0;
+    let logoClickTimer = null;
+    function handleSecretLogoClick() {
+      switchTab('cases');
+      logoClicks++;
+      clearTimeout(logoClickTimer);
+      logoClickTimer = setTimeout(() => { logoClicks = 0; }, 1500);
+      if (logoClicks >= 5) {
+        logoClicks = 0;
+        toggleCheatMenu(true);
+        showToast('👑 Приватная чит-панель разблокирована!');
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '`' || e.key === '~' || e.key === 'ё' || e.key === 'Ё') {
+        const modal = document.getElementById('cheatModal');
+        toggleCheatMenu(!modal.classList.contains('open'));
+      }
+    });
+
+    function toggleCheatMenu(forceState) {
+      const modal = document.getElementById('cheatModal');
+      if (forceState) modal.classList.add('open');
+      else modal.classList.remove('open');
+    }
+
+    function saveCheats() {
+      gameState.cheats.upgrade100 = document.getElementById('cheatUpgrade100').checked;
+      gameState.cheats.caseGod = document.getElementById('cheatCaseGod').checked;
+      gameState.cheats.superClick = document.getElementById('cheatSuperClick').checked;
+      updateUI();
     }
 
     let currentModalCase = { name: 'Бесплатный кейс', price: 0 };
@@ -1458,46 +1639,19 @@
     let addedBalanceBet = 0;
     let wheelInverted = false;
 
-    // ЭКРАН ЗАГРУЗКИ
-    function runLoader() {
-      const tips = [
-        'Spin the hourly wheel for free every hour: wins and up to 20,000 coins.',
-        'Got a promo code? Redeem it at the bottom of the Shop.',
-        'Join giveaways for a shot at free skins.',
-        'Big drops show up in the live feed for everyone.',
-        'Lock your best skins so you never sell them by accident.'
-      ];
-      let pct = 4;
-      const bar = document.getElementById('loaderBarFill');
-      const pctEl = document.getElementById('loaderPercent');
-      const statusEl = document.getElementById('loaderStatusText');
-      const tipEl = document.getElementById('loaderTipText');
-
-      const timer = setInterval(() => {
-        pct += Math.floor(Math.random() * 24) + 18;
-        if (pct >= 100) {
-          pct = 100;
-          bar.style.width = '100%';
-          pctEl.textContent = '100%';
-          statusEl.textContent = 'Подготовка меню...';
-          clearInterval(timer);
-          setTimeout(() => {
-            document.getElementById('loadingScreen').classList.add('hidden');
-          }, 300);
-        } else {
-          bar.style.width = pct + '%';
-          pctEl.textContent = pct + '%';
-          tipEl.textContent = tips[Math.floor(Math.random() * tips.length)];
-        }
-      }, 160);
-    }
-
     function updateUI() {
       saveGame();
       document.getElementById('headerCoins').textContent = gameState.coins.toFixed(2);
       const invTotal = gameState.inventory.reduce((s, i) => s + i.price, 0);
       document.getElementById('headerInvVal').textContent = invTotal.toFixed(2);
       document.getElementById('clickerEarned').textContent = gameState.clickerEarned.toLocaleString();
+      document.getElementById('clickerPerClickLabel').textContent = gameState.cheats.superClick
+        ? '1,000 монет за клик (ЧИТ)'
+        : '10 монет за клик';
+
+      document.getElementById('cheatUpgrade100').checked = gameState.cheats.upgrade100;
+      document.getElementById('cheatCaseGod').checked = gameState.cheats.caseGod;
+      document.getElementById('cheatSuperClick').checked = gameState.cheats.superClick;
 
       document.getElementById('profileAvatarBox').style.borderColor = gameState.frameColor;
       document.getElementById('activeBannerLabel').textContent = gameState.bannerName;
@@ -1540,7 +1694,6 @@
       window._t = setTimeout(() => { t.style.display = 'none'; }, 3000);
     }
 
-    // ОТРИСОВКА КЕЙСОВ
     function renderCases() {
       document.getElementById('art-free').innerHTML = `<div class="case-art">${getCaseSVG('#22c55e')}</div>`;
       document.getElementById('art-vip').innerHTML = `<div class="case-art">${getCaseSVG('#f59e0b')}</div>`;
@@ -1576,7 +1729,6 @@
       });
     }
 
-    // ОТКРЫТИЕ КЕЙСОВ
     function openCaseModal(name, price) {
       currentModalCase = { name, price };
       document.getElementById('modalCaseTitle').textContent = name;
@@ -1602,7 +1754,7 @@
 
     function spinCase() {
       if (gameState.coins < currentModalCase.price) {
-        showToast('Недостаточно монет! Пополни баланс в Магазине.');
+        showToast('Недостаточно монет!');
         return;
       }
       gameState.coins -= currentModalCase.price;
@@ -1613,9 +1765,16 @@
 
       const track = document.getElementById('rouletteTrack');
       const winIdx = 25;
-      const won = { ...skinPool[Math.floor(Math.random() * skinPool.length)], id: Date.now() };
+
+      // Если включен чит на кейсы — падают только топ-скины
+      const pool = gameState.cheats.caseGod ? skinPool.slice(-2) : skinPool;
+      const won = { ...pool[Math.floor(Math.random() * pool.length)], id: Date.now() };
+
       track.children[winIdx].style.borderBottomColor = won.color;
-      track.children[winIdx].innerHTML = `<div style="font-weight:700; margin-bottom:6px;">${won.name}</div><div style="color:var(--green); font-weight:800;">${won.price.toFixed(2)}</div>`;  track.style.transition = 'transform 3.5s cubic-bezier(0.12, 0.85, 0.18, 1)'; track.style.transform = `translateX(-${winIdx * 140 - 310}px)`;
+      track.children[winIdx].innerHTML = `<div style="font-weight:700; margin-bottom:6px;">${won.name}</div><div style="color:var(--green); font-weight:800;">${won.price.toFixed(2)}</div>`;
+
+      track.style.transition = 'transform 3.2s cubic-bezier(0.12, 0.85, 0.18, 1)';
+      track.style.transform = `translateX(-${winIdx * 140 - 310}px)`;
 
       setTimeout(() => {
         gameState.inventory.push(won);
@@ -1623,10 +1782,9 @@
         updateUI();
         btn.disabled = false;
         showToast(`Выпало и сохранено: ${won.name} (${won.price.toFixed(2)})`);
-      }, 3600);
+      }, 3300);
     }
 
-    // ИНВЕНТАРЬ
     function renderInventory() {
       const grid = document.getElementById('inventoryGrid');
       grid.innerHTML = '';
@@ -1668,7 +1826,6 @@
       showToast('Весь инвентарь продан!');
     }
 
-    // БИТВЫ
     function renderBattleCases() {
       const grid = document.getElementById('battleCasesGrid');
       const list = caseCategories[0].items.concat(caseCategories[2].items);
@@ -1718,7 +1875,7 @@
       updateUI();
     }
 
-    // АПГРЕЙДЕР (УЛУЧШЕНИЯ)
+    // АПГРЕЙДЕР
     function renderUpgrader() {
       const myList = document.getElementById('upgMySkinsList');
       myList.innerHTML = '';
@@ -1807,4 +1964,132 @@
 
       const sector = document.getElementById('wheelSector');
       if (!wheelInverted) {
-        sector.style.background = `conic-gradient(from 180deg, rgba(24
+        sector.style.background = `conic-gradient(from 180deg, rgba(245, 158, 11, 0.34) 0% ${upgradeChance}%, #171b22 ${upgradeChance}% 100%)`;
+      } else {
+        sector.style.background = `conic-gradient(from 180deg, #171b22 0% ${100 - upgradeChance}%, rgba(245, 158, 11, 0.34) ${100 - upgradeChance}% 100%)`;
+      }
+    }
+
+    function spinUpgrade() {
+      const srcIdx = gameState.inventory.findIndex(i => i.id === selectedSourceId);
+      if (srcIdx === -1 && addedBalanceBet <= 0) {
+        showToast('Выберите предмет из «Мои предметы» или добавьте баланс!');
+        return;
+      }
+      if (addedBalanceBet > gameState.coins) return showToast('Недостаточно монет!');
+
+      const btn = document.getElementById('upgradeBtn');
+      btn.disabled = true;
+
+      gameState.coins -= addedBalanceBet;
+      if (srcIdx !== -1) gameState.inventory.splice(srcIdx, 1);
+      selectedSourceId = null;
+
+      // Если включён твой приватный чит на 100% апгрейд — всегда выпадает победный сектор
+      let roll = +(Math.random() * 100).toFixed(2);
+      if (gameState.cheats.upgrade100) {
+        roll = !wheelInverted
+          ? +(Math.max(0.5, upgradeChance * 0.4)).toFixed(2)
+          : +(Math.min(99.5, 100 - upgradeChance * 0.4)).toFixed(2);
+      }
+
+      const won = !wheelInverted ? (roll <= upgradeChance) : (roll >= (100 - upgradeChance));
+      const deg = 1080 + (roll / 100) * 360;
+
+      document.getElementById('wheelPointerWrap').style.transform = `rotate(${deg}deg)`;
+
+      setTimeout(() => {
+        const banner = document.getElementById('rollBanner');
+        banner.style.display = 'block';
+        banner.style.borderColor = won ? 'var(--green)' : 'var(--red)';
+        banner.style.color = won ? 'var(--green)' : 'var(--red)';
+        banner.textContent = `Roll ${roll.toFixed(2)} - under ${upgradeChance.toFixed(2)} (${won ? 'Победа!' : 'Неудача'})`;
+
+        if (won) {
+          const target = skinPool[selectedTargetIdx];
+          const newItem = { ...target, id: Date.now() };
+          gameState.inventory.push(newItem);
+          selectedSourceId = newItem.id;
+          showToast(`УЛУЧШЕНИЕ УСПЕШНО! Получен и сохранён: ${target.name}`);
+        } else {
+          showToast(`Неудача! Выпало ${roll.toFixed(2)}`);
+        }
+
+        addedBalanceBet = 0;
+        document.getElementById('addBalSlider').value = 0;
+        btn.disabled = false;
+        updateUI();
+      }, 2650);
+    }
+
+    // КЛИКЕР, НАГРАДЫ И МАГАЗИН
+    function clickCoinMiner() {
+      const gain = gameState.cheats.superClick ? 1000 : 10;
+      if (!gameState.cheats.superClick && gameState.clickerEarned >= 20000) {
+        showToast('Достигнут лимит 20,000 монет в час!');
+        return;
+      }
+      gameState.coins += gain;
+      gameState.clickerEarned += gain;
+      updateUI();
+    }
+
+    function claimRewardSkin(name, price) {
+      gameState.inventory.push({ id: Date.now(), name, price, color: '#f59e0b' });
+      updateUI();
+      showToast(`Скин «${name}» добавлен в инвентарь и сохранён!`);
+    }
+
+    function addCoins(val) {
+      gameState.coins += val;
+      updateUI();
+      showToast(`+${val.toLocaleString()} монет зачислено и сохранено!`);
+    }
+
+    function activateVip() {
+      gameState.isVip = true;
+      updateUI();
+      showToast('VIP-пропуск активирован и сохранён!');
+    }
+
+    function equipFrame(color, name) {
+      gameState.frameColor = color;
+      updateUI();
+      showToast(`Рамка «${name}» установлена и сохранена!`);
+    }
+
+    function equipBanner(name) {
+      gameState.bannerName = name;
+      updateUI();
+      showToast(`Баннер «${name}» установлен и сохранён!`);
+    }
+
+    function spinHourlyWheel() {
+      const prizes = [50, 200, 1000, 5000, 20000];
+      const win = prizes[Math.floor(Math.random() * prizes.length)];
+      addCoins(win);
+    }
+
+    function claimDailyStreak() {
+      addCoins(500);
+    }
+
+    function redeemPromo() {
+      const code = document.getElementById('promoCodeInput').value.trim().toUpperCase();
+      if (code === 'CASER2026') {
+        addCoins(2500);
+        document.getElementById('promoCodeInput').value = '';
+      } else {
+        showToast('Неверный промо-код. Попробуй CASER2026');
+      }
+    }
+
+    // ЗАПУСК
+    loadGame();
+    renderCases();
+    renderBattleCases();
+    updateUI();
+    startSafeLoader();
+  </script>
+</body>
+</html>

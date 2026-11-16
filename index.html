@@ -10,14 +10,14 @@
       --bg-header: #12151a;
       --bg-card: #161a20;
       --bg-card-hover: #1d222a;
-      --bg-dark-box: #101317;
+      --bg-dark: #101317;
       --border: #242a33;
       --text-main: #f3f5f7;
       --text-muted: #7f8999;
       --green: #22c55e;
       --green-dark: #15803d;
       --amber: #f59e0b;
-      --amber-glow: rgba(245, 158, 11, 0.3);
+      --amber-glow: rgba(245, 158, 11, 0.32);
       --cyan: #38bdf8;
       --red: #ef4444;
       --purple: #a855f7;
@@ -37,7 +37,7 @@
       overflow-x: hidden;
     }
 
-    /* ==================== LOADING SCREEN ==================== */
+    /* ==================== ЭКРАН ЗАГРУЗКИ ==================== */
     #loadingScreen {
       position: fixed;
       inset: 0;
@@ -48,7 +48,7 @@
       align-items: center;
       justify-content: center;
       padding: 24px;
-      transition: opacity 0.45s ease;
+      transition: opacity 0.4s ease;
     }
 
     #loadingScreen.hidden {
@@ -60,7 +60,7 @@
       display: flex;
       align-items: center;
       gap: 16px;
-      margin-bottom: 28px;
+      margin-bottom: 26px;
     }
 
     .loader-hex {
@@ -107,7 +107,7 @@
       width: 4%;
       background: linear-gradient(90deg, var(--amber), #fbbf24);
       box-shadow: 0 0 12px var(--amber);
-      transition: width 0.25s ease;
+      transition: width 0.2s ease;
     }
 
     .loader-tip-row {
@@ -130,7 +130,7 @@
       border-radius: 4px;
     }
 
-    /* ==================== HEADER ==================== */
+    /* ==================== ШАПКА ==================== */
     header {
       position: sticky;
       top: 0;
@@ -189,7 +189,7 @@
 
     .nav-btn.active {
       color: var(--cyan);
-      background: rgba(56, 189, 248, 0.1);
+      background: rgba(56, 189, 248, 0.12);
     }
 
     .nav-btn.rewards-btn {
@@ -280,7 +280,7 @@
       border-radius: 8px;
     }
 
-    /* ==================== PROFILE MENU ==================== */
+    /* ==================== МЕНЮ ПРОФИЛЯ ==================== */
     .profile-menu {
       position: fixed;
       top: 66px;
@@ -291,13 +291,11 @@
       border-radius: 14px;
       padding: 16px;
       z-index: 250;
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.8);
       display: none;
     }
 
-    .profile-menu.open {
-      display: block;
-    }
+    .profile-menu.open { display: block; }
 
     .profile-top {
       display: flex;
@@ -366,20 +364,15 @@
       margin-bottom: 6px;
     }
 
-    /* ==================== MAIN & SECTIONS ==================== */
+    /* ==================== ОСНОВНОЙ КОНТЕЙНЕР ==================== */
     main {
       max-width: 1340px;
       margin: 0 auto;
       padding: 18px;
     }
 
-    .tab-section {
-      display: none;
-    }
-
-    .tab-section.active {
-      display: block;
-    }
+    .tab-section { display: none; }
+    .tab-section.active { display: block; }
 
     .search-input {
       width: 100%;
@@ -393,9 +386,7 @@
       margin-bottom: 18px;
     }
 
-    .search-input:focus {
-      border-color: var(--cyan);
-    }
+    .search-input:focus { border-color: var(--cyan); }
 
     .section-title {
       font-size: 17px;
@@ -406,7 +397,7 @@
       gap: 8px;
     }
 
-    /* ==================== CASES CARDS ==================== */
+    /* ==================== КАРТОЧКИ КЕЙСОВ ==================== */
     .featured-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -428,9 +419,7 @@
       border-color: #574119;
     }
 
-    .featured-card:hover {
-      transform: translateY(-2px);
-    }
+    .featured-card:hover { transform: translateY(-2px); }
 
     .tag-badge {
       display: inline-block;
@@ -497,7 +486,7 @@
       gap: 5px;
     }
 
-    /* ==================== UPGRADER (1:1 WHEEL & PANELS) ==================== */
+    /* ==================== АПГРЕЙДЕР (КОЛЕСО 1 В 1) ==================== */
     .upgrader-grid {
       display: grid;
       grid-template-columns: 1fr 380px 1fr;
@@ -506,9 +495,7 @@
     }
 
     @media (max-width: 1024px) {
-      .upgrader-grid {
-        grid-template-columns: 1fr;
-      }
+      .upgrader-grid { grid-template-columns: 1fr; }
     }
 
     .upg-side-card {
@@ -556,7 +543,7 @@
       align-items: center;
       justify-content: center;
       margin: 8px 0 14px;
-      box-shadow: inset 0 0 25px rgba(0,0,0,0.85);
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.85);
     }
 
     .wheel-scale-label {
@@ -576,7 +563,7 @@
       width: 224px;
       height: 224px;
       border-radius: 50%;
-      background: conic-gradient(from 180deg, rgba(245, 158, 11, 0.32) 0% 50%, #171b22 50% 100%);
+      background: conic-gradient(from 180deg, rgba(245, 158, 11, 0.34) 0% 50%, #171b22 50% 100%);
       border: 2px solid #2f3744;
       display: flex;
       align-items: center;
@@ -621,7 +608,7 @@
     .roll-banner {
       position: absolute;
       top: 44px;
-      background: rgba(18, 22, 28, 0.94);
+      background: rgba(18, 22, 28, 0.96);
       border: 1px solid var(--amber);
       color: var(--amber);
       font-size: 11px;
@@ -694,33 +681,6 @@
       cursor: pointer;
     }
 
-    /* ==================== BUTTONS & GRIDS ==================== */
-    .btn-primary {
-      background: var(--green);
-      color: #05180c;
-      border: none;
-      padding: 11px 20px;
-      border-radius: 9px;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .btn-primary:hover { filter: brightness(1.08); }
-    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
-
-    .btn-amber {
-      background: var(--amber);
-      color: #161004;
-      border: none;
-      padding: 11px 20px;
-      border-radius: 9px;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
     .skin-mini-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
@@ -745,19 +705,78 @@
       background: rgba(34, 197, 94, 0.12);
     }
 
-    /* ==================== BATTLES, REWARDS, SHOP ==================== */
+    /* ==================== КНОПКИ, КЛИКЕР И МАГАЗИН ==================== */
+    .btn-primary {
+      background: var(--green);
+      color: #05180c;
+      border: none;
+      padding: 11px 20px;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-amber {
+      background: var(--amber);
+      color: #161004;
+      border: none;
+      padding: 11px 20px;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
     .panel-box {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 18px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .cards-3 {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 14px;
+    }
+
+    .clicker-card {
+      background: linear-gradient(145deg, #16241c, #13181f);
+      border: 1px solid #284b36;
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .coin-click-btn {
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      border: 3px solid #6ee7b7;
+      background: radial-gradient(circle at 30% 30%, #34d399, #059669);
+      color: #041d12;
+      font-size: 28px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+      transition: transform 0.08s;
+      user-select: none;
+    }
+
+    .coin-click-btn:active {
+      transform: scale(0.9);
     }
 
     .banner-preview {
@@ -770,7 +789,7 @@
       font-weight: 900;
       letter-spacing: 1px;
       font-size: 14px;
-      border: 1px solid rgba(255,255,255,0.1);
+      border: 1px solid rgba(255, 255, 255, 0.12);
     }
 
     .frame-circle {
@@ -785,7 +804,7 @@
       font-size: 26px;
     }
 
-    /* ==================== MODAL & TOAST ==================== */
+    /* ==================== МОДАЛКА РУЛЕТКИ КЕЙСА ==================== */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -865,14 +884,14 @@
       font-size: 13px;
       font-weight: 700;
       z-index: 900;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65);
       display: none;
     }
   </style>
 </head>
 <body>
 
-  <!-- ЭКРАН ЗАГРУЗКИ CASER (1:1 КАК НА ВИДЕО) -->
+  <!-- ЭКРАН ЗАГРУЗКИ CASER -->
   <div id="loadingScreen">
     <div class="loader-brand">
       <div class="loader-hex">
@@ -917,19 +936,19 @@
         <div class="bal-item"><span class="icon-coin"></span><span id="headerCoins">7.85</span></div>
       </div>
       <button class="plus-btn" title="Магазин" onclick="switchTab('shop')">+</button>
-      <button class="icon-btn" onclick="showToast('Уведомления (99+)')">🔔<span class="badge-notif">99+</span></button>
+      <button class="icon-btn" onclick="showToast('Прогресс автоматически сохраняется в браузере!')">🔔<span class="badge-notif">99+</span></button>
       <button class="icon-btn" onclick="toggleProfileMenu()">☰</button>
     </div>
   </header>
 
-  <!-- МЕНЮ ПРОФИЛЯ ROMAWE4KA13 -->
+  <!-- ВЫПАДАЮЩЕЕ МЕНЮ ПРОФИЛЯ -->
   <div class="profile-menu" id="profileMenu">
     <div class="profile-top">
       <div class="profile-user">
-        <div class="avatar-box">😎</div>
+        <div class="avatar-box" id="profileAvatarBox">😎</div>
         <div>
-          <div style="font-weight:800; font-size:14px;">Romawe4ka13</div>
-          <div style="font-size:12px; color:var(--cyan); cursor:pointer;">Просмотреть профиль ›</div>
+          <div style="font-weight:800; font-size:14px;">Romawe4ka13 <span id="vipTagBadge" style="display:none; background:var(--amber); color:#000; font-size:10px; padding:1px 5px; border-radius:4px;">VIP</span></div>
+          <div style="font-size:12px; color:var(--cyan);" id="activeBannerLabel">Без баннера</div>
         </div>
       </div>
       <div class="profile-id">2,646</div>
@@ -937,15 +956,15 @@
     <div class="menu-grid">
       <div class="menu-tile" onclick="spinHourlyWheel()"><span>🎡</span>Колесо часов</div>
       <div class="menu-tile" onclick="showToast('Активных Giveaways сейчас нет')"><span>🎁</span>GIVEAWAYS</div>
-      <div class="menu-tile" onclick="addCoins(150); showToast('Ежедневная серия: +150 монет!')"><span>📅</span>Ежедневная серия</div>
+      <div class="menu-tile" onclick="claimDailyStreak()"><span>📅</span>Ежедневная серия</div>
       <div class="menu-tile" onclick="switchTab('shop'); toggleProfileMenu();"><span>➕</span>Магазин</div>
       <div class="menu-tile" onclick="showToast('Чат игроков подключён')"><span>💬</span>Чат</div>
-      <div class="menu-tile" onclick="showToast('CASER 2.0 [БЕТА] от 1F3ndy')"><span>📢</span>ЧТО НОВОГО</div>
+      <div class="menu-tile" onclick="resetProgress()"><span>🔄</span>Сбросить сейв</div>
     </div>
   </div>
 
   <main>
-    <!-- ВКЛАДКА: СЛУЧАИ (КЕЙСЫ) -->
+    <!-- ВКЛАДКА 1: СЛУЧАИ (КЕЙСЫ) -->
     <section id="tab-cases" class="tab-section active">
       <input type="text" class="search-input" id="caseSearch" placeholder="🔍 поиск..." oninput="renderCases()" />
 
@@ -968,19 +987,19 @@
       <div id="casesContainer"></div>
     </section>
 
-    <!-- ВКЛАДКА: ИНВЕНТАРЬ -->
+    <!-- ВКЛАДКА 2: ИНВЕНТАРЬ -->
     <section id="tab-inventory" class="tab-section">
       <div class="panel-box" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
         <div>
-          <h3>Инвентарь</h3>
-          <p style="font-size:12px; color:var(--text-muted);">Нажмите «Продать», чтобы обменять скин на монеты</p>
+          <h3>Инвентарь (Автосохранение включено)</h3>
+          <p style="font-size:12px; color:var(--text-muted);">Все выбитые скины сохраняются даже после перезагрузки страницы</p>
         </div>
         <button class="btn-primary" onclick="sellAllInventory()">Продать всё</button>
       </div>
       <div class="cases-grid" id="inventoryGrid"></div>
     </section>
 
-    <!-- ВКЛАДКА: БИТВЫ -->
+    <!-- ВКЛАДКА 3: БИТВЫ -->
     <section id="tab-battles" class="tab-section">
       <div class="panel-box" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
         <div>
@@ -1023,10 +1042,10 @@
       </div>
     </section>
 
-    <!-- ВКЛАДКА: УЛУЧШЕНИЯ (КОЛЕСО 1:1 КАК НА ВИДЕО) -->
+    <!-- ВКЛАДКА 4: УЛУЧШЕНИЯ (АПГРЕЙДЕР 1 В 1) -->
     <section id="tab-upgrader" class="tab-section">
       <div class="upgrader-grid">
-        <!-- Левый блок: Ваши предметы -->
+        <!-- Левая колонка -->
         <div class="upg-side-card">
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1043,7 +1062,7 @@
           </div>
         </div>
 
-        <!-- Центральное колесо улучшений -->
+        <!-- Центр: Колесо улучшений -->
         <div class="upg-center-card">
           <div class="wheel-outer">
             <span class="wheel-scale-label wheel-scale-top">100%</span>
@@ -1087,7 +1106,7 @@
           <button class="btn-primary" id="upgradeBtn" style="width:100%;" onclick="spinUpgrade()">Улучшение</button>
         </div>
 
-        <!-- Правый блок: Цель -->
+        <!-- Правая колонка -->
         <div class="upg-side-card">
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1106,7 +1125,7 @@
       </div>
     </section>
 
-    <!-- ВКЛАДКА: НАГРАДЫ -->
+    <!-- ВКЛАДКА 5: НАГРАДЫ -->
     <section id="tab-rewards" class="tab-section">
       <div class="panel-box" style="border-color:#574119; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
         <div>
@@ -1139,8 +1158,13 @@
         </div>
       </div>
 
-      <div class="section-title">Ежедневный дроп и Задачи</div>
+      <div class="section-title">Ежедневные награды и Задачи</div>
       <div class="cards-3">
+        <div class="panel-box">
+          <span class="tag-badge" style="background:var(--green); color:#000;">ЕЖЕДНЕВНЫЙ БОНУС</span>
+          <div style="font-weight:800; margin:8px 0;">Забрать ежедневные монеты (+500)</div>
+          <button class="btn-primary" style="width:100%;" onclick="claimDailyStreak()">Получить награду</button>
+        </div>
         <div class="panel-box">
           <span class="tag-badge" style="background:var(--green); color:#000;">ЛЕГКО</span>
           <div style="font-weight:800; margin:8px 0;">Открыть 40 кейсов</div>
@@ -1151,80 +1175,52 @@
           <div style="font-weight:800; margin:8px 0;">Выиграйте 2 улучшений с вероятностью 25% или ниже</div>
           <div style="color:var(--green); font-weight:800;">Награда: +1,200.00</div>
         </div>
-        <div class="panel-box">
-          <span class="tag-badge tag-limited">СЛОЖНО</span>
-          <div style="font-weight:800; margin:8px 0;">Выиграйте 20 улучшений</div>
-          <div style="color:var(--green); font-weight:800;">Награда: +1,800.00</div>
-        </div>
       </div>
     </section>
 
-    <!-- ВКЛАДКА: МАГАЗИН (МОНЕТЫ, VIP, РАМКИ, БАННЕРЫ, ПРОМОКОД) -->
+    <!-- ВКЛАДКА 6: МАГАЗИН (С КЛИКЕРОМ МОНЕТ И БЕСПЛАТНЫМИ ПОКУПКАМИ) -->
     <section id="tab-shop" class="tab-section">
-      <div class="section-title">МОНЕТЫ</div>
+      <div class="section-title">💎 МОНЕТЫ (Бесплатное пополнение)</div>
       <div class="cards-3">
-        <div class="panel-box"><div style="font-size:20px; font-weight:900;">5,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(5000)">20 R$</button></div>
-        <div class="panel-box"><div style="font-size:20px; font-weight:900;">15,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(15000)">50 R$</button></div>
-        <div class="panel-box"><div style="font-size:20px; font-weight:900;">30,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(30000)">85 R$</button></div>
-        <div class="panel-box"><div style="font-size:20px; font-weight:900;">50,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(50000)">140 R$</button></div>
-        <div class="panel-box"><span class="tag-badge tag-new">ПОПУЛЯРНЫЕ</span><div style="font-size:20px; font-weight:900;">100,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(100000)">250 R$</button></div>
-        <div class="panel-box"><div style="font-size:20px; font-weight:900;">500,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(500000)">1000 R$</button></div>
+        <div class="panel-box"><div style="font-size:20px; font-weight:900;">5,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(5000)">Получить (20 R$)</button></div>
+        <div class="panel-box"><div style="font-size:20px; font-weight:900;">15,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(15000)">Получить (50 R$)</button></div>
+        <div class="panel-box"><div style="font-size:20px; font-weight:900;">30,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(30000)">Получить (85 R$)</button></div>
+        <div class="panel-box"><div style="font-size:20px; font-weight:900;">50,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(50000)">Получить (140 R$)</button></div>
+        <div class="panel-box"><span class="tag-badge tag-new">ПОПУЛЯРНЫЕ</span><div style="font-size:20px; font-weight:900;">100,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(100000)">Получить (250 R$)</button></div>
+        <div class="panel-box"><div style="font-size:20px; font-weight:900;">500,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Набор баланса</div><button class="btn-primary" onclick="addCoins(500000)">Получить (1000 R$)</button></div>
       </div>
 
-      <div class="section-title">Рамки для аватара</div>
-      <div class="cards-3">
-        <div class="panel-box" style="text-align:center;">
-          <div class="frame-circle" style="border:3px solid #a855f7; box-shadow:0 0 15px rgba(168,85,247,0.4);">😎</div>
-          <div style="font-weight:700; margin-bottom:8px;">Фиолетовое разделение</div>
-          <button class="btn-primary" onclick="showToast('Рамка «Фиолетовое разделение» куплена!')">Купить • 50 R$</button>
+      <!-- КЛИКЕР МОНЕТ (1 В 1 КАК НА СКРИНШОТЕ МАГАЗИНА) -->
+      <div class="clicker-card">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <button class="coin-click-btn" onclick="clickCoinMiner()" title="Нажми для добычи монет!">🪙</button>
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <strong style="font-size:16px;">Нажиматель монет</strong>
+              <span class="tag-badge" style="background:var(--green); color:#041a0c; margin:0;">БЕСПЛАТНО</span>
+            </div>
+            <div style="font-size:13px; color:var(--text-muted);">Нажмите на монету: <strong>10 монет за клик</strong>, максимум 20,000 монет в час.</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">До 10 кликов в секунду • без опыта</div>
+          </div>
         </div>
-        <div class="panel-box" style="text-align:center;">
-          <div class="frame-circle" style="border:3px solid #10b981; box-shadow:0 0 15px rgba(16,185,129,0.4);">😎</div>
-          <div style="font-weight:700; margin-bottom:8px;">Изумруд</div>
-          <button class="btn-primary" onclick="showToast('Рамка «Изумруд» куплена!')">Купить • 50 R$</button>
-        </div>
-        <div class="panel-box" style="text-align:center;">
-          <div class="frame-circle" style="border:3px solid #ef4444; box-shadow:0 0 15px rgba(239,68,68,0.4);">😎</div>
-          <div style="font-weight:700; margin-bottom:8px;">Багровый импульс</div>
-          <button class="btn-primary" onclick="showToast('Рамка «Багровый импульс» куплена!')">Купить • 50 R$</button>
-        </div>
-        <div class="panel-box" style="text-align:center;">
-          <div class="frame-circle" style="border:3px solid #38bdf8; box-shadow:0 0 15px rgba(56,189,248,0.4);">😎</div>
-          <div style="font-weight:700; margin-bottom:8px;">Ледяной голубой</div>
-          <button class="btn-primary" onclick="showToast('Рамка «Ледяной голубой» куплена!')">Купить • 50 R$</button>
-        </div>
-        <div class="panel-box" style="text-align:center;">
-          <div class="frame-circle" style="border:3px solid #f59e0b; box-shadow:0 0 15px rgba(245,158,11,0.4);">😎</div>
-          <div style="font-weight:700; margin-bottom:8px;">Золотой</div>
-          <button class="btn-amber" onclick="showToast('Только для VIP!')">Только для VIP</button>
+        <div style="text-align:right;">
+          <div style="font-size:12px; color:var(--text-muted);">Заработано за этот час</div>
+          <div style="font-size:18px; font-weight:900; color:var(--green);"><span id="clickerEarned">0</span> / 20,000</div>
         </div>
       </div>
 
-      <div class="section-title">BANNERS (Баннеры профиля)</div>
+      <div class="section-title">VIP и пропуски</div>
       <div class="cards-3">
         <div class="panel-box">
-          <div class="banner-preview" style="background:linear-gradient(135deg,#064e3b,#10b981); color:#ecfdf5;">EMERALD WAVE</div>
-          <div style="font-weight:700; margin-bottom:6px;">EMERALD WAVE • 100,000</div>
-          <button class="btn-primary" style="width:100%;" onclick="buyBanner(100000, 'EMERALD WAVE')">Купить за монеты</button>
+          <span class="tag-badge tag-vip">VIP-ПРОПУСК</span>
+          <div style="font-weight:800; margin:6px 0;">Постоянные преимущества</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Золотой VIP-значок, VIP-раздачи (30,000–120,000), открыть 10 ящиков одновременно.</div>
+          <button class="btn-amber" style="width:100%;" onclick="activateVip()">Получить VIP • Бесплатно</button>
         </div>
-        <div class="panel-box">
-          <div class="banner-preview" style="background:linear-gradient(135deg,#3b0764,#ec4899); color:#fdf2f8;">НЕОНОВАЯ АРКАДА</div>
-          <div style="font-weight:700; margin-bottom:6px;">Неоновая аркада • 500,000</div>
-          <button class="btn-primary" style="width:100%;" onclick="buyBanner(500000, 'Неоновая аркада')">Купить за монеты</button>
-        </div>
-        <div class="panel-box">
-          <div class="banner-preview" style="background:linear-gradient(135deg,#0f172a,#f59e0b); color:#fef3c7;">НЕОНОВЫЙ ГОРОДСКОЙ КАРАМБИТ</div>
-          <div style="font-weight:700; margin-bottom:6px;">Неоновый городской карамбит • 1,000,000</div>
-          <button class="btn-primary" style="width:100%;" onclick="buyBanner(1000000, 'Неоновый городской карамбит')">Купить за монеты</button>
-        </div>
-      </div>
-
-      <div class="section-title">Дополнительные материалы</div>
-      <div class="cards-3">
         <div class="panel-box">
           <div style="font-weight:800; margin-bottom:6px;">Еще один запуск часового колеса</div>
           <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">16 призов до 60,000 монет</div>
-          <button class="btn-amber" onclick="spinHourlyWheel()">Дополнительное вращение • 15</button>
+          <button class="btn-amber" style="width:100%;" onclick="spinHourlyWheel()">Дополнительное вращение</button>
         </div>
         <div class="panel-box">
           <div style="font-weight:800; margin-bottom:6px;">Промо-код (попробуй CASER2026)</div>
@@ -1232,6 +1228,51 @@
             <input type="text" id="promoCodeInput" class="search-input" style="margin:0;" placeholder="ВВЕДИТЕ КОД" />
             <button class="btn-primary" onclick="redeemPromo()">Активировать</button>
           </div>
+        </div>
+      </div>
+
+      <div class="section-title">Рамки для аватара</div>
+      <div class="cards-3">
+        <div class="panel-box" style="text-align:center;">
+          <div class="frame-circle" style="border:3px solid #a855f7;">😎</div>
+          <div style="font-weight:700; margin-bottom:8px;">Фиолетовое разделение</div>
+          <button class="btn-primary" onclick="equipFrame('#a855f7', 'Фиолетовое разделение')">Выбрать</button>
+        </div>
+        <div class="panel-box" style="text-align:center;">
+          <div class="frame-circle" style="border:3px solid #10b981;">😎</div>
+          <div style="font-weight:700; margin-bottom:8px;">Изумруд</div>
+          <button class="btn-primary" onclick="equipFrame('#10b981', 'Изумруд')">Выбрать</button>
+        </div>
+        <div class="panel-box" style="text-align:center;">
+          <div class="frame-circle" style="border:3px solid #ef4444;">😎</div>
+          <div style="font-weight:700; margin-bottom:8px;">Багровый импульс</div>
+          <button class="btn-primary" onclick="equipFrame('#ef4444', 'Багровый импульс')">Выбрать</button>
+        </div>
+        <div class="panel-box" style="text-align:center;">
+          <div class="frame-circle" style="border:3px solid #38bdf8;">😎</div>
+          <div style="font-weight:700; margin-bottom:8px;">Ледяной голубой</div>
+          <button class="btn-primary" onclick="equipFrame('#38bdf8', 'Ледяной голубой')">Выбрать</button>
+        </div>
+        <div class="panel-box" style="text-align:center;">
+          <div class="frame-circle" style="border:3px solid #f59e0b;">😎</div>
+          <div style="font-weight:700; margin-bottom:8px;">Золотой</div>
+          <button class="btn-amber" onclick="equipFrame('#f59e0b', 'Золотой')">Выбрать (VIP)</button>
+        </div>
+      </div>
+
+      <div class="section-title">BANNERS</div>
+      <div class="cards-3">
+        <div class="panel-box">
+          <div class="banner-preview" style="background:linear-gradient(135deg,#064e3b,#10b981); color:#ecfdf5;">EMERALD WAVE</div>
+          <button class="btn-primary" style="width:100%;" onclick="equipBanner('EMERALD WAVE')">Установить баннер</button>
+        </div>
+        <div class="panel-box">
+          <div class="banner-preview" style="background:linear-gradient(135deg,#3b0764,#ec4899); color:#fdf2f8;">НЕОНОВАЯ АРКАДА</div>
+          <button class="btn-primary" style="width:100%;" onclick="equipBanner('Неоновая аркада')">Установить баннер</button>
+        </div>
+        <div class="panel-box">
+          <div class="banner-preview" style="background:linear-gradient(135deg,#0f172a,#f59e0b); color:#fef3c7;">НЕОНОВЫЙ ГОРОДСКОЙ КАРАМБИТ</div>
+          <button class="btn-primary" style="width:100%;" onclick="equipBanner('Неоновый городской карамбит')">Установить баннер</button>
         </div>
       </div>
     </section>
@@ -1258,7 +1299,8 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    // ГЕНЕРАТОР SVG-КОНТЕЙНЕРА КЕЙСА С УНИКАЛЬНЫМ ЦВЕТОМ
+    const STORAGE_KEY = 'caser_2_0_save_v1';
+
     function getCaseSVG(color) {
       return `
         <svg width="86" height="64" viewBox="0 0 96 72" fill="none">
@@ -1271,7 +1313,6 @@
       `;
     }
 
-    // ДАННЫЕ КАТЕГОРИЙ И КЕЙСОВ
     const caseCategories = [
       {
         title: 'НОВЫЙ',
@@ -1374,18 +1415,50 @@
       { name: '★ Карамбит | Градиент', price: 18500.00, color: '#eab308' }
     ];
 
-    // СОСТОЯНИЕ ИГРЫ
-    let coins = 7.85;
-    let inventory = [{ id: 101, name: 'Амулет-сувенир | Подсветка', price: 9.55, color: '#94a3b8' }];
+    // СОСТОЯНИЕ ИГРЫ С ЗАГРУЗКОЙ ИЗ LOCALSTORAGE
+    let gameState = {
+      coins: 7.85,
+      inventory: [{ id: 101, name: 'Амулет-сувенир | Подсветка', price: 9.55, color: '#94a3b8' }],
+      clickerEarned: 0,
+      isVip: false,
+      frameColor: '#38bdf8',
+      bannerName: 'Без баннера'
+    };
+
+    function loadGame() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          gameState = { ...gameState, ...parsed };
+        }
+      } catch (e) {
+        console.error('Ошибка чтения сохранения:', e);
+      }
+    }
+
+    function saveGame() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
+      } catch (e) {
+        console.error('Ошибка сохранения:', e);
+      }
+    }
+
+    function resetProgress() {
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    }
+
     let currentModalCase = { name: 'Бесплатный кейс', price: 0 };
     let battleCases = [];
-    let selectedSourceId = 101;
+    let selectedSourceId = null;
     let selectedTargetIdx = 3;
     let upgradeChance = 47.97;
     let addedBalanceBet = 0;
     let wheelInverted = false;
 
-    // ЗАГРУЗОЧНЫЙ ЭКРАН CASER
+    // ЭКРАН ЗАГРУЗКИ
     function runLoader() {
       const tips = [
         'Spin the hourly wheel for free every hour: wins and up to 20,000 coins.',
@@ -1401,7 +1474,7 @@
       const tipEl = document.getElementById('loaderTipText');
 
       const timer = setInterval(() => {
-        pct += Math.floor(Math.random() * 18) + 12;
+        pct += Math.floor(Math.random() * 24) + 18;
         if (pct >= 100) {
           pct = 100;
           bar.style.width = '100%';
@@ -1410,28 +1483,38 @@
           clearInterval(timer);
           setTimeout(() => {
             document.getElementById('loadingScreen').classList.add('hidden');
-          }, 450);
+          }, 300);
         } else {
           bar.style.width = pct + '%';
           pctEl.textContent = pct + '%';
           tipEl.textContent = tips[Math.floor(Math.random() * tips.length)];
         }
-      }, 240);
+      }, 160);
     }
 
     function updateUI() {
-      document.getElementById('headerCoins').textContent = coins.toFixed(2);
-      const invTotal = inventory.reduce((s, i) => s + i.price, 0);
+      saveGame();
+      document.getElementById('headerCoins').textContent = gameState.coins.toFixed(2);
+      const invTotal = gameState.inventory.reduce((s, i) => s + i.price, 0);
       document.getElementById('headerInvVal').textContent = invTotal.toFixed(2);
+      document.getElementById('clickerEarned').textContent = gameState.clickerEarned.toLocaleString();
+
+      document.getElementById('profileAvatarBox').style.borderColor = gameState.frameColor;
+      document.getElementById('activeBannerLabel').textContent = gameState.bannerName;
+      document.getElementById('vipTagBadge').style.display = gameState.isVip ? 'inline-block' : 'none';
 
       const slider = document.getElementById('addBalSlider');
-      slider.max = coins.toFixed(2);
-      if (addedBalanceBet > coins) {
+      slider.max = gameState.coins.toFixed(2);
+      if (addedBalanceBet > gameState.coins) {
         addedBalanceBet = 0;
         slider.value = 0;
       }
-      document.getElementById('maxBalLabel').textContent = coins.toFixed(2);
+      document.getElementById('maxBalLabel').textContent = gameState.coins.toFixed(2);
       document.getElementById('addedBalLabel').textContent = addedBalanceBet.toFixed(2);
+
+      if (!selectedSourceId && gameState.inventory.length > 0) {
+        selectedSourceId = gameState.inventory[0].id;
+      }
 
       renderInventory();
       renderUpgrader();
@@ -1454,7 +1537,7 @@
       t.textContent = msg;
       t.style.display = 'block';
       clearTimeout(window._t);
-      window._t = setTimeout(() => { t.style.display = 'none'; }, 3200);
+      window._t = setTimeout(() => { t.style.display = 'none'; }, 3000);
     }
 
     // ОТРИСОВКА КЕЙСОВ
@@ -1518,11 +1601,11 @@
     }
 
     function spinCase() {
-      if (coins < currentModalCase.price) {
-        showToast('Недостаточно монет!');
+      if (gameState.coins < currentModalCase.price) {
+        showToast('Недостаточно монет! Пополни баланс в Магазине.');
         return;
       }
-      coins -= currentModalCase.price;
+      gameState.coins -= currentModalCase.price;
       updateUI();
 
       const btn = document.getElementById('spinCaseBtn');
@@ -1532,17 +1615,14 @@
       const winIdx = 25;
       const won = { ...skinPool[Math.floor(Math.random() * skinPool.length)], id: Date.now() };
       track.children[winIdx].style.borderBottomColor = won.color;
-      track.children[winIdx].innerHTML = `<div style="font-weight:700; margin-bottom:6px;">${won.name}</div><div style="color:var(--green); font-weight:800;">${won.price.toFixed(2)}</div>`;
-
-      track.style.transition = 'transform 3.5s cubic-bezier(0.12, 0.85, 0.18, 1)';
-      track.style.transform = `translateX(-${winIdx * 140 - 310}px)`;
+      track.children[winIdx].innerHTML = `<div style="font-weight:700; margin-bottom:6px;">${won.name}</div><div style="color:var(--green); font-weight:800;">${won.price.toFixed(2)}</div>`;  track.style.transition = 'transform 3.5s cubic-bezier(0.12, 0.85, 0.18, 1)'; track.style.transform = `translateX(-${winIdx * 140 - 310}px)`;
 
       setTimeout(() => {
-        inventory.push(won);
+        gameState.inventory.push(won);
         selectedSourceId = won.id;
         updateUI();
         btn.disabled = false;
-        showToast(`Выпало: ${won.name} (${won.price.toFixed(2)})`);
+        showToast(`Выпало и сохранено: ${won.name} (${won.price.toFixed(2)})`);
       }, 3600);
     }
 
@@ -1550,11 +1630,11 @@
     function renderInventory() {
       const grid = document.getElementById('inventoryGrid');
       grid.innerHTML = '';
-      if (!inventory.length) {
+      if (!gameState.inventory.length) {
         grid.innerHTML = '<div style="color:var(--text-muted);">Ваш инвентарь пуст. Откройте свой первый кейс!</div>';
         return;
       }
-      inventory.forEach(item => {
+      gameState.inventory.forEach(item => {
         const card = document.createElement('div');
         card.className = 'case-card';
         card.innerHTML = `
@@ -1570,18 +1650,20 @@
     }
 
     function sellSkin(id) {
-      const idx = inventory.findIndex(i => i.id === id);
+      const idx = gameState.inventory.findIndex(i => i.id === id);
       if (idx !== -1) {
-        coins += inventory[idx].price;
-        inventory.splice(idx, 1);
+        gameState.coins += gameState.inventory[idx].price;
+        gameState.inventory.splice(idx, 1);
+        if (selectedSourceId === id) selectedSourceId = null;
         updateUI();
       }
     }
 
     function sellAllInventory() {
-      if (!inventory.length) return;
-      coins += inventory.reduce((s, i) => s + i.price, 0);
-      inventory = [];
+      if (!gameState.inventory.length) return;
+      gameState.coins += gameState.inventory.reduce((s, i) => s + i.price, 0);
+      gameState.inventory = [];
+      selectedSourceId = null;
       updateUI();
       showToast('Весь инвентарь продан!');
     }
@@ -1623,24 +1705,24 @@
     function startBattle() {
       if (!battleCases.length) return showToast('Добавьте хотя бы 1 кейс!');
       const cost = battleCases.reduce((s, x) => s + x.price, 0);
-      if (coins < cost) return showToast('Недостаточно монет!');
-      coins -= cost;
+      if (gameState.coins < cost) return showToast('Недостаточно монет!');
+      gameState.coins -= cost;
       const myPts = cost * (0.6 + Math.random() * 1.2);
       const botPts = cost * (0.6 + Math.random() * 1.2);
       if (myPts >= botPts) {
-        coins += myPts + botPts;
-        showToast(`Победа в битве! Выигрыш: ${(myPts + botPts).toFixed(2)}`);
+        gameState.coins += myPts + botPts;
+        showToast(`Победа! Выигрыш: +${(myPts + botPts).toFixed(2)} монет`);
       } else {
         showToast(`Бот победил (${botPts.toFixed(1)} против ${myPts.toFixed(1)})`);
       }
       updateUI();
     }
 
-    // УЛУЧШЕНИЯ (АПГРЕЙДЕР)
+    // АПГРЕЙДЕР (УЛУЧШЕНИЯ)
     function renderUpgrader() {
       const myList = document.getElementById('upgMySkinsList');
       myList.innerHTML = '';
-      inventory.forEach(item => {
+      gameState.inventory.forEach(item => {
         const el = document.createElement('div');
         el.className = 'skin-mini-card' + (item.id === selectedSourceId ? ' selected' : '');
         el.onclick = () => {
@@ -1666,7 +1748,7 @@
         tgtList.appendChild(el);
       });
 
-      const src = inventory.find(i => i.id === selectedSourceId);
+      const src = gameState.inventory.find(i => i.id === selectedSourceId);
       const tgt = skinPool[selectedTargetIdx];
 
       document.getElementById('upgSourcePrice').textContent = src ? src.price.toFixed(2) : '0.00';
@@ -1687,7 +1769,7 @@
     }
 
     function recalcUpgradeChance() {
-      const src = inventory.find(i => i.id === selectedSourceId);
+      const src = gameState.inventory.find(i => i.id === selectedSourceId);
       const tgt = skinPool[selectedTargetIdx];
       const totalBet = (src ? src.price : 0) + addedBalanceBet;
       if (totalBet > 0 && tgt && tgt.price > 0) {
@@ -1702,7 +1784,7 @@
     }
 
     function applyMult(mult) {
-      const src = inventory.find(i => i.id === selectedSourceId);
+      const src = gameState.inventory.find(i => i.id === selectedSourceId);
       const base = (src ? src.price : 10) + addedBalanceBet;
       const desired = base * mult;
       let bestIdx = 0;
@@ -1725,98 +1807,4 @@
 
       const sector = document.getElementById('wheelSector');
       if (!wheelInverted) {
-        sector.style.background = `conic-gradient(from 180deg, rgba(245, 158, 11, 0.34) 0% ${upgradeChance}%, #171b22 ${upgradeChance}% 100%)`;
-      } else {
-        sector.style.background = `conic-gradient(from 180deg, #171b22 0% ${100 - upgradeChance}%, rgba(245, 158, 11, 0.34) ${100 - upgradeChance}% 100%)`;
-      }
-    }
-
-    function spinUpgrade() {
-      const srcIdx = inventory.findIndex(i => i.id === selectedSourceId);
-      if (srcIdx === -1 && addedBalanceBet <= 0) {
-        showToast('Выберите предмет из «Мои предметы» или добавьте баланс!');
-        return;
-      }
-      if (addedBalanceBet > coins) return showToast('Недостаточно монет!');
-
-      const btn = document.getElementById('upgradeBtn');
-      btn.disabled = true;
-
-      coins -= addedBalanceBet;
-      if (srcIdx !== -1) inventory.splice(srcIdx, 1);
-      selectedSourceId = null;
-
-      const roll = +(Math.random() * 100).toFixed(2);
-      const won = !wheelInverted ? (roll <= upgradeChance) : (roll >= (100 - upgradeChance));
-      const deg = 1080 + (roll / 100) * 360;
-
-      document.getElementById('wheelPointerWrap').style.transform = `rotate(${deg}deg)`;
-
-      setTimeout(() => {
-        const banner = document.getElementById('rollBanner');
-        banner.style.display = 'block';
-        banner.style.borderColor = won ? 'var(--green)' : 'var(--red)';
-        banner.style.color = won ? 'var(--green)' : 'var(--red)';
-        banner.textContent = `Roll ${roll.toFixed(2)} - under ${upgradeChance.toFixed(2)} (${won ? 'Победа!' : 'Неудача'})`;
-
-        if (won) {
-          const target = skinPool[selectedTargetIdx];
-          const newItem = { ...target, id: Date.now() };
-          inventory.push(newItem);
-          selectedSourceId = newItem.id;
-          showToast(`УЛУЧШЕНИЕ УСПЕШНО! Получен: ${target.name}`);
-        } else {
-          showToast(`Неудача! Выпало ${roll.toFixed(2)}`);
-        }
-
-        addedBalanceBet = 0;
-        document.getElementById('addBalSlider').value = 0;
-        btn.disabled = false;
-        updateUI();
-      }, 2850);
-    }
-
-    // НАГРАДЫ И МАГАЗИН
-    function claimRewardSkin(name, price) {
-      inventory.push({ id: Date.now(), name, price, color: '#f59e0b' });
-      updateUI();
-      showToast(`Получен скин: ${name}`);
-    }
-
-    function addCoins(val) {
-      coins += val;
-      updateUI();
-      showToast(`+${val.toLocaleString()} монет зачислено!`);
-    }
-
-    function buyBanner(price, title) {
-      if (coins < price) return showToast(`Не хватает ${(price - coins).toFixed(2)} монет`);
-      coins -= price;
-      updateUI();
-      showToast(`Баннер «${title}» установлен!`);
-    }
-
-    function spinHourlyWheel() {
-      const prizes = [50, 200, 1000, 5000, 20000];
-      const win = prizes[Math.floor(Math.random() * prizes.length)];
-      addCoins(win);
-    }
-
-    function redeemPromo() {
-      const code = document.getElementById('promoCodeInput').value.trim().toUpperCase();
-      if (code === 'CASER2026') {
-        addCoins(2500);
-        document.getElementById('promoCodeInput').value = '';
-      } else {
-        showToast('Неверный промо-код. Попробуй CASER2026');
-      }
-    }
-
-    // СТАРТ
-    runLoader();
-    renderCases();
-    renderBattleCases();
-    updateUI();
-  </script>
-</body>
-</html>
+        sector.style.background = `conic-gradient(from 180deg, rgba(24

@@ -10,12 +10,10 @@
       --bg-header: #12151a;
       --bg-card: #161a20;
       --bg-card-hover: #1d222a;
-      --bg-dark: #101317;
       --border: #242a33;
       --text-main: #f3f5f7;
       --text-muted: #7f8999;
       --green: #22c55e;
-      --green-dark: #15803d;
       --amber: #f59e0b;
       --amber-glow: rgba(245, 158, 11, 0.32);
       --cyan: #38bdf8;
@@ -37,7 +35,7 @@
       overflow-x: hidden;
     }
 
-    /* ==================== ЭКРАН ЗАГРУЗКИ ==================== */
+    /* ==================== ЗАГРУЗКА НА ЧИСТОМ CSS (НИКОГДА НЕ ЗАВИСНЕТ) ==================== */
     #loadingScreen {
       position: fixed;
       inset: 0;
@@ -48,13 +46,22 @@
       align-items: center;
       justify-content: center;
       padding: 24px;
-      transition: opacity 0.35s ease, visibility 0.35s ease;
+      animation: hideLoader 0.35s ease 1.1s forwards;
+      pointer-events: none;
     }
 
-    #loadingScreen.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
+    @keyframes hideLoader {
+      to {
+        opacity: 0;
+        visibility: hidden;
+        display: none;
+      }
+    }
+
+    @keyframes fillBar {
+      0% { width: 10%; }
+      60% { width: 78%; }
+      100% { width: 100%; }
     }
 
     .loader-brand {
@@ -83,16 +90,6 @@
       color: #fff;
     }
 
-    .loader-status-row {
-      width: 100%;
-      max-width: 420px;
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
     .loader-bar-wrap {
       width: 100%;
       max-width: 420px;
@@ -100,15 +97,15 @@
       background: #1b1f26;
       border-radius: 6px;
       overflow: hidden;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .loader-bar-fill {
       height: 100%;
-      width: 15%;
+      width: 100%;
       background: linear-gradient(90deg, var(--amber), #fbbf24);
       box-shadow: 0 0 12px var(--amber);
-      transition: width 0.2s linear;
+      animation: fillBar 1s ease-out forwards;
     }
 
     .loader-tip-row {
@@ -119,7 +116,6 @@
       color: #9ca3af;
       text-align: center;
       max-width: 440px;
-      margin-bottom: 18px;
     }
 
     .tip-badge {
@@ -140,7 +136,7 @@
       background: var(--bg-header);
       border-bottom: 1px solid var(--border);
       height: 60px;
-      padding: 0 18px;
+      padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -150,7 +146,7 @@
     .header-left {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
       overflow-x: auto;
     }
 
@@ -178,16 +174,10 @@
       color: var(--text-muted);
       font-size: 13px;
       font-weight: 600;
-      padding: 8px 12px;
+      padding: 8px 11px;
       border-radius: 8px;
       cursor: pointer;
-      transition: 0.2s;
       white-space: nowrap;
-    }
-
-    .nav-btn:hover {
-      color: #fff;
-      background: rgba(255, 255, 255, 0.05);
     }
 
     .nav-btn.active {
@@ -210,10 +200,10 @@
     .balance-box {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       background: #181c23;
       border: 1px solid var(--border);
-      padding: 6px 12px;
+      padding: 6px 10px;
       border-radius: 9px;
       font-size: 13px;
       font-weight: 700;
@@ -226,16 +216,16 @@
     }
 
     .icon-gun {
-      width: 14px;
-      height: 14px;
+      width: 13px;
+      height: 13px;
       border-radius: 3px;
       background: linear-gradient(135deg, #38bdf8, #0284c7);
       display: inline-block;
     }
 
     .icon-coin {
-      width: 14px;
-      height: 14px;
+      width: 13px;
+      height: 13px;
       border-radius: 50%;
       background: radial-gradient(circle at 35% 35%, #6ee7b7, #10b981);
       display: inline-block;
@@ -251,9 +241,6 @@
       font-size: 20px;
       font-weight: 900;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .icon-btn {
@@ -287,14 +274,14 @@
     .profile-menu {
       position: fixed;
       top: 66px;
-      right: 18px;
-      width: 320px;
+      right: 16px;
+      width: 315px;
       background: #151920;
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 16px;
       z-index: 250;
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.8);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85);
       display: none;
     }
 
@@ -350,15 +337,9 @@
       padding: 12px 6px;
       text-align: center;
       cursor: pointer;
-      transition: 0.2s;
       font-size: 11px;
       font-weight: 600;
       color: var(--text-main);
-    }
-
-    .menu-tile:hover {
-      border-color: var(--green);
-      background: #222933;
     }
 
     .menu-tile span {
@@ -367,19 +348,19 @@
       margin-bottom: 6px;
     }
 
-    /* ==================== СЕКРЕТНАЯ ЧИТ-ПАНЕЛЬ (ТОЛЬКО ДЛЯ ТЕБЯ) ==================== */
+    /* ==================== ПРИВАТНАЯ ЧИТ-ПАНЕЛЬ ==================== */
     .cheat-modal {
       position: fixed;
-      top: 72px;
-      left: 18px;
+      top: 70px;
+      left: 16px;
       width: 340px;
-      max-width: calc(100vw - 36px);
+      max-width: calc(100vw - 32px);
       background: linear-gradient(160deg, #1a1324, #101319);
       border: 2px solid var(--purple);
       border-radius: 14px;
       padding: 16px;
       z-index: 600;
-      box-shadow: 0 15px 40px rgba(168, 85, 247, 0.35);
+      box-shadow: 0 15px 40px rgba(168, 85, 247, 0.4);
       display: none;
     }
 
@@ -398,7 +379,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.05);
       padding: 9px 12px;
       border-radius: 8px;
       margin-bottom: 8px;
@@ -421,26 +402,21 @@
     }
 
     .cheat-btn {
-      background: rgba(168, 85, 247, 0.2);
+      background: rgba(168, 85, 247, 0.22);
       border: 1px solid var(--purple);
       color: #f3e8ff;
-      padding: 7px 6px;
+      padding: 8px 6px;
       border-radius: 7px;
       font-size: 11px;
       font-weight: 800;
       cursor: pointer;
     }
 
-    .cheat-btn:hover {
-      background: var(--purple);
-      color: #fff;
-    }
-
     /* ==================== ОСНОВНОЙ КОНТЕЙНЕР ==================== */
     main {
       max-width: 1340px;
       margin: 0 auto;
-      padding: 18px;
+      padding: 16px;
     }
 
     .tab-section { display: none; }
@@ -455,26 +431,20 @@
       color: #fff;
       font-size: 14px;
       outline: none;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
-
-    .search-input:focus { border-color: var(--cyan); }
 
     .section-title {
       font-size: 17px;
       font-weight: 800;
-      margin: 22px 0 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      margin: 20px 0 12px;
     }
 
-    /* ==================== КАРТОЧКИ КЕЙСОВ ==================== */
     .featured-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 14px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     .featured-card {
@@ -483,15 +453,12 @@
       border-radius: 12px;
       padding: 16px;
       cursor: pointer;
-      transition: 0.2s;
     }
 
     .featured-card.vip {
       background: linear-gradient(155deg, #292012, #13161b);
       border-color: #574119;
     }
-
-    .featured-card:hover { transform: translateY(-2px); }
 
     .tag-badge {
       display: inline-block;
@@ -509,7 +476,7 @@
 
     .cases-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
       gap: 12px;
     }
 
@@ -519,25 +486,16 @@
       border-radius: 12px;
       padding: 12px;
       cursor: pointer;
-      transition: 0.2s;
       position: relative;
-    }
-
-    .case-card:hover {
-      background: var(--bg-card-hover);
-      border-color: #364152;
-      transform: translateY(-2px);
     }
 
     .case-art {
-      height: 92px;
+      height: 88px;
       border-radius: 9px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
-      overflow: hidden;
     }
 
     .case-name {
@@ -558,10 +516,10 @@
       gap: 5px;
     }
 
-    /* ==================== АПГРЕЙДЕР (КОЛЕСО) ==================== */
+    /* ==================== АПГРЕЙДЕР ==================== */
     .upgrader-grid {
       display: grid;
-      grid-template-columns: 1fr 380px 1fr;
+      grid-template-columns: 1fr 370px 1fr;
       gap: 16px;
       align-items: stretch;
     }
@@ -584,7 +542,7 @@
       background: #101318;
       border: 1px dashed #2d3542;
       border-radius: 12px;
-      min-height: 150px;
+      min-height: 140px;
       padding: 16px;
       display: flex;
       flex-direction: column;
@@ -606,8 +564,8 @@
 
     .wheel-outer {
       position: relative;
-      width: 266px;
-      height: 266px;
+      width: 262px;
+      height: 262px;
       border-radius: 50%;
       background: #101318;
       border: 2px solid #2b323d;
@@ -615,7 +573,6 @@
       align-items: center;
       justify-content: center;
       margin: 8px 0 14px;
-      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.85);
     }
 
     .wheel-scale-label {
@@ -632,8 +589,8 @@
     .wheel-scale-left { left: 8px; top: 50%; transform: translateY(-50%); }
 
     .wheel-sector {
-      width: 224px;
-      height: 224px;
+      width: 220px;
+      height: 220px;
       border-radius: 50%;
       background: conic-gradient(from 180deg, rgba(245, 158, 11, 0.34) 0% 50%, #171b22 50% 100%);
       border: 2px solid #2f3744;
@@ -644,8 +601,8 @@
     }
 
     .wheel-inner-core {
-      width: 152px;
-      height: 152px;
+      width: 150px;
+      height: 150px;
       border-radius: 50%;
       background: radial-gradient(circle, #191e26 0%, #101318 100%);
       border: 2px solid #2b3340;
@@ -660,7 +617,7 @@
       position: absolute;
       inset: 14px;
       z-index: 5;
-      transition: transform 2.6s cubic-bezier(0.12, 0.85, 0.2, 1);
+      transition: transform 2.5s cubic-bezier(0.12, 0.85, 0.2, 1);
       pointer-events: none;
     }
 
@@ -674,12 +631,11 @@
       border-left: 8px solid transparent;
       border-right: 8px solid transparent;
       border-bottom: 13px solid var(--amber);
-      filter: drop-shadow(0 0 6px var(--amber));
     }
 
     .roll-banner {
       position: absolute;
-      top: 44px;
+      top: 42px;
       background: rgba(18, 22, 28, 0.96);
       border: 1px solid var(--amber);
       color: var(--amber);
@@ -755,9 +711,9 @@
 
     .skin-mini-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
       gap: 8px;
-      max-height: 220px;
+      max-height: 210px;
       overflow-y: auto;
       margin-top: 8px;
     }
@@ -787,11 +743,8 @@
       font-size: 14px;
       font-weight: 800;
       cursor: pointer;
-      transition: 0.15s;
     }
 
-    .btn-primary:hover { filter: brightness(1.08); }
-    .btn-primary:active { transform: scale(0.97); }
     .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
 
     .btn-amber {
@@ -809,13 +762,13 @@
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 18px;
-      margin-bottom: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
     }
 
     .cards-3 {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 14px;
     }
 
@@ -843,30 +796,26 @@
       font-weight: 900;
       cursor: pointer;
       box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
-      transition: transform 0.08s;
       user-select: none;
     }
 
-    .coin-click-btn:active {
-      transform: scale(0.9);
-    }
+    .coin-click-btn:active { transform: scale(0.9); }
 
     .banner-preview {
-      height: 76px;
+      height: 72px;
       border-radius: 10px;
       margin-bottom: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 900;
-      letter-spacing: 1px;
       font-size: 14px;
       border: 1px solid rgba(255, 255, 255, 0.12);
     }
 
     .frame-circle {
-      width: 64px;
-      height: 64px;
+      width: 62px;
+      height: 62px;
       border-radius: 14px;
       margin: 0 auto 10px;
       background: #1b212a;
@@ -896,17 +845,17 @@
       background: #14181f;
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 22px;
+      padding: 20px;
     }
 
     .roulette-window {
       position: relative;
-      height: 146px;
+      height: 144px;
       background: #0c0e12;
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
-      margin: 18px 0;
+      margin: 16px 0;
       display: flex;
       align-items: center;
     }
@@ -919,7 +868,6 @@
       width: 3px;
       background: var(--amber);
       z-index: 10;
-      box-shadow: 0 0 12px var(--amber);
     }
 
     .roulette-track {
@@ -930,7 +878,7 @@
 
     .roulette-item {
       min-width: 130px;
-      height: 120px;
+      height: 118px;
       background: #161b23;
       border: 1px solid var(--border);
       border-bottom: 4px solid var(--cyan);
@@ -956,14 +904,13 @@
       font-size: 13px;
       font-weight: 700;
       z-index: 900;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65);
       display: none;
     }
   </style>
 </head>
 <body>
 
-  <!-- БЫСТРЫЙ ЭКРАН ЗАГРУЗКИ CASER -->
+  <!-- ЭКРАН ЗАГРУЗКИ НА ЧИСТОМ CSS (САМ ПРОХОДИТ ЗА 1.1 СЕКУНДЫ) -->
   <div id="loadingScreen">
     <div class="loader-brand">
       <div class="loader-hex">
@@ -974,24 +921,19 @@
       </div>
       <div class="loader-title">CASER</div>
     </div>
-    <div class="loader-status-row">
-      <span id="loaderStatusText">Подключение к серверу...</span>
-      <span id="loaderPercent">20%</span>
-    </div>
     <div class="loader-bar-wrap">
-      <div class="loader-bar-fill" id="loaderBarFill"></div>
+      <div class="loader-bar-fill"></div>
     </div>
     <div class="loader-tip-row">
       <span class="tip-badge">TIP</span>
-      <span id="loaderTipText">Spin the hourly wheel for free every hour: wins and up to 20,000 coins.</span>
+      <span>Spin the hourly wheel for free every hour: wins and up to 20,000 coins.</span>
     </div>
-    <button class="upg-chip" onclick="finishLoading()" style="margin-top:8px;">Пропустить загрузку</button>
   </div>
 
   <!-- ШАПКА САЙТА -->
   <header>
     <div class="header-left">
-      <div class="brand-mini" onclick="handleSecretLogoClick()" title="CASER">
+      <div class="brand-mini" onclick="handleSecretLogoClick()">
         <span style="color:var(--amber);">◆</span> CASER
       </div>
       <nav>
@@ -1009,15 +951,15 @@
         <div class="bal-item"><span class="icon-coin"></span><span id="headerCoins">7.85</span></div>
       </div>
       <button class="plus-btn" title="Магазин" onclick="switchTab('shop')">+</button>
-      <button class="icon-btn" onclick="showToast('Автосохранение работает!')">🔔<span class="badge-notif">99+</span></button>
+      <button class="icon-btn" onclick="showToast('Автосохранение активно!')">🔔<span class="badge-notif">99+</span></button>
       <button class="icon-btn" onclick="toggleProfileMenu()">☰</button>
     </div>
   </header>
 
-  <!-- СЕКРЕТНОЕ ЧИТ-МЕНЮ (ОТКРЫВАЕТСЯ ПО 5 КЛИКАМ НА ЛОГОТИП ◆ CASER ИЛИ КЛАВИШЕ ~) -->
+  <!-- СЕКРЕТНОЕ ЧИТ-МЕНЮ (5 КЛИКОВ ПО ЛОГОТИПУ ◆ CASER ИЛИ КЛАВИША ~) -->
   <div class="cheat-modal" id="cheatModal">
     <div class="cheat-header">
-      <strong style="color:#e9d5ff; font-size:14px;">👑 ПРИВАТНЫЕ ЧИТЫ (Romawe4ka13)</strong>
+      <strong style="color:#e9d5ff; font-size:13px;">👑 ПРИВАТНЫЕ ЧИТЫ (Romawe4ka13)</strong>
       <button class="upg-chip" onclick="toggleCheatMenu(false)">✕</button>
     </div>
 
@@ -1036,14 +978,14 @@
       <input type="checkbox" class="cheat-toggle" id="cheatSuperClick" onchange="saveCheats()" />
     </div>
 
-    <div style="font-size:11px; color:#c084fc; font-weight:800; margin-top:10px;">БЫСТРАЯ НАКРУТКА МОНЕТ:</div>
+    <div style="font-size:11px; color:#c084fc; font-weight:800; margin-top:10px;">НАКРУТКА МОНЕТ:</div>
     <div class="cheat-btn-grid">
       <button class="cheat-btn" onclick="addCoins(10000)">+10,000</button>
       <button class="cheat-btn" onclick="addCoins(100000)">+100,000</button>
       <button class="cheat-btn" onclick="addCoins(1000000)">+1,000,000</button>
     </div>
 
-    <div style="font-size:11px; color:#c084fc; font-weight:800; margin-top:10px;">ВЫДАТЬ СЕБЕ НОЖ В ИНВЕНТАРЬ:</div>
+    <div style="font-size:11px; color:#c084fc; font-weight:800; margin-top:10px;">ВЫДАТЬ СЕБЕ НОЖ:</div>
     <div class="cheat-btn-grid">
       <button class="cheat-btn" onclick="claimRewardSkin('★ Карамбит | Градиент', 18500)">Карамбит</button>
       <button class="cheat-btn" onclick="claimRewardSkin('★ Нож-бабочка | Изумруд', 99999)">Бабочка</button>
@@ -1101,8 +1043,8 @@
     <section id="tab-inventory" class="tab-section">
       <div class="panel-box" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
         <div>
-          <h3>Инвентарь (Автосохранение включено)</h3>
-          <p style="font-size:12px; color:var(--text-muted);">Все выбитые скины сохраняются даже после перезагрузки страницы</p>
+          <h3>Инвентарь (Автосохранение)</h3>
+          <p style="font-size:12px; color:var(--text-muted);">Все выбитые скины сохраняются автоматически</p>
         </div>
         <button class="btn-primary" onclick="sellAllInventory()">Продать всё</button>
       </div>
@@ -1406,7 +1348,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const STORAGE_KEY = 'caser_2_0_save_v2';
+    const STORAGE_KEY = 'caser_2_0_save_v3';
 
     function getCaseSVG(color) {
       return `
@@ -1536,64 +1478,41 @@
       }
     };
 
+    // ДВОЙНОЕ СОХРАНЕНИЕ (localStorage + window.name для мобильных проводников)
     function loadGame() {
+      let raw = null;
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) {
+        raw = localStorage.getItem(STORAGE_KEY);
+      } catch (e) {}
+      if (!raw && window.name && window.name.startsWith('CASER_SAVE:')) {
+        raw = window.name.replace('CASER_SAVE:', '');
+      }
+      if (raw) {
+        try {
           const parsed = JSON.parse(raw);
           gameState = {
             ...gameState,
             ...parsed,
             cheats: { ...gameState.cheats, ...(parsed.cheats || {}) }
           };
-        }
-      } catch (e) {}
+        } catch (e) {}
+      }
     }
 
     function saveGame() {
+      const json = JSON.stringify(gameState);
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
+        localStorage.setItem(STORAGE_KEY, json);
+      } catch (e) {}
+      try {
+        window.name = 'CASER_SAVE:' + json;
       } catch (e) {}
     }
 
     function resetProgress() {
-      localStorage.removeItem(STORAGE_KEY);
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+      window.name = '';
       location.reload();
-    }
-
-    // БЫСТРАЯ И НАДЁЖНАЯ ЗАГРУЗКА (БЕЗ ЗАВИСАНИЙ)
-    let loaderFinished = false;
-    function finishLoading() {
-      if (loaderFinished) return;
-      loaderFinished = true;
-      document.getElementById('loaderBarFill').style.width = '100%';
-      document.getElementById('loaderPercent').textContent = '100%';
-      document.getElementById('loaderStatusText').textContent = 'Готово!';
-      setTimeout(() => {
-        document.getElementById('loadingScreen').classList.add('hidden');
-      }, 150);
-    }
-
-    function startSafeLoader() {
-      let step = 20;
-      const bar = document.getElementById('loaderBarFill');
-      const pct = document.getElementById('loaderPercent');
-      const status = document.getElementById('loaderStatusText');
-
-      const iv = setInterval(() => {
-        step += 25;
-        if (step >= 100) {
-          clearInterval(iv);
-          finishLoading();
-        } else {
-          bar.style.width = step + '%';
-          pct.textContent = step + '%';
-          if (step >= 70) status.textContent = 'Подготовка меню...';
-        }
-      }, 220);
-
-      // Жёсткий таймаут: через 1.5 секунды экран точно откроется
-      setTimeout(finishLoading, 1500);
     }
 
     // СЕКРЕТНОЕ ЧИТ-МЕНЮ (5 КЛИКОВ ПО ЛОГОТИПУ ИЛИ КЛАВИША ~)
@@ -1603,7 +1522,7 @@
       switchTab('cases');
       logoClicks++;
       clearTimeout(logoClickTimer);
-      logoClickTimer = setTimeout(() => { logoClicks = 0; }, 1500);
+      logoClickTimer = setTimeout(() => { logoClicks = 0; }, 1800);
       if (logoClicks >= 5) {
         logoClicks = 0;
         toggleCheatMenu(true);
@@ -1766,7 +1685,6 @@
       const track = document.getElementById('rouletteTrack');
       const winIdx = 25;
 
-      // Если включен чит на кейсы — падают только топ-скины
       const pool = gameState.cheats.caseGod ? skinPool.slice(-2) : skinPool;
       const won = { ...pool[Math.floor(Math.random() * pool.length)], id: Date.now() };
 
@@ -1781,7 +1699,7 @@
         selectedSourceId = won.id;
         updateUI();
         btn.disabled = false;
-        showToast(`Выпало и сохранено: ${won.name} (${won.price.toFixed(2)})`);
+        showToast(`Выпало: ${won.name} (${won.price.toFixed(2)})`);
       }, 3300);
     }
 
@@ -1875,7 +1793,6 @@
       updateUI();
     }
 
-    // АПГРЕЙДЕР
     function renderUpgrader() {
       const myList = document.getElementById('upgMySkinsList');
       myList.innerHTML = '';
@@ -1985,7 +1902,6 @@
       if (srcIdx !== -1) gameState.inventory.splice(srcIdx, 1);
       selectedSourceId = null;
 
-      // Если включён твой приватный чит на 100% апгрейд — всегда выпадает победный сектор
       let roll = +(Math.random() * 100).toFixed(2);
       if (gameState.cheats.upgrade100) {
         roll = !wheelInverted
@@ -2010,7 +1926,7 @@
           const newItem = { ...target, id: Date.now() };
           gameState.inventory.push(newItem);
           selectedSourceId = newItem.id;
-          showToast(`УЛУЧШЕНИЕ УСПЕШНО! Получен и сохранён: ${target.name}`);
+          showToast(`УЛУЧШЕНИЕ УСПЕШНО! Получен: ${target.name}`);
         } else {
           showToast(`Неудача! Выпало ${roll.toFixed(2)}`);
         }
@@ -2019,10 +1935,9 @@
         document.getElementById('addBalSlider').value = 0;
         btn.disabled = false;
         updateUI();
-      }, 2650);
+      }, 2550);
     }
 
-    // КЛИКЕР, НАГРАДЫ И МАГАЗИН
     function clickCoinMiner() {
       const gain = gameState.cheats.superClick ? 1000 : 10;
       if (!gameState.cheats.superClick && gameState.clickerEarned >= 20000) {
@@ -2037,31 +1952,31 @@
     function claimRewardSkin(name, price) {
       gameState.inventory.push({ id: Date.now(), name, price, color: '#f59e0b' });
       updateUI();
-      showToast(`Скин «${name}» добавлен в инвентарь и сохранён!`);
+      showToast(`Скин «${name}» добавлен и сохранён!`);
     }
 
     function addCoins(val) {
       gameState.coins += val;
       updateUI();
-      showToast(`+${val.toLocaleString()} монет зачислено и сохранено!`);
+      showToast(`+${val.toLocaleString()} монет зачислено!`);
     }
 
     function activateVip() {
       gameState.isVip = true;
       updateUI();
-      showToast('VIP-пропуск активирован и сохранён!');
+      showToast('VIP-пропуск активирован!');
     }
 
     function equipFrame(color, name) {
       gameState.frameColor = color;
       updateUI();
-      showToast(`Рамка «${name}» установлена и сохранена!`);
+      showToast(`Рамка «${name}» установлена!`);
     }
 
     function equipBanner(name) {
       gameState.bannerName = name;
       updateUI();
-      showToast(`Баннер «${name}» установлен и сохранён!`);
+      showToast(`Баннер «${name}» установлен!`);
     }
 
     function spinHourlyWheel() {
@@ -2084,12 +1999,10 @@
       }
     }
 
-    // ЗАПУСК
     loadGame();
     renderCases();
     renderBattleCases();
     updateUI();
-    startSafeLoader();
   </script>
 </body>
 </html>

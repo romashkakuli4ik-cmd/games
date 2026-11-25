@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEXUS PLAY — Telegram Mini App</title>
+    <title>NEXUS PLAY — 120 FPS Engine</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-body: #090b10;
-            --bg-card: #12151e;
-            --bg-element: #1c202e;
-            --border-color: #262b3d;
+            --bg-body: #07090e;
+            --bg-card: #11141d;
+            --bg-element: #191e2c;
+            --border-color: #242a3d;
             --accent-green: #00e676;
-            --accent-green-dim: rgba(0, 230, 118, 0.12);
+            --accent-green-dim: rgba(0, 230, 118, 0.14);
             --accent-blue: #00b0ff;
             --accent-purple: #aa00ff;
             --accent-red: #ff3d57;
             --gold: #ffb300;
-            --gold-dim: rgba(255, 179, 0, 0.15);
+            --gold-dim: rgba(255, 179, 0, 0.16);
             --text-main: #ffffff;
             --text-secondary: #8a94ad;
             --radius-lg: 16px;
@@ -40,8 +40,18 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            padding-bottom: 75px;
+            padding-bottom: 78px;
             overflow-x: hidden;
+        }
+
+        /* Global FX Canvas for 120fps confetti & sparks */
+        #fxCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
         }
 
         header {
@@ -49,8 +59,9 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 16px;
-            background-color: rgba(18, 21, 30, 0.9);
-            backdrop-filter: blur(10px);
+            background-color: rgba(17, 20, 29, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
@@ -62,7 +73,7 @@
         .logo {
             font-weight: 900;
             font-size: 1.35rem;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
             background: linear-gradient(90deg, #00e676, #00b0ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -99,13 +110,20 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            font-weight: 700;
+            font-weight: 800;
             font-size: 0.95rem;
             color: var(--gold);
+            font-variant-numeric: tabular-nums;
+            transition: transform 0.15s cubic-bezier(0.2, 1.4, 0.4, 1);
+        }
+
+        .balance-box.bump {
+            transform: scale(1.08);
+            border-color: var(--gold);
         }
 
         .add-funds-btn {
-            background: var(--accent-blue);
+            background: linear-gradient(135deg, #00b0ff, #0081cb);
             color: #fff;
             border: none;
             width: 28px;
@@ -117,7 +135,9 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            transition: transform 0.12s cubic-bezier(0.2, 1.5, 0.4, 1);
         }
+        .add-funds-btn:active { transform: scale(0.88); }
 
         main {
             flex: 1;
@@ -127,12 +147,18 @@
             margin: 0 auto;
         }
 
-        .tab-view { display: none; animation: fadeIn 0.2s ease; }
-        .tab-view.active { display: block; }
+        .tab-view {
+            display: none;
+            will-change: transform, opacity;
+        }
+        .tab-view.active {
+            display: block;
+            animation: viewEnter 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes viewEnter {
+            from { opacity: 0; transform: translate3d(0, 8px, 0) scale(0.99); }
+            to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
         }
 
         .promo-card {
@@ -185,8 +211,9 @@
             font-weight: 700;
             font-size: 0.85rem;
             cursor: pointer;
+            transition: transform 0.12s cubic-bezier(0.2, 1.5, 0.4, 1);
         }
-
+        .btn-small:active { transform: scale(0.92); }
         .btn-small:disabled {
             background: var(--bg-element);
             color: var(--text-secondary);
@@ -219,10 +246,15 @@
             align-items: center;
             gap: 14px;
             cursor: pointer;
-            transition: transform 0.12s, border-color 0.2s;
+            will-change: transform;
+            transition: transform 0.14s cubic-bezier(0.2, 1.4, 0.4, 1), border-color 0.2s, background-color 0.2s;
         }
 
-        .game-card:active { transform: scale(0.98); }
+        .game-card:active {
+            transform: scale(0.965);
+            border-color: var(--accent-blue);
+            background-color: #161a26;
+        }
 
         .game-icon {
             width: 54px;
@@ -233,6 +265,7 @@
             justify-content: center;
             font-size: 1.6rem;
             flex-shrink: 0;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.35);
         }
 
         .icon-keno { background: linear-gradient(135deg, #004d40, #00e676); }
@@ -272,7 +305,13 @@
             height: 6px;
             background: var(--accent-green);
             border-radius: 50%;
-            box-shadow: 0 0 6px var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
+            animation: pulseDot 1.6s infinite ease-in-out;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
         }
 
         .game-desc { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px; }
@@ -328,7 +367,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .back-btn {
@@ -340,14 +379,16 @@
             font-weight: 600;
             font-size: 0.85rem;
             cursor: pointer;
+            transition: transform 0.12s cubic-bezier(0.2, 1.5, 0.4, 1);
         }
+        .back-btn:active { transform: scale(0.92); }
 
         .bet-panel {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
             padding: 16px;
-            margin-top: 16px;
+            margin-top: 14px;
         }
 
         .bet-row {
@@ -373,7 +414,7 @@
             border: none;
             color: #fff;
             font-size: 1rem;
-            font-weight: 700;
+            font-weight: 800;
             padding: 10px 6px;
             outline: none;
             text-align: center;
@@ -387,7 +428,9 @@
             border-radius: var(--radius-sm);
             font-weight: 700;
             cursor: pointer;
+            transition: transform 0.1s;
         }
+        .mod-btn:active { transform: scale(0.9); }
 
         .risk-tabs {
             display: grid;
@@ -405,6 +448,7 @@
             font-size: 0.78rem;
             font-weight: 700;
             cursor: pointer;
+            transition: all 0.15s ease;
         }
 
         .risk-btn.active {
@@ -425,12 +469,18 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 230, 118, 0.25);
+            box-shadow: 0 4px 18px rgba(0, 230, 118, 0.28);
+            will-change: transform;
+            transition: transform 0.1s cubic-bezier(0.2, 1.5, 0.4, 1), box-shadow 0.15s;
+        }
+        .play-btn:active {
+            transform: scale(0.96);
+            box-shadow: 0 2px 8px rgba(0, 230, 118, 0.2);
         }
 
         .play-btn.cashout {
             background: linear-gradient(90deg, #ffb300, #ff8f00);
-            box-shadow: 0 4px 15px rgba(255, 179, 0, 0.3);
+            box-shadow: 0 4px 18px rgba(255, 179, 0, 0.35);
         }
 
         /* MINES */
@@ -452,16 +502,40 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
+            font-size: 1.45rem;
             font-weight: 800;
             color: var(--text-secondary);
             cursor: pointer;
-            transition: transform 0.1s, background 0.2s;
+            will-change: transform;
+            transition: transform 0.16s cubic-bezier(0.2, 1.6, 0.4, 1), background 0.18s, border-color 0.18s;
         }
 
-        .mine-cell:active { transform: scale(0.94); }
-        .mine-cell.gem { background: var(--accent-green-dim); border-color: var(--accent-green); color: var(--accent-green); }
-        .mine-cell.bomb { background: rgba(255, 61, 87, 0.2); border-color: var(--accent-red); color: var(--accent-red); }
+        .mine-cell:active { transform: scale(0.88); }
+        .mine-cell.gem {
+            background: var(--accent-green-dim);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+            animation: popCell 0.26s cubic-bezier(0.2, 1.7, 0.4, 1);
+            box-shadow: 0 0 12px rgba(0, 230, 118, 0.25);
+        }
+        .mine-cell.bomb {
+            background: rgba(255, 61, 87, 0.22);
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+            animation: shakeCell 0.32s ease;
+            box-shadow: 0 0 14px rgba(255, 61, 87, 0.35);
+        }
+
+        @keyframes popCell {
+            0% { transform: scale(0.5); }
+            70% { transform: scale(1.12); }
+            100% { transform: scale(1); }
+        }
+        @keyframes shakeCell {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
 
         /* LIMBO */
         .limbo-wheel-box {
@@ -478,28 +552,29 @@
         .wheel-pointer {
             width: 0;
             height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 14px solid #fff;
+            border-left: 11px solid transparent;
+            border-right: 11px solid transparent;
+            border-top: 15px solid #fff;
             margin-bottom: 6px;
             z-index: 2;
+            filter: drop-shadow(0 2px 6px rgba(255,255,255,0.5));
         }
 
         .wheel-circle {
-            width: 210px;
-            height: 210px;
+            width: 215px;
+            height: 215px;
             border-radius: 50%;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 2.2s cubic-bezier(0.15, 0.85, 0.25, 1);
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+            will-change: transform;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(0,0,0,0.5);
         }
 
         .wheel-inner {
-            width: 110px;
-            height: 110px;
+            width: 114px;
+            height: 114px;
             background: var(--bg-body);
             border-radius: 50%;
             border: 3px solid var(--border-color);
@@ -510,25 +585,46 @@
             z-index: 2;
         }
 
-        .wheel-mult { font-size: 1.5rem; font-weight: 900; color: #fff; }
-        .wheel-status { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; }
+        .wheel-mult { font-size: 1.55rem; font-weight: 900; color: #fff; font-variant-numeric: tabular-nums; }
+        .wheel-status { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; }
 
         .slider-box { width: 100%; margin-top: 18px; }
         .slider-labels { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; }
         input[type="range"] { width: 100%; accent-color: var(--accent-green); }
 
-        /* PLINKO */
+        /* PLINKO 120 FPS CANVAS */
         .plinko-wrap {
-            background: var(--bg-card);
+            background: radial-gradient(circle at top, #171d2c 0%, #0e1119 100%);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
-            padding: 12px;
+            padding: 10px 8px 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
+            overflow: hidden;
         }
 
-        canvas#plinkoCanvas { width: 100%; max-width: 340px; height: 260px; display: block; }
+        .fps-pill {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            background: rgba(0, 230, 118, 0.12);
+            border: 1px solid rgba(0, 230, 118, 0.35);
+            color: var(--accent-green);
+            font-size: 0.62rem;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        canvas#plinkoCanvas {
+            width: 100%;
+            max-width: 350px;
+            height: 270px;
+            display: block;
+        }
 
         .plinko-buckets {
             display: grid;
@@ -536,18 +632,25 @@
             gap: 4px;
             width: 100%;
             max-width: 340px;
-            margin-top: 6px;
+            margin-top: 4px;
         }
 
         .bucket {
-            background: var(--gold);
+            background: linear-gradient(180deg, #ffca28 0%, #ff8f00 100%);
             color: #000;
-            font-size: 0.65rem;
+            font-size: 0.66rem;
             font-weight: 900;
-            padding: 5px 2px;
-            border-radius: 4px;
+            padding: 6px 1px;
+            border-radius: 5px;
             text-align: center;
-            transition: transform 0.15s;
+            box-shadow: 0 3px 0 #b26500;
+            will-change: transform;
+            transition: transform 0.12s cubic-bezier(0.2, 1.8, 0.4, 1), filter 0.15s;
+        }
+
+        .bucket.hit-bucket {
+            transform: translateY(4px) scale(1.12);
+            filter: brightness(1.35);
         }
 
         /* HI-LO */
@@ -559,21 +662,32 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            perspective: 800px;
         }
 
         .playing-card {
             width: 130px;
             height: 180px;
-            background: linear-gradient(145deg, #1e2436, #141824);
+            background: linear-gradient(145deg, #22293e, #131724);
             border: 2px solid var(--border-color);
-            border-radius: 14px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3.5rem;
+            font-size: 3.6rem;
             font-weight: 900;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
             margin-bottom: 20px;
+            will-change: transform;
+        }
+
+        .playing-card.flip {
+            animation: cardFlip 0.28s cubic-bezier(0.2, 1.4, 0.4, 1);
+        }
+
+        @keyframes cardFlip {
+            0% { transform: rotateY(90deg) scale(0.9); }
+            100% { transform: rotateY(0deg) scale(1); }
         }
 
         .hilo-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; }
@@ -589,7 +703,9 @@
             align-items: center;
             gap: 4px;
             cursor: pointer;
+            transition: transform 0.12s cubic-bezier(0.2, 1.5, 0.4, 1);
         }
+        .hilo-btn:active { transform: scale(0.93); }
 
         .hilo-btn span:first-child { font-size: 0.8rem; font-weight: 800; }
         .hilo-btn span:last-child { font-size: 0.75rem; color: var(--text-secondary); }
@@ -622,10 +738,11 @@
             font-size: 0.9rem;
             color: var(--text-secondary);
             cursor: pointer;
+            transition: transform 0.14s cubic-bezier(0.2, 1.6, 0.4, 1), background 0.15s, border-color 0.15s;
         }
-
-        .keno-num.selected { background: rgba(0, 176, 255, 0.2); border-color: var(--accent-blue); color: #fff; }
-        .keno-num.hit { background: var(--accent-green); border-color: var(--accent-green); color: #000; box-shadow: 0 0 10px rgba(0, 230, 118, 0.5); }
+        .keno-num:active { transform: scale(0.88); }
+        .keno-num.selected { background: rgba(0, 176, 255, 0.22); border-color: var(--accent-blue); color: #fff; transform: scale(1.04); }
+        .keno-num.hit { background: var(--accent-green); border-color: var(--accent-green); color: #000; box-shadow: 0 0 12px rgba(0, 230, 118, 0.6); animation: popCell 0.25s ease; }
         .keno-num.miss { background: rgba(255, 61, 87, 0.25); border-color: var(--accent-red); color: var(--accent-red); }
 
         /* Rating, Rewards, Shop, Earn */
@@ -669,9 +786,9 @@
             align-items: center;
             margin-bottom: 10px;
             cursor: pointer;
-            transition: transform 0.1s;
+            transition: transform 0.12s cubic-bezier(0.2, 1.5, 0.4, 1);
         }
-        .shop-item:active { transform: scale(0.98); }
+        .shop-item:active { transform: scale(0.96); }
         .shop-item.best { border-color: var(--gold); background: linear-gradient(90deg, var(--bg-card), rgba(255, 179, 0, 0.08)); }
 
         .star-pill {
@@ -694,8 +811,9 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(18, 21, 30, 0.95);
-            backdrop-filter: blur(12px);
+            background: rgba(17, 20, 29, 0.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             border-top: 1px solid var(--border-color);
             display: flex;
             justify-content: space-around;
@@ -703,16 +821,18 @@
             z-index: 100;
         }
 
-        .nav-btn { background: none; border: none; color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.72rem; font-weight: 600; cursor: pointer; }
+        .nav-btn { background: none; border: none; color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.72rem; font-weight: 600; cursor: pointer; transition: transform 0.12s, color 0.15s; }
+        .nav-btn:active { transform: scale(0.9); }
         .nav-btn.active { color: var(--accent-blue); }
         .nav-btn span.ico { font-size: 1.25rem; }
 
         #toast {
             position: fixed;
-            top: 70px;
+            top: 68px;
             left: 50%;
-            transform: translateX(-50%) translateY(-20px);
-            background: var(--bg-element);
+            transform: translate3d(-50%, -18px, 0) scale(0.95);
+            background: rgba(25, 30, 44, 0.95);
+            backdrop-filter: blur(10px);
             border: 1px solid var(--accent-green);
             color: #fff;
             padding: 10px 18px;
@@ -721,16 +841,17 @@
             font-weight: 700;
             opacity: 0;
             pointer-events: none;
-            transition: all 0.25s ease;
+            transition: all 0.22s cubic-bezier(0.2, 1.4, 0.4, 1);
             z-index: 999;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.65);
             text-align: center;
         }
-        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        #toast.show { opacity: 1; transform: translate3d(-50%, 0, 0) scale(1); }
     </style>
 </head>
 <body>
 
+<canvas id="fxCanvas"></canvas>
 <div id="toast">Уведомление</div>
 
 <header>
@@ -740,7 +861,7 @@
         <div class="admin-badge" id="adminBadge">ADMIN</div>
     </div>
     <div class="wallet-group">
-        <div class="balance-box">
+        <div class="balance-box" id="balanceBox">
             <span>🪙</span>
             <span id="balanceDisplay">1000</span>
         </div>
@@ -800,7 +921,7 @@
                 <div class="game-icon icon-plinko">🟡</div>
                 <div class="game-details">
                     <div class="game-title-row">
-                        <h3>Плинко</h3>
+                        <h3>Плинко <span class="badge-new">120 FPS</span></h3>
                         <span class="online-dot">85 Онлайн</span>
                     </div>
                     <p class="game-desc">Брось шар, поймай множитель</p>
@@ -906,15 +1027,16 @@
         </div>
     </div>
 
-    <!-- PLINKO -->
+    <!-- PLINKO 120 FPS -->
     <div id="game-plinko" class="tab-view">
         <div class="game-topbar">
             <button class="back-btn" onclick="closeGame()">← Назад</button>
             <h3>🟡 ПЛИНКО</h3>
-            <span class="rtp-tag">RTP 100%</span>
+            <span class="rtp-tag">MULTI-DROP</span>
         </div>
         <div class="plinko-wrap">
-            <canvas id="plinkoCanvas" width="340" height="260"></canvas>
+            <div class="fps-pill" id="fpsCounter">120 FPS</div>
+            <canvas id="plinkoCanvas"></canvas>
             <div class="plinko-buckets" id="plinkoBuckets"></div>
         </div>
         <div class="bet-panel">
@@ -1098,15 +1220,24 @@
         tg.expand();
     }
 
+    // Haptic Feedback Engine (120Hz tactile response)
+    function haptic(type = 'light') {
+        if (!tg || !tg.HapticFeedback) return;
+        try {
+            if (type === 'light') tg.HapticFeedback.impactOccurred('light');
+            else if (type === 'medium') tg.HapticFeedback.impactOccurred('medium');
+            else if (type === 'heavy') tg.HapticFeedback.impactOccurred('heavy');
+            else if (type === 'win') tg.HapticFeedback.notificationOccurred('success');
+            else if (type === 'lose') tg.HapticFeedback.notificationOccurred('error');
+        } catch (e) {}
+    }
+
     const currentUserId = tg?.initDataUnsafe?.user?.id || 0;
     const isAdmin = ADMIN_IDS.includes(currentUserId);
 
-    if (isAdmin) {
-        document.getElementById('adminBadge').style.display = 'inline-block';
-    }
+    if (isAdmin) document.getElementById('adminBadge').style.display = 'inline-block';
     document.getElementById('userIdLabel').innerText = `ID: ${currentUserId || 'не в Telegram'}`;
 
-    // Проверяем, пришли ли монеты после оплаты Stars в боте (?add_coins=...)
     const urlParams = new URLSearchParams(window.location.search);
     const paidCoins = parseInt(urlParams.get('add_coins')) || 0;
     const txId = urlParams.get('tx');
@@ -1117,17 +1248,46 @@
         refEarned: parseInt(localStorage.getItem('nexus_ref')) || 150
     };
 
+    let displayedBalance = state.balance;
+
     if (paidCoins > 0 && txId && localStorage.getItem('last_tx') !== txId) {
         state.balance += paidCoins;
         localStorage.setItem('last_tx', txId);
-        setTimeout(() => showToast(`Оплата Stars прошла! +${paidCoins.toLocaleString('ru-RU')} 🪙`), 400);
+        setTimeout(() => {
+            haptic('win');
+            spawnConfetti(window.innerWidth / 2, 120, 45);
+            showToast(`Оплата Stars прошла! +${paidCoins.toLocaleString('ru-RU')} 🪙`);
+        }, 400);
+    }
+
+    // Smooth 120fps animated balance counter
+    function animateBalanceTo(target) {
+        const start = displayedBalance;
+        const diff = target - start;
+        if (diff === 0) return;
+
+        const box = document.getElementById('balanceBox');
+        box.classList.add('bump');
+        setTimeout(() => box.classList.remove('bump'), 180);
+
+        const duration = 320;
+        const startTime = performance.now();
+
+        function step(now) {
+            const progress = Math.min((now - startTime) / duration, 1);
+            const ease = 1 - Math.pow(1 - progress, 3);
+            displayedBalance = Math.round(start + diff * ease);
+            document.getElementById('balanceDisplay').innerText = displayedBalance.toLocaleString('ru-RU');
+            document.getElementById('ratingMyScore').innerText = displayedBalance.toLocaleString('ru-RU');
+            if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
     }
 
     function saveState() {
         localStorage.setItem('nexus_balance', state.balance);
         localStorage.setItem('nexus_ref', state.refEarned);
-        document.getElementById('balanceDisplay').innerText = state.balance.toLocaleString('ru-RU');
-        document.getElementById('ratingMyScore').innerText = state.balance.toLocaleString('ru-RU');
+        animateBalanceTo(state.balance);
         document.getElementById('refClaimable').innerText = state.refEarned;
     }
 
@@ -1135,24 +1295,60 @@
         const t = document.getElementById('toast');
         t.innerText = msg;
         t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2500);
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 2200);
     }
 
+    // ================= GLOBAL 120FPS PARTICLES FX =================
+    const fxCanvas = document.getElementById('fxCanvas');
+    const fxCtx = fxCanvas.getContext('2d');
+    let fxParticles = [];
+
+    function resizeFx() {
+        const dpr = window.devicePixelRatio || 1;
+        fxCanvas.width = window.innerWidth * dpr;
+        fxCanvas.height = window.innerHeight * dpr;
+        fxCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', resizeFx);
+    resizeFx();
+
+    function spawnConfetti(x, y, count = 28) {
+        const colors = ['#00e676', '#ffb300', '#00b0ff', '#ff3d57', '#ffffff'];
+        for (let i = 0; i < count; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 120 + Math.random() * 280;
+            fxParticles.push({
+                x, y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed - 120,
+                size: 3 + Math.random() * 4,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                life: 1.0,
+                decay: 1.1 + Math.random() * 0.8
+            });
+        }
+    }
+
+    // Navigation
     function switchTab(tabName) {
+        haptic('light');
         document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
         document.getElementById('tab-' + tabName).classList.add('active');
         document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabName));
     }
 
     function openGame(gameName) {
+        haptic('medium');
         document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
         document.getElementById('game-' + gameName).classList.add('active');
-        if (gameName === 'plinko') drawPlinkoBoard();
+        if (gameName === 'plinko') setupPlinkoCanvas();
     }
 
     function closeGame() { switchTab('solo'); }
 
     function adjustBet(inputId, factor) {
+        haptic('light');
         const input = document.getElementById(inputId);
         input.value = Math.max(1, Math.floor((parseFloat(input.value) || 10) * factor));
         if (inputId === 'limboBet') updateLimboChance();
@@ -1170,11 +1366,13 @@
 
     function claimDaily() {
         if (state.dailyClaimed) return;
+        haptic('win');
         state.balance += 250;
         state.dailyClaimed = true;
         localStorage.setItem('nexus_daily', new Date().toDateString());
         saveState();
         updateDailyUI();
+        spawnConfetti(window.innerWidth / 2, 140, 30);
         showToast('+250 🪙 Ежедневный бонус получен!');
     }
 
@@ -1194,7 +1392,7 @@
         `).join('');
     }
 
-    // SHOP & STARS
+    // ================= SHOP & STARS =================
     const shopPackages = [
         { id: 'pack_1000', coins: 1000, stars: 10, bonus: 'Базовый пакет', best: false },
         { id: 'pack_5250', coins: 5250, stars: 50, bonus: '+250 бонусных монет (+5%)', best: false },
@@ -1222,25 +1420,265 @@
 
     function buyPack(packId, coins, stars) {
         if (isAdmin) {
+            haptic('win');
             state.balance += coins;
             saveState();
+            spawnConfetti(window.innerWidth / 2, 200, 35);
             showToast(`Бесплатно начислено +${coins.toLocaleString('ru-RU')} 🪙`);
             return;
         }
-
+        haptic('medium');
         if (tg && tg.sendData) {
-            tg.sendData(JSON.stringify({
-                action: 'buy_stars',
-                pack_id: packId,
-                coins: coins,
-                stars: stars
-            }));
+            tg.sendData(JSON.stringify({ action: 'buy_stars', pack_id: packId, coins: coins, stars: stars }));
         } else {
             showToast(`Откройте приложение через кнопку бота для оплаты ${stars} ⭐`);
         }
     }
 
-    // MINES
+    // ================= PLINKO 120 FPS PHYSICS ENGINE =================
+    const plinkoMultipliers = {
+        low: [5.6, 2.1, 1.3, 1.0, 0.7, 1.0, 1.3, 2.1, 5.6],
+        med: [13.1, 3.0, 1.3, 0.7, 0.4, 0.7, 1.3, 3.0, 13.1],
+        high: [29.0, 4.0, 1.5, 0.3, 0.2, 0.3, 1.5, 4.0, 29.0],
+        ext: [100.0, 8.0, 1.5, 0.2, 0.1, 0.2, 1.5, 8.0, 100.0]
+    };
+    let currentPlinkoRisk = 'med';
+
+    const plinkoCanvas = document.getElementById('plinkoCanvas');
+    const pCtx = plinkoCanvas.getContext('2d');
+    const P_LOGIC_W = 340;
+    const P_LOGIC_H = 270;
+    const P_ROWS = 8;
+    const P_START_Y = 34;
+    const P_SPACING_Y = 27;
+    const P_SPACING_X = 34;
+
+    let plinkoPegs = [];
+    let plinkoBalls = [];
+    let plinkoSparks = [];
+
+    function setupPlinkoCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        plinkoCanvas.width = P_LOGIC_W * dpr;
+        plinkoCanvas.height = P_LOGIC_H * dpr;
+        pCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        plinkoPegs = [];
+        for (let r = 0; r < P_ROWS; r++) {
+            const cols = r + 3;
+            const startX = (P_LOGIC_W - (cols - 1) * P_SPACING_X) / 2;
+            for (let c = 0; c < cols; c++) {
+                plinkoPegs.push({
+                    x: startX + c * P_SPACING_X,
+                    y: P_START_Y + r * P_SPACING_Y,
+                    row: r,
+                    col: c,
+                    pulse: 0
+                });
+            }
+        }
+    }
+
+    function setPlinkoRisk(risk, btn) {
+        haptic('light');
+        currentPlinkoRisk = risk;
+        document.querySelectorAll('#plinkoRiskTabs .risk-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderPlinkoBuckets();
+    }
+
+    function renderPlinkoBuckets() {
+        document.getElementById('plinkoBuckets').innerHTML = plinkoMultipliers[currentPlinkoRisk].map((m, idx) =>
+            `<div class="bucket" id="bucket-${idx}">${m}x</div>`
+        ).join('');
+    }
+
+    function dropPlinkoBall() {
+        const bet = parseInt(document.getElementById('plinkoBet').value);
+        if (!bet || bet <= 0 || bet > state.balance) {
+            haptic('lose');
+            return showToast('Недостаточно монет!');
+        }
+        haptic('light');
+        state.balance -= bet;
+        saveState();
+
+        // Pre-calculate unbiased path (8 binary decisions -> bucket 0..8)
+        let waypoints = [{ x: P_LOGIC_W / 2 + (Math.random() - 0.5) * 4, y: 8 }];
+        let rightMoves = 0;
+        let currentCol = 1; // Top row has 3 pegs (index 0, 1, 2); start above middle peg (1)
+
+        for (let r = 0; r < P_ROWS; r++) {
+            const cols = r + 3;
+            const startX = (P_LOGIC_W - (cols - 1) * P_SPACING_X) / 2;
+            const pegX = startX + currentCol * P_SPACING_X;
+            const pegY = P_START_Y + r * P_SPACING_Y;
+
+            const dir = Math.random() < 0.5 ? -1 : 1;
+            if (dir === 1) {
+                rightMoves++;
+                currentCol++;
+            }
+            waypoints.push({
+                x: pegX,
+                y: pegY - 6,
+                pegRow: r,
+                pegCol: dir === 1 ? currentCol - 1 : currentCol,
+                dir: dir
+            });
+        }
+
+        // Final landing point in bucket
+        const finalX = (P_LOGIC_W - 8 * P_SPACING_X) / 2 + rightMoves * P_SPACING_X;
+        waypoints.push({ x: finalX, y: P_LOGIC_H - 6 });
+
+        plinkoBalls.push({
+            bet: bet,
+            risk: currentPlinkoRisk,
+            bucketIdx: rightMoves,
+            waypoints: waypoints,
+            seg: 0,
+            t: 0,
+            speed: 5.2, // segments per second -> ultra crisp & fast
+            x: waypoints[0].x,
+            y: waypoints[0].y,
+            trail: []
+        });
+    }
+
+    function updateAndRenderPlinko(dt) {
+        if (!document.getElementById('game-plinko').classList.contains('active')) return;
+
+        pCtx.clearRect(0, 0, P_LOGIC_W, P_LOGIC_H);
+
+        // Update & Draw Pegs with glow pulse
+        for (let i = 0; i < plinkoPegs.length; i++) {
+            const p = plinkoPegs[i];
+            if (p.pulse > 0) p.pulse = Math.max(0, p.pulse - dt * 3.2);
+
+            if (p.pulse > 0) {
+                pCtx.beginPath();
+                pCtx.arc(p.x, p.y, 4 + p.pulse * 8, 0, Math.PI * 2);
+                pCtx.fillStyle = `rgba(255, 179, 0, ${p.pulse * 0.35})`;
+                pCtx.fill();
+            }
+
+            pCtx.beginPath();
+            pCtx.arc(p.x, p.y, 3.8, 0, Math.PI * 2);
+            pCtx.fillStyle = p.pulse > 0.1 ? '#ffd54f' : '#586380';
+            pCtx.fill();
+        }
+
+        // Update & Draw Sparks
+        for (let i = plinkoSparks.length - 1; i >= 0; i--) {
+            const s = plinkoSparks[i];
+            s.x += s.vx * dt;
+            s.y += s.vy * dt;
+            s.vy += 280 * dt;
+            s.life -= dt * 2.8;
+            if (s.life <= 0) {
+                plinkoSparks.splice(i, 1);
+                continue;
+            }
+            pCtx.fillStyle = `rgba(255, 193, 7, ${s.life})`;
+            pCtx.beginPath();
+            pCtx.arc(s.x, s.y, 2, 0, Math.PI * 2);
+            pCtx.fill();
+        }
+
+        // Update & Draw Balls with parabolic bounce physics
+        for (let i = plinkoBalls.length - 1; i >= 0; i--) {
+            const b = plinkoBalls[i];
+            b.t += dt * b.speed;
+
+            if (b.t >= 1) {
+                b.t -= 1;
+                b.seg++;
+
+                // Trigger peg hit FX & haptic
+                const wp = b.waypoints[b.seg];
+                if (wp && wp.pegRow !== undefined) {
+                    haptic('light');
+                    const peg = plinkoPegs.find(p => p.row === wp.pegRow && p.col === wp.pegCol);
+                    if (peg) peg.pulse = 1.0;
+
+                    for (let k = 0; k < 5; k++) {
+                        plinkoSparks.push({
+                            x: wp.x,
+                            y: wp.y,
+                            vx: (Math.random() - 0.5) * 90,
+                            vy: -30 - Math.random() * 60,
+                            life: 1.0
+                        });
+                    }
+                }
+
+                // Reached bucket!
+                if (b.seg >= b.waypoints.length - 1) {
+                    const mult = plinkoMultipliers[b.risk][b.bucketIdx];
+                    const win = Math.floor(b.bet * mult);
+                    state.balance += win;
+                    saveState();
+
+                    if (mult >= 3) {
+                        haptic('win');
+                        showToast(`🔥 ${mult}x! Выигрыш +${win} 🪙`);
+                    }
+
+                    const bucketEl = document.getElementById(`bucket-${b.bucketIdx}`);
+                    if (bucketEl) {
+                        bucketEl.classList.remove('hit-bucket');
+                        void bucketEl.offsetWidth;
+                        bucketEl.classList.add('hit-bucket');
+                        setTimeout(() => bucketEl.classList.remove('hit-bucket'), 180);
+                    }
+
+                    plinkoBalls.splice(i, 1);
+                    continue;
+                }
+            }
+
+            const p0 = b.waypoints[b.seg];
+            const p1 = b.waypoints[b.seg + 1];
+            const u = b.t;
+
+            // Horizontal smooth ease + parabolic gravity arc vertically
+            const easeX = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+            b.x = p0.x + (p1.x - p0.x) * easeX;
+            const bounceArc = b.seg > 0 ? Math.sin(u * Math.PI) * -7 : 0;
+            b.y = p0.y + (p1.y - p0.y) * (u * u) + bounceArc;
+
+            b.trail.push({ x: b.x, y: b.y });
+            if (b.trail.length > 14) b.trail.shift();
+
+            // Draw glowing motion trail
+            for (let tIdx = 0; tIdx < b.trail.length; tIdx++) {
+                const pt = b.trail[tIdx];
+                const ratio = (tIdx + 1) / b.trail.length;
+                pCtx.beginPath();
+                pCtx.arc(pt.x, pt.y, 6.2 * ratio, 0, Math.PI * 2);
+                pCtx.fillStyle = `rgba(255, 179, 0, ${ratio * 0.28})`;
+                pCtx.fill();
+            }
+
+            // Draw main ball
+            pCtx.save();
+            pCtx.shadowColor = '#ffb300';
+            pCtx.shadowBlur = 12;
+            pCtx.fillStyle = '#ffd54f';
+            pCtx.beginPath();
+            pCtx.arc(b.x, b.y, 6.5, 0, Math.PI * 2);
+            pCtx.fill();
+
+            pCtx.fillStyle = '#ffffff';
+            pCtx.beginPath();
+            pCtx.arc(b.x - 2, b.y - 2, 2, 0, Math.PI * 2);
+            pCtx.fill();
+            pCtx.restore();
+        }
+    }
+
+    // ================= MINES GAME =================
     let minesState = { active: false, minesCount: 5, bet: 0, bombs: [], revealed: 0, mult: 1.0 };
 
     function initMinesGrid() {
@@ -1257,6 +1695,7 @@
 
     function setMinesCount(count, btn) {
         if (minesState.active) return;
+        haptic('light');
         minesState.minesCount = count;
         document.querySelectorAll('#minesRiskTabs .risk-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -1266,7 +1705,11 @@
         const btn = document.getElementById('minesActionBtn');
         if (!minesState.active) {
             const bet = parseInt(document.getElementById('minesBet').value);
-            if (!bet || bet <= 0 || bet > state.balance) return showToast('Недостаточно монет!');
+            if (!bet || bet <= 0 || bet > state.balance) {
+                haptic('lose');
+                return showToast('Недостаточно монет!');
+            }
+            haptic('medium');
             state.balance -= bet;
             saveState();
 
@@ -1286,9 +1729,11 @@
             btn.innerText = `Забрать ${bet} 🪙`;
             btn.classList.add('cashout');
         } else {
+            haptic('win');
             const win = Math.floor(minesState.bet * minesState.mult);
             state.balance += win;
             saveState();
+            spawnConfetti(window.innerWidth / 2, 260, 35);
             showToast(`Выигрыш: +${win} 🪙 (${minesState.mult.toFixed(2)}x)`);
             endMinesRound();
         }
@@ -1297,11 +1742,13 @@
     function clickMineCell(index, cellEl) {
         if (!minesState.active || cellEl.classList.contains('gem') || cellEl.classList.contains('bomb')) return;
         if (minesState.bombs.includes(index)) {
+            haptic('lose');
             cellEl.classList.add('bomb');
             cellEl.innerText = '💣';
             showToast('Бум! Вы попали на мину.');
             endMinesRound();
         } else {
+            haptic('medium');
             cellEl.classList.add('gem');
             cellEl.innerText = '💎';
             minesState.revealed++;
@@ -1327,7 +1774,7 @@
         btn.classList.remove('cashout');
     }
 
-    // LIMBO
+    // ================= LIMBO 120 FPS WHEEL =================
     let limboRotation = 0;
     let limboSpinning = false;
 
@@ -1341,14 +1788,18 @@
         document.getElementById('limboPotentialWin').innerText = Math.floor(bet * mult);
 
         const deg = (chance / 100) * 360;
-        document.getElementById('limboWheel').style.background = `conic-gradient(var(--accent-green) 0deg ${deg}deg, #1c202e ${deg}deg 360deg)`;
+        document.getElementById('limboWheel').style.background = `conic-gradient(var(--accent-green) 0deg ${deg}deg, #191e2c ${deg}deg 360deg)`;
     }
 
     function spinLimbo() {
         if (limboSpinning) return;
         const bet = parseInt(document.getElementById('limboBet').value);
-        if (!bet || bet <= 0 || bet > state.balance) return showToast('Недостаточно монет!');
+        if (!bet || bet <= 0 || bet > state.balance) {
+            haptic('lose');
+            return showToast('Недостаточно монет!');
+        }
 
+        haptic('medium');
         state.balance -= bet;
         saveState();
         limboSpinning = true;
@@ -1360,121 +1811,56 @@
         const targetAngle = Math.random() * 360;
         const won = targetAngle <= winAngleLimit;
 
-        const extraSpins = 360 * 5;
-        const currentMod = limboRotation % 360;
+        const startRot = limboRotation;
+        const extraSpins = 360 * 6;
+        const currentMod = startRot % 360;
         const desiredFinal = (360 - targetAngle) % 360;
         const delta = (desiredFinal - currentMod + 360) % 360;
-        limboRotation += extraSpins + delta;
+        const targetRot = startRot + extraSpins + delta;
 
         const wheel = document.getElementById('limboWheel');
         document.getElementById('limboStatusText').innerText = 'КРУТИТСЯ';
-        wheel.style.transform = `rotate(${limboRotation}deg)`;
 
-        setTimeout(() => {
-            limboSpinning = false;
-            if (won) {
-                const prize = Math.floor(bet * mult);
-                state.balance += prize;
-                saveState();
-                document.getElementById('limboStatusText').innerText = 'ПОБЕДА!';
-                showToast(`Победа! +${prize} 🪙`);
+        const duration = 2100;
+        const startTime = performance.now();
+        let lastTickSector = 0;
+
+        function animateWheel(now) {
+            const p = Math.min((now - startTime) / duration, 1);
+            // Quintic ease-out for silky 120fps deceleration
+            const ease = 1 - Math.pow(1 - p, 5);
+            limboRotation = startRot + (targetRot - startRot) * ease;
+            wheel.style.transform = `rotate3d(0, 0, 1, ${limboRotation}deg)`;
+
+            const sector = Math.floor(limboRotation / 30);
+            if (sector !== lastTickSector) {
+                lastTickSector = sector;
+                haptic('light');
+            }
+
+            if (p < 1) {
+                requestAnimationFrame(animateWheel);
             } else {
-                document.getElementById('limboStatusText').innerText = 'ПРОИГРЫШ';
-                showToast('Не повезло, попробуйте ещё!');
-            }
-        }, 2250);
-    }
-
-    // PLINKO
-    const plinkoMultipliers = {
-        low: [5.6, 2.1, 1.3, 1.0, 0.7, 1.0, 1.3, 2.1, 5.6],
-        med: [13.1, 3.0, 1.3, 0.7, 0.4, 0.7, 1.3, 3.0, 13.1],
-        high: [29.0, 4.0, 1.5, 0.3, 0.2, 0.3, 1.5, 4.0, 29.0],
-        ext: [100.0, 8.0, 1.5, 0.2, 0.1, 0.2, 1.5, 8.0, 100.0]
-    };
-    let currentPlinkoRisk = 'med';
-
-    function setPlinkoRisk(risk, btn) {
-        currentPlinkoRisk = risk;
-        document.querySelectorAll('#plinkoRiskTabs .risk-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderPlinkoBuckets();
-    }
-
-    function renderPlinkoBuckets() {
-        document.getElementById('plinkoBuckets').innerHTML = plinkoMultipliers[currentPlinkoRisk].map((m, idx) =>
-            `<div class="bucket" id="bucket-${idx}">${m}x</div>`
-        ).join('');
-    }
-
-    function drawPlinkoBoard(ballPos = null) {
-        const canvas = document.getElementById('plinkoCanvas');
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        const rows = 8, startY = 30, spacingY = 26, spacingX = 34;
-        ctx.fillStyle = '#4a536b';
-        for (let r = 0; r < rows; r++) {
-            const cols = r + 3;
-            const startX = (canvas.width - (cols - 1) * spacingX) / 2;
-            for (let c = 0; c < cols; c++) {
-                ctx.beginPath();
-                ctx.arc(startX + c * spacingX, startY + r * spacingY, 4, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        if (ballPos) {
-            ctx.fillStyle = '#ffb300';
-            ctx.shadowColor = '#ffb300';
-            ctx.shadowBlur = 10;
-            ctx.beginPath();
-            ctx.arc(ballPos.x, ballPos.y, 7, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-        }
-    }
-
-    function dropPlinkoBall() {
-        const bet = parseInt(document.getElementById('plinkoBet').value);
-        if (!bet || bet <= 0 || bet > state.balance) return showToast('Недостаточно монет!');
-        state.balance -= bet;
-        saveState();
-
-        const rows = 8;
-        let path = [], rightMoves = 0;
-        for (let i = 0; i < rows; i++) {
-            const dir = Math.random() < 0.5 ? -1 : 1;
-            if (dir === 1) rightMoves++;
-            path.push(dir);
-        }
-
-        let step = 0, x = 170, y = 15;
-        const interval = setInterval(() => {
-            if (step >= rows) {
-                clearInterval(interval);
-                drawPlinkoBoard();
-                const mult = plinkoMultipliers[currentPlinkoRisk][rightMoves];
-                const win = Math.floor(bet * mult);
-                state.balance += win;
-                saveState();
-
-                const bucketEl = document.getElementById(`bucket-${rightMoves}`);
-                if (bucketEl) {
-                    bucketEl.style.transform = 'scale(1.2)';
-                    setTimeout(() => bucketEl.style.transform = 'scale(1)', 200);
+                limboSpinning = false;
+                if (won) {
+                    haptic('win');
+                    const prize = Math.floor(bet * mult);
+                    state.balance += prize;
+                    saveState();
+                    document.getElementById('limboStatusText').innerText = 'ПОБЕДА!';
+                    spawnConfetti(window.innerWidth / 2, 230, 35);
+                    showToast(`Победа! +${prize} 🪙`);
+                } else {
+                    haptic('lose');
+                    document.getElementById('limboStatusText').innerText = 'ПРОИГРЫШ';
+                    showToast('Не повезло, попробуйте ещё!');
                 }
-                showToast(`Шар попал в ${mult}x (+${win} 🪙)`);
-                return;
             }
-            x += path[step] * 17;
-            y += 28;
-            drawPlinkoBoard({ x, y });
-            step++;
-        }, 90);
+        }
+        requestAnimationFrame(animateWheel);
     }
 
-    // HI-LO
+    // ================= HI-LO =================
     let currentHiloCard = 7;
 
     function updateHiloOdds() {
@@ -1501,20 +1887,27 @@
         else if (choice === 'eq' && nextCard === currentHiloCard) { won = true; mult = 12; }
 
         currentHiloCard = nextCard;
-        document.getElementById('hiloCardDisplay').innerText = currentHiloCard;
+        const cardEl = document.getElementById('hiloCardDisplay');
+        cardEl.classList.remove('flip');
+        void cardEl.offsetWidth;
+        cardEl.classList.add('flip');
+        cardEl.innerText = currentHiloCard;
         updateHiloOdds();
 
         if (won) {
+            haptic('win');
             const win = Math.floor(bet * mult);
             state.balance += win;
             saveState();
+            spawnConfetti(window.innerWidth / 2, 220, 25);
             showToast(`Угадали! Выпало ${nextCard} (+${win} 🪙)`);
         } else {
+            haptic('lose');
             showToast(`Мимо! Выпала карта ${nextCard}`);
         }
     }
 
-    // KENO
+    // ================= KENO =================
     let kenoSelected = [];
 
     function initKenoGrid() {
@@ -1531,6 +1924,7 @@
     }
 
     function toggleKenoNum(num) {
+        haptic('light');
         clearKenoResults();
         const idx = kenoSelected.indexOf(num);
         if (idx > -1) kenoSelected.splice(idx, 1);
@@ -1550,9 +1944,10 @@
         for (let i = 1; i <= 30; i++) document.getElementById('keno-' + i).classList.remove('hit', 'miss');
     }
 
-    function kenoClear() { kenoSelected = []; clearKenoResults(); renderKenoSelection(); }
+    function kenoClear() { haptic('light'); kenoSelected = []; clearKenoResults(); renderKenoSelection(); }
 
     function kenoAutoPick() {
+        haptic('medium');
         kenoClear();
         while (kenoSelected.length < 5) {
             const r = Math.floor(Math.random() * 30) + 1;
@@ -1584,25 +1979,30 @@
         });
 
         if (hits > 0) {
+            haptic('win');
             const mult = parseFloat(((hits / kenoSelected.length) * 3.5).toFixed(2));
             const win = Math.floor(bet * mult);
             state.balance += win;
             saveState();
+            spawnConfetti(window.innerWidth / 2, 240, 30);
             showToast(`Совпадений: ${hits}! Выигрыш +${win} 🪙`);
         } else {
+            haptic('lose');
             showToast('Нет совпадений. Попробуйте ещё!');
         }
     }
 
     // REWARDS & REFERRALS
     function redeemReward(name, cost) {
-        if (state.balance < cost) return showToast('Недостаточно монет для награды!');
+        if (state.balance < cost) { haptic('lose'); return showToast('Недостаточно монет для награды!'); }
+        haptic('win');
         state.balance -= cost;
         saveState();
         showToast(`Заявка на «${name}» отправлена!`);
     }
 
     function copyRefLink() {
+        haptic('light');
         const input = document.getElementById('refLinkInput');
         input.select();
         navigator.clipboard?.writeText(input.value);
@@ -1611,10 +2011,62 @@
 
     function claimReferral() {
         if (state.refEarned <= 0) return showToast('Нет доступных начислений');
+        haptic('win');
         state.balance += state.refEarned;
+        spawnConfetti(window.innerWidth / 2, 260, 25);
         showToast(`Забрано +${state.refEarned} 🪙 с рефералов!`);
         state.refEarned = 0;
         saveState();
+    }
+
+    // ================= MASTER 120 FPS RENDER LOOP =================
+    let lastFrameTime = performance.now();
+    let frameCount = 0;
+    let fpsTimer = 0;
+
+    function masterLoop(now) {
+        const dt = Math.min((now - lastFrameTime) / 1000, 0.05); // clamp dt for stability
+        lastFrameTime = now;
+
+        // Live FPS badge updater
+        frameCount++;
+        fpsTimer += dt;
+        if (fpsTimer >= 0.5) {
+            const currentFps = Math.round(frameCount / fpsTimer);
+            const fpsEl = document.getElementById('fpsCounter');
+            if (fpsEl) fpsEl.innerText = `${currentFps} FPS`;
+            frameCount = 0;
+            fpsTimer = 0;
+        }
+
+        // 1. Update Plinko Physics
+        updateAndRenderPlinko(dt);
+
+        // 2. Update Global Confetti Particles
+        if (fxParticles.length > 0) {
+            fxCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+            for (let i = fxParticles.length - 1; i >= 0; i--) {
+                const p = fxParticles[i];
+                p.x += p.vx * dt;
+                p.y += p.vy * dt;
+                p.vy += 650 * dt;
+                p.life -= p.decay * dt;
+                if (p.life <= 0) {
+                    fxParticles.splice(i, 1);
+                    continue;
+                }
+                fxCtx.globalAlpha = Math.max(0, p.life);
+                fxCtx.fillStyle = p.color;
+                fxCtx.beginPath();
+                fxCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                fxCtx.fill();
+            }
+            fxCtx.globalAlpha = 1;
+        } else {
+            fxCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        }
+
+        requestAnimationFrame(masterLoop);
     }
 
     // Boot
@@ -1625,9 +2077,10 @@
     initMinesGrid();
     updateLimboChance();
     renderPlinkoBuckets();
-    drawPlinkoBoard();
+    setupPlinkoCanvas();
     updateHiloOdds();
     initKenoGrid();
+    requestAnimationFrame(masterLoop);
 </script>
 </body>
-    </html>
+</html>

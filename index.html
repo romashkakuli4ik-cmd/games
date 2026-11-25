@@ -9,7 +9,6 @@
         :root {
             --bg-body: #090b10;
             --bg-card: #12151e;
-            --bg-card-hover: #181c28;
             --bg-element: #1c202e;
             --border-color: #262b3d;
             --accent-green: #00e676;
@@ -82,6 +81,17 @@
             font-size: 0.75rem;
             font-weight: 700;
             color: var(--text-secondary);
+        }
+
+        .admin-badge {
+            background: rgba(0, 230, 118, 0.15);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+            padding: 3px 7px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            display: none;
         }
 
         .wallet-group {
@@ -424,10 +434,6 @@
             grid-template-columns: repeat(4, 1fr);
             gap: 6px;
             margin-bottom: 14px;
-        }
-
-        .risk-tabs.three {
-            grid-template-columns: repeat(3, 1fr);
         }
 
         .risk-btn {
@@ -841,6 +847,11 @@
             align-items: center;
             margin-bottom: 10px;
             cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .shop-item:active {
+            transform: scale(0.98);
         }
 
         .shop-item.best {
@@ -850,10 +861,18 @@
 
         .star-pill {
             background: var(--bg-element);
-            padding: 6px 12px;
-            border-radius: 8px;
+            padding: 7px 14px;
+            border-radius: 10px;
             font-weight: 800;
             color: var(--gold);
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .star-pill.free-pill {
+            background: var(--accent-green-dim);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
         }
 
         .ref-box {
@@ -934,6 +953,7 @@
             transition: all 0.25s ease;
             z-index: 999;
             box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+            text-align: center;
         }
 
         #toast.show {
@@ -950,6 +970,7 @@
     <div class="logo-wrap">
         <div class="logo">NEXUS</div>
         <div class="rank-pill">#145</div>
+        <div class="admin-badge" id="adminBadge">ADMIN</div>
     </div>
     <div class="wallet-group">
         <div class="balance-box">
@@ -1316,40 +1337,9 @@
     <div id="tab-shop" class="tab-view">
         <div class="section-header">
             <span class="section-title">🛍️ Пакеты монет</span>
+            <span style="font-size: 0.72rem; color: var(--text-secondary);" id="userIdLabel">ID: ...</span>
         </div>
-
-        <div class="shop-item" onclick="buyPack(1000, 10)">
-            <div>
-                <div style="font-weight: 800; font-size: 1.05rem;">🪙 1 000</div>
-                <div style="font-size: 0.75rem; color: var(--text-secondary);">Базовый пакет</div>
-            </div>
-            <div class="star-pill">⭐ 10</div>
-        </div>
-
-        <div class="shop-item" onclick="buyPack(5250, 50)">
-            <div>
-                <div style="font-weight: 800; font-size: 1.05rem;">🪙 5 250</div>
-                <div style="font-size: 0.75rem; color: var(--accent-green);">+250 бонусных монет (+5%)</div>
-            </div>
-            <div class="star-pill">⭐ 50</div>
-        </div>
-
-        <div class="shop-item" onclick="buyPack(27500, 250)">
-            <div>
-                <div style="font-weight: 800; font-size: 1.05rem;">🪙 27 500</div>
-                <div style="font-size: 0.75rem; color: var(--accent-green);">+2 500 бонусных монет (+10%)</div>
-            </div>
-            <div class="star-pill">⭐ 250</div>
-        </div>
-
-        <div class="shop-item best" onclick="buyPack(312500, 2500)">
-            <div>
-                <span class="badge-new" style="background: var(--gold); margin-bottom: 4px; display: inline-block;">ЛУЧШЕЕ ПРЕДЛОЖЕНИЕ</span>
-                <div style="font-weight: 800; font-size: 1.05rem;">🪙 312 500</div>
-                <div style="font-size: 0.75rem; color: var(--accent-green);">+62 500 бонусных монет (+25%)</div>
-            </div>
-            <div class="star-pill">⭐ 2 500</div>
-        </div>
+        <div id="shopContainer"></div>
     </div>
 
     <!-- TAB 5: EARN (REFERRALS) -->
@@ -1401,11 +1391,24 @@
 </nav>
 
 <script>
-    // Telegram WebApp Init
-    if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
+    // ==========================================
+    // ВПИШИ СВОЙ TELEGRAM ID СЮДА (через запятую, если нужно)
+    const ADMIN_IDS = [123456789]; 
+    // ==========================================
+
+    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    if (tg) {
+        tg.ready();
+        tg.expand();
     }
+
+    const currentUserId = tg?.initDataUnsafe?.user?.id || 0;
+    const isAdmin = ADMIN_IDS.includes(currentUserId);
+
+    if (isAdmin) {
+        document.getElementById('adminBadge').style.display = 'inline-block';
+    }
+    document.getElementById('userIdLabel').innerText = `Ваш ID: ${currentUserId || 'не в Telegram'}`;
 
     // Core State
     let state = {
@@ -1426,7 +1429,7 @@
         const t = document.getElementById('toast');
         t.innerText = msg;
         t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2200);
+        setTimeout(() => t.classList.remove('show'), 2500);
     }
 
     // Navigation
@@ -1497,15 +1500,57 @@
         `).join('');
     }
 
+    // ================= SHOP & TELEGRAM STARS =================
+    const shopPackages = [
+        { id: 'pack_1000', coins: 1000, stars: 10, bonus: 'Базовый пакет', best: false },
+        { id: 'pack_5250', coins: 5250, stars: 50, bonus: '+250 бонусных монет (+5%)', best: false },
+        { id: 'pack_27500', coins: 27500, stars: 250, bonus: '+2 500 бонусных монет (+10%)', best: false },
+        { id: 'pack_57500', coins: 57500, stars: 500, bonus: '+7 500 бонусных монет (+15%)', best: false },
+        { id: 'pack_120000', coins: 120000, stars: 1000, bonus: '+20 000 бонусных монет (+20%)', best: false },
+        { id: 'pack_312500', coins: 312500, stars: 2500, bonus: '+62 500 бонусных монет (+25%)', best: true }
+    ];
+
+    function renderShop() {
+        const container = document.getElementById('shopContainer');
+        container.innerHTML = shopPackages.map(pkg => `
+            <div class="shop-item ${pkg.best ? 'best' : ''}" onclick="buyPack('${pkg.id}', ${pkg.coins}, ${pkg.stars})">
+                <div>
+                    ${pkg.best ? '<span class="badge-new" style="background: var(--gold); margin-bottom: 4px; display: inline-block;">ЛУЧШЕЕ ПРЕДЛОЖЕНИЕ</span>' : ''}
+                    <div style="font-weight: 800; font-size: 1.05rem;">🪙 ${pkg.coins.toLocaleString('ru-RU')}</div>
+                    <div style="font-size: 0.75rem; color: ${pkg.bonus.includes('+') ? 'var(--accent-green)' : 'var(--text-secondary)'};">${pkg.bonus}</div>
+                </div>
+                <div class="star-pill ${isAdmin ? 'free-pill' : ''}">
+                    ${isAdmin ? 'БЕСПЛАТНО' : '⭐ ' + pkg.stars}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function buyPack(packId, coins, stars) {
+        // Если это ты (ADMIN_IDS) — зачисляем мгновенно и бесплатно
+        if (isAdmin) {
+            state.balance += coins;
+            saveState();
+            showToast(`Бесплатно начислено +${coins.toLocaleString('ru-RU')} 🪙`);
+            return;
+        }
+
+        // Для обычных пользователей — отправка запроса на оплату в Telegram-бота
+        if (tg && tg.sendData) {
+            tg.sendData(JSON.stringify({
+                action: 'buy_stars',
+                pack_id: packId,
+                coins: coins,
+                stars: stars
+            }));
+            showToast(`Счёт на ${stars} ⭐ отправлен в чат бота!`);
+        } else {
+            showToast(`Откройте приложение через Telegram-бота для оплаты ${stars} ⭐`);
+        }
+    }
+
     // ================= MINES GAME =================
-    let minesState = {
-        active: false,
-        minesCount: 5,
-        bet: 0,
-        bombs: [],
-        revealed: 0,
-        mult: 1.0
-    };
+    let minesState = { active: false, minesCount: 5, bet: 0, bombs: [], revealed: 0, mult: 1.0 };
 
     function initMinesGrid() {
         const grid = document.getElementById('minesGrid');
@@ -1530,10 +1575,7 @@
         const btn = document.getElementById('minesActionBtn');
         if (!minesState.active) {
             const bet = parseInt(document.getElementById('minesBet').value);
-            if (!bet || bet <= 0 || bet > state.balance) {
-                showToast('Недостаточно монет!');
-                return;
-            }
+            if (!bet || bet <= 0 || bet > state.balance) return showToast('Недостаточно монет!');
             state.balance -= bet;
             saveState();
 
@@ -1553,12 +1595,11 @@
             btn.innerText = `Забрать ${bet} 🪙`;
             btn.classList.add('cashout');
         } else {
-            // Cashout
             const win = Math.floor(minesState.bet * minesState.mult);
             state.balance += win;
             saveState();
             showToast(`Выигрыш: +${win} 🪙 (${minesState.mult.toFixed(2)}x)`);
-            endMinesRound(true);
+            endMinesRound();
         }
     }
 
@@ -1569,7 +1610,7 @@
             cellEl.classList.add('bomb');
             cellEl.innerText = '💣';
             showToast('Бум! Вы попали на мину.');
-            endMinesRound(false);
+            endMinesRound();
         } else {
             cellEl.classList.add('gem');
             cellEl.innerText = '💎';
@@ -1584,7 +1625,7 @@
         }
     }
 
-    function endMinesRound(won) {
+    function endMinesRound() {
         minesState.active = false;
         const cells = document.querySelectorAll('.mine-cell');
         minesState.bombs.forEach(idx => {
@@ -1617,10 +1658,7 @@
     function spinLimbo() {
         if (limboSpinning) return;
         const bet = parseInt(document.getElementById('limboBet').value);
-        if (!bet || bet <= 0 || bet > state.balance) {
-            showToast('Недостаточно монет!');
-            return;
-        }
+        if (!bet || bet <= 0 || bet > state.balance) return showToast('Недостаточно монет!');
 
         state.balance -= bet;
         saveState();
@@ -1633,7 +1671,6 @@
         const targetAngle = Math.random() * 360;
         const won = targetAngle <= winAngleLimit;
 
-        // Pointer is at top (0 deg). To land targetAngle at top, rotate by (360 - targetAngle)
         const extraSpins = 360 * 5;
         const currentMod = limboRotation % 360;
         const desiredFinal = (360 - targetAngle) % 360;
@@ -1717,10 +1754,7 @@
 
     function dropPlinkoBall() {
         const bet = parseInt(document.getElementById('plinkoBet').value);
-        if (!bet || bet <= 0 || bet > state.balance) {
-            showToast('Недостаточно монет!');
-            return;
-        }
+        if (!bet || bet <= 0 || bet > state.balance) return showToast('Недостаточно монет!');
         state.balance -= bet;
         saveState();
 
@@ -1766,19 +1800,13 @@
     function updateHiloOdds() {
         const hiCount = 13 - currentHiloCard;
         const loCount = currentHiloCard - 1;
-        const hiMult = hiCount > 0 ? (13 / hiCount).toFixed(2) : '—';
-        const loMult = loCount > 0 ? (13 / loCount).toFixed(2) : '—';
-        document.getElementById('hiloHiMult').innerText = hiMult + 'x';
-        document.getElementById('hiloLoMult').innerText = loMult + 'x';
+        document.getElementById('hiloHiMult').innerText = (hiCount > 0 ? (13 / hiCount).toFixed(2) : '—') + 'x';
+        document.getElementById('hiloLoMult').innerText = (loCount > 0 ? (13 / loCount).toFixed(2) : '—') + 'x';
     }
 
     function playHilo(choice) {
         const bet = parseInt(document.getElementById('hiloBet').value);
-        if (!bet || bet <= 0 || bet > state.balance) {
-            showToast('Недостаточно монет!');
-            return;
-        }
-
+        if (!bet || bet <= 0 || bet > state.balance) return showToast('Недостаточно монет!');
         if (choice === 'hi' && currentHiloCard === 13) return showToast('Карта максимальная!');
         if (choice === 'lo' && currentHiloCard === 1) return showToast('Карта минимальная!');
 
@@ -1789,16 +1817,9 @@
         let won = false;
         let mult = 1;
 
-        if (choice === 'hi' && nextCard > currentHiloCard) {
-            won = true;
-            mult = 13 / (13 - currentHiloCard);
-        } else if (choice === 'lo' && nextCard < currentHiloCard) {
-            won = true;
-            mult = 13 / (currentHiloCard - 1);
-        } else if (choice === 'eq' && nextCard === currentHiloCard) {
-            won = true;
-            mult = 12;
-        }
+        if (choice === 'hi' && nextCard > currentHiloCard) { won = true; mult = 13 / (13 - currentHiloCard); }
+        else if (choice === 'lo' && nextCard < currentHiloCard) { won = true; mult = 13 / (currentHiloCard - 1); }
+        else if (choice === 'eq' && nextCard === currentHiloCard) { won = true; mult = 12; }
 
         currentHiloCard = nextCard;
         document.getElementById('hiloCardDisplay').innerText = currentHiloCard;
@@ -1833,13 +1854,9 @@
     function toggleKenoNum(num) {
         clearKenoResults();
         const idx = kenoSelected.indexOf(num);
-        if (idx > -1) {
-            kenoSelected.splice(idx, 1);
-        } else {
-            if (kenoSelected.length >= 10) {
-                showToast('Максимум 10 чисел!');
-                return;
-            }
+        if (idx > -1) kenoSelected.splice(idx, 1);
+        else {
+            if (kenoSelected.length >= 10) return showToast('Максимум 10 чисел!');
             kenoSelected.push(num);
         }
         renderKenoSelection();
@@ -1847,17 +1864,13 @@
 
     function renderKenoSelection() {
         for (let i = 1; i <= 30; i++) {
-            const el = document.getElementById('keno-' + i);
-            el.classList.toggle('selected', kenoSelected.includes(i));
+            document.getElementById('keno-' + i).classList.toggle('selected', kenoSelected.includes(i));
         }
         document.getElementById('kenoCountLabel').innerText = `${kenoSelected.length}/10`;
     }
 
     function clearKenoResults() {
-        for (let i = 1; i <= 30; i++) {
-            const el = document.getElementById('keno-' + i);
-            el.classList.remove('hit', 'miss');
-        }
+        for (let i = 1; i <= 30; i++) document.getElementById('keno-' + i).classList.remove('hit', 'miss');
     }
 
     function kenoClear() {
@@ -1876,15 +1889,9 @@
     }
 
     function playKeno() {
-        if (kenoSelected.length === 0) {
-            showToast('Выберите хотя бы 1 число!');
-            return;
-        }
+        if (kenoSelected.length === 0) return showToast('Выберите хотя бы 1 число!');
         const bet = parseInt(document.getElementById('kenoBet').value);
-        if (!bet || bet <= 0 || bet > state.balance) {
-            showToast('Недостаточно монет!');
-            return;
-        }
+        if (!bet || bet <= 0 || bet > state.balance) return showToast('Недостаточно монет!');
 
         state.balance -= bet;
         saveState();
@@ -1899,12 +1906,8 @@
         let hits = 0;
         drawn.forEach(num => {
             const el = document.getElementById('keno-' + num);
-            if (kenoSelected.includes(num)) {
-                el.classList.add('hit');
-                hits++;
-            } else {
-                el.classList.add('miss');
-            }
+            if (kenoSelected.includes(num)) { el.classList.add('hit'); hits++; }
+            else el.classList.add('miss');
         });
 
         if (hits > 0) {
@@ -1918,18 +1921,9 @@
         }
     }
 
-    // ================= SHOP, REWARDS, REFERRALS =================
-    function buyPack(coins, stars) {
-        state.balance += coins;
-        saveState();
-        showToast(`Куплено +${coins.toLocaleString('ru-RU')} 🪙 за ${stars} ⭐`);
-    }
-
+    // ================= REWARDS & REFERRALS =================
     function redeemReward(name, cost) {
-        if (state.balance < cost) {
-            showToast('Недостаточно монет для награды!');
-            return;
-        }
+        if (state.balance < cost) return showToast('Недостаточно монет для награды!');
         state.balance -= cost;
         saveState();
         showToast(`Заявка на «${name}» отправлена!`);
@@ -1943,10 +1937,7 @@
     }
 
     function claimReferral() {
-        if (state.refEarned <= 0) {
-            showToast('Нет доступных начислений');
-            return;
-        }
+        if (state.refEarned <= 0) return showToast('Нет доступных начислений');
         state.balance += state.refEarned;
         showToast(`Забрано +${state.refEarned} 🪙 с рефералов!`);
         state.refEarned = 0;
@@ -1955,6 +1946,7 @@
 
     // Boot App
     saveState();
+    renderShop();
     updateDailyUI();
     initLiveFeed();
     initMinesGrid();
@@ -1965,4 +1957,4 @@
     initKenoGrid();
 </script>
 </body>
-</html>
+                </html>
